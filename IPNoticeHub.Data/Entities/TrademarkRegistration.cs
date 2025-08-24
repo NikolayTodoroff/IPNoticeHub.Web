@@ -1,10 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using IPNoticeHub.Data.EnumConstants;
 using System.ComponentModel.DataAnnotations;
+using static IPNoticeHub.Common.EntityValidationConstants.TrademarkRegistrationConstants;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace IPNoticeHub.Data.Entities
 {
-    public class Trademark
+    public class TrademarkRegistration
     {
         [Key]
         [Comment("Primary key for the Trademark entity")]
@@ -15,38 +17,37 @@ namespace IPNoticeHub.Data.Entities
         public Guid PublicId { get; set; } = Guid.NewGuid();
 
 
-        [Required]
-        [MaxLength(200)]
-        [Comment("The wordmark or name of the trademark (required, max length 200)")]
+        [Required, MaxLength(WordmarkMaxLength)]
+        [Comment("The wordmark or name of the trademark)")]
         public string Wordmark { get; set; } = string.Empty;
 
 
-        [Required]
-        [MaxLength(50)]
-        [Comment("The serial number of the trademark application (required, max length 50)")]
+        [Required,MaxLength(SerialNumberMaxLength)]
+        [Comment("The serial number of the trademark application")]
         public string SerialNumber { get; set; } = string.Empty;
 
 
-        [MaxLength(50)]
-        [Comment("Registration number of the trademark (optional, max length 50)")]
+        [MaxLength(RegistrationNumberMaxLength)]
+        [Comment("Registration number of the trademark (optional)")]
         public string? RegistrationNumber { get; set; }
 
 
-        [Comment("Current status of the trademark (default is Pending)")]
-        public TrademarkStatus Status { get; set; } = TrademarkStatus.Pending;
+        [Required, MaxLength(GoodsAndServicesMaxLength)]
+        [Comment("Description of goods and services associated with the trademark")]
+        public string GoodsAndServices { get; set; } = string.Empty;
 
 
-        [Comment("Status code from the TSDR system (optional)")]
-        public int? TsdrStatusCode { get; set; }
+        [Required, MaxLength(OwnerNameMaxLength)]
+        [Comment("Name of the current owner/s of the trademark")]
+        public string Owner { get; set; } = string.Empty;
 
 
-        [StringLength(500)]
-        [Comment("Status text from the TSDR system (optional, max length 500)")]
-        public string? TsdrStatusText { get; set; }
+        [Required, Comment("Current status of the trademark (default is Pending)")]
+        public TrademarkStatusCategory StatusCategory { get; set; } = TrademarkStatusCategory.Pending;
 
 
-        [Comment("Classification of the trademark")]
-        public TrademarkClass Class { get; set; }
+        [Required, MaxLength(TrademarkStatusDetailsMaxLength)]
+        public string StatusDetail { get; set; } = string.Empty;
 
 
         [Comment("Filing date of the trademark application (optional)")]
@@ -57,15 +58,20 @@ namespace IPNoticeHub.Data.Entities
         public DateTime? RegistrationDate { get; set; }
 
 
-        [Comment("Collection of associated trademark registration classes")]
-        public ICollection<TrademarkRegistrationClass> Classes { get; set; } = new List<TrademarkRegistrationClass>();
+        [Comment("Collection of trademark classes associated with this trademark registration")]
+        public ICollection<TrademarkClass> Classes { get; set; } = new List<TrademarkClass>();
 
 
-        [Comment("Collection of events related to the trademark")]
+        [Comment("Collection of events related to this trademark registration")]
         public ICollection<TrademarkEvent> Events { get; set; } = new List<TrademarkEvent>();
 
 
-        [Comment("Indicates whether the trademark is marked as deleted")]
-        public bool IsDeleted { get; set; }
+        [Required, ForeignKey(nameof(ApplicationUser))]
+        [Comment("Identifier for the user who owns this trademark registration")]
+        public string ApplicationUserId { get; set; } = string.Empty;
+
+
+        [Comment("The application user entity associated with this trademark registration")]
+        public ApplicationUser ApplicationUser { get; set; } = null!;
     }
 }

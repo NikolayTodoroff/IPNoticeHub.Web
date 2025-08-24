@@ -14,9 +14,11 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.19" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.19" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.4" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\IPNoticeHub.Common\IPNoticeHub.Common.csproj" />
     <ProjectReference Include="..\IPNoticeHub.Services\IPNoticeHub.Services.csproj" />
   </ItemGroup>
 

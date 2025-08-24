@@ -18,7 +18,10 @@
 
   <ItemGroup>
     <Folder Include="Entities\TrademarkRegistration\" />
-    <Folder Include="TM\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\IPNoticeHub.Common\IPNoticeHub.Common.csproj" />
   </ItemGroup>
 
 </Project>

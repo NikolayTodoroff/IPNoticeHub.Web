@@ -4,6 +4,6 @@ namespace IPNoticeHub.Data.Entities
 {
     public class ApplicationUser : IdentityUser
     {
-        public ICollection<Trademark> Trademarks { get; set; } = new List<Trademark>();
+        public ICollection<TrademarkRegistration> Trademarks { get; set; } = new List<TrademarkRegistration>();
     }
 }
