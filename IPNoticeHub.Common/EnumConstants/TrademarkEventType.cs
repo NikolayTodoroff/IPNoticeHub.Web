@@ -1,4 +1,4 @@
-﻿namespace IPNoticeHub.Data.EnumConstants
+﻿namespace IPNoticeHub.Common.EnumConstants
 {
     /// <summary>
     /// Represents various categories of trademark events.

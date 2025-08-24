@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using IPNoticeHub.Data.EnumConstants;
+using IPNoticeHub.Common.EnumConstants;
 using System.ComponentModel.DataAnnotations;
 using static IPNoticeHub.Common.EntityValidationConstants.TrademarkRegistrationConstants;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -59,7 +59,7 @@ namespace IPNoticeHub.Data.Entities
 
 
         [Comment("Collection of trademark classes associated with this trademark registration")]
-        public ICollection<TrademarkClass> Classes { get; set; } = new List<TrademarkClass>();
+        public ICollection<int> Classes { get; set; } = new List<int>();
 
 
         [Comment("Collection of events related to this trademark registration")]

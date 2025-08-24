@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace IPNoticeHub.Data.EnumConstants
+﻿namespace IPNoticeHub.Common.EnumConstants
 {
     /// <summary>
     /// Defines the various status categories for trademarks, representing their current state in the application or registration process.

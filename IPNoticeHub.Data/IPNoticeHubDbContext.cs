@@ -11,5 +11,12 @@ namespace IPNoticeHub.Data
         }
 
         public DbSet<TrademarkRegistration> TrademarkRegistrations { get; set; }
+        public DbSet<TrademarkEvent> TrademarkEvents { get; set; }
+
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+        }
     }
 }

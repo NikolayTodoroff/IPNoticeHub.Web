@@ -1,4 +1,4 @@
-﻿using IPNoticeHub.Data.EnumConstants;
+﻿using IPNoticeHub.Common.EnumConstants;
 
 namespace IPNoticeHub.Common.AdditionalConfigurations
 {

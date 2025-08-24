@@ -17,10 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Entities\TrademarkRegistration\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\IPNoticeHub.Common\IPNoticeHub.Common.csproj" />
   </ItemGroup>
 
