@@ -6,6 +6,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace IPNoticeHub.Data.Entities
 {
+    /// <summary>
+    /// Represents a trademark registration entity, containing details about the trademark,
+    /// its status, associated events, and ownership information.
+    /// </summary>
     public class TrademarkRegistration
     {
         [Key]
