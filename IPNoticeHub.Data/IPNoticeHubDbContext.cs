@@ -78,6 +78,9 @@ namespace IPNoticeHub.Data
                 HasOne(tc => tc.TrademarkRegistration).
                 WithMany(t => t.Classes).
                 HasForeignKey(tc => tc.TrademarkRegistrationId);
+
+            //Only seed in Debug builds (not in production)
+            Seed.FakeDataSeeder.Seed(builder);
         }
     }
 }
