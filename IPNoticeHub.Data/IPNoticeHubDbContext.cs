@@ -17,6 +17,10 @@ namespace IPNoticeHub.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            builder.Entity<TrademarkRegistration>().
+                HasIndex(t => new { t.Source, t.SourceId }).
+                IsUnique();
         }
     }
 }

@@ -23,6 +23,5 @@ namespace IPNoticeHub.Common.AdditionalConfigurations
                 .OrderBy(c => c)
                 .Select(c => GetTrademarkDisplayName((TrademarkClass)c)));
         }
-
     }
 }

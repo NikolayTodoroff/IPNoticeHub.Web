@@ -22,9 +22,9 @@ namespace IPNoticeHub.Data.Entities
         public string Wordmark { get; set; } = string.Empty;
 
 
-        [Required,MaxLength(SerialNumberMaxLength)]
-        [Comment("The serial number of the trademark application")]
-        public string SerialNumber { get; set; } = string.Empty;
+        [Required,MaxLength(SourceIdMaxLength)]
+        [Comment("Original identifier from the source system (USPTO Serial, EUIPO Application, WIPO IRN)")]
+        public string SourceId { get; set; } = string.Empty;
 
 
         [MaxLength(RegistrationNumberMaxLength)]
@@ -56,6 +56,15 @@ namespace IPNoticeHub.Data.Entities
 
         [Comment("Registration date of the trademark (optional)")]
         public DateTime? RegistrationDate { get; set; }
+
+
+        [MaxLength(MarkImageUrlMaxLength)]
+        [Comment("URL of the image representing the trademark (optional)")]
+        public string? MarkImageUrl { get; set; }
+
+
+        [Required, Comment("Source of the data for the trademark registration")]
+        public DataProvider Source { get; set; }
 
 
         [Comment("Collection of trademark classes associated with this trademark registration")]
