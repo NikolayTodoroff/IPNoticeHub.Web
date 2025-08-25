@@ -40,22 +40,8 @@ namespace IPNoticeHub.Data.Entities
         [Comment("Nation of first publication")]
         public string? NationOfFirstPublication { get; set; }
 
-        [Required, ForeignKey(nameof(ApplicationUser))]
-        [Comment("Identifier for the user who owns this copyright registration in the app")]
-        public string ApplicationUserId { get; set; } = string.Empty;
 
-        [Comment("The application user entity associated with this copyright registration")]
-        public ApplicationUser ApplicationUser { get; set; } = null!;
-
-
-
-
-
-
-
-
-
-
-
+        [Comment("Navigation property for the many - to - many relationship between CopyrightRegistration and UserCopyrights")]
+        public ICollection<UserCopyright> UserCopyrights { get; set; } = new List<UserCopyright>();
     }
 }

@@ -1,8 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
-using IPNoticeHub.Common.EnumConstants;
+﻿using IPNoticeHub.Common.EnumConstants;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.ComponentModel.DataAnnotations;
-using static IPNoticeHub.Common.EntityValidationConstants.TrademarkRegistrationConstants;
 using System.ComponentModel.DataAnnotations.Schema;
+using static IPNoticeHub.Common.EntityValidationConstants.TrademarkRegistrationConstants;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace IPNoticeHub.Data.Entities
 {
@@ -76,15 +78,10 @@ namespace IPNoticeHub.Data.Entities
 
 
         [Comment("Collection of events related to this trademark registration")]
-        public ICollection<TrademarkEvent> Events { get; set; } = new List<TrademarkEvent>();
+        public ICollection<TrademarkEvent> Events { get; set; } = new List<TrademarkEvent>();       
 
 
-        [Required, ForeignKey(nameof(ApplicationUser))]
-        [Comment("Identifier for the user who owns this trademark registration")]
-        public string ApplicationUserId { get; set; } = string.Empty;
-
-
-        [Comment("The application user entity associated with this trademark registration")]
-        public ApplicationUser ApplicationUser { get; set; } = null!;
+        [Comment("Navigation property for the many - to - many relationship between TrademarkRegistration and UserTrademark")]
+        public ICollection<UserTrademark> UserTrademarks { get; set; } = new List<UserTrademark>();
     }
 }
