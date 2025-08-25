@@ -2,9 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using static IPNoticeHub.Common.EntityValidationConstants.TrademarkRegistrationConstants;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+
 
 namespace IPNoticeHub.Data.Entities
 {
@@ -74,7 +73,7 @@ namespace IPNoticeHub.Data.Entities
 
 
         [Comment("Collection of trademark classes associated with this trademark registration")]
-        public ICollection<int> Classes { get; set; } = new List<int>();
+        public ICollection<TrademarkClassAssignment> Classes { get; set; } = new List<TrademarkClassAssignment>();
 
 
         [Comment("Collection of events related to this trademark registration")]

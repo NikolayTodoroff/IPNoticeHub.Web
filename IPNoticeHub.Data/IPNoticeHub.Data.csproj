@@ -20,4 +20,8 @@
     <ProjectReference Include="..\IPNoticeHub.Common\IPNoticeHub.Common.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+  </ItemGroup>
+
 </Project>

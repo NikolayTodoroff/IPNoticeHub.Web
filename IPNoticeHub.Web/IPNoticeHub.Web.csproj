@@ -22,4 +22,8 @@
     <ProjectReference Include="..\IPNoticeHub.Services\IPNoticeHub.Services.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Data\" />
+  </ItemGroup>
+
 </Project>

@@ -1,6 +1,7 @@
 ﻿using IPNoticeHub.Data.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 
 namespace IPNoticeHub.Data
 {
@@ -66,6 +67,17 @@ namespace IPNoticeHub.Data
                 WithMany(c => c.UserCopyrights).
                 HasForeignKey(uc => uc.CopyrightRegistrationId).
                 OnDelete(DeleteBehavior.Restrict);
+
+
+            // Define composite primary key for TrademarkClassAssignment entity
+            builder.Entity<TrademarkClassAssignment>().
+                HasKey(tc => new { tc.TrademarkRegistrationId, tc.ClassNumber });
+
+            // Configure relationship between TrademarkClassAssignment and TrademarkRegistration
+            builder.Entity<TrademarkClassAssignment>().
+                HasOne(tc => tc.TrademarkRegistration).
+                WithMany(t => t.Classes).
+                HasForeignKey(tc => tc.TrademarkRegistrationId);
         }
     }
 }

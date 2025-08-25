@@ -1,9 +1,6 @@
 using IPNoticeHub.Data;
 using IPNoticeHub.Data.Entities;
-using IPNoticeHub.Web.Data;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
 
 namespace IPNoticeHub.Web
 {
