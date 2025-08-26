@@ -1,5 +1,8 @@
 ﻿using IPNoticeHub.Common.EnumConstants;
 using IPNoticeHub.Data.Entities;
+using IPNoticeHub.Data.Entities.ApplicationUser;
+using IPNoticeHub.Data.Entities.CopyrightRegistration;
+using IPNoticeHub.Data.Entities.TrademarkRegistration;
 using Microsoft.EntityFrameworkCore;
 
 namespace IPNoticeHub.Data.Seed
@@ -10,8 +13,7 @@ namespace IPNoticeHub.Data.Seed
         {
             var user1Id = "2b195b12-9690-46b9-ac8e-50118a7102ea";
             var user2Id = "4d8f7a3e-cb13-42f4-bf61-0a8c301a3f8b";
-              
-            // Seed Fake User Data
+                       
             builder.Entity<ApplicationUser>().HasData(
                 new ApplicationUser
                 {
@@ -38,10 +40,9 @@ namespace IPNoticeHub.Data.Seed
                     ConcurrencyStamp = "d1d41029-3bbf-4476-890a-d64104220466"
                 }
             );
-
-            // Seed Fake Trademark Registrations
-            builder.Entity<TrademarkRegistration>().HasData(
-                new TrademarkRegistration
+         
+            builder.Entity<TrademarkEntity>().HasData(
+                new TrademarkEntity
                 {
                     Id = 1,
                     PublicId = Guid.Parse("4dd1f011-5362-42ff-9853-33ccbe4aa935"),
@@ -56,7 +57,7 @@ namespace IPNoticeHub.Data.Seed
                     RegistrationDate = new DateTime(2012, 1, 1),
                     Source = DataProvider.USPTO
                 },
-                new TrademarkRegistration
+                new TrademarkEntity
                 {
                     Id = 2,
                     PublicId = Guid.Parse("fdb6b78f-6f5c-42ec-8b36-9a958011168b"),
@@ -78,10 +79,9 @@ namespace IPNoticeHub.Data.Seed
                 new { TrademarkRegistrationId = 2, ClassNumber = 25 },
                 new { TrademarkRegistrationId = 2, ClassNumber = 28 }
             );
-
-            // Seed Fake Copyright Registrations
-            builder.Entity<CopyrightRegistration>().HasData(
-                new CopyrightRegistration
+        
+            builder.Entity<CopyrightEntity>().HasData(
+                new CopyrightEntity
                 {
                     Id = 1,
                     PublicId = Guid.Parse("076d6d16-235d-40e7-b419-da5465d8ebdf"),
@@ -94,8 +94,7 @@ namespace IPNoticeHub.Data.Seed
                     NationOfFirstPublication = "United States"
                 }
             );
-
-            // Relationships and Associations
+          
             builder.Entity<UserTrademark>().HasData(
                 new { ApplicationUserId = user1Id, TrademarkRegistrationId = 1, AddedToWatchlist = true, DateAdded = DateTime.UtcNow, IsDeleted = false },
                 new { ApplicationUserId = user2Id, TrademarkRegistrationId = 2, AddedToWatchlist = false, DateAdded = DateTime.UtcNow, IsDeleted = false }
