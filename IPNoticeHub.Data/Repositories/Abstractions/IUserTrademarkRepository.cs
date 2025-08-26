@@ -6,12 +6,13 @@ namespace IPNoticeHub.Data.Repositories.Abstractions
     {
         Task<bool> IsLinkedAsync(string userId, int trademarkId, bool includeSoftDeleted = false);
 
-        Task AddOrUndeleteAsync(string userId, int trademarkId, CancellationToken ct = default);
+        Task AddOrUndeleteAsync(string userId, int trademarkId, CancellationToken cancellationToken = default);
 
-        Task<bool> SoftRemoveAsync(string userId, int trademarkId, CancellationToken ct = default);
+        Task<bool> SoftRemoveAsync(string userId, int trademarkId, CancellationToken cancellationToken = default);
 
-
-        // Returns the user's saved trademarks (joined), ready for projection
+        /// <summary>
+        /// Returns the user's saved trademarks (joined), ready for projection.
+        /// </summary>
         IQueryable<TrademarkEntity> QueryUserCollection(string userId);
     }
 }

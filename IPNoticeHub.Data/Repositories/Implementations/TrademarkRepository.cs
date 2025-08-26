@@ -21,12 +21,17 @@ namespace IPNoticeHub.Data.Repositories.Implementations
 
         public async Task<TrademarkEntity?> GetByPublicIdAsync(Guid publicId, bool asNoTracking = true)
         {
-             return await dbContext.TrademarkRegistrations.
-                Include(t => t.Classes).
-                Include(t => t.Events).
-                AsSplitQuery().
-                AsNoTrackingIf(asNoTracking == true).
-                SingleOrDefaultAsync(t => t.PublicId == publicId);
+            var trademarksQuery = dbContext.TrademarkRegistrations.
+               Include(t => t.Classes).
+               Include(t => t.Events).
+               AsSplitQuery();
+
+            if (asNoTracking == true)
+            {
+                trademarksQuery = trademarksQuery.AsNoTracking();
+            }
+
+            return await trademarksQuery.SingleOrDefaultAsync(t => t.PublicId == publicId);
         }
 
         public Task<int?> GetIdByPublicIdAsync(Guid publicId)
@@ -37,30 +42,35 @@ namespace IPNoticeHub.Data.Repositories.Implementations
                 FirstOrDefaultAsync();
         }
 
-        // Queries the TrademarkEntity table based on the provided filter and optional navigation properties.
-        public IQueryable<TrademarkEntity> Query(TrademarkSearchFilter filter, bool includeNavProp = false)
+        /// <summary>
+        /// Queries the TrademarkEntity table based on the provided filter and optional navigation properties.
+        /// </summary>
+        public IQueryable<TrademarkEntity> Query(TrademarkSearchFilter filter, bool includeNav = false)
         {
             IQueryable<TrademarkEntity> trademarksQuery = dbContext.TrademarkRegistrations;
 
-            if (includeNavProp)
+            if (includeNav)
             {
-                trademarksQuery = trademarksQuery.Include(t => t.Classes).
-                Include(t => t.Events);
+                trademarksQuery = trademarksQuery.
+                    Include(t => t.Classes).
+                    Include(t => t.Events);
             }
 
             if (filter.Provider.HasValue)
             {
-                trademarksQuery = trademarksQuery.Where(t => t.Source == filter.Provider);
+                trademarksQuery = trademarksQuery.Where(t => t.Source == filter.Provider.Value);
             }
 
             if (filter.Status.HasValue)
             {
-                trademarksQuery = trademarksQuery.Where(t => t.StatusCategory == filter.Status.Value);
+                trademarksQuery = trademarksQuery.
+                    Where(t => t.StatusCategory == filter.Status.Value);
             }
 
             if (filter.ClassNumbers != null && filter.ClassNumbers.Length > 0)
             {
-                trademarksQuery = trademarksQuery.Where(t => t.Classes
+                trademarksQuery = trademarksQuery.
+                    Where(t => t.Classes
                     .Any(c => filter.ClassNumbers.Contains(c.ClassNumber)));
             }
 
@@ -78,8 +88,9 @@ namespace IPNoticeHub.Data.Repositories.Implementations
                 else if (filter.SearchBy == TrademarkSearchBy.Owner)
                 {
                     trademarksQuery = exact ?
-                        trademarksQuery.Where(t => t.Owner == searchTerm) :
-                        trademarksQuery.Where(t => t.Owner!.Contains(searchTerm));
+                        trademarksQuery.Where(t => t.SourceId == searchTerm || t.RegistrationNumber == searchTerm) :
+                        trademarksQuery.Where(t => t.SourceId.Contains(searchTerm) ||
+                        (t.RegistrationNumber != null && t.RegistrationNumber.Contains(searchTerm)));
                 }
 
                 else if (filter.SearchBy == TrademarkSearchBy.Number)

@@ -31,6 +31,7 @@ namespace IPNoticeHub.Web
                 .AddEntityFrameworkStores<IPNoticeHubDbContext>();
 
             builder.Services.AddControllersWithViews();
+            builder.Services.AddScoped<ITrademarkRepository, TrademarkRepository>();
             builder.Services.AddScoped<IUserTrademarkRepository, UserTrademarkRepository>();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();

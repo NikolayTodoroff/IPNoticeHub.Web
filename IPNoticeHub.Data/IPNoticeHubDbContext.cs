@@ -1,4 +1,6 @@
-﻿using IPNoticeHub.Data.Entities;
+﻿using IPNoticeHub.Data.Entities.ApplicationUser;
+using IPNoticeHub.Data.Entities.CopyrightRegistration;
+using IPNoticeHub.Data.Entities.TrademarkRegistration;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Emit;
@@ -11,21 +13,23 @@ namespace IPNoticeHub.Data
         {
         }
 
-        public DbSet<TrademarkRegistration> TrademarkRegistrations { get; set; }
+        public DbSet<TrademarkEntity> TrademarkRegistrations { get; set; }
         public DbSet<TrademarkEvent> TrademarkEvents { get; set; }
-        public DbSet<CopyrightRegistration> CopyrightRegistrations { get; set; }
+        public DbSet<CopyrightEntity> CopyrightRegistrations { get; set; }
+        public DbSet<UserTrademark> UserTrademarks { get; set; }
+        public DbSet<UserCopyright> UserCopyrights { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
             // Ensure that the combination of Source and SourceId is unique for TrademarkRegistration
-            builder.Entity<TrademarkRegistration>().
+            builder.Entity<TrademarkEntity>().
                 HasIndex(t => new { t.Source, t.SourceId }).
                 IsUnique();
 
             // Ensure that the RegistrationNumber is unique for CopyrightRegistration
-            builder.Entity<CopyrightRegistration>().
+            builder.Entity<CopyrightEntity>().
                 HasIndex(c => c.RegistrationNumber).
                 IsUnique();
 

@@ -4,9 +4,9 @@ namespace IPNoticeHub.Data.Repositories.Abstractions
 {
     public interface ITrademarkRepository
     {
-        IQueryable<TrademarkEntity> Query(TrademarkSearchFilter filter, bool includeNavProp = false);
+        IQueryable<TrademarkEntity> Query(TrademarkSearchFilter filter, bool includeNav = false);
 
-        Task<TrademarkEntity?> GetByPublicIdAsync(Guid publicId, bool @asNoTracking = true);
+        Task<TrademarkEntity?> GetByPublicIdAsync(Guid publicId, bool asNoTracking = true);
 
         Task<int?> GetIdByPublicIdAsync(Guid publicId);
 
