@@ -1,17 +1,18 @@
 ﻿using IPNoticeHub.Common.EnumConstants;
+using IPNoticeHub.Data.Entities.ApplicationUser;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.ComponentModel.DataAnnotations;
 using static IPNoticeHub.Common.EntityValidationConstants.TrademarkRegistrationConstants;
 
 
-namespace IPNoticeHub.Data.Entities
+namespace IPNoticeHub.Data.Entities.TrademarkRegistration
 {
     /// <summary>
     /// Represents a trademark registration entity, containing details about the trademark,
     /// its status, associated events, and ownership information.
     /// </summary>
-    public class TrademarkRegistration
+    public class TrademarkEntity
     {
         [Key]
         [Comment("Primary key for the Trademark entity")]

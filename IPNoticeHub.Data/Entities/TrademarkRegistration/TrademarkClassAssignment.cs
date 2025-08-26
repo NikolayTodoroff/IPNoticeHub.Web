@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace IPNoticeHub.Data.Entities
+namespace IPNoticeHub.Data.Entities.TrademarkRegistration
 {
     public class TrademarkClassAssignment
     {
@@ -11,6 +11,6 @@ namespace IPNoticeHub.Data.Entities
 
         [ForeignKey(nameof(TrademarkRegistration))]
         public int TrademarkRegistrationId { get; set; }
-        public TrademarkRegistration TrademarkRegistration { get; set; } = null!;
+        public TrademarkEntity TrademarkRegistration { get; set; } = null!;
     }
 }

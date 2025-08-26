@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace IPNoticeHub.Data.Entities
+namespace IPNoticeHub.Data.Entities.ApplicationUser
 {
     public class ApplicationUser : IdentityUser
     {

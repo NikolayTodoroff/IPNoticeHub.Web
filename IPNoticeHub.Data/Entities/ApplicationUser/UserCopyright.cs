@@ -1,7 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using IPNoticeHub.Data.Entities.CopyrightRegistration;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace IPNoticeHub.Data.Entities
+namespace IPNoticeHub.Data.Entities.ApplicationUser
 {
     public class UserCopyright
     {
@@ -11,7 +12,7 @@ namespace IPNoticeHub.Data.Entities
 
         [ForeignKey(nameof(CopyrightRegistration))]
         public int CopyrightRegistrationId { get; set; }
-        public CopyrightRegistration CopyrightRegistration { get; set; } = null!;
+        public CopyrightEntity CopyrightRegistration { get; set; } = null!;
 
 
         [Comment("Date when the user added this copyright registration to their account")]

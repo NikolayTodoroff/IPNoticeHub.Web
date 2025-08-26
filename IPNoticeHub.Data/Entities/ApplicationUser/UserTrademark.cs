@@ -1,7 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
+using IPNoticeHub.Data.Entities.TrademarkRegistration;
 
-namespace IPNoticeHub.Data.Entities
+namespace IPNoticeHub.Data.Entities.ApplicationUser
 {
     public class UserTrademark
     {
@@ -11,7 +12,7 @@ namespace IPNoticeHub.Data.Entities
 
         [ForeignKey(nameof(TrademarkRegistration))]
         public int TrademarkRegistrationId { get; set; }
-        public TrademarkRegistration TrademarkRegistration { get; set; } = null!;
+        public TrademarkEntity TrademarkRegistration { get; set; } = null!;
 
 
         [Comment("Indicates whether the trademark is on a watchlist")]

@@ -4,7 +4,7 @@ namespace IPNoticeHub.Common.AdditionalConfigurations
 {
     public static class TrademarkEventTypeMapper
     {
-        public static TrademarkEventType MapFromRaw(string? rawCode)
+        public static TrademarkEventType MapFromRawEventType(string? rawCode)
         {
             if (string.IsNullOrWhiteSpace(rawCode))
                 return TrademarkEventType.Other;

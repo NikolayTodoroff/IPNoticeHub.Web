@@ -1,0 +1,15 @@
+﻿using IPNoticeHub.Data.Entities.TrademarkRegistration;
+
+namespace IPNoticeHub.Data.Repositories.Abstractions
+{
+    public interface ITrademarkRepository
+    {
+        IQueryable<TrademarkEntity> Query(TrademarkSearchFilter filter, bool includeNavProp = false);
+
+        Task<TrademarkEntity?> GetByPublicIdAsync(Guid publicId, bool @asNoTracking = true);
+
+        Task<int?> GetIdByPublicIdAsync(Guid publicId);
+
+        Task<bool> ExistsAsync(int id);
+    }
+}

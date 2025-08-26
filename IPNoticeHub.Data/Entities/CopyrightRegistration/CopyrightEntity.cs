@@ -1,11 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using IPNoticeHub.Data.Entities.ApplicationUser;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using static IPNoticeHub.Common.EntityValidationConstants.CopyrightRegistrationConstants;
 
-namespace IPNoticeHub.Data.Entities
+namespace IPNoticeHub.Data.Entities.CopyrightRegistration
 {
-    public class CopyrightRegistration
+    public class CopyrightEntity
     {
         [Key]
         [Comment("Primary key for the Copyright entity")]

@@ -1,6 +1,8 @@
 using IPNoticeHub.Data;
-using IPNoticeHub.Data.Entities;
+using IPNoticeHub.Data.Entities.ApplicationUser;
 using Microsoft.EntityFrameworkCore;
+using IPNoticeHub.Data.Repositories.Abstractions;
+using IPNoticeHub.Data.Repositories.Implementations;
 
 namespace IPNoticeHub.Web
 {
@@ -29,7 +31,7 @@ namespace IPNoticeHub.Web
                 .AddEntityFrameworkStores<IPNoticeHubDbContext>();
 
             builder.Services.AddControllersWithViews();
-
+            builder.Services.AddScoped<IUserTrademarkRepository, UserTrademarkRepository>();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             

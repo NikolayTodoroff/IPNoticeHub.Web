@@ -1,15 +1,12 @@
 ﻿namespace IPNoticeHub.Common.EnumConstants
 {
-    // Enum representing different data providers
+    /// <summary>
+    /// Enum representing different data providers.
+    /// </summary>
     public enum DataProvider
-    {
-        // United States Patent and Trademark Office
-        USPTO = 0,
-
-        // European Union Intellectual Property Office
-        EUIPO = 1,
-
-        // World Intellectual Property Organization
-        WIPO = 2
+    { 
+        USPTO = 0, // United States Patent and Trademark Office    
+        EUIPO = 1, // European Union Intellectual Property Office  
+        WIPO = 2   // World Intellectual Property Organization
     }
 }

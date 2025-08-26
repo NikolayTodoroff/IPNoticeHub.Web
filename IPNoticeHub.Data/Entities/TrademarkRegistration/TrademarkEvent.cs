@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using static IPNoticeHub.Common.EntityValidationConstants.TrademarkEventConstants;
 
-namespace IPNoticeHub.Data.Entities
+namespace IPNoticeHub.Data.Entities.TrademarkRegistration
 {
     /// <summary>
     /// Represents an event associated with a trademark registration.
@@ -20,7 +20,7 @@ namespace IPNoticeHub.Data.Entities
         public int TrademarkId { get; set; }
 
         [Comment("Navigation property for the associated TrademarkRegistration")]
-        public TrademarkRegistration TrademarkRegistration { get; set; } = null!;
+        public TrademarkEntity TrademarkRegistration { get; set; } = null!;
 
         [Required, Comment("The date when the event occurred")]
         public DateTime EventDate { get; set; }
