@@ -4,5 +4,7 @@ namespace IPNoticeHub.Services.Implementations
 {
     public class TrademarkCollectionService : ITrademarkCollectionService
     {
+        
+
     }
 }
