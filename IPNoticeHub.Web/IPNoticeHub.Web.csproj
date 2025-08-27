@@ -19,11 +19,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\IPNoticeHub.Common\IPNoticeHub.Common.csproj" />
-    <ProjectReference Include="..\IPNoticeHub.Services\IPNoticeHub.Services.csproj" />
+    <ProjectReference Include="..\Services\IPNoticeHub.Services.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Data\" />
+    <Folder Include="Models\Trademarks\" />
+    <Folder Include="Views\Trademarks\" />
   </ItemGroup>
 
 </Project>

@@ -3,6 +3,9 @@ using IPNoticeHub.Data.Entities.ApplicationUser;
 using Microsoft.EntityFrameworkCore;
 using IPNoticeHub.Data.Repositories.Abstractions;
 using IPNoticeHub.Data.Repositories.Implementations;
+using IPNoticeHub.Services.Abstractions;
+using IPNoticeHub.Services.Implementations;
+using Services.Implementations;
 
 namespace IPNoticeHub.Web
 {
@@ -30,12 +33,15 @@ namespace IPNoticeHub.Web
             })
                 .AddEntityFrameworkStores<IPNoticeHubDbContext>();
 
-            builder.Services.AddControllersWithViews();
-            builder.Services.AddScoped<ITrademarkRepository, TrademarkRepository>();
-            builder.Services.AddScoped<IUserTrademarkRepository, UserTrademarkRepository>();
+            builder.Services.AddControllersWithViews();           
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-            
+
+            builder.Services.AddScoped<ITrademarkRepository, TrademarkRepository>();
+            builder.Services.AddScoped<IUserTrademarkRepository, UserTrademarkRepository>();
+            builder.Services.AddScoped<ITrademarkSearchService, TrademarkSearchService>();
+            builder.Services.AddScoped<ITrademarkCollectionService, TrademarkCollectionService>();
+
             var app = builder.Build();
 
             if (app.Environment.IsDevelopment())
