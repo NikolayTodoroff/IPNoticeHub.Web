@@ -1,10 +1,10 @@
-﻿using IPNoticeHub.Data.Repositories.Abstractions;
+﻿using IPNoticeHub.Common.AdditionalConfigurations;
+using IPNoticeHub.Data.Repositories.Abstractions;
 using IPNoticeHub.Services.Abstractions;
 using IPNoticeHub.Services.DTOs.Trademarks;
 using Microsoft.EntityFrameworkCore;
-using static IPNoticeHub.Common.EntityValidationConstants;
 
-namespace Services.Implementations
+namespace IPNoticeHub.Services.Implementations
 {
     public sealed class TrademarkSearchService : ITrademarkSearchService
     {
@@ -17,57 +17,38 @@ namespace Services.Implementations
 
         public async Task<TrademarkDetailsDTO?> GetDetailsAsync(Guid publicId)
         {
-            var result = await trademarks.GetByPublicIdAsync(publicId, asNoTracking:true);
+            var result = await trademarks.GetByPublicIdAsync(publicId, asNoTracking: true);
 
-            if (result == null)
+            if (result is null)
             {
                 return null;
-            }
+            } 
 
-            return new TrademarkDetailsDTO()
+            return new TrademarkDetailsDTO
             {
                 PublicId = result.PublicId,
-
                 Wordmark = result.Wordmark,
-
                 Owner = result.Owner,
-
                 SourceId = result.SourceId,
-
                 RegistrationNumber = result.RegistrationNumber,
-
                 Status = result.StatusCategory,
-
                 FilingDate = result.FilingDate,
-
                 RegistrationDate = result.RegistrationDate,
-
                 MarkImageUrl = result.MarkImageUrl,
-
                 Provider = result.Source,
-
-                Classes = result.Classes.
-                    Select(c => c.ClassNumber).
-                    ToList(),
-
+                Classes = result.Classes.Select(c => c.ClassNumber).ToList(),
                 Events = result.Events.
-                    OrderByDescending(e => e.EventDate).
-                    Select(e => (Date: e.EventDate, Code: e.Code, Description: e.Description)).
-                    ToList(),
+                                        OrderByDescending(e => e.EventDate).
+                                        Select(e => (Date: e.EventDate, Code: e.Code, Description: e.Description)).
+                                        ToList()
             };
         }
 
         public async Task<PagedResult<TrademarkListItemDTO>> SearchAsync(TrademarkFilterDTO filter, int page, int pageSize)
         {
-            // Normalize page & pageSize (apply defaults and upper limits)
-            page = page < PagingConstants.DefaultPage ? PagingConstants.DefaultPage : page;
+            var (normalizedPage, normalizedPageSize) = PagingConfiguration.NormalizePaging(page, pageSize);
 
-            if (pageSize < 1)
-                pageSize = PagingConstants.DefaultPageSize;
-            else if (pageSize > PagingConstants.MaxPageSize)
-                pageSize = PagingConstants.MaxPageSize;
-
-            var searchFilter = new TrademarkSearchFilter()
+            var searchFilter = new TrademarkSearchFilter
             {
                 Provider = filter.Provider,
                 ClassNumbers = filter.ClassNumbers,
@@ -77,14 +58,14 @@ namespace Services.Implementations
                 ExactMatch = filter.ExactMatch
             };
 
-            var queryResult = trademarks.Query(searchFilter,includeNav: true).
-                OrderBy(t=>t.Wordmark);
+            var query = trademarks.Query(searchFilter, includeNav: true)
+                                  .OrderBy(t => t.Wordmark);
 
-            var totalResults = await queryResult.CountAsync();
+            var resultsCount = await query.CountAsync();
 
-            var items = await queryResult.
-                Skip((page - 1) * pageSize)
-                .Take(pageSize)
+            var searchResults = await query
+                .Skip((normalizedPage - 1) * normalizedPageSize)
+                .Take(normalizedPageSize)
                 .Select(t => new TrademarkListItemDTO
                 {
                     PublicId = t.PublicId,
@@ -96,13 +77,13 @@ namespace Services.Implementations
                     Provider = t.Source
                 })
                 .ToListAsync();
-         
+
             return new PagedResult<TrademarkListItemDTO>
             {
-                Items = items,
-                Total = totalResults,
-                Page = page,
-                PageSize = pageSize
+                Results = searchResults,
+                ResultsCount = resultsCount,
+                CurrentPage = normalizedPage,
+                ResultsCountPerPage = normalizedPageSize
             };
         }
     }

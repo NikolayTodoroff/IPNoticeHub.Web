@@ -5,7 +5,6 @@ using IPNoticeHub.Data.Repositories.Abstractions;
 using IPNoticeHub.Data.Repositories.Implementations;
 using IPNoticeHub.Services.Abstractions;
 using IPNoticeHub.Services.Implementations;
-using Services.Implementations;
 
 namespace IPNoticeHub.Web
 {

@@ -3,12 +3,12 @@ namespace IPNoticeHub.Services.DTOs.Trademarks
 {
     public sealed class PagedResult<T>
     {
-        public IReadOnlyList<T> Items { get; init; } = new List<T>();
+        public IReadOnlyList<T> Results { get; init; } = new List<T>();
 
-        public int Total { get; init; }
+        public int ResultsCount { get; init; }
 
-        public int Page { get; init; }
+        public int CurrentPage { get; init; }
 
-        public int PageSize { get; init; }
+        public int ResultsCountPerPage { get; init; }
     }
 }
