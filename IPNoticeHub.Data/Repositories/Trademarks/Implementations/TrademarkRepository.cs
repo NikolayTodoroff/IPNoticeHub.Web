@@ -1,9 +1,9 @@
 ﻿using IPNoticeHub.Common.EnumConstants;
 using IPNoticeHub.Data.Entities.TrademarkRegistration;
-using IPNoticeHub.Data.Repositories.Abstractions;
+using IPNoticeHub.Data.Repositories.Trademarks.Abstractions;
 using Microsoft.EntityFrameworkCore;
 
-namespace IPNoticeHub.Data.Repositories.Implementations
+namespace IPNoticeHub.Data.Repositories.Trademarks.Implementations
 {
     public class TrademarkRepository : ITrademarkRepository
     {
@@ -90,7 +90,7 @@ namespace IPNoticeHub.Data.Repositories.Implementations
                     trademarksQuery = exact ?
                         trademarksQuery.Where(t => t.SourceId == searchTerm || t.RegistrationNumber == searchTerm) :
                         trademarksQuery.Where(t => t.SourceId.Contains(searchTerm) ||
-                        (t.RegistrationNumber != null && t.RegistrationNumber.Contains(searchTerm)));
+                        t.RegistrationNumber != null && t.RegistrationNumber.Contains(searchTerm));
                 }
 
                 else if (filter.SearchBy == TrademarkSearchBy.Number)

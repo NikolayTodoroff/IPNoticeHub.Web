@@ -1,9 +1,9 @@
 ﻿using IPNoticeHub.Data.Entities.ApplicationUser;
 using IPNoticeHub.Data.Entities.TrademarkRegistration;
-using IPNoticeHub.Data.Repositories.Abstractions;
+using IPNoticeHub.Data.Repositories.Trademarks.Abstractions;
 using Microsoft.EntityFrameworkCore;
 
-namespace IPNoticeHub.Data.Repositories.Implementations
+namespace IPNoticeHub.Data.Repositories.Trademarks.Implementations
 {
     /// <summary>
     /// Repository for managing associations between users and trademark registrations.

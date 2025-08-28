@@ -82,8 +82,7 @@ namespace IPNoticeHub.Web.Controllers
                 return Challenge();
             } 
 
-            var orderedCollectionModel = await collectionService.GetUserCollectionAsync(
-                userId, sortBy, currentPage, pageSize);
+            var orderedCollectionModel = await collectionService.GetUserCollectionAsync (userId, sortBy, currentPage, pageSize);
 
             ViewBag.SortBy = sortBy;
             return View(orderedCollectionModel);

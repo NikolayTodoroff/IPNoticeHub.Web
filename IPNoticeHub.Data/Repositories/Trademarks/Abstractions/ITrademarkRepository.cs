@@ -1,6 +1,6 @@
 ﻿using IPNoticeHub.Data.Entities.TrademarkRegistration;
 
-namespace IPNoticeHub.Data.Repositories.Abstractions
+namespace IPNoticeHub.Data.Repositories.Trademarks.Abstractions
 {
     public interface ITrademarkRepository
     {

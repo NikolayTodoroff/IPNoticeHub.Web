@@ -1,6 +1,6 @@
 ﻿using IPNoticeHub.Common.AdditionalConfigurations;
 using IPNoticeHub.Common.EnumConstants;
-using IPNoticeHub.Data.Repositories.Abstractions;
+using IPNoticeHub.Data.Repositories.Trademarks.Abstractions;
 using IPNoticeHub.Services.Abstractions;
 using IPNoticeHub.Services.DTOs.Trademarks;
 using Microsoft.EntityFrameworkCore;
@@ -21,7 +21,11 @@ namespace IPNoticeHub.Services.Implementations
         public async Task AddAsync(string userId, int trademarkId, CancellationToken cancellationToken = default)
         {
             var exists = await trademarks.ExistsAsync(trademarkId);
-            if (!exists) return;
+
+            if (!exists)
+            {
+                return;
+            }
 
             await userTrademarks.AddOrUndeleteAsync(userId, trademarkId, cancellationToken);
         }

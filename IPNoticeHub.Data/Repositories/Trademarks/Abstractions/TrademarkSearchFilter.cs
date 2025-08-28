@@ -1,6 +1,6 @@
 ﻿using IPNoticeHub.Common.EnumConstants;
 
-namespace IPNoticeHub.Data.Repositories.Abstractions
+namespace IPNoticeHub.Data.Repositories.Trademarks.Abstractions
 {
     public sealed class TrademarkSearchFilter
     {
