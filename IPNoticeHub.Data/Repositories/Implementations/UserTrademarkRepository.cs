@@ -74,6 +74,15 @@ namespace IPNoticeHub.Data.Repositories.Implementations
                 AsNoTracking();
         }
 
+        public IQueryable<UserTrademark> QueryUserLinks(string userId)
+        {
+            return dbContext.UserTrademarks.
+                Where(ut => ut.ApplicationUserId == userId && !ut.IsDeleted).
+                Include(ut => ut.TrademarkRegistration).
+                ThenInclude(t => t.Classes).
+                AsNoTracking();
+        }
+
         /// <summary>
         /// Marks the association between a user and a trademark as soft-deleted.
         /// </summary>

@@ -1,4 +1,5 @@
-﻿using IPNoticeHub.Data.Entities.TrademarkRegistration;
+﻿using IPNoticeHub.Data.Entities.ApplicationUser;
+using IPNoticeHub.Data.Entities.TrademarkRegistration;
 
 namespace IPNoticeHub.Data.Repositories.Abstractions
 {
@@ -14,5 +15,12 @@ namespace IPNoticeHub.Data.Repositories.Abstractions
         /// Returns the user's saved trademarks (joined), ready for projection.
         /// </summary>
         IQueryable<TrademarkEntity> QueryUserCollection(string userId);
+
+
+        /// <summary>
+        /// Returns a queryable collection of UserTrademark entities for the specified user.
+        /// This can be used to order or filter the user's linked trademark registrations.
+        /// </summary>
+        IQueryable<UserTrademark> QueryUserLinks(string userId);
     }
 }

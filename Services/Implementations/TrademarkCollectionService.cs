@@ -1,4 +1,5 @@
 ﻿using IPNoticeHub.Common.AdditionalConfigurations;
+using IPNoticeHub.Common.EnumConstants;
 using IPNoticeHub.Data.Repositories.Abstractions;
 using IPNoticeHub.Services.Abstractions;
 using IPNoticeHub.Services.DTOs.Trademarks;
@@ -25,14 +26,14 @@ namespace IPNoticeHub.Services.Implementations
             await userTrademarks.AddOrUndeleteAsync(userId, trademarkId, cancellationToken);
         }
 
-        public async Task<PagedResult<TrademarkListItemDTO>> GetUserCollectionAsync(
-    string userId, int page, int pageSize, CancellationToken cancellationToken = default)
+        public async Task<PagedResult<TrademarkListItemDTO>> GetUserCollectionAsync(string userId, int page, int pageSize, CancellationToken cancellationToken = default)
         {
             var (normalizedPage, normalizedPageSize) = PagingConfiguration.NormalizePaging(page, pageSize);
 
-            var userTrademarksQuery = userTrademarks.QueryUserCollection(userId)
-                .OrderByDescending(t => t.RegistrationDate)
-                .ThenBy(t => t.Wordmark);
+            var userTrademarksQuery = userTrademarks.QueryUserCollection(userId).
+                OrderByDescending(t => t.RegistrationDate.HasValue).
+                ThenByDescending(t => t.RegistrationDate).
+                ThenBy(t => t.Wordmark);
 
             var resultsCount = await userTrademarksQuery.CountAsync(cancellationToken);
 
@@ -54,6 +55,58 @@ namespace IPNoticeHub.Services.Implementations
             return new PagedResult<TrademarkListItemDTO>
             {
                 Results = userTrademarksList,
+                ResultsCount = resultsCount,
+                CurrentPage = normalizedPage,
+                ResultsCountPerPage = normalizedPageSize
+            };
+        }
+
+        public async Task<PagedResult<TrademarkListItemDTO>> GetUserCollectionAsync(string userId, TrademarkCollectionSortBy sortBy, int page, int pageSize, CancellationToken cancellationToken = default)
+        {
+            var (normalizedPage, normalizedPageSize) = PagingConfiguration.NormalizePaging(page, pageSize);
+
+            var links = userTrademarks.QueryUserLinks(userId);
+
+            if (sortBy == TrademarkCollectionSortBy.DateAddedAsc)
+            {
+                links = links.OrderBy(l => l.DateAdded);
+            }
+
+            else if (sortBy == TrademarkCollectionSortBy.WordmarkAsc)
+            {
+                links = links.OrderBy(l => l.TrademarkRegistration.Wordmark);
+            }
+
+            else if (sortBy == TrademarkCollectionSortBy.WordmarkDesc)
+            {
+                links = links.OrderByDescending(l => l.TrademarkRegistration.Wordmark);
+            }
+
+            else
+            {
+                links = links.OrderByDescending(l => l.DateAdded);
+            }
+
+            var resultsCount = await links.CountAsync(cancellationToken);
+
+            var results = await links.
+                Skip((normalizedPage - 1) * normalizedPageSize).
+                Take(normalizedPageSize).
+                Select(l => new TrademarkListItemDTO
+                {
+                   PublicId = l.TrademarkRegistration.PublicId,
+                   Wordmark = l.TrademarkRegistration.Wordmark,
+                   Owner = l.TrademarkRegistration.Owner,
+                   SourceId = l.TrademarkRegistration.SourceId,
+                   Status = l.TrademarkRegistration.StatusCategory,
+                   Classes = l.TrademarkRegistration.Classes.Select(c => c.ClassNumber).ToArray(),
+                   Provider = l.TrademarkRegistration.Source
+                }).
+                   ToListAsync(cancellationToken);
+
+            return new PagedResult<TrademarkListItemDTO>
+            {
+                Results = results,
                 ResultsCount = resultsCount,
                 CurrentPage = normalizedPage,
                 ResultsCountPerPage = normalizedPageSize

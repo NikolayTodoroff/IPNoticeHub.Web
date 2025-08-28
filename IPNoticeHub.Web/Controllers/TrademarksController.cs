@@ -1,4 +1,5 @@
-﻿using IPNoticeHub.Services.Abstractions;
+﻿using IPNoticeHub.Common.EnumConstants;
+using IPNoticeHub.Services.Abstractions;
 using IPNoticeHub.Services.DTOs.Trademarks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -68,6 +69,24 @@ namespace IPNoticeHub.Web.Controllers
 
             var collectionModel = await collectionService.GetUserCollectionAsync(userId, currentPage, pageSize);
             return View(collectionModel);
+        }
+
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> MyCollection(TrademarkCollectionSortBy sortBy = TrademarkCollectionSortBy.DateAddedDesc,int currentPage = DefaultPage,int pageSize = DefaultPageSize)
+        {
+            var userId = GetUserId();
+
+            if (userId is null)
+            {
+                return Challenge();
+            } 
+
+            var orderedCollectionModel = await collectionService.GetUserCollectionAsync(
+                userId, sortBy, currentPage, pageSize);
+
+            ViewBag.SortBy = sortBy;
+            return View(orderedCollectionModel);
         }
 
         [Authorize]

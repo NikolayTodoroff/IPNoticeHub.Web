@@ -11,5 +11,6 @@ namespace IPNoticeHub.Data.Repositories.Abstractions
         Task<int?> GetIdByPublicIdAsync(Guid publicId);
 
         Task<bool> ExistsAsync(int id);
+
     }
 }
