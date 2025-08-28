@@ -15,6 +15,7 @@ namespace IPNoticeHub.Common.AdditionalConfigurations
             {
                 pageSize = PagingConstants.DefaultPageSize;
             }
+
             else if (pageSize > PagingConstants.MaxPageSize)
             {
                 pageSize = PagingConstants.MaxPageSize;

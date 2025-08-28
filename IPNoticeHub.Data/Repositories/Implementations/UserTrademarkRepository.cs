@@ -87,7 +87,9 @@ namespace IPNoticeHub.Data.Repositories.Implementations
                 ut.TrademarkRegistrationId == trademarkId, cancellationToken);
 
             if (link == null || link.IsDeleted)
+            {
                 return false;
+            }             
 
             link.IsDeleted = true;
             await dbContext.SaveChangesAsync(cancellationToken);

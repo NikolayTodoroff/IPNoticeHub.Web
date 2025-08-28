@@ -11,7 +11,7 @@ namespace IPNoticeHub.Data.Entities.CopyrightRegistration
         [Comment("Primary key for the Copyright entity")]
         public int Id { get; set; }
 
-        [Comment("Public identifier for the copyright (e.g. Registration Number)")]
+        [Comment("Unique identifier for the Copyright, generated automatically")]
         public Guid PublicId { get; set; } = Guid.NewGuid();
 
         [Required, MaxLength(RegistrationNumberMaxLength)]
