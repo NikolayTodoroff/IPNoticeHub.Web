@@ -22,8 +22,6 @@
 
   <ItemGroup>
     <Folder Include="Migrations\" />
-    <Folder Include="Repositories\Copyrights\Abstractions\" />
-    <Folder Include="Repositories\Copyrights\Implementations\" />
   </ItemGroup>
 
 </Project>
