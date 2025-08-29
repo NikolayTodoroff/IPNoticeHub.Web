@@ -1,10 +1,10 @@
 using IPNoticeHub.Data;
 using IPNoticeHub.Data.Entities.ApplicationUser;
 using Microsoft.EntityFrameworkCore;
-using IPNoticeHub.Services.Abstractions;
-using IPNoticeHub.Services.Implementations;
 using IPNoticeHub.Data.Repositories.Trademarks.Abstractions;
 using IPNoticeHub.Data.Repositories.Trademarks.Implementations;
+using IPNoticeHub.Services.Trademarks.Abstractions;
+using IPNoticeHub.Services.Trademarks.Implementations;
 
 namespace IPNoticeHub.Web
 {

@@ -1,11 +1,11 @@
 ﻿using IPNoticeHub.Common.AdditionalConfigurations;
 using IPNoticeHub.Common.EnumConstants;
 using IPNoticeHub.Data.Repositories.Trademarks.Abstractions;
-using IPNoticeHub.Services.Abstractions;
-using IPNoticeHub.Services.DTOs.Trademarks;
+using IPNoticeHub.Services.Trademarks.Abstractions;
+using IPNoticeHub.Services.Trademarks.DTOs;
 using Microsoft.EntityFrameworkCore;
 
-namespace IPNoticeHub.Services.Implementations
+namespace IPNoticeHub.Services.Trademarks.Implementations
 {
     public class TrademarkCollectionService : ITrademarkCollectionService
     {

@@ -1,7 +1,7 @@
-﻿using IPNoticeHub.Services.DTOs.Trademarks;
-using IPNoticeHub.Common.EnumConstants;
+﻿using IPNoticeHub.Common.EnumConstants;
+using IPNoticeHub.Services.Trademarks.DTOs;
 
-namespace IPNoticeHub.Services.Abstractions
+namespace IPNoticeHub.Services.Trademarks.Abstractions
 {
     public interface ITrademarkCollectionService
     {

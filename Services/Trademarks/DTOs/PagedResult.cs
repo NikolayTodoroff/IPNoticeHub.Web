@@ -1,5 +1,5 @@
 ﻿using IPNoticeHub.Common.EnumConstants;
-namespace IPNoticeHub.Services.DTOs.Trademarks
+namespace IPNoticeHub.Services.Trademarks.DTOs
 {
     public sealed class PagedResult<T>
     {

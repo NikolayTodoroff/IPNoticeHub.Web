@@ -1,10 +1,10 @@
 ﻿using IPNoticeHub.Common.AdditionalConfigurations;
 using IPNoticeHub.Data.Repositories.Trademarks.Abstractions;
-using IPNoticeHub.Services.Abstractions;
-using IPNoticeHub.Services.DTOs.Trademarks;
+using IPNoticeHub.Services.Trademarks.Abstractions;
+using IPNoticeHub.Services.Trademarks.DTOs;
 using Microsoft.EntityFrameworkCore;
 
-namespace IPNoticeHub.Services.Implementations
+namespace IPNoticeHub.Services.Trademarks.Implementations
 {
     public sealed class TrademarkSearchService : ITrademarkSearchService
     {
@@ -39,7 +39,7 @@ namespace IPNoticeHub.Services.Implementations
                 Classes = result.Classes.Select(c => c.ClassNumber).ToList(),
                 Events = result.Events.
                                         OrderByDescending(e => e.EventDate).
-                                        Select(e => (Date: e.EventDate, Code: e.Code, Description: e.Description)).
+                                        Select(e => (Date: e.EventDate, e.Code, e.Description)).
                                         ToList()
             };
         }

@@ -2,7 +2,7 @@
 using static IPNoticeHub.Common.EntityValidationConstants.TrademarkRegistrationConstants;
 using System.ComponentModel.DataAnnotations;
 
-namespace IPNoticeHub.Services.DTOs.Trademarks
+namespace IPNoticeHub.Services.Trademarks.DTOs
 {
     public sealed class TrademarkFilterDTO
     {

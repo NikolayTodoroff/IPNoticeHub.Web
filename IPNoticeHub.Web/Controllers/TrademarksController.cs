@@ -1,6 +1,6 @@
 ﻿using IPNoticeHub.Common.EnumConstants;
-using IPNoticeHub.Services.Abstractions;
-using IPNoticeHub.Services.DTOs.Trademarks;
+using IPNoticeHub.Services.Trademarks.Abstractions;
+using IPNoticeHub.Services.Trademarks.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
