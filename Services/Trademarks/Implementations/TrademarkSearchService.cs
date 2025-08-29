@@ -1,4 +1,5 @@
 ﻿using IPNoticeHub.Common.AdditionalConfigurations;
+using IPNoticeHub.Data.Entities.TrademarkRegistration;
 using IPNoticeHub.Data.Repositories.Trademarks.Abstractions;
 using IPNoticeHub.Services.Common;
 using IPNoticeHub.Services.Trademarks.Abstractions;
@@ -20,10 +21,7 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
         {
             var result = await trademarks.GetByPublicIdAsync(publicId, asNoTracking: true);
 
-            if (result is null)
-            {
-                return null;
-            } 
+            if (result is null) return null;
 
             return new TrademarkDetailsDTO
             {
@@ -49,7 +47,7 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
         {
             var (normalizedPage, normalizedPageSize) = PagingConfiguration.NormalizePaging(page, pageSize);
 
-            var searchFilter = new TrademarkSearchFilter
+            TrademarkSearchFilter? searchFilter = new TrademarkSearchFilter
             {
                 Provider = filter.Provider,
                 ClassNumbers = filter.ClassNumbers,
@@ -59,12 +57,12 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
                 ExactMatch = filter.ExactMatch
             };
 
-            var query = trademarks.Query(searchFilter, includeNav: true)
+            IOrderedQueryable<TrademarkEntity>? query = trademarks.Query(searchFilter, includeNav: true)
                                   .OrderBy(t => t.Wordmark);
 
-            var resultsCount = await query.CountAsync();
+            int resultsCount = await query.CountAsync();
 
-            var searchResults = await query
+            List<TrademarkListItemDTO>? searchResults = await query
                 .Skip((normalizedPage - 1) * normalizedPageSize)
                 .Take(normalizedPageSize)
                 .Select(t => new TrademarkListItemDTO

@@ -1,5 +1,7 @@
 ﻿using IPNoticeHub.Common.AdditionalConfigurations;
 using IPNoticeHub.Common.EnumConstants;
+using IPNoticeHub.Data.Entities.ApplicationUser;
+using IPNoticeHub.Data.Entities.TrademarkRegistration;
 using IPNoticeHub.Data.Repositories.Trademarks.Abstractions;
 using IPNoticeHub.Services.Common;
 using IPNoticeHub.Services.Trademarks.Abstractions;
@@ -23,10 +25,7 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
         {
             var exists = await trademarks.ExistsAsync(trademarkId);
 
-            if (!exists)
-            {
-                return;
-            }
+            if (!exists) return;
 
             await userTrademarks.AddOrUndeleteAsync(userId, trademarkId, cancellationToken);
         }
@@ -35,14 +34,14 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
         {
             var (normalizedPage, normalizedPageSize) = PagingConfiguration.NormalizePaging(page, resultsPerPage);
 
-            var userTrademarksQuery = userTrademarks.QueryUserCollection(userId).
+            IOrderedQueryable<TrademarkEntity>? userTrademarksQuery = userTrademarks.QueryUserCollection(userId).
                 OrderByDescending(t => t.RegistrationDate.HasValue).
                 ThenByDescending(t => t.RegistrationDate).
                 ThenBy(t => t.Wordmark);
 
-            var resultsCount = await userTrademarksQuery.CountAsync(cancellationToken);
+            int resultsCount = await userTrademarksQuery.CountAsync(cancellationToken);
 
-            var userTrademarksList = await userTrademarksQuery
+            List<TrademarkListItemDTO>? userTrademarksList = await userTrademarksQuery
                 .Skip((normalizedPage - 1) * normalizedPageSize)
                 .Take(normalizedPageSize)
                 .Select(t => new TrademarkListItemDTO
@@ -70,7 +69,7 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
         {
             var (normalizedPage, normalizedPageSize) = PagingConfiguration.NormalizePaging(page, resultsPerPage);
 
-            var links = userTrademarks.QueryUserLinks(userId);
+            IQueryable<UserTrademark>? links = userTrademarks.QueryUserLinks(userId);
 
             if (sortBy == CollectionSortBy.DateAddedAsc)
             {
@@ -92,9 +91,9 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
                 links = links.OrderByDescending(l => l.DateAdded);
             }
 
-            var resultsCount = await links.CountAsync(cancellationToken);
+            int resultsCount = await links.CountAsync(cancellationToken);
 
-            var results = await links.
+            List<TrademarkListItemDTO>? results = await links.
                 Skip((normalizedPage - 1) * normalizedPageSize).
                 Take(normalizedPageSize).
                 Select(l => new TrademarkListItemDTO

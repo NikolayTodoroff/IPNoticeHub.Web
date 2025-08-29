@@ -54,6 +54,7 @@ namespace IPNoticeHub.Web
             {
                 app.UseDeveloperExceptionPage();
             }
+
             else
             {
                 app.UseExceptionHandler("/Home/Error");

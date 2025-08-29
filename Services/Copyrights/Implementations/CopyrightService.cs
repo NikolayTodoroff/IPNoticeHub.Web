@@ -1,5 +1,6 @@
 ﻿using IPNoticeHub.Common.AdditionalConfigurations;
 using IPNoticeHub.Common.EnumConstants;
+using IPNoticeHub.Data.Entities.ApplicationUser;
 using IPNoticeHub.Data.Entities.CopyrightRegistration;
 using IPNoticeHub.Data.Repositories.Copyrights.Abstractions;
 using IPNoticeHub.Services.Common;
@@ -54,11 +55,11 @@ namespace IPNoticeHub.Services.Copyrights.Implementations
 
         public async Task<CopyrightDetailsDTO?> GetDetailsAsync(string userId, Guid publicId, CancellationToken cancellationToken = default)
         {
-            var entity = await copyrights.GetByPublicIdAsync(publicId, asNoTracking: true);
+            CopyrightEntity? entity = await copyrights.GetByPublicIdAsync(publicId, asNoTracking: true);
 
             if (entity is null) return null;
 
-            var linked = await userCopyrights.IsLinkedAsync(userId, entity.Id, includeSoftDeleted: false);
+            bool linked = await userCopyrights.IsLinkedAsync(userId, entity.Id, includeSoftDeleted: false);
             if (!linked) return null;
 
             return new CopyrightDetailsDTO()
@@ -74,13 +75,11 @@ namespace IPNoticeHub.Services.Copyrights.Implementations
             };
         }
 
-        
-
         public async Task<PagedResult<CopyrightListItemDTO>> GetUserCollectionAsync(string userId, CollectionSortBy sortBy, int page, int resultsPerPage, CancellationToken cancellationToken = default)
         {
             var (normalizedPage, normalizedPageSize) = PagingConfiguration.NormalizePaging(page, resultsPerPage);
 
-            var links = userCopyrights.QueryUserLinks(userId);
+            IQueryable<UserCopyright>? links = userCopyrights.QueryUserLinks(userId);
 
             if (sortBy == CollectionSortBy.DateAddedAsc)
             {
@@ -102,9 +101,9 @@ namespace IPNoticeHub.Services.Copyrights.Implementations
                 links = links.OrderByDescending(l => l.DateAdded);
             }
 
-            var resultsCount = await links.CountAsync(cancellationToken);
+            int resultsCount = await links.CountAsync(cancellationToken);
 
-            var results = await links.
+            List<CopyrightListItemDTO>? results = await links.
                 Skip((normalizedPage - 1) * normalizedPageSize).
                 Take(normalizedPageSize).
                 Select(l=> new CopyrightListItemDTO()
@@ -128,7 +127,7 @@ namespace IPNoticeHub.Services.Copyrights.Implementations
 
         public async Task<bool> RemoveAsync(string userId, Guid publicId, CancellationToken cancellationToken = default)
         {
-            var entity = await copyrights.GetByPublicIdAsync(publicId, asNoTracking : true);
+            CopyrightEntity? entity = await copyrights.GetByPublicIdAsync(publicId, asNoTracking : true);
 
             if (entity == null) return false;
 

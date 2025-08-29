@@ -27,8 +27,7 @@ namespace IPNoticeHub.Web.Controllers
             {
                 ViewBag.HasSearch = false;
 
-                // Return an empty PagedResult so the view can bind safely
-                var emptyModel = new PagedResult<TrademarkListItemDTO>
+                PagedResult<TrademarkListItemDTO>? emptyModel = new PagedResult<TrademarkListItemDTO>
                 {
                     Results = Array.Empty<TrademarkListItemDTO>(),
                     ResultsCount = 0,
@@ -39,7 +38,7 @@ namespace IPNoticeHub.Web.Controllers
                 return View(emptyModel);
             }
 
-            var searchResultModel = await searchService.SearchAsync(filter, currentPage, pageSize);
+            PagedResult<TrademarkListItemDTO>? searchResultModel = await searchService.SearchAsync(filter, currentPage, pageSize);
             ViewBag.HasSearch = true;
             return View(searchResultModel);
         }
@@ -47,12 +46,9 @@ namespace IPNoticeHub.Web.Controllers
         [HttpGet("Trademarks/Details/{id:guid}")]
         public async Task<IActionResult> Details(Guid id)
         {
-            var detailsModel = await searchService.GetDetailsAsync(id);
+            TrademarkDetailsDTO? detailsModel = await searchService.GetDetailsAsync(id);
 
-            if (detailsModel is null)
-            {
-                return NotFound();
-            } 
+            if (detailsModel is null) return NotFound();
 
             return View(detailsModel);
         }
@@ -61,14 +57,11 @@ namespace IPNoticeHub.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> MyCollection(int currentPage = DefaultPage, int pageSize = DefaultPageSize)
         {
-            var userId = GetUserId();
+            string? userId = GetUserId();
 
-            if (userId is null)
-            {
-                return Challenge();
-            } 
+            if (userId is null) return Challenge();
 
-            var collectionModel = await collectionService.GetUserCollectionAsync(userId, currentPage, pageSize);
+            PagedResult<TrademarkListItemDTO>? collectionModel = await collectionService.GetUserCollectionAsync(userId, currentPage, pageSize);
             return View(collectionModel);
         }
 
@@ -76,14 +69,11 @@ namespace IPNoticeHub.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> MyCollection(CollectionSortBy sortBy = CollectionSortBy.DateAddedDesc,int currentPage = DefaultPage,int pageSize = DefaultPageSize)
         {
-            var userId = GetUserId();
+            string? userId = GetUserId();
 
-            if (userId is null)
-            {
-                return Challenge();
-            } 
+            if (userId is null) return Challenge();
 
-            var orderedCollectionModel = await collectionService.GetUserCollectionAsync (userId, sortBy, currentPage, pageSize);
+            PagedResult<TrademarkListItemDTO>? orderedCollectionModel = await collectionService.GetUserCollectionAsync (userId, sortBy, currentPage, pageSize);
 
             ViewBag.SortBy = sortBy;
             return View(orderedCollectionModel);
@@ -94,12 +84,9 @@ namespace IPNoticeHub.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Add(int trademarkId, string? returnUrl = null)
         {
-            var userId = GetUserId();
+            string? userId = GetUserId();
 
-            if (userId is null)
-            {
-                return Challenge();
-            }
+            if (userId is null) return Challenge();
 
             await collectionService.AddAsync(userId, trademarkId);
 
@@ -112,12 +99,9 @@ namespace IPNoticeHub.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Remove(int trademarkId, string? returnUrl = null)
         {
-            var userId = GetUserId();
+            string? userId = GetUserId();
 
-            if (userId is null)
-            {
-                return Challenge();
-            }
+            if (userId is null) return Challenge();
 
             await collectionService.RemoveAsync(userId, trademarkId);
 
@@ -125,10 +109,7 @@ namespace IPNoticeHub.Web.Controllers
             return RedirectToLocal(returnUrl) ?? RedirectToAction(nameof(MyCollection));
         }
 
-        private string? GetUserId()
-        {
-            return User.FindFirstValue(ClaimTypes.NameIdentifier);
-        }
+        private string? GetUserId() => User.FindFirstValue(ClaimTypes.NameIdentifier);
 
         private IActionResult? RedirectToLocal(string? returnUrl)
         {
