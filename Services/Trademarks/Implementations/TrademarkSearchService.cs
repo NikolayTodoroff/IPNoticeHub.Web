@@ -1,5 +1,6 @@
 ﻿using IPNoticeHub.Common.AdditionalConfigurations;
 using IPNoticeHub.Data.Repositories.Trademarks.Abstractions;
+using IPNoticeHub.Services.Common;
 using IPNoticeHub.Services.Trademarks.Abstractions;
 using IPNoticeHub.Services.Trademarks.DTOs;
 using Microsoft.EntityFrameworkCore;

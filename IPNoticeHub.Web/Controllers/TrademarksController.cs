@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using static IPNoticeHub.Common.EntityValidationConstants.PagingConstants;
+using IPNoticeHub.Services.Common;
 
 namespace IPNoticeHub.Web.Controllers
 {
@@ -73,7 +74,7 @@ namespace IPNoticeHub.Web.Controllers
 
         [Authorize]
         [HttpGet]
-        public async Task<IActionResult> MyCollection(TrademarkCollectionSortBy sortBy = TrademarkCollectionSortBy.DateAddedDesc,int currentPage = DefaultPage,int pageSize = DefaultPageSize)
+        public async Task<IActionResult> MyCollection(CollectionSortBy sortBy = CollectionSortBy.DateAddedDesc,int currentPage = DefaultPage,int pageSize = DefaultPageSize)
         {
             var userId = GetUserId();
 

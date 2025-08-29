@@ -1,9 +1,9 @@
 ﻿namespace IPNoticeHub.Common.EnumConstants
 {
     /// <summary>
-    /// Specifies the available sorting options for trademark collections.
+    /// Specifies the available sorting options for trademark and copyright collections.
     /// </summary>
-    public enum TrademarkCollectionSortBy
+    public enum CollectionSortBy
     {
         DateAddedDesc = 0,
         DateAddedAsc = 1,

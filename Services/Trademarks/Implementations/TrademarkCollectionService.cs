@@ -1,6 +1,7 @@
 ﻿using IPNoticeHub.Common.AdditionalConfigurations;
 using IPNoticeHub.Common.EnumConstants;
 using IPNoticeHub.Data.Repositories.Trademarks.Abstractions;
+using IPNoticeHub.Services.Common;
 using IPNoticeHub.Services.Trademarks.Abstractions;
 using IPNoticeHub.Services.Trademarks.DTOs;
 using Microsoft.EntityFrameworkCore;
@@ -65,23 +66,23 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
             };
         }
 
-        public async Task<PagedResult<TrademarkListItemDTO>> GetUserCollectionAsync(string userId, TrademarkCollectionSortBy sortBy, int page, int pageSize, CancellationToken cancellationToken = default)
+        public async Task<PagedResult<TrademarkListItemDTO>> GetUserCollectionAsync(string userId, CollectionSortBy sortBy, int page, int pageSize, CancellationToken cancellationToken = default)
         {
             var (normalizedPage, normalizedPageSize) = PagingConfiguration.NormalizePaging(page, pageSize);
 
             var links = userTrademarks.QueryUserLinks(userId);
 
-            if (sortBy == TrademarkCollectionSortBy.DateAddedAsc)
+            if (sortBy == CollectionSortBy.DateAddedAsc)
             {
                 links = links.OrderBy(l => l.DateAdded);
             }
 
-            else if (sortBy == TrademarkCollectionSortBy.WordmarkAsc)
+            else if (sortBy == CollectionSortBy.WordmarkAsc)
             {
                 links = links.OrderBy(l => l.TrademarkRegistration.Wordmark);
             }
 
-            else if (sortBy == TrademarkCollectionSortBy.WordmarkDesc)
+            else if (sortBy == CollectionSortBy.WordmarkDesc)
             {
                 links = links.OrderByDescending(l => l.TrademarkRegistration.Wordmark);
             }

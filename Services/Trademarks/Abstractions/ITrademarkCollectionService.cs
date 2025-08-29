@@ -1,4 +1,5 @@
 ﻿using IPNoticeHub.Common.EnumConstants;
+using IPNoticeHub.Services.Common;
 using IPNoticeHub.Services.Trademarks.DTOs;
 
 namespace IPNoticeHub.Services.Trademarks.Abstractions
@@ -14,7 +15,7 @@ namespace IPNoticeHub.Services.Trademarks.Abstractions
         Task<PagedResult<TrademarkListItemDTO>> GetUserCollectionAsync(string userId,int page,int pageSize,
             CancellationToken cancellationToken = default);
 
-        Task<PagedResult<TrademarkListItemDTO>> GetUserCollectionAsync(string userId, TrademarkCollectionSortBy sortBy,
+        Task<PagedResult<TrademarkListItemDTO>> GetUserCollectionAsync(string userId, CollectionSortBy sortBy,
            int page, int pageSize, CancellationToken ct = default);
     }
 }
