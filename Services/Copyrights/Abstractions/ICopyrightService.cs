@@ -10,9 +10,9 @@ namespace IPNoticeHub.Services.Copyrights.Abstractions
 
         Task<bool> RemoveAsync(string userId, Guid publicId, CancellationToken cancellationToken = default);
 
-        Task<CopyrightCreateDTO?> GetDetailsAsync(string userId, Guid publicId, CancellationToken cancellationToken = default);
+        Task<CopyrightDetailsDTO?> GetDetailsAsync(string userId, Guid publicId, CancellationToken cancellationToken = default);
 
-        Task<PagedResult<CopyrightCreateDTO>> GetUserCollectionAsync(string userId,CollectionSortBy sortBy,
+        Task<PagedResult<CopyrightListItemDTO>> GetUserCollectionAsync(string userId,CollectionSortBy sortBy,
             int page, int resultsPerPage, CancellationToken cancellationToken = default);
     }
 }

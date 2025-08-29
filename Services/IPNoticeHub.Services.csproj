@@ -11,8 +11,4 @@
     <ProjectReference Include="..\IPNoticeHub.Data\IPNoticeHub.Data.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Copyrights\Implementations\" />
-  </ItemGroup>
-
 </Project>

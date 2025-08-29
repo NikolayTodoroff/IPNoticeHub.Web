@@ -31,9 +31,9 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
             await userTrademarks.AddOrUndeleteAsync(userId, trademarkId, cancellationToken);
         }
 
-        public async Task<PagedResult<TrademarkListItemDTO>> GetUserCollectionAsync(string userId, int page, int pageSize, CancellationToken cancellationToken = default)
+        public async Task<PagedResult<TrademarkListItemDTO>> GetUserCollectionAsync(string userId, int page, int resultsPerPage, CancellationToken cancellationToken = default)
         {
-            var (normalizedPage, normalizedPageSize) = PagingConfiguration.NormalizePaging(page, pageSize);
+            var (normalizedPage, normalizedPageSize) = PagingConfiguration.NormalizePaging(page, resultsPerPage);
 
             var userTrademarksQuery = userTrademarks.QueryUserCollection(userId).
                 OrderByDescending(t => t.RegistrationDate.HasValue).
@@ -66,9 +66,9 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
             };
         }
 
-        public async Task<PagedResult<TrademarkListItemDTO>> GetUserCollectionAsync(string userId, CollectionSortBy sortBy, int page, int pageSize, CancellationToken cancellationToken = default)
+        public async Task<PagedResult<TrademarkListItemDTO>> GetUserCollectionAsync(string userId, CollectionSortBy sortBy, int page, int resultsPerPage, CancellationToken cancellationToken = default)
         {
-            var (normalizedPage, normalizedPageSize) = PagingConfiguration.NormalizePaging(page, pageSize);
+            var (normalizedPage, normalizedPageSize) = PagingConfiguration.NormalizePaging(page, resultsPerPage);
 
             var links = userTrademarks.QueryUserLinks(userId);
 

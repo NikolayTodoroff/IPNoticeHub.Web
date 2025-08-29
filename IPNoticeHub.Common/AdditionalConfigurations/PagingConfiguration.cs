@@ -7,21 +7,21 @@ namespace IPNoticeHub.Common.AdditionalConfigurations
         /// <summary>
         /// Sets the page and page size values, ensuring they fall within the defined constraints.
         /// </summary>
-        public static (int Page, int PageSize) NormalizePaging(int page, int pageSize)
+        public static (int Page, int PageSize) NormalizePaging(int page, int resultsPerPage)
         {
             page = page < PagingConstants.DefaultPage ? PagingConstants.DefaultPage : page;
 
-            if (pageSize < 1)
+            if (resultsPerPage < 1)
             {
-                pageSize = PagingConstants.DefaultPageSize;
+                resultsPerPage = PagingConstants.DefaultPageSize;
             }
 
-            else if (pageSize > PagingConstants.MaxPageSize)
+            else if (resultsPerPage > PagingConstants.MaxPageSize)
             {
-                pageSize = PagingConstants.MaxPageSize;
+                resultsPerPage = PagingConstants.MaxPageSize;
             }
 
-            return (page, pageSize);
+            return (page, resultsPerPage);
         }
     }
 }

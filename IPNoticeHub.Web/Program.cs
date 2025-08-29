@@ -5,6 +5,10 @@ using IPNoticeHub.Data.Repositories.Trademarks.Abstractions;
 using IPNoticeHub.Data.Repositories.Trademarks.Implementations;
 using IPNoticeHub.Services.Trademarks.Abstractions;
 using IPNoticeHub.Services.Trademarks.Implementations;
+using IPNoticeHub.Data.Repositories.Copyrights.Abstractions;
+using IPNoticeHub.Data.Repositories.Copyrights.Implementations;
+using IPNoticeHub.Services.Copyrights.Abstractions;
+using IPNoticeHub.Services.Copyrights.Implementations;
 
 namespace IPNoticeHub.Web
 {
@@ -40,6 +44,9 @@ namespace IPNoticeHub.Web
             builder.Services.AddScoped<IUserTrademarkRepository, UserTrademarkRepository>();
             builder.Services.AddScoped<ITrademarkSearchService, TrademarkSearchService>();
             builder.Services.AddScoped<ITrademarkCollectionService, TrademarkCollectionService>();
+            builder.Services.AddScoped<ICopyrightRepository, CopyrightRepository>();
+            builder.Services.AddScoped<IUserCopyrightRepository, UserCopyrightRepository>();
+            builder.Services.AddScoped<ICopyrightService, CopyrightService>();
 
             var app = builder.Build();
 

@@ -5,9 +5,11 @@
     /// </summary>
     public enum CollectionSortBy
     {
-        DateAddedDesc = 0,
-        DateAddedAsc = 1,
-        WordmarkAsc = 2,
-        WordmarkDesc = 3
+        DateAddedDesc = 0, // 0: For both trademarks and copyrights
+        DateAddedAsc = 1,  // 1: For both trademarks and copyrights
+        WordmarkAsc = 2,   // 2: For trademarks
+        TitleAsc = 2,      // 2: For copyrights
+        WordmarkDesc = 3,  // 3: For trademarks
+        TitleDesc = 3      // 3: For copyrights
     }
 }
