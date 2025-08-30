@@ -12,9 +12,7 @@ namespace IPNoticeHub.Web.Models.Trademarks
         [MaxLength(TrademarkSearchTermMaxLength, ErrorMessage = "Search term cannot exceed {0} characters in length.")]
         public string? SearchTerm { get; init; }
 
-        [Required]
-        [RegularExpression("^(Wordmark|Owner|Number)$", ErrorMessage = "Invalid search field. Valid options are: Wordmark, Owner, or Number.")]
-        public string SearchBy { get; set; } = "Wordmark";
+        public TrademarkSearchBy SearchBy { get; init; } = TrademarkSearchBy.Wordmark;
 
         public DataProvider? Provider { get; set; }
 
@@ -40,10 +38,9 @@ namespace IPNoticeHub.Web.Models.Trademarks
         /// </summary>
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-
             string searchTerm = (SearchTerm ?? string.Empty).Trim();
 
-            if (searchTerm.Length > 0 && SearchBy == "Number")
+            if (searchTerm.Length > 0 && SearchBy == TrademarkSearchBy.Number)
             {
                 bool onlyDigitsUsed = searchTerm.All(char.IsDigit);
 

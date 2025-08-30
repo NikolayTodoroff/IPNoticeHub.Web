@@ -9,7 +9,7 @@ namespace IPNoticeHub.Web.Models.Trademarks
     public sealed class TrademarksIndexViewModel
     {
         public string? SearchTerm { get; init; }
-        public string SearchBy { get; init; } = "Wordmark"; // Wordmark | Owner | Number
+        public TrademarkSearchBy SearchBy { get; init; } = TrademarkSearchBy.Wordmark;
         public DataProvider? Provider { get; init; }
         public TrademarkStatusCategory? Status { get; init; }
         public IReadOnlyList<int> ClassNumbers { get; init; } = Array.Empty<int>();
@@ -21,6 +21,6 @@ namespace IPNoticeHub.Web.Models.Trademarks
         public int ResultsCount { get; init; }
 
 
-        public IReadOnlyList<TrademarkListItemViewModel> Results { get; init; } = Array.Empty<TrademarkListItemViewModel>();
+        public IReadOnlyList<TrademarkSummaryViewModel> Results { get; init; } = Array.Empty<TrademarkSummaryViewModel>();
     }
 }

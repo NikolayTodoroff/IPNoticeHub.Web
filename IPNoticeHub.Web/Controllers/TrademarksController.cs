@@ -1,11 +1,12 @@
 ﻿using IPNoticeHub.Common.EnumConstants;
+using IPNoticeHub.Services.Common;
 using IPNoticeHub.Services.Trademarks.Abstractions;
 using IPNoticeHub.Services.Trademarks.DTOs;
+using IPNoticeHub.Web.Models.Trademarks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using static IPNoticeHub.Common.EntityValidationConstants.PagingConstants;
-using IPNoticeHub.Services.Common;
 
 namespace IPNoticeHub.Web.Controllers
 {
@@ -21,26 +22,62 @@ namespace IPNoticeHub.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index([FromQuery] TrademarkFilterDTO filter, int currentPage = DefaultPage, int pageSize = DefaultPageSize)
+        public async Task<IActionResult> Index([FromQuery] TrademarkFilterViewModel filter)
         {
-            if (string.IsNullOrWhiteSpace(filter?.SearchTerm) || !ModelState.IsValid)
+            string searchTerm = (filter.SearchTerm ?? string.Empty).Trim();
+            
+            if (string.IsNullOrWhiteSpace(searchTerm))
             {
                 ViewBag.HasSearch = false;
 
-                PagedResult<TrademarkListItemDTO>? emptyModel = new PagedResult<TrademarkListItemDTO>
+                PagedResult<TrademarkSummaryDTO>? emptyPageDTO = new PagedResult<TrademarkSummaryDTO>()
                 {
-                    Results = Array.Empty<TrademarkListItemDTO>(),
+                    Results = Array.Empty<TrademarkSummaryDTO>(),
                     ResultsCount = 0,
-                    CurrentPage = currentPage,
-                    ResultsCountPerPage = pageSize
+                    CurrentPage = filter.CurrentPage,
+                    ResultsCountPerPage = filter.ResultsPerPage
                 };
 
-                return View(emptyModel);
+                TrademarksIndexViewModel emptyPageViewModel = TrademarksIndexDtoToVmMapper.MapToIndexViewModel(filter, emptyPageDTO);
+                return View(emptyPageViewModel);
             }
 
-            PagedResult<TrademarkListItemDTO>? searchResultModel = await searchService.SearchAsync(filter, currentPage, pageSize);
+
+            if (!ModelState.IsValid)
+            {
+                ViewBag.HasSearch = false;
+
+                PagedResult<TrademarkSummaryDTO>? invalidPageDTO = new PagedResult<TrademarkSummaryDTO>()
+                {
+                    Results = Array.Empty<TrademarkSummaryDTO>(),
+                    ResultsCount = 0,
+                    CurrentPage = filter.CurrentPage,
+                    ResultsCountPerPage = filter.ResultsPerPage
+                };
+
+                TrademarksIndexViewModel? invalidPageViewModel = TrademarksIndexDtoToVmMapper.MapToIndexViewModel(filter, invalidPageDTO);
+                return View(invalidPageViewModel);
+            }
+
+            TrademarkFilterDTO dtoFilter = new TrademarkFilterDTO
+            {
+                SearchTerm = searchTerm,
+                SearchBy = filter.SearchBy,
+                Provider = filter.Provider,
+                Status = filter.Status,
+                ClassNumbers = (filter.ClassNumbers ?? Array.Empty<int>())
+                        .Where(cn => Enum.IsDefined(typeof(TrademarkClass), cn))
+                        .Distinct()
+                        .ToArray(),
+                ExactMatch = filter.ExactMatch
+            };
+
+            PagedResult<TrademarkSummaryDTO>? page = await searchService.SearchAsync(dtoFilter, filter.CurrentPage, filter.ResultsPerPage);
+
             ViewBag.HasSearch = true;
-            return View(searchResultModel);
+
+            TrademarksIndexViewModel? indexViewModel = TrademarksIndexDtoToVmMapper.MapToIndexViewModel(filter, page);
+            return View(indexViewModel);
         }
 
         [HttpGet("Trademarks/Details/{id:guid}")]
@@ -61,7 +98,7 @@ namespace IPNoticeHub.Web.Controllers
 
             if (userId is null) return Challenge();
 
-            PagedResult<TrademarkListItemDTO>? collectionModel = await collectionService.GetUserCollectionAsync(userId, currentPage, pageSize);
+            PagedResult<TrademarkSummaryDTO>? collectionModel = await collectionService.GetUserCollectionAsync(userId, currentPage, pageSize);
             return View(collectionModel);
         }
 
@@ -73,7 +110,7 @@ namespace IPNoticeHub.Web.Controllers
 
             if (userId is null) return Challenge();
 
-            PagedResult<TrademarkListItemDTO>? orderedCollectionModel = await collectionService.GetUserCollectionAsync (userId, sortBy, currentPage, pageSize);
+            PagedResult<TrademarkSummaryDTO>? orderedCollectionModel = await collectionService.GetUserCollectionAsync (userId, sortBy, currentPage, pageSize);
 
             ViewBag.SortBy = sortBy;
             return View(orderedCollectionModel);

@@ -1,22 +1,19 @@
 ﻿using IPNoticeHub.Common.EnumConstants;
 
-namespace IPNoticeHub.Services.Trademarks.DTOs
+namespace IPNoticeHub.Web.Models.Trademarks
 {
-    public sealed class TrademarkListItemDTO
+    /// <summary>
+    /// Row item displayed in the Trademarks search results table.
+    /// </summary>
+    public sealed class TrademarkSummaryViewModel
     {
-        public int Id { get; init; }
-        public Guid PublicId { get; init; }
-
+        public int Id { get; init; }                
+        public Guid PublicId { get; init; }         
         public string Wordmark { get; init; } = null!;
-
         public string SourceId { get; init; } = null!;
-
         public string? Owner { get; init; }
-        
         public TrademarkStatusCategory Status { get; init; }
-
         public int[] Classes { get; init; } = Array.Empty<int>();
-
         public DataProvider Provider { get; init; }
     }
 }
