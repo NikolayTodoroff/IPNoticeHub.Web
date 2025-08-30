@@ -24,7 +24,7 @@
 
   <ItemGroup>
     <Folder Include="Data\" />
-    <Folder Include="Models\Trademarks\" />
+    <Folder Include="Models\Copyrights\" />
     <Folder Include="Views\Trademarks\" />
   </ItemGroup>
 
