@@ -9,7 +9,7 @@ namespace IPNoticeHub.Web.Models.Trademarks
     /// </summary>
     public static class TrademarksIndexDtoToVmMapper
     {
-        public static TrademarksIndexViewModel MapToIndexViewModel(TrademarkFilterViewModel filter,PagedResult<TrademarkSummaryDTO> page)
+        public static TrademarksIndexViewModel MapToIndexViewModel(TrademarkFilterViewModel filter,PagedResult<TrademarkSummaryDTO> resultsPageDTO)
         {
             return new TrademarksIndexViewModel
             {             
@@ -20,15 +20,15 @@ namespace IPNoticeHub.Web.Models.Trademarks
                 ClassNumbers = filter.ClassNumbers ?? Array.Empty<int>(),
                 ExactMatch = filter.ExactMatch,
               
-                CurrentPage = page.CurrentPage,
-                ResultsPerPage = page.ResultsCountPerPage,
-                ResultsCount = page.ResultsCount,
+                CurrentPage = resultsPageDTO.CurrentPage,
+                ResultsPerPage = resultsPageDTO.ResultsCountPerPage,
+                ResultsCount = resultsPageDTO.ResultsCount,
 
-                Results = page.Results.Select(MapToTrademarkSummaryViewModel).ToList()
+                Results = resultsPageDTO.Results.Select(MapResultsToTrademarkSummary).ToList()
             };
         }
 
-        private static TrademarkSummaryViewModel MapToTrademarkSummaryViewModel(TrademarkSummaryDTO summaryDTO)
+        private static TrademarkSummaryViewModel MapResultsToTrademarkSummary(TrademarkSummaryDTO summaryDTO)
         {
             return new TrademarkSummaryViewModel()
             {

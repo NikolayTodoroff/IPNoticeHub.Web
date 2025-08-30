@@ -59,7 +59,7 @@ namespace IPNoticeHub.Web.Controllers
                 return View(invalidPageViewModel);
             }
 
-            TrademarkFilterDTO dtoFilter = new TrademarkFilterDTO
+            TrademarkFilterDTO filterDTO = new TrademarkFilterDTO
             {
                 SearchTerm = searchTerm,
                 SearchBy = filter.SearchBy,
@@ -72,11 +72,11 @@ namespace IPNoticeHub.Web.Controllers
                 ExactMatch = filter.ExactMatch
             };
 
-            PagedResult<TrademarkSummaryDTO>? page = await searchService.SearchAsync(dtoFilter, filter.CurrentPage, filter.ResultsPerPage);
+            PagedResult<TrademarkSummaryDTO>? resultsPageDTO = await searchService.SearchAsync(filterDTO, filter.CurrentPage, filter.ResultsPerPage);
 
             ViewBag.HasSearch = true;
 
-            TrademarksIndexViewModel? indexViewModel = TrademarksIndexDtoToVmMapper.MapToIndexViewModel(filter, page);
+            TrademarksIndexViewModel? indexViewModel = TrademarksIndexDtoToVmMapper.MapToIndexViewModel(filter, resultsPageDTO);
             return View(indexViewModel);
         }
 
