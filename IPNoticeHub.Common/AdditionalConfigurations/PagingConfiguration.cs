@@ -1,4 +1,4 @@
-﻿using static IPNoticeHub.Common.EntityValidationConstants;
+﻿using static IPNoticeHub.Common.ValidationConstants;
 
 namespace IPNoticeHub.Common.AdditionalConfigurations
 {

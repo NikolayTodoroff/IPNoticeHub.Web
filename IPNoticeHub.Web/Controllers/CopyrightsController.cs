@@ -4,7 +4,8 @@ using IPNoticeHub.Services.Copyrights.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using static IPNoticeHub.Common.EntityValidationConstants.PagingConstants;
+using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
+using static IPNoticeHub.Common.ValidationConstants.StatusMessages;
 
 namespace IPNoticeHub.Web.Controllers
 {
@@ -66,7 +67,7 @@ namespace IPNoticeHub.Web.Controllers
 
             Guid publicId = await service.CreateAsync(userId, dto, cancellationToken);
 
-            TempData["StatusMessage"] = "Copyright added to your collection.";
+            TempData["StatusMessage"] = CopyrightAddedMessage;
 
             return RedirectToLocal(returnUrl)
                 ?? RedirectToAction(nameof(Details), new { id = publicId });
@@ -81,7 +82,7 @@ namespace IPNoticeHub.Web.Controllers
 
             await service.RemoveAsync(userId, id, cancellationToken);
 
-            TempData["StatusMessage"] = "Copyright removed from your collection.";
+            TempData["StatusMessage"] = CopyrightRemovedMessage;
             return RedirectToLocal(returnUrl)
                 ?? RedirectToAction(nameof(MyCollection));
         }

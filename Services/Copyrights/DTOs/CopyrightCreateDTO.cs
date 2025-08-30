@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using static IPNoticeHub.Common.EntityValidationConstants.CopyrightRegistrationConstants;
+using static IPNoticeHub.Common.ValidationConstants.CopyrightRegistrationConstants;
 
 namespace IPNoticeHub.Services.Copyrights.DTOs
 {

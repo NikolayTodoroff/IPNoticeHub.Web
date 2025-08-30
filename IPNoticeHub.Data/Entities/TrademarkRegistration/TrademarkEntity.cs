@@ -3,7 +3,7 @@ using IPNoticeHub.Data.Entities.ApplicationUser;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.ComponentModel.DataAnnotations;
-using static IPNoticeHub.Common.EntityValidationConstants.TrademarkRegistrationConstants;
+using static IPNoticeHub.Common.ValidationConstants.TrademarkRegistrationConstants;
 
 
 namespace IPNoticeHub.Data.Entities.TrademarkRegistration

@@ -1,7 +1,7 @@
 ﻿using IPNoticeHub.Data.Entities.ApplicationUser;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
-using static IPNoticeHub.Common.EntityValidationConstants.CopyrightRegistrationConstants;
+using static IPNoticeHub.Common.ValidationConstants.CopyrightRegistrationConstants;
 
 namespace IPNoticeHub.Data.Entities.CopyrightRegistration
 {

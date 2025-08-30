@@ -6,7 +6,7 @@ using IPNoticeHub.Web.Models.Trademarks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using static IPNoticeHub.Common.EntityValidationConstants.PagingConstants;
+using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
 
 namespace IPNoticeHub.Web.Controllers
 {

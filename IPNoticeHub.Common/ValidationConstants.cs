@@ -1,6 +1,6 @@
 ﻿namespace IPNoticeHub.Common
 {
-    public static class EntityValidationConstants
+    public static class ValidationConstants
     {
         public static class TrademarkRegistrationConstants
         {
@@ -43,6 +43,12 @@
             public const int DefaultPage = 1;
             public const int DefaultPageSize = 20;
             public const int MaxPageSize = 200;
+        }
+
+        public static class StatusMessages
+        {
+            public const string CopyrightAddedMessage = "Copyright added to your collection.";
+            public const string CopyrightRemovedMessage = "Copyright removed from your collection.";
         }
     }
 }

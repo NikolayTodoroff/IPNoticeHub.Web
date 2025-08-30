@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using static IPNoticeHub.Common.EntityValidationConstants.TrademarkEventConstants;
+using static IPNoticeHub.Common.ValidationConstants.TrademarkEventConstants;
 
 namespace IPNoticeHub.Data.Entities.TrademarkRegistration
 {

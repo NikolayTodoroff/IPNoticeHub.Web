@@ -1,5 +1,5 @@
 ﻿using IPNoticeHub.Common.EnumConstants;
-using static IPNoticeHub.Common.EntityValidationConstants.TrademarkRegistrationConstants;
+using static IPNoticeHub.Common.ValidationConstants.TrademarkRegistrationConstants;
 using System.ComponentModel.DataAnnotations;
 
 namespace IPNoticeHub.Services.Trademarks.DTOs

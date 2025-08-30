@@ -1,6 +1,6 @@
 ﻿using IPNoticeHub.Common.EnumConstants;
 using System.ComponentModel.DataAnnotations;
-using static IPNoticeHub.Common.EntityValidationConstants.TrademarkSearchFilterConstants;
+using static IPNoticeHub.Common.ValidationConstants.TrademarkSearchFilterConstants;
 
 namespace IPNoticeHub.Web.Models.Trademarks
 {
