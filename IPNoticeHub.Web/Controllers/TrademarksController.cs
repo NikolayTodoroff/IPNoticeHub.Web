@@ -25,58 +25,19 @@ namespace IPNoticeHub.Web.Controllers
         public async Task<IActionResult> Index([FromQuery] TrademarkFilterViewModel filter)
         {
             string searchTerm = (filter.SearchTerm ?? string.Empty).Trim();
-            
-            if (string.IsNullOrWhiteSpace(searchTerm))
+
+            if (string.IsNullOrWhiteSpace(searchTerm) || !ModelState.IsValid)
             {
-                ViewBag.HasSearch = false;
-
-                PagedResult<TrademarkSummaryDTO>? emptyPageDTO = new PagedResult<TrademarkSummaryDTO>()
-                {
-                    Results = Array.Empty<TrademarkSummaryDTO>(),
-                    ResultsCount = 0,
-                    CurrentPage = filter.CurrentPage,
-                    ResultsCountPerPage = filter.ResultsPerPage
-                };
-
-                TrademarksIndexViewModel emptyPageViewModel = TrademarksIndexDtoToVmMapper.MapToIndexViewModel(filter, emptyPageDTO);
-                return View(emptyPageViewModel);
+                return CreateEmptyViewModel(filter);
             }
 
+            TrademarkFilterDTO? filterDTO = CreateNormalizedFilterDTO(filter, searchTerm);
 
-            if (!ModelState.IsValid)
-            {
-                ViewBag.HasSearch = false;
-
-                PagedResult<TrademarkSummaryDTO>? invalidPageDTO = new PagedResult<TrademarkSummaryDTO>()
-                {
-                    Results = Array.Empty<TrademarkSummaryDTO>(),
-                    ResultsCount = 0,
-                    CurrentPage = filter.CurrentPage,
-                    ResultsCountPerPage = filter.ResultsPerPage
-                };
-
-                TrademarksIndexViewModel? invalidPageViewModel = TrademarksIndexDtoToVmMapper.MapToIndexViewModel(filter, invalidPageDTO);
-                return View(invalidPageViewModel);
-            }
-
-            TrademarkFilterDTO filterDTO = new TrademarkFilterDTO
-            {
-                SearchTerm = searchTerm,
-                SearchBy = filter.SearchBy,
-                Provider = filter.Provider,
-                Status = filter.Status,
-                ClassNumbers = (filter.ClassNumbers ?? Array.Empty<int>())
-                        .Where(cn => Enum.IsDefined(typeof(TrademarkClass), cn))
-                        .Distinct()
-                        .ToArray(),
-                ExactMatch = filter.ExactMatch
-            };
-
-            PagedResult<TrademarkSummaryDTO>? resultsPageDTO = await searchService.SearchAsync(filterDTO, filter.CurrentPage, filter.ResultsPerPage);
+            PagedResult<TrademarkSummaryDTO> resultsPageDTO = await searchService.SearchAsync(filterDTO, filter.CurrentPage, filter.ResultsPerPage);
 
             ViewBag.HasSearch = true;
 
-            TrademarksIndexViewModel? indexViewModel = TrademarksIndexDtoToVmMapper.MapToIndexViewModel(filter, resultsPageDTO);
+            TrademarksIndexViewModel indexViewModel = TrademarksIndexDtoToVmMapper.MapToIndexViewModel(filter, resultsPageDTO);
             return View(indexViewModel);
         }
 
@@ -146,7 +107,38 @@ namespace IPNoticeHub.Web.Controllers
             return RedirectToLocal(returnUrl) ?? RedirectToAction(nameof(MyCollection));
         }
 
+
+        // Helper methods for internal use within the controller
         private string? GetUserId() => User.FindFirstValue(ClaimTypes.NameIdentifier);
+        
+        private IActionResult CreateEmptyViewModel(TrademarkFilterViewModel filter)
+        {
+            ViewBag.HasSearch = false;
+            var emptyPageDTO = new PagedResult<TrademarkSummaryDTO>
+            {
+                Results = Array.Empty<TrademarkSummaryDTO>(),
+                ResultsCount = 0,
+                CurrentPage = filter.CurrentPage,
+                ResultsCountPerPage = filter.ResultsPerPage
+            };
+            var viewModel = TrademarksIndexDtoToVmMapper.MapToIndexViewModel(filter, emptyPageDTO);
+            return View(viewModel);
+        }
+        private static TrademarkFilterDTO CreateNormalizedFilterDTO(TrademarkFilterViewModel filter, string searchTerm)
+        {
+            return new TrademarkFilterDTO
+            {
+                SearchTerm = searchTerm,
+                SearchBy = filter.SearchBy,
+                Provider = filter.Provider,
+                Status = filter.Status,
+                ClassNumbers = (filter.ClassNumbers ?? Array.Empty<int>())
+                        .Where(cn => Enum.IsDefined(typeof(TrademarkClass), cn))
+                        .Distinct()
+                        .ToArray(),
+                ExactMatch = filter.ExactMatch
+            };
+        }
 
         private IActionResult? RedirectToLocal(string? returnUrl)
         {
