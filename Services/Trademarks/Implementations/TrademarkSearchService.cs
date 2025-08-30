@@ -43,9 +43,9 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
             };
         }
 
-        public async Task<PagedResult<TrademarkListItemDTO>> SearchAsync(TrademarkFilterDTO filter, int page, int pageSize)
+        public async Task<PagedResult<TrademarkListItemDTO>> SearchAsync(TrademarkFilterDTO filter, int currentPage, int resultsPerPage, CancellationToken cancellationToken = default)
         {
-            var (normalizedPage, normalizedPageSize) = PagingConfiguration.NormalizePaging(page, pageSize);
+            var (normalizedPage, normalizedPageSize) = PagingConfiguration.NormalizePaging(currentPage, resultsPerPage);
 
             TrademarkSearchFilter? searchFilter = new TrademarkSearchFilter
             {
@@ -60,13 +60,15 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
             IOrderedQueryable<TrademarkEntity>? query = trademarks.Query(searchFilter, includeNav: true)
                                   .OrderBy(t => t.Wordmark);
 
-            int resultsCount = await query.CountAsync();
+            int resultsCount = await query.AsNoTracking().CountAsync(cancellationToken);
 
-            List<TrademarkListItemDTO>? searchResults = await query
-                .Skip((normalizedPage - 1) * normalizedPageSize)
-                .Take(normalizedPageSize)
-                .Select(t => new TrademarkListItemDTO
+            List<TrademarkListItemDTO>? searchResults = await query.
+                AsNoTracking().
+                Skip((normalizedPage - 1) * normalizedPageSize).
+                Take(normalizedPageSize).
+                Select(t => new TrademarkListItemDTO
                 {
+                    Id = t.Id,
                     PublicId = t.PublicId,
                     Wordmark = t.Wordmark,
                     Owner = t.Owner,
@@ -75,7 +77,7 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
                     Classes = t.Classes.Select(c => c.ClassNumber).ToArray(),
                     Provider = t.Source
                 })
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             return new PagedResult<TrademarkListItemDTO>
             {

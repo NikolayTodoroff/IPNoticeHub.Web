@@ -4,6 +4,7 @@ namespace IPNoticeHub.Services.Trademarks.DTOs
 {
     public sealed class TrademarkListItemDTO
     {
+        public int Id { get; init; }
         public Guid PublicId { get; init; }
 
         public string Wordmark { get; init; } = null!;

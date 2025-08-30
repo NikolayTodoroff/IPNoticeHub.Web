@@ -30,9 +30,9 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
             await userTrademarks.AddOrUndeleteAsync(userId, trademarkId, cancellationToken);
         }
 
-        public async Task<PagedResult<TrademarkListItemDTO>> GetUserCollectionAsync(string userId, int page, int resultsPerPage, CancellationToken cancellationToken = default)
+        public async Task<PagedResult<TrademarkListItemDTO>> GetUserCollectionAsync(string userId, int currentPage, int resultsPerPage, CancellationToken cancellationToken = default)
         {
-            var (normalizedPage, normalizedPageSize) = PagingConfiguration.NormalizePaging(page, resultsPerPage);
+            var (normalizedPage, normalizedPageSize) = PagingConfiguration.NormalizePaging(currentPage, resultsPerPage);
 
             IOrderedQueryable<TrademarkEntity>? userTrademarksQuery = userTrademarks.QueryUserCollection(userId).
                 OrderByDescending(t => t.RegistrationDate.HasValue).
@@ -65,9 +65,9 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
             };
         }
 
-        public async Task<PagedResult<TrademarkListItemDTO>> GetUserCollectionAsync(string userId, CollectionSortBy sortBy, int page, int resultsPerPage, CancellationToken cancellationToken = default)
+        public async Task<PagedResult<TrademarkListItemDTO>> GetUserCollectionAsync(string userId, CollectionSortBy sortBy, int currentPage, int resultsPerPage, CancellationToken cancellationToken = default)
         {
-            var (normalizedPage, normalizedPageSize) = PagingConfiguration.NormalizePaging(page, resultsPerPage);
+            var (normalizedPage, normalizedPageSize) = PagingConfiguration.NormalizePaging(currentPage, resultsPerPage);
 
             IQueryable<UserTrademark>? links = userTrademarks.QueryUserLinks(userId);
 
@@ -91,13 +91,15 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
                 links = links.OrderByDescending(l => l.DateAdded);
             }
 
-            int resultsCount = await links.CountAsync(cancellationToken);
+            int resultsCount = await links.AsNoTracking().CountAsync(cancellationToken);
 
             List<TrademarkListItemDTO>? results = await links.
+                AsNoTracking().
                 Skip((normalizedPage - 1) * normalizedPageSize).
                 Take(normalizedPageSize).
                 Select(l => new TrademarkListItemDTO
                 {
+                   Id = l.TrademarkRegistrationId,
                    PublicId = l.TrademarkRegistration.PublicId,
                    Wordmark = l.TrademarkRegistration.Wordmark,
                    Owner = l.TrademarkRegistration.Owner,
