@@ -5,7 +5,7 @@ namespace IPNoticeHub.Data.Repositories.Trademarks.Abstractions
 {
     public interface IUserTrademarkRepository
     {
-        Task<bool> IsLinkedAsync(string userId, int trademarkId, CancellationToken cancellationToken, bool includeSoftDeleted = false);
+        Task<bool> IsLinkedAsync(string userId, int trademarkId, bool includeSoftDeleted = false, CancellationToken cancellationToken=default);
 
         Task AddOrUndeleteAsync(string userId, int trademarkId, CancellationToken cancellationToken = default);
 

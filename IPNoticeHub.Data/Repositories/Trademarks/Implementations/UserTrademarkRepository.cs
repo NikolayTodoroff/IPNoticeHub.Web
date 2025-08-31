@@ -25,8 +25,8 @@ namespace IPNoticeHub.Data.Repositories.Trademarks.Implementations
         public async Task AddOrUndeleteAsync(string userId, int trademarkId, CancellationToken cancellationToken = default)
         {
             var link = await dbContext.UserTrademarks.
-                FirstOrDefaultAsync(ut => ut.ApplicationUserId == userId &&
-                ut.TrademarkRegistrationId == trademarkId, cancellationToken);
+                FirstOrDefaultAsync(ut => ut.ApplicationUserId == userId && ut.TrademarkRegistrationId == trademarkId,
+                    cancellationToken);
 
             if (link == null)
             {
@@ -53,12 +53,11 @@ namespace IPNoticeHub.Data.Repositories.Trademarks.Implementations
         /// <summary>
         /// Checks whether a user is linked to a specific trademark.
         /// </summary>
-        public Task<bool> IsLinkedAsync(string userId, int trademarkId, CancellationToken cancellationToken,bool includeSoftDeleted = false)
+        public Task<bool> IsLinkedAsync(string userId, int trademarkId, bool includeSoftDeleted = false, CancellationToken cancellationToken=default)
         {
-            return dbContext.UserTrademarks.AnyAsync(ut =>
-                ut.ApplicationUserId == userId &&
-                ut.TrademarkRegistrationId == trademarkId &&
-                (includeSoftDeleted || !ut.IsDeleted));
+            return dbContext.UserTrademarks.
+                AnyAsync(ut =>ut.ApplicationUserId == userId &&
+                ut.TrademarkRegistrationId == trademarkId &&(includeSoftDeleted || !ut.IsDeleted),cancellationToken);
         }
 
         /// <summary>
@@ -71,6 +70,7 @@ namespace IPNoticeHub.Data.Repositories.Trademarks.Implementations
                 Where(ut => ut.ApplicationUserId == userId && !ut.IsDeleted).
                 Select(ut => ut.TrademarkRegistration).
                 Include(t => t.Classes).
+                AsSplitQuery().
                 AsNoTracking();
         }
 
@@ -80,13 +80,14 @@ namespace IPNoticeHub.Data.Repositories.Trademarks.Implementations
                 Where(ut => ut.ApplicationUserId == userId && !ut.IsDeleted).
                 Include(ut => ut.TrademarkRegistration).
                 ThenInclude(t => t.Classes).
+                AsSplitQuery().
                 AsNoTracking();
         }
 
         /// <summary>
         /// Marks the association between a user and a trademark as soft-deleted.
         /// </summary>
-        /// True if the link was active and is now soft-deleted,
+        /// True if the link was active and is now soft-deleted, 
         /// or false if it did not exist or was already deleted.
         /// </returns>
         public async Task<bool> SoftRemoveAsync(string userId, int trademarkId, CancellationToken cancellationToken = default)
