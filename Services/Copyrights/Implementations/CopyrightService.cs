@@ -23,7 +23,8 @@ namespace IPNoticeHub.Services.Copyrights.Implementations
 
         public async Task<Guid> CreateAsync(string userId, CopyrightCreateDTO dto, CancellationToken cancellationToken = default)
         {
-            var existingEntity = await copyrights.GetByRegNumberAsync(dto.RegistrationNumber, asNoTracking: false);
+            var existingEntity = await copyrights.
+                GetByRegNumberAsync(dto.RegistrationNumber, asNoTracking: false, cancellationToken: cancellationToken);
 
             CopyrightEntity newEntity;
 
@@ -55,11 +56,11 @@ namespace IPNoticeHub.Services.Copyrights.Implementations
 
         public async Task<CopyrightDetailsDTO?> GetDetailsAsync(string userId, Guid publicId, CancellationToken cancellationToken = default)
         {
-            CopyrightEntity? entity = await copyrights.GetByPublicIdAsync(publicId, asNoTracking: true);
+            CopyrightEntity? entity = await copyrights.GetByPublicIdAsync(publicId, asNoTracking: true,cancellationToken: cancellationToken);
 
             if (entity is null) return null;
 
-            bool linked = await userCopyrights.IsLinkedAsync(userId, entity.Id, includeSoftDeleted: false);
+            bool linked = await userCopyrights.IsLinkedAsync(userId, entity.Id, includeSoftDeleted: false,cancellationToken: cancellationToken);
             if (!linked) return null;
 
             return new CopyrightDetailsDTO()
@@ -83,25 +84,25 @@ namespace IPNoticeHub.Services.Copyrights.Implementations
 
             if (sortBy == CollectionSortBy.DateAddedAsc)
             {
-                links = links.OrderBy(l => l.DateAdded);
+                links = links.OrderBy(l => l.DateAdded).ThenBy(l => l.CopyrightRegistrationId);
             }
 
             else if (sortBy == CollectionSortBy.TitleAsc)
             {
-                links = links.OrderBy(l => l.CopyrightRegistration.Title);
+                links = links.OrderBy(l => l.CopyrightRegistration.Title).ThenBy(l => l.CopyrightRegistrationId);
             }
 
             else if (sortBy == CollectionSortBy.TitleDesc)
             {
-                links = links.OrderByDescending(l => l.CopyrightRegistration.Title);
+                links = links.OrderByDescending(l => l.CopyrightRegistration.Title).ThenBy(l => l.CopyrightRegistrationId);
             }
 
             else
             {
-                links = links.OrderByDescending(l => l.DateAdded);
+                links = links.OrderByDescending(l => l.DateAdded).ThenBy(l => l.CopyrightRegistrationId);
             }
 
-            int resultsCount = await links.CountAsync(cancellationToken);
+            int resultsCount = await links.AsNoTracking().CountAsync(cancellationToken);
 
             List<CopyrightListItemDTO>? results = await links.
                 Skip((normalizedPage - 1) * normalizedPageSize).
@@ -127,9 +128,9 @@ namespace IPNoticeHub.Services.Copyrights.Implementations
 
         public async Task<bool> RemoveAsync(string userId, Guid publicId, CancellationToken cancellationToken = default)
         {
-            CopyrightEntity? entity = await copyrights.GetByPublicIdAsync(publicId, asNoTracking : true);
+            CopyrightEntity? entity = await copyrights.GetByPublicIdAsync(publicId, asNoTracking : true, cancellationToken: cancellationToken);
 
-            if (entity == null) return false;
+            if (entity is null) return false;
 
             return await userCopyrights.SoftRemoveAsync(userId,entity.Id, cancellationToken);
         }

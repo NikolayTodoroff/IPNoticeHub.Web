@@ -29,7 +29,7 @@ namespace IPNoticeHub.Data.Repositories.Copyrights.Implementations
                      .AnyAsync(c => c.RegistrationNumber == regNumber);
         }
 
-        public Task<CopyrightEntity?> GetByPublicIdAsync(Guid publicId, bool asNoTracking = true)
+        public Task<CopyrightEntity?> GetByPublicIdAsync(Guid publicId, bool asNoTracking = true, CancellationToken cancellationToken = default)
         {
             var query = dbContext.Set<CopyrightEntity>().
                 Where(c => c.PublicId == publicId);
@@ -42,7 +42,7 @@ namespace IPNoticeHub.Data.Repositories.Copyrights.Implementations
             return query.SingleOrDefaultAsync();
         }
 
-        public Task<CopyrightEntity?> GetByRegNumberAsync(string registrationNumber, bool asNoTracking = true)
+        public Task<CopyrightEntity?> GetByRegNumberAsync(string registrationNumber, bool asNoTracking = true,CancellationToken cancellationToken = default)
         {
             var regNumber = NormalizeReg(registrationNumber);
 

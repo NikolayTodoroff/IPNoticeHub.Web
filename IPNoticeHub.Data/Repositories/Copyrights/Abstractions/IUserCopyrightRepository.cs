@@ -5,7 +5,7 @@ namespace IPNoticeHub.Data.Repositories.Copyrights.Abstractions
 {
     public interface IUserCopyrightRepository
     {
-        Task<bool> IsLinkedAsync(string userId, int copyrightId, bool includeSoftDeleted = false);
+        Task<bool> IsLinkedAsync(string userId, int copyrightId, bool includeSoftDeleted = false, CancellationToken cancellationToken = default);
 
         Task AddOrUndeleteAsync(string userId, int copyrightId, CancellationToken  cancellationToken = default);
 

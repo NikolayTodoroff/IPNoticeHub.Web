@@ -37,7 +37,7 @@ namespace IPNoticeHub.Data.Repositories.Copyrights.Implementations
             await dbContext.SaveChangesAsync(cancellationToken);
         }
 
-        public Task<bool> IsLinkedAsync(string userId, int copyrightId, bool includeSoftDeleted = false)
+        public Task<bool> IsLinkedAsync(string userId, int copyrightId, bool includeSoftDeleted = false,CancellationToken cancellationToken = default)
         {
             var query = dbContext.UserCopyrights
                 .Where(uc => uc.ApplicationUserId == userId && uc.CopyrightRegistrationId == copyrightId);

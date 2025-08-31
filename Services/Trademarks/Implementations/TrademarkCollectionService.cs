@@ -121,9 +121,9 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
             };
         }
 
-        public Task<bool> IsInCollectionAsync(string userId, int trademarkId, CancellationToken cancellationToken = default, bool includeSoftDeleted = false)
+        public Task<bool> IsInCollectionAsync(string userId, int trademarkId, bool includeSoftDeleted = false, CancellationToken cancellationToken = default)
         {
-            return userTrademarks.IsLinkedAsync(userId, trademarkId, cancellationToken, includeSoftDeleted);
+            return userTrademarks.IsLinkedAsync(userId, trademarkId, includeSoftDeleted, cancellationToken);
         }
 
         public async Task RemoveAsync(string userId, int trademarkId, CancellationToken cancellationToken = default)
