@@ -5,8 +5,8 @@ using IPNoticeHub.Services.Trademarks.DTOs;
 using IPNoticeHub.Web.Models.Trademarks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
+using IPNoticeHub.Common.Extensions;
 
 namespace IPNoticeHub.Web.Controllers
 {
@@ -51,66 +51,45 @@ namespace IPNoticeHub.Web.Controllers
             return View(detailsModel);
         }
 
-        [Authorize]
+        [Authorize(Policy = "HasUserId")]
         [HttpGet]
-        public async Task<IActionResult> MyCollection(int currentPage = DefaultPage, int pageSize = DefaultPageSize)
+        public async Task<IActionResult> MyCollection(CollectionSortBy sortBy = CollectionSortBy.DateAddedDesc,
+        int currentPage = DefaultPage,int resultsPerPage = DefaultPageSize,CancellationToken cancellationToken = default)
         {
-            string? userId = GetUserId();
+            if (!User.TryGetUserId(out var userId)) return Forbid();
 
-            if (userId is null) return Challenge();
-
-            PagedResult<TrademarkSummaryDTO>? collectionModel = await collectionService.GetUserCollectionAsync(userId, currentPage, pageSize);
-            return View(collectionModel);
-        }
-
-        [Authorize]
-        [HttpGet]
-        public async Task<IActionResult> MyCollection(CollectionSortBy sortBy = CollectionSortBy.DateAddedDesc,int currentPage = DefaultPage,int pageSize = DefaultPageSize)
-        {
-            string? userId = GetUserId();
-
-            if (userId is null) return Challenge();
-
-            PagedResult<TrademarkSummaryDTO>? orderedCollectionModel = await collectionService.GetUserCollectionAsync (userId, sortBy, currentPage, pageSize);
-
+            var page = await collectionService.GetUserCollectionAsync(userId, sortBy, currentPage, resultsPerPage, cancellationToken);
             ViewBag.SortBy = sortBy;
-            return View(orderedCollectionModel);
+            return View(page);
         }
 
-        [Authorize]
+        [Authorize(Policy = "HasUserId")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Add(int trademarkId, string? returnUrl = null)
+        public async Task<IActionResult> Add(int trademarkId, string? returnUrl = null, CancellationToken cancellationToken = default)
         {
-            string? userId = GetUserId();
+            if (!User.TryGetUserId(out var userId)) return Forbid();
 
-            if (userId is null) return Challenge();
-
-            await collectionService.AddAsync(userId, trademarkId);
+            await collectionService.AddAsync(userId, trademarkId, cancellationToken);
 
             TempData["StatusMessage"] = "Trademark added to your collection.";
             return RedirectToLocal(returnUrl) ?? RedirectToAction(nameof(MyCollection));
         }
 
-        [Authorize]
+        [Authorize(Policy = "HasUserId")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Remove(int trademarkId, string? returnUrl = null)
+        public async Task<IActionResult> Remove(int trademarkId, string? returnUrl = null, CancellationToken cancellationToken = default)
         {
-            string? userId = GetUserId();
+            if (!User.TryGetUserId(out var userId)) return Forbid();
 
-            if (userId is null) return Challenge();
-
-            await collectionService.RemoveAsync(userId, trademarkId);
+            await collectionService.RemoveAsync(userId, trademarkId, cancellationToken);
 
             TempData["StatusMessage"] = "Trademark removed from your collection.";
             return RedirectToLocal(returnUrl) ?? RedirectToAction(nameof(MyCollection));
         }
 
-
         // Helper methods for internal use within the controller
-        private string? GetUserId() => User.FindFirstValue(ClaimTypes.NameIdentifier);
-        
         private IActionResult CreateEmptyViewModel(TrademarkFilterViewModel filter)
         {
             ViewBag.HasSearch = false;

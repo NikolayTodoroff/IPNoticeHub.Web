@@ -3,13 +3,13 @@ using IPNoticeHub.Services.Copyrights.Abstractions;
 using IPNoticeHub.Services.Copyrights.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
 using static IPNoticeHub.Common.ValidationConstants.StatusMessages;
+using IPNoticeHub.Common.Extensions;
 
 namespace IPNoticeHub.Web.Controllers
 {
-    [Authorize]
+    [Authorize(Policy = "HasUserId")]
     public sealed class CopyrightsController : Controller
     {
         private readonly ICopyrightService service;
@@ -23,9 +23,7 @@ namespace IPNoticeHub.Web.Controllers
         public async Task<IActionResult> MyCollection(CollectionSortBy sortBy = CollectionSortBy.DateAddedDesc,
             int currentPage = DefaultPage, int resultsPerPage = DefaultPageSize, CancellationToken cancellationToken = default)
         {
-            string? userId = GetUserId();
-
-            if (userId is null) return Challenge();
+            if (!User.TryGetUserId(out var userId)) return Forbid();
 
             var model = await service.GetUserCollectionAsync(
                 userId, sortBy, currentPage, resultsPerPage, cancellationToken);
@@ -38,11 +36,9 @@ namespace IPNoticeHub.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(Guid id, CancellationToken cancellationToken = default)
         {
-            string? userId = GetUserId();
+            User.TryGetUserId(out var userId);
 
-            if (userId is null) return Challenge();
-
-            CopyrightDetailsDTO? model = await service.GetDetailsAsync(userId, id, cancellationToken);
+            CopyrightDetailsDTO? model = await service.GetDetailsAsync(userId!, id, cancellationToken);
             
             if (model is null) return NotFound();
 
@@ -58,12 +54,10 @@ namespace IPNoticeHub.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CopyrightCreateDTO dto, string? returnUrl = null, CancellationToken cancellationToken = default)
-        {
-            string? userId = GetUserId();
-
-            if (userId is null) return Challenge();
-
+        {         
             if (!ModelState.IsValid) return View(dto);
+
+            if (!User.TryGetUserId(out var userId)) return Forbid();
 
             Guid publicId = await service.CreateAsync(userId, dto, cancellationToken);
 
@@ -77,17 +71,14 @@ namespace IPNoticeHub.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Remove(Guid id, string? returnUrl = null, CancellationToken cancellationToken = default)
         {
-            string? userId = GetUserId();
-            if (userId is null) return Challenge();
+            if (!User.TryGetUserId(out var userId)) return Forbid();
 
             await service.RemoveAsync(userId, id, cancellationToken);
 
             TempData["StatusMessage"] = CopyrightRemovedMessage;
             return RedirectToLocal(returnUrl)
                 ?? RedirectToAction(nameof(MyCollection));
-        }
-
-        private string? GetUserId() => User.FindFirstValue(ClaimTypes.NameIdentifier);
+        }       
 
         private IActionResult? RedirectToLocal(string? returnUrl)
         {

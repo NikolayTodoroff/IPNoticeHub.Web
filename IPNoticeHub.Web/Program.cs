@@ -9,6 +9,7 @@ using IPNoticeHub.Data.Repositories.Copyrights.Abstractions;
 using IPNoticeHub.Data.Repositories.Copyrights.Implementations;
 using IPNoticeHub.Services.Copyrights.Abstractions;
 using IPNoticeHub.Services.Copyrights.Implementations;
+using System.Security.Claims;
 
 namespace IPNoticeHub.Web
 {
@@ -35,6 +36,11 @@ namespace IPNoticeHub.Web
                 options.Password.RequiredLength = 6;
             })
                 .AddEntityFrameworkStores<IPNoticeHubDbContext>();
+
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("HasUserId", p => p.RequireClaim(ClaimTypes.NameIdentifier));
+            });
 
             builder.Services.AddControllersWithViews();           
             builder.Services.AddEndpointsApiExplorer();
