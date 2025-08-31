@@ -22,7 +22,7 @@ namespace IPNoticeHub.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index([FromQuery] TrademarkFilterViewModel filter)
+        public async Task<IActionResult> Index([FromQuery] TrademarkFilterViewModel filter, CancellationToken cancellationToken)
         {
             string searchTerm = (filter.SearchTerm ?? string.Empty).Trim();
 
@@ -33,7 +33,7 @@ namespace IPNoticeHub.Web.Controllers
 
             TrademarkFilterDTO? filterDTO = CreateNormalizedFilterDTO(filter, searchTerm);
 
-            PagedResult<TrademarkSummaryDTO> resultsPageDTO = await searchService.SearchAsync(filterDTO, filter.CurrentPage, filter.ResultsPerPage);
+            PagedResult<TrademarkSummaryDTO> resultsPageDTO = await searchService.SearchAsync(filterDTO, filter.CurrentPage, filter.ResultsPerPage, cancellationToken);
 
             ViewBag.HasSearch = true;
 
@@ -42,9 +42,9 @@ namespace IPNoticeHub.Web.Controllers
         }
 
         [HttpGet("Trademarks/Details/{id:guid}")]
-        public async Task<IActionResult> Details(Guid id)
+        public async Task<IActionResult> Details(Guid id, CancellationToken cancellationToken = default)
         {
-            TrademarkDetailsDTO? detailsModel = await searchService.GetDetailsAsync(id);
+            TrademarkDetailsDTO? detailsModel = await searchService.GetDetailsAsync(id, cancellationToken);
 
             if (detailsModel is null) return NotFound();
 

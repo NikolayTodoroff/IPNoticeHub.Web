@@ -14,32 +14,35 @@ namespace IPNoticeHub.Data.Repositories.Trademarks.Implementations
             dbContext = context;
         }
 
-        public Task<bool> ExistsAsync(int id)
+        public Task<bool> ExistsAsync(int id, CancellationToken cancellationToken)
         {
-            return dbContext.TrademarkRegistrations.AnyAsync(t => t.Id == id);
+            return dbContext.TrademarkRegistrations.
+                AsNoTracking().
+                AnyAsync(t => t.Id == id, cancellationToken);
         }
 
-        public async Task<TrademarkEntity?> GetByPublicIdAsync(Guid publicId, bool asNoTracking = true)
+        public async Task<TrademarkEntity?> GetByPublicIdAsync(Guid publicId, CancellationToken cancellationToken, bool asNoTracking = true)
         {
             var trademarksQuery = dbContext.TrademarkRegistrations.
                Include(t => t.Classes).
                Include(t => t.Events).
                AsSplitQuery();
 
-            if (asNoTracking == true)
+            if (asNoTracking)
             {
                 trademarksQuery = trademarksQuery.AsNoTracking();
             }
 
-            return await trademarksQuery.SingleOrDefaultAsync(t => t.PublicId == publicId);
+            return await trademarksQuery.SingleOrDefaultAsync(t => t.PublicId == publicId, cancellationToken);
         }
 
-        public Task<int?> GetIdByPublicIdAsync(Guid publicId)
+        public Task<int?> GetIdByPublicIdAsync(Guid publicId, CancellationToken cancellationToken)
         {
             return dbContext.TrademarkRegistrations.
+                AsNoTracking().
                 Where(t=>t.PublicId == publicId).
                 Select(t=>(int?)t.Id).
-                FirstOrDefaultAsync();
+                FirstOrDefaultAsync(cancellationToken);
         }
 
         /// <summary>
@@ -53,7 +56,8 @@ namespace IPNoticeHub.Data.Repositories.Trademarks.Implementations
             {
                 trademarksQuery = trademarksQuery.
                     Include(t => t.Classes).
-                    Include(t => t.Events);
+                    Include(t => t.Events).
+                    AsSplitQuery(); 
             }
 
             if (filter.Provider.HasValue)
@@ -88,9 +92,8 @@ namespace IPNoticeHub.Data.Repositories.Trademarks.Implementations
                 else if (filter.SearchBy == TrademarkSearchBy.Owner)
                 {
                     trademarksQuery = exact ?
-                        trademarksQuery.Where(t => t.SourceId == searchTerm || t.RegistrationNumber == searchTerm) :
-                        trademarksQuery.Where(t => t.SourceId.Contains(searchTerm) ||
-                        t.RegistrationNumber != null && t.RegistrationNumber.Contains(searchTerm));
+                        trademarksQuery.Where(t => t.Owner == searchTerm) :
+                        trademarksQuery.Where(t => t.Owner!=null && t.Owner.Contains(searchTerm));
                 }
 
                 else if (filter.SearchBy == TrademarkSearchBy.Number)

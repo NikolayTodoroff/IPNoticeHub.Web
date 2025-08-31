@@ -17,9 +17,9 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
             this.trademarks = trademarks;
         }
 
-        public async Task<TrademarkDetailsDTO?> GetDetailsAsync(Guid publicId)
+        public async Task<TrademarkDetailsDTO?> GetDetailsAsync(Guid publicId,CancellationToken cancellationToken = default)
         {
-            var result = await trademarks.GetByPublicIdAsync(publicId, asNoTracking: true);
+            var result = await trademarks.GetByPublicIdAsync(publicId, cancellationToken,asNoTracking: true);
 
             if (result is null) return null;
 

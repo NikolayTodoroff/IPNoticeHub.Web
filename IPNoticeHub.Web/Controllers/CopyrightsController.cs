@@ -36,9 +36,9 @@ namespace IPNoticeHub.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(Guid id, CancellationToken cancellationToken = default)
         {
-            User.TryGetUserId(out var userId);
+            if (!User.TryGetUserId(out var userId)) return Forbid();
 
-            CopyrightDetailsDTO? model = await service.GetDetailsAsync(userId!, id, cancellationToken);
+            CopyrightDetailsDTO? model = await service.GetDetailsAsync(userId, id, cancellationToken);
             
             if (model is null) return NotFound();
 

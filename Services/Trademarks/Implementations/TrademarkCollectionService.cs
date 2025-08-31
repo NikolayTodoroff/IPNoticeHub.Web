@@ -23,7 +23,7 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
 
         public async Task AddAsync(string userId, int trademarkId, CancellationToken cancellationToken = default)
         {
-            var exists = await trademarks.ExistsAsync(trademarkId);
+            var exists = await trademarks.ExistsAsync(trademarkId, cancellationToken);
 
             if (!exists) return;
 

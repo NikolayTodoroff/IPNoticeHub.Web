@@ -6,11 +6,11 @@ namespace IPNoticeHub.Data.Repositories.Trademarks.Abstractions
     {
         IQueryable<TrademarkEntity> Query(TrademarkSearchFilter filter, bool includeNav = false);
 
-        Task<TrademarkEntity?> GetByPublicIdAsync(Guid publicId, bool asNoTracking = true);
+        Task<TrademarkEntity?> GetByPublicIdAsync(Guid publicId, CancellationToken cancellationToken, bool asNoTracking = true);
 
-        Task<int?> GetIdByPublicIdAsync(Guid publicId);
+        Task<int?> GetIdByPublicIdAsync(Guid publicId, CancellationToken cancellationToken);
 
-        Task<bool> ExistsAsync(int id);
+        Task<bool> ExistsAsync(int id, CancellationToken cancellationToken);
 
     }
 }
