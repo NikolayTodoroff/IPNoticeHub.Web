@@ -22,11 +22,11 @@ namespace IPNoticeHub.Data.Repositories.Copyrights.Implementations
             await dbContext.SaveChangesAsync(cancellationToken);
         }
 
-        public Task<bool> ExistsByRegNumberAsync(string registrationNumber)
+        public Task<bool> ExistsByRegNumberAsync(string registrationNumber, CancellationToken cancellationToken = default)
         {
             var regNumber = NormalizeReg(registrationNumber);
             return dbContext.Set<CopyrightEntity>()
-                     .AnyAsync(c => c.RegistrationNumber == regNumber);
+                     .AnyAsync(c => c.RegistrationNumber == regNumber, cancellationToken);
         }
 
         public Task<CopyrightEntity?> GetByPublicIdAsync(Guid publicId, bool asNoTracking = true, CancellationToken cancellationToken = default)
@@ -39,7 +39,7 @@ namespace IPNoticeHub.Data.Repositories.Copyrights.Implementations
                 query = query.AsNoTracking();
             } 
 
-            return query.SingleOrDefaultAsync();
+            return query.SingleOrDefaultAsync(cancellationToken);
         }
 
         public Task<CopyrightEntity?> GetByRegNumberAsync(string registrationNumber, bool asNoTracking = true,CancellationToken cancellationToken = default)
@@ -54,7 +54,7 @@ namespace IPNoticeHub.Data.Repositories.Copyrights.Implementations
                 query = query.AsNoTracking();
             } 
 
-            return query.SingleOrDefaultAsync();
+            return query.SingleOrDefaultAsync(cancellationToken);
         }
 
         private static string NormalizeReg(string input) => (input ?? string.Empty).Trim().ToUpperInvariant();

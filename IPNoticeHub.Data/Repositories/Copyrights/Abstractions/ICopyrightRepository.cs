@@ -8,7 +8,7 @@ namespace IPNoticeHub.Data.Repositories.Copyrights.Abstractions
 
         Task<CopyrightEntity?> GetByRegNumberAsync(string registrationNumber, bool asNoTracking = true,CancellationToken cancellationToken=default);
 
-        Task<bool> ExistsByRegNumberAsync(string registrationNumber);
+        Task<bool> ExistsByRegNumberAsync(string registrationNumber, CancellationToken cancellationToken = default);
 
         Task AddAsync(CopyrightEntity entity, CancellationToken cancellationToken = default);
     }

@@ -3,6 +3,7 @@ using IPNoticeHub.Data.Entities.CopyrightRegistration;
 using IPNoticeHub.Data.Entities.TrademarkRegistration;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 
 namespace IPNoticeHub.Data
 {
@@ -71,7 +72,6 @@ namespace IPNoticeHub.Data
                 HasForeignKey(uc => uc.CopyrightRegistrationId).
                 OnDelete(DeleteBehavior.Restrict);
 
-
             // Define composite primary key for TrademarkClassAssignment entity
             builder.Entity<TrademarkClassAssignment>().
                 HasKey(tc => new { tc.TrademarkRegistrationId, tc.ClassNumber });
@@ -81,6 +81,11 @@ namespace IPNoticeHub.Data
                 HasOne(tc => tc.TrademarkRegistration).
                 WithMany(t => t.Classes).
                 HasForeignKey(tc => tc.TrademarkRegistrationId);
+
+            // Ensure that the combination of ApplicationUserId and CopyrightRegistrationId is unique for UserCopyright
+            builder.Entity<UserCopyright>().
+                HasIndex(x => new { x.ApplicationUserId, x.CopyrightRegistrationId }).
+                IsUnique();
 
             //Only seed in Debug builds (not in production)
             Seed.FakeDataSeeder.Seed(builder);

@@ -45,20 +45,25 @@ namespace IPNoticeHub.Data.Repositories.Copyrights.Implementations
             if (!includeSoftDeleted)
                 query = query.Where(uc => !uc.IsDeleted);
 
-            return query.AnyAsync();
+            return query.AsNoTracking().AnyAsync(cancellationToken);
         }
 
         public IQueryable<CopyrightEntity> QueryUserCollection(string userId)
-            => dbContext.UserCopyrights
+        {
+            return dbContext.UserCopyrights
                 .Where(uc => uc.ApplicationUserId == userId && !uc.IsDeleted)
                 .Select(uc => uc.CopyrightRegistration)
                 .AsNoTracking();
+        }       
 
         public IQueryable<UserCopyright> QueryUserLinks(string userId)
-            => dbContext.UserCopyrights
-                .Where(uc => uc.ApplicationUserId == userId && !uc.IsDeleted)
-                .Include(uc => uc.CopyrightRegistration)
-                .AsNoTracking();
+        {
+            return dbContext.UserCopyrights.
+                Where(uc => uc.ApplicationUserId == userId && !uc.IsDeleted).
+                Include(uc => uc.CopyrightRegistration).
+                AsSplitQuery().
+                AsNoTracking();
+        }    
 
         public async Task<bool> SoftRemoveAsync(string userId, int copyrightId, CancellationToken cancellationToken = default)
         {
