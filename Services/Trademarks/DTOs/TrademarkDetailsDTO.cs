@@ -24,9 +24,9 @@ namespace IPNoticeHub.Services.Trademarks.DTOs
 
         public DataProvider Provider { get; init; }
 
-        public IReadOnlyList<int> Classes { get; init; } = new List<int>();
+        public IReadOnlyList<int> Classes { get; init; } = Array.Empty<int>();
 
-        public IReadOnlyList<(DateTime Date, string Code, string? Description)> Events { get; init; }
-            = new List<(DateTime, string, string?)>();
+        public IReadOnlyList<(DateTime Date, string Code, string? Description)> Events{ get; init; } = 
+            Array.Empty<(DateTime, string, string?)>();
     }
 }

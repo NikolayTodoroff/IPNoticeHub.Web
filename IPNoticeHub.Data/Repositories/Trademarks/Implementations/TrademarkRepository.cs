@@ -93,14 +93,14 @@ namespace IPNoticeHub.Data.Repositories.Trademarks.Implementations
                 {
                     trademarksQuery = exact ?
                         trademarksQuery.Where(t => t.Owner == searchTerm) :
-                        trademarksQuery.Where(t => t.Owner!=null && t.Owner.Contains(searchTerm));
+                        trademarksQuery.Where(t => t.Owner != null && t.Owner.Contains(searchTerm));
                 }
 
                 else if (filter.SearchBy == TrademarkSearchBy.Number)
                 {
                     trademarksQuery = exact ?
-                        trademarksQuery.Where(t => t.SourceId == searchTerm || t.RegistrationNumber == searchTerm) :
-                        trademarksQuery.Where(t => t.SourceId.Contains(searchTerm) || t.RegistrationNumber!.Contains(searchTerm));
+                        trademarksQuery.Where(t => t.RegistrationNumber == searchTerm) :
+                        trademarksQuery.Where(t => t.RegistrationNumber != null && t.RegistrationNumber.Contains(searchTerm));
                 }
             }
 

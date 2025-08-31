@@ -7,6 +7,6 @@ namespace IPNoticeHub.Services.Trademarks.Abstractions
     {
         Task<PagedResult<TrademarkSummaryDTO>> SearchAsync(TrademarkFilterDTO filter,int currentPage, int resultsPerPage, CancellationToken cancellationToken = default);
 
-        Task<TrademarkDetailsDTO?> GetDetailsAsync(Guid publicId, CancellationToken cancellationToken);
+        Task<TrademarkDetailsDTO?> GetDetailsAsync(Guid publicId, CancellationToken cancellationToken = default);
     }
 }

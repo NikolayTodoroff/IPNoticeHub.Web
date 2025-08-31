@@ -17,9 +17,9 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
             this.trademarks = trademarks;
         }
 
-        public async Task<TrademarkDetailsDTO?> GetDetailsAsync(Guid publicId,CancellationToken cancellationToken = default)
+        public async Task<TrademarkDetailsDTO?> GetDetailsAsync(Guid publicId, CancellationToken cancellationToken = default)
         {
-            var result = await trademarks.GetByPublicIdAsync(publicId, cancellationToken,asNoTracking: true);
+            var result = await trademarks.GetByPublicIdAsync(publicId, cancellationToken: cancellationToken);
 
             if (result is null) return null;
 
@@ -37,9 +37,9 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
                 Provider = result.Source,
                 Classes = result.Classes.Select(c => c.ClassNumber).ToList(),
                 Events = result.Events.
-                                        OrderByDescending(e => e.EventDate).
-                                        Select(e => (Date: e.EventDate, e.Code, e.Description)).
-                                        ToList()
+                     OrderByDescending(e => e.EventDate).
+                     Select(e => (e.EventDate, e.Code, e.Description)).
+                     ToList()
             };
         }
 
@@ -57,13 +57,14 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
                 ExactMatch = filter.ExactMatch
             };
 
-            IOrderedQueryable<TrademarkEntity>? query = trademarks.Query(searchFilter, includeNav: true)
-                                  .OrderBy(t => t.Wordmark);
+            IOrderedQueryable<TrademarkEntity>? query = trademarks.
+                Query(searchFilter, includeNav: false).
+                OrderBy(t => t.Wordmark).
+                ThenBy(t => t.Id);
 
-            int resultsCount = await query.AsNoTracking().CountAsync(cancellationToken);
+            int resultsCount = await query.CountAsync(cancellationToken);
 
             List<TrademarkSummaryDTO>? searchResults = await query.
-                AsNoTracking().
                 Skip((normalizedPage - 1) * normalizedPageSize).
                 Take(normalizedPageSize).
                 Select(t => new TrademarkSummaryDTO
