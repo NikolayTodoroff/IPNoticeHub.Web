@@ -35,6 +35,7 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
             var (normalizedPage, normalizedPageSize) = PagingConfiguration.NormalizePaging(currentPage, resultsPerPage);
 
             IOrderedQueryable<TrademarkEntity>? userTrademarksQuery = userTrademarks.QueryUserCollection(userId).
+                AsNoTracking().
                 OrderByDescending(t => t.RegistrationDate.HasValue).
                 ThenByDescending(t => t.RegistrationDate).
                 ThenBy(t => t.Wordmark);
@@ -46,6 +47,7 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
                 .Take(normalizedPageSize)
                 .Select(t => new TrademarkSummaryDTO
                 {
+                    Id = t.Id,
                     PublicId = t.PublicId,
                     Wordmark = t.Wordmark,
                     Owner = t.Owner,
@@ -119,9 +121,9 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
             };
         }
 
-        public Task<bool> IsInCollectionAsync(string userId, int trademarkId, bool includeSoftDeleted = false)
+        public Task<bool> IsInCollectionAsync(string userId, int trademarkId, CancellationToken cancellationToken = default, bool includeSoftDeleted = false)
         {
-            return userTrademarks.IsLinkedAsync(userId, trademarkId, includeSoftDeleted);
+            return userTrademarks.IsLinkedAsync(userId, trademarkId, cancellationToken, includeSoftDeleted);
         }
 
         public async Task RemoveAsync(string userId, int trademarkId, CancellationToken cancellationToken = default)

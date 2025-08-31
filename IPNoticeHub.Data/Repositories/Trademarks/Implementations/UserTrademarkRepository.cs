@@ -53,7 +53,7 @@ namespace IPNoticeHub.Data.Repositories.Trademarks.Implementations
         /// <summary>
         /// Checks whether a user is linked to a specific trademark.
         /// </summary>
-        public Task<bool> IsLinkedAsync(string userId, int trademarkId, bool includeSoftDeleted = false)
+        public Task<bool> IsLinkedAsync(string userId, int trademarkId, CancellationToken cancellationToken,bool includeSoftDeleted = false)
         {
             return dbContext.UserTrademarks.AnyAsync(ut =>
                 ut.ApplicationUserId == userId &&
