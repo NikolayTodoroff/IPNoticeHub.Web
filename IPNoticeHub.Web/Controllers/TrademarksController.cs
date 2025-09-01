@@ -12,13 +12,13 @@ namespace IPNoticeHub.Web.Controllers
 {
     public sealed class TrademarksController : Controller
     {
-        private readonly ITrademarkCollectionService collectionService;
-        private readonly ITrademarkSearchService searchService;
+        private readonly ITrademarkCollectionService tmCollectionService;
+        private readonly ITrademarkSearchService tmSearchService;
 
         public TrademarksController(ITrademarkSearchService searchService, ITrademarkCollectionService collectionService)
         {
-            this.searchService = searchService;
-            this.collectionService = collectionService;
+            this.tmSearchService = searchService;
+            this.tmCollectionService = collectionService;
         }
 
         [HttpGet]
@@ -33,7 +33,7 @@ namespace IPNoticeHub.Web.Controllers
 
             TrademarkFilterDTO? filterDTO = CreateNormalizedFilterDTO(filter, searchTerm);
 
-            PagedResult<TrademarkSummaryDTO> resultsPageDTO = await searchService.SearchAsync(filterDTO, filter.CurrentPage, filter.ResultsPerPage, cancellationToken);
+            PagedResult<TrademarkSummaryDTO> resultsPageDTO = await tmSearchService.SearchAsync(filterDTO, filter.CurrentPage, filter.ResultsPerPage, cancellationToken);
 
             ViewBag.HasSearch = true;
 
@@ -44,7 +44,7 @@ namespace IPNoticeHub.Web.Controllers
         [HttpGet("Trademarks/Details/{id:guid}")]
         public async Task<IActionResult> Details(Guid id, CancellationToken cancellationToken = default)
         {
-            TrademarkDetailsDTO? detailsModel = await searchService.GetDetailsAsync(id, cancellationToken);
+            TrademarkDetailsDTO? detailsModel = await tmSearchService.GetDetailsAsync(id, cancellationToken);
 
             if (detailsModel is null) return NotFound();
 
@@ -58,7 +58,7 @@ namespace IPNoticeHub.Web.Controllers
         {
             if (!User.TryGetUserId(out var userId)) return Forbid();
 
-            var page = await collectionService.GetUserCollectionAsync(userId, sortBy, currentPage, resultsPerPage, cancellationToken);
+            var page = await tmCollectionService.GetUserCollectionAsync(userId, sortBy, currentPage, resultsPerPage, cancellationToken);
             ViewBag.SortBy = sortBy;
             return View(page);
         }
@@ -70,7 +70,7 @@ namespace IPNoticeHub.Web.Controllers
         {
             if (!User.TryGetUserId(out var userId)) return Forbid();
 
-            await collectionService.AddAsync(userId, trademarkId, cancellationToken);
+            await tmCollectionService.AddAsync(userId, trademarkId, cancellationToken);
 
             TempData["StatusMessage"] = "Trademark added to your collection.";
             return RedirectToLocal(returnUrl) ?? RedirectToAction(nameof(MyCollection));
@@ -83,7 +83,7 @@ namespace IPNoticeHub.Web.Controllers
         {
             if (!User.TryGetUserId(out var userId)) return Forbid();
 
-            await collectionService.RemoveAsync(userId, trademarkId, cancellationToken);
+            await tmCollectionService.RemoveAsync(userId, trademarkId, cancellationToken);
 
             TempData["StatusMessage"] = "Trademark removed from your collection.";
             return RedirectToLocal(returnUrl) ?? RedirectToAction(nameof(MyCollection));

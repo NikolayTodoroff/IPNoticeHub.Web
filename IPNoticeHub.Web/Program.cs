@@ -1,15 +1,15 @@
+using System.Security.Claims;
 using IPNoticeHub.Data;
 using IPNoticeHub.Data.Entities.ApplicationUser;
-using Microsoft.EntityFrameworkCore;
-using IPNoticeHub.Data.Repositories.Trademarks.Abstractions;
-using IPNoticeHub.Data.Repositories.Trademarks.Implementations;
-using IPNoticeHub.Services.Trademarks.Abstractions;
-using IPNoticeHub.Services.Trademarks.Implementations;
 using IPNoticeHub.Data.Repositories.Copyrights.Abstractions;
 using IPNoticeHub.Data.Repositories.Copyrights.Implementations;
+using IPNoticeHub.Data.Repositories.Trademarks.Abstractions;
+using IPNoticeHub.Data.Repositories.Trademarks.Implementations;
 using IPNoticeHub.Services.Copyrights.Abstractions;
 using IPNoticeHub.Services.Copyrights.Implementations;
-using System.Security.Claims;
+using IPNoticeHub.Services.Trademarks.Abstractions;
+using IPNoticeHub.Services.Trademarks.Implementations;
+using Microsoft.EntityFrameworkCore;
 
 namespace IPNoticeHub.Web
 {

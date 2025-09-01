@@ -12,18 +12,18 @@ namespace IPNoticeHub.Services.Copyrights.Implementations
 {
     public sealed class CopyrightService : ICopyrightService
     {
-        private readonly ICopyrightRepository copyrights;
-        private readonly IUserCopyrightRepository userCopyrights;
+        private readonly ICopyrightRepository copyrightRepository;
+        private readonly IUserCopyrightRepository userCopyrightRepository;
 
         public CopyrightService(ICopyrightRepository copyrights,IUserCopyrightRepository userCopyrights)
         {
-            this.copyrights = copyrights;
-            this.userCopyrights = userCopyrights;
+            this.copyrightRepository = copyrights;
+            this.userCopyrightRepository = userCopyrights;
         } 
 
         public async Task<Guid> CreateAsync(string userId, CopyrightCreateDTO dto, CancellationToken cancellationToken = default)
         {
-            var existingEntity = await copyrights.
+            var existingEntity = await copyrightRepository.
                 GetByRegNumberAsync(dto.RegistrationNumber, asNoTracking: false, cancellationToken: cancellationToken);
 
             CopyrightEntity newEntity;
@@ -41,7 +41,7 @@ namespace IPNoticeHub.Services.Copyrights.Implementations
                     NationOfFirstPublication = dto.NationOfFirstPublication
                 };
 
-                await copyrights.AddAsync(newEntity,cancellationToken);
+                await copyrightRepository.AddAsync(newEntity,cancellationToken);
             }
 
             else
@@ -49,18 +49,18 @@ namespace IPNoticeHub.Services.Copyrights.Implementations
                 newEntity = existingEntity;
             }
 
-            await userCopyrights.AddOrUndeleteAsync(userId, newEntity.Id, cancellationToken);
+            await userCopyrightRepository.AddOrUndeleteAsync(userId, newEntity.Id, cancellationToken);
 
             return newEntity.PublicId;
         }
 
         public async Task<CopyrightDetailsDTO?> GetDetailsAsync(string userId, Guid publicId, CancellationToken cancellationToken = default)
         {
-            CopyrightEntity? entity = await copyrights.GetByPublicIdAsync(publicId, asNoTracking: true,cancellationToken: cancellationToken);
+            CopyrightEntity? entity = await copyrightRepository.GetByPublicIdAsync(publicId, asNoTracking: true,cancellationToken: cancellationToken);
 
             if (entity is null) return null;
 
-            bool linked = await userCopyrights.IsLinkedAsync(userId, entity.Id, includeSoftDeleted: false,cancellationToken: cancellationToken);
+            bool linked = await userCopyrightRepository.IsLinkedAsync(userId, entity.Id, includeSoftDeleted: false,cancellationToken: cancellationToken);
             if (!linked) return null;
 
             return new CopyrightDetailsDTO()
@@ -80,7 +80,7 @@ namespace IPNoticeHub.Services.Copyrights.Implementations
         {
             var (normalizedPage, normalizedPageSize) = PagingConfiguration.NormalizePaging(page, resultsPerPage);
 
-            IQueryable<UserCopyright>? links = userCopyrights.QueryUserLinks(userId);
+            IQueryable<UserCopyright>? links = userCopyrightRepository.QueryUserLinks(userId);
 
             if (sortBy == CollectionSortBy.DateAddedAsc)
             {
@@ -128,11 +128,11 @@ namespace IPNoticeHub.Services.Copyrights.Implementations
 
         public async Task<bool> RemoveAsync(string userId, Guid publicId, CancellationToken cancellationToken = default)
         {
-            CopyrightEntity? entity = await copyrights.GetByPublicIdAsync(publicId, asNoTracking : true, cancellationToken: cancellationToken);
+            CopyrightEntity? entity = await copyrightRepository.GetByPublicIdAsync(publicId, asNoTracking : true, cancellationToken: cancellationToken);
 
             if (entity is null) return false;
 
-            return await userCopyrights.SoftRemoveAsync(userId,entity.Id, cancellationToken);
+            return await userCopyrightRepository.SoftRemoveAsync(userId,entity.Id, cancellationToken);
         }
     }
 }

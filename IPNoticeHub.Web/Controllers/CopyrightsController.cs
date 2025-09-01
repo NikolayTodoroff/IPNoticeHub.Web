@@ -1,22 +1,22 @@
-﻿using IPNoticeHub.Common.EnumConstants; 
+﻿using IPNoticeHub.Common.EnumConstants;
+using IPNoticeHub.Common.Extensions;
 using IPNoticeHub.Services.Copyrights.Abstractions;
 using IPNoticeHub.Services.Copyrights.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
 using static IPNoticeHub.Common.ValidationConstants.StatusMessages;
-using IPNoticeHub.Common.Extensions;
 
 namespace IPNoticeHub.Web.Controllers
 {
     [Authorize(Policy = "HasUserId")]
     public sealed class CopyrightsController : Controller
     {
-        private readonly ICopyrightService service;
+        private readonly ICopyrightService copyrightService;
 
         public CopyrightsController(ICopyrightService service)
         {
-            this.service = service;
+            this.copyrightService = service;
         }
 
         [HttpGet]
@@ -25,7 +25,7 @@ namespace IPNoticeHub.Web.Controllers
         {
             if (!User.TryGetUserId(out var userId)) return Forbid();
 
-            var model = await service.GetUserCollectionAsync(
+            var model = await copyrightService.GetUserCollectionAsync(
                 userId, sortBy, currentPage, resultsPerPage, cancellationToken);
 
             ViewBag.SortBy = sortBy;
@@ -38,7 +38,7 @@ namespace IPNoticeHub.Web.Controllers
         {
             if (!User.TryGetUserId(out var userId)) return Forbid();
 
-            CopyrightDetailsDTO? model = await service.GetDetailsAsync(userId, id, cancellationToken);
+            CopyrightDetailsDTO? model = await copyrightService.GetDetailsAsync(userId, id, cancellationToken);
             
             if (model is null) return NotFound();
 
@@ -59,7 +59,7 @@ namespace IPNoticeHub.Web.Controllers
 
             if (!User.TryGetUserId(out var userId)) return Forbid();
 
-            Guid publicId = await service.CreateAsync(userId, dto, cancellationToken);
+            Guid publicId = await copyrightService.CreateAsync(userId, dto, cancellationToken);
 
             TempData["StatusMessage"] = CopyrightAddedMessage;
 
@@ -73,7 +73,7 @@ namespace IPNoticeHub.Web.Controllers
         {
             if (!User.TryGetUserId(out var userId)) return Forbid();
 
-            await service.RemoveAsync(userId, id, cancellationToken);
+            await copyrightService.RemoveAsync(userId, id, cancellationToken);
 
             TempData["StatusMessage"] = CopyrightRemovedMessage;
             return RedirectToLocal(returnUrl)

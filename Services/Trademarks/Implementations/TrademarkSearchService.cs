@@ -1,25 +1,26 @@
-﻿using IPNoticeHub.Common.AdditionalConfigurations;
+﻿using Microsoft.EntityFrameworkCore;
+
+using IPNoticeHub.Common.AdditionalConfigurations;
 using IPNoticeHub.Data.Entities.TrademarkRegistration;
 using IPNoticeHub.Data.Repositories.Trademarks.Abstractions;
 using IPNoticeHub.Services.Common;
 using IPNoticeHub.Services.Trademarks.Abstractions;
 using IPNoticeHub.Services.Trademarks.DTOs;
-using Microsoft.EntityFrameworkCore;
 
 namespace IPNoticeHub.Services.Trademarks.Implementations
 {
     public sealed class TrademarkSearchService : ITrademarkSearchService
     {
-        private readonly ITrademarkRepository trademarks;
+        private readonly ITrademarkRepository trademarkRepository;
 
         public TrademarkSearchService(ITrademarkRepository trademarks)
         {
-            this.trademarks = trademarks;
+            this.trademarkRepository = trademarks;
         }
 
         public async Task<TrademarkDetailsDTO?> GetDetailsAsync(Guid publicId, CancellationToken cancellationToken = default)
         {
-            var result = await trademarks.GetByPublicIdAsync(publicId, cancellationToken: cancellationToken);
+            var result = await trademarkRepository.GetByPublicIdAsync(publicId, cancellationToken: cancellationToken);
 
             if (result is null) return null;
 
@@ -57,7 +58,7 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
                 ExactMatch = filter.ExactMatch
             };
 
-            IOrderedQueryable<TrademarkEntity>? query = trademarks.
+            IOrderedQueryable<TrademarkEntity>? query = trademarkRepository.
                 Query(searchFilter, includeNav: false).
                 OrderBy(t => t.Wordmark).
                 ThenBy(t => t.Id);
