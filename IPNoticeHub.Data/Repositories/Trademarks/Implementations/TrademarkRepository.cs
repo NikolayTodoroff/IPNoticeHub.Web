@@ -41,7 +41,7 @@ namespace IPNoticeHub.Data.Repositories.Trademarks.Implementations
             return dbContext.TrademarkRegistrations.
                 AsNoTracking().
                 Where(t=>t.PublicId == publicId).
-                Select(t=>(int?)t.Id).
+                Select(t => (int?)t.Id).
                 FirstOrDefaultAsync(cancellationToken);
         }
 
@@ -57,12 +57,13 @@ namespace IPNoticeHub.Data.Repositories.Trademarks.Implementations
                 trademarksQuery = trademarksQuery.
                     Include(t => t.Classes).
                     Include(t => t.Events).
-                    AsSplitQuery(); 
+                    AsSplitQuery();
             }
 
             if (filter.Provider.HasValue)
             {
-                trademarksQuery = trademarksQuery.Where(t => t.Source == filter.Provider.Value);
+                trademarksQuery = trademarksQuery.
+                    Where(t => t.Source == filter.Provider.Value);
             }
 
             if (filter.Status.HasValue)
@@ -75,7 +76,8 @@ namespace IPNoticeHub.Data.Repositories.Trademarks.Implementations
             {
                 trademarksQuery = trademarksQuery.
                     Where(t => t.Classes
-                    .Any(c => filter.ClassNumbers.Contains(c.ClassNumber)));
+                    .Any(c => filter.ClassNumbers.
+                    Contains(c.ClassNumber)));
             }
 
             if (!string.IsNullOrWhiteSpace(filter.SearchTerm))

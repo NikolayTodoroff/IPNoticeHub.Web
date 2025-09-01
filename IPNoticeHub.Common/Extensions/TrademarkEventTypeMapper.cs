@@ -2,6 +2,10 @@
 
 namespace IPNoticeHub.Common.AdditionalConfigurations
 {
+    /// <summary>
+    /// Provides a mapping utility to convert raw event type codes into their corresponding enumeration values. 
+    /// This helps standardize and interpret raw event type codes received from external sources.
+    /// </summary>
     public static class TrademarkEventTypeMapper
     {
         public static TrademarkEventType MapFromRawEventType(string? rawCode)

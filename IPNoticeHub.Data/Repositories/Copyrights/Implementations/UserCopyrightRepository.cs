@@ -13,12 +13,12 @@ namespace IPNoticeHub.Data.Repositories.Copyrights.Implementations
 
         public async Task AddOrUndeleteAsync(string userId, int copyrightId, CancellationToken cancellationToken = default)
         {
-            var link = await dbContext.UserCopyrights
+            UserCopyright? collectionLink = await dbContext.UserCopyrights
                 .SingleOrDefaultAsync(uc => uc.ApplicationUserId == userId && uc.CopyrightRegistrationId == copyrightId, cancellationToken);
 
-            if (link is null)
+            if (collectionLink is null)
             {
-                link = new UserCopyright
+                collectionLink = new UserCopyright
                 {
                     ApplicationUserId = userId,
                     CopyrightRegistrationId = copyrightId,
@@ -26,12 +26,13 @@ namespace IPNoticeHub.Data.Repositories.Copyrights.Implementations
                     IsDeleted = false
                 };
 
-                await dbContext.UserCopyrights.AddAsync(link, cancellationToken);
+                await dbContext.UserCopyrights.AddAsync(collectionLink, cancellationToken);
             }
-            else if (link.IsDeleted)
+
+            else if (collectionLink.IsDeleted)
             {
-                link.IsDeleted = false;
-                link.DateAdded = DateTime.UtcNow;
+                collectionLink.IsDeleted = false;
+                collectionLink.DateAdded = DateTime.UtcNow;
             }
 
             await dbContext.SaveChangesAsync(cancellationToken);

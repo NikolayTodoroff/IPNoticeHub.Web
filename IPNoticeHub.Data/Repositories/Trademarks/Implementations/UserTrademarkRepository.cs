@@ -19,18 +19,17 @@ namespace IPNoticeHub.Data.Repositories.Trademarks.Implementations
         }
 
         /// <summary>
-        /// Adds a user-trademark link if it does not exist,
-        /// or undeletes it if it was previously soft-deleted.
+        /// Adds a user-trademark link if it does not exist, or undeletes it if it was previously soft-deleted.
         /// </summary>
         public async Task AddOrUndeleteAsync(string userId, int trademarkId, CancellationToken cancellationToken = default)
         {
-            var link = await dbContext.UserTrademarks.
+            UserTrademark? collectionLink = await dbContext.UserTrademarks.
                 FirstOrDefaultAsync(ut => ut.ApplicationUserId == userId && ut.TrademarkRegistrationId == trademarkId,
                     cancellationToken);
 
-            if (link == null)
+            if (collectionLink == null)
             {
-                await dbContext.UserTrademarks.AddAsync(new UserTrademark
+                await dbContext.UserTrademarks.AddAsync(new UserTrademark()
                 {
                     ApplicationUserId = userId,
                     TrademarkRegistrationId = trademarkId,
@@ -40,11 +39,11 @@ namespace IPNoticeHub.Data.Repositories.Trademarks.Implementations
                 }, cancellationToken);
             }
 
-            else if (link.IsDeleted)
+            else if (collectionLink.IsDeleted)
             {
-                link.IsDeleted = false;
-                link.AddedToWatchlist = true;
-                link.DateAdded = DateTime.UtcNow;
+                collectionLink.IsDeleted = false;
+                collectionLink.AddedToWatchlist = true;
+                collectionLink.DateAdded = DateTime.UtcNow;
             }
 
             await dbContext.SaveChangesAsync(cancellationToken);
@@ -61,8 +60,7 @@ namespace IPNoticeHub.Data.Repositories.Trademarks.Implementations
         }
 
         /// <summary>
-        /// Retrieves all trademarks currently linked to a user,
-        /// excluding soft-deleted associations.
+        /// Retrieves all trademarks currently linked to a user, excluding soft-deleted associations.
         /// </summary>
         public IQueryable<TrademarkEntity> QueryUserCollection(string userId)
         {
@@ -86,22 +84,20 @@ namespace IPNoticeHub.Data.Repositories.Trademarks.Implementations
 
         /// <summary>
         /// Marks the association between a user and a trademark as soft-deleted.
+        /// Returns True if the link was active and is now soft-deleted, or false if it did not exist or was already deleted.
         /// </summary>
-        /// True if the link was active and is now soft-deleted, 
-        /// or false if it did not exist or was already deleted.
-        /// </returns>
         public async Task<bool> SoftRemoveAsync(string userId, int trademarkId, CancellationToken cancellationToken = default)
         {
-            var link = await dbContext.UserTrademarks
+            UserTrademark? collectionLink = await dbContext.UserTrademarks
                 .FirstOrDefaultAsync(ut => ut.ApplicationUserId == userId &&
                 ut.TrademarkRegistrationId == trademarkId, cancellationToken);
 
-            if (link == null || link.IsDeleted)
+            if (collectionLink == null || collectionLink.IsDeleted)
             {
                 return false;
             }             
 
-            link.IsDeleted = true;
+            collectionLink.IsDeleted = true;
             await dbContext.SaveChangesAsync(cancellationToken);
             return true;
         }

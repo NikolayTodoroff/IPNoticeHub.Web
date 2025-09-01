@@ -93,14 +93,15 @@ namespace IPNoticeHub.Web.Controllers
         private IActionResult CreateEmptyViewModel(TrademarkFilterViewModel filter)
         {
             ViewBag.HasSearch = false;
-            var emptyPageDTO = new PagedResult<TrademarkSummaryDTO>
+            PagedResult<TrademarkSummaryDTO>? emptyPageDTO = new PagedResult<TrademarkSummaryDTO>
             {
                 Results = Array.Empty<TrademarkSummaryDTO>(),
                 ResultsCount = 0,
                 CurrentPage = filter.CurrentPage,
                 ResultsCountPerPage = filter.ResultsPerPage
             };
-            var viewModel = TrademarksIndexDtoToVmMapper.MapToIndexViewModel(filter, emptyPageDTO);
+
+            TrademarksIndexViewModel? viewModel = TrademarksIndexDtoToVmMapper.MapToIndexViewModel(filter, emptyPageDTO);
             return View(viewModel);
         }
         private static TrademarkFilterDTO CreateNormalizedFilterDTO(TrademarkFilterViewModel filter, string searchTerm)
@@ -122,7 +123,10 @@ namespace IPNoticeHub.Web.Controllers
         private IActionResult? RedirectToLocal(string? returnUrl)
         {
             if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+            {
                 return Redirect(returnUrl);
+            }       
+
             return null;
         }
     }

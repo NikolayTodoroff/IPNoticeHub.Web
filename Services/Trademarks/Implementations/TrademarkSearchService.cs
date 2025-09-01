@@ -20,27 +20,25 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
 
         public async Task<TrademarkDetailsDTO?> GetDetailsAsync(Guid publicId, CancellationToken cancellationToken = default)
         {
-            var result = await trademarkRepository.GetByPublicIdAsync(publicId, cancellationToken: cancellationToken);
+            TrademarkEntity? entity = await trademarkRepository.GetByPublicIdAsync(publicId, cancellationToken: cancellationToken);
 
-            if (result is null) return null;
+            if (entity is null) return null;
 
             return new TrademarkDetailsDTO
             {
-                PublicId = result.PublicId,
-                Wordmark = result.Wordmark,
-                Owner = result.Owner,
-                SourceId = result.SourceId,
-                RegistrationNumber = result.RegistrationNumber,
-                Status = result.StatusCategory,
-                FilingDate = result.FilingDate,
-                RegistrationDate = result.RegistrationDate,
-                MarkImageUrl = result.MarkImageUrl,
-                Provider = result.Source,
-                Classes = result.Classes.Select(c => c.ClassNumber).ToList(),
-                Events = result.Events.
-                     OrderByDescending(e => e.EventDate).
-                     Select(e => (e.EventDate, e.Code, e.Description)).
-                     ToList()
+                PublicId = entity.PublicId,
+                Wordmark = entity.Wordmark,
+                Owner = entity.Owner,
+                SourceId = entity.SourceId,
+                RegistrationNumber = entity.RegistrationNumber,
+                Status = entity.StatusCategory,
+                FilingDate = entity.FilingDate,
+                RegistrationDate = entity.RegistrationDate,
+                MarkImageUrl = entity.MarkImageUrl,
+                Provider = entity.Source,
+                Classes = entity.Classes.Select(c => c.ClassNumber).ToList(),
+                Events = entity.Events.OrderByDescending(e => e.EventDate).
+                     Select(e => (e.EventDate, e.Code, e.Description)).ToList()
             };
         }
 

@@ -24,7 +24,7 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
 
         public async Task AddAsync(string userId, int trademarkId, CancellationToken cancellationToken = default)
         {
-            var exists = await trademarkRepository.ExistsAsync(trademarkId, cancellationToken);
+            bool exists = await trademarkRepository.ExistsAsync(trademarkId, cancellationToken);
 
             if (!exists) return;
 
@@ -72,31 +72,31 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
         {
             var (normalizedPage, normalizedPageSize) = PagingConfiguration.NormalizePaging(currentPage, resultsPerPage);
 
-            IQueryable<UserTrademark>? links = userTrademarkRepository.QueryUserLinks(userId);
+            IQueryable<UserTrademark>? collectionLinks = userTrademarkRepository.QueryUserLinks(userId);
 
             if (sortBy == CollectionSortBy.DateAddedAsc)
             {
-                links = links.OrderBy(l => l.DateAdded);
+                collectionLinks = collectionLinks.OrderBy(l => l.DateAdded);
             }
 
             else if (sortBy == CollectionSortBy.WordmarkAsc)
             {
-                links = links.OrderBy(l => l.TrademarkRegistration.Wordmark);
+                collectionLinks = collectionLinks.OrderBy(l => l.TrademarkRegistration.Wordmark);
             }
 
             else if (sortBy == CollectionSortBy.WordmarkDesc)
             {
-                links = links.OrderByDescending(l => l.TrademarkRegistration.Wordmark);
+                collectionLinks = collectionLinks.OrderByDescending(l => l.TrademarkRegistration.Wordmark);
             }
 
             else
             {
-                links = links.OrderByDescending(l => l.DateAdded);
+                collectionLinks = collectionLinks.OrderByDescending(l => l.DateAdded);
             }
 
-            int resultsCount = await links.AsNoTracking().CountAsync(cancellationToken);
+            int resultsCount = await collectionLinks.AsNoTracking().CountAsync(cancellationToken);
 
-            List<TrademarkSummaryDTO>? results = await links.
+            List<TrademarkSummaryDTO>? results = await collectionLinks.
                 AsNoTracking().
                 Skip((normalizedPage - 1) * normalizedPageSize).
                 Take(normalizedPageSize).

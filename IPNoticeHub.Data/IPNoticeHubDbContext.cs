@@ -3,7 +3,6 @@ using IPNoticeHub.Data.Entities.CopyrightRegistration;
 using IPNoticeHub.Data.Entities.TrademarkRegistration;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Emit;
 
 namespace IPNoticeHub.Data
 {
@@ -12,7 +11,6 @@ namespace IPNoticeHub.Data
         public IPNoticeHubDbContext(DbContextOptions<IPNoticeHubDbContext> options) : base(options)
         {
         }
-
         public DbSet<TrademarkEntity> TrademarkRegistrations { get; set; }
         public DbSet<TrademarkEvent> TrademarkEvents { get; set; }
         public DbSet<CopyrightEntity> CopyrightRegistrations { get; set; }
@@ -33,8 +31,6 @@ namespace IPNoticeHub.Data
                 HasIndex(c => c.RegistrationNumber).
                 IsUnique();
 
-
-
             // Define composite primary key for UserTrademark entity
             builder.Entity<UserTrademark>().
                 HasKey(ut => new { ut.ApplicationUserId, ut.TrademarkRegistrationId });
@@ -52,7 +48,6 @@ namespace IPNoticeHub.Data
                 WithMany(t => t.UserTrademarks).
                 HasForeignKey(ut => ut.TrademarkRegistrationId).
                 OnDelete(DeleteBehavior.Restrict);
-
 
             // Define composite primary key for UserCopyright entity
             builder.Entity<UserCopyright>().
