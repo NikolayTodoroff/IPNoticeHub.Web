@@ -90,7 +90,8 @@ namespace IPNoticeHub.Data.Repositories.Trademarks.Implementations
                      trademarksQuery = exact ?
                         trademarksQuery.Where(t => t.Wordmark == searchTerm) :
                         trademarksQuery.Where(t => t.Wordmark.Contains(searchTerm));
-                }
+                }
+
                 else if (filter.SearchBy == TrademarkSearchBy.Owner)
                 {
                     trademarksQuery = exact ?

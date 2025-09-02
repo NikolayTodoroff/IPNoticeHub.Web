@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPNoticeHub.Common", "IPNot
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPNoticeHub.Services", "Services\IPNoticeHub.Services.csproj", "{30217C15-D12B-41CC-85F1-13B2CB66D0B6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPNoticeHub.Tests", "IPNoticeHub.Tests\IPNoticeHub.Tests.csproj", "{65E47B5A-D513-45B6-B179-21FE5F2CC700}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{30217C15-D12B-41CC-85F1-13B2CB66D0B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{30217C15-D12B-41CC-85F1-13B2CB66D0B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{30217C15-D12B-41CC-85F1-13B2CB66D0B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65E47B5A-D513-45B6-B179-21FE5F2CC700}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65E47B5A-D513-45B6-B179-21FE5F2CC700}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65E47B5A-D513-45B6-B179-21FE5F2CC700}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65E47B5A-D513-45B6-B179-21FE5F2CC700}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
