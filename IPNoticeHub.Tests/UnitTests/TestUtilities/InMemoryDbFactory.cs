@@ -14,55 +14,50 @@ namespace IPNoticeHub.Tests.TestUtilities
         /// <summary>
         /// Creates an in-memory database context for testing purposes.
         /// </summary>
-        public static IPNoticeHubDbContext Create(string? dbName = null)
+        public static IPNoticeHubDbContext CreateTestDbContext(string? dbName = null)
         {
             DbContextOptions<IPNoticeHubDbContext>? options = new DbContextOptionsBuilder<IPNoticeHubDbContext>()
                 .UseInMemoryDatabase(dbName ?? Guid.NewGuid().ToString())
                 .EnableSensitiveDataLogging()
                 .Options;
 
-            IPNoticeHubDbContext? ctx = new IPNoticeHubDbContext(options);
-            ctx.Database.EnsureCreated();
-            return ctx;
+            IPNoticeHubDbContext? testDbContext = new IPNoticeHubDbContext(options);
+            testDbContext.Database.EnsureCreated();
+            return testDbContext;
         }
 
         /// <summary>
         /// Creates a TrademarkEntity and its associated classes for testing purposes.
         /// </summary>
         public static (TrademarkEntity trademarkEntity, List<TrademarkClassAssignment> trademarkClasses) CreateTrademark(
-            int id,
-            string wordmark,
-            string owner,
-            string? regNumber,
-            TrademarkStatusCategory status = TrademarkStatusCategory.Pending,
-            DataProvider source = DataProvider.USPTO,
-            params int[] classNumbers)
+            string wordmark, string owner, string? regNumber, TrademarkStatusCategory status = TrademarkStatusCategory.Pending,
+            DataProvider source = DataProvider.USPTO, DateTime? filingDate = null, params int[] classNumbers)
         {
             TrademarkEntity? trademarkEntity = new TrademarkEntity
-            {
-                Id = id,
+            {               
                 PublicId = Guid.NewGuid(),
                 Wordmark = wordmark,
                 Owner = owner,
                 RegistrationNumber = regNumber,
-                GoodsAndServices = "Dummy goods and services",
+                GoodsAndServices = "Test goods and services",
                 StatusCategory = status,
                 Source = source,
-                FilingDate = DateTime.UtcNow.Date,
+                FilingDate = filingDate ?? DateTime.UtcNow.Date              
             };
 
-            List<TrademarkClassAssignment>? trademarksList = new List<TrademarkClassAssignment>();
-            foreach (var classNumber in classNumbers)
+            List<TrademarkClassAssignment>? trademarkClassesList = new List<TrademarkClassAssignment>();
+
+            foreach (int classNumber in classNumbers ?? Array.Empty<int>())
             {
-                trademarksList.Add(new TrademarkClassAssignment
+                trademarkClassesList.Add(new TrademarkClassAssignment
                 {
                     ClassNumber = classNumber,
                     TrademarkRegistration = trademarkEntity
                 });
             }
 
-            trademarkEntity.Classes = trademarksList;
-            return (trademarkEntity, trademarksList);
+            trademarkEntity.Classes = trademarkClassesList;
+            return (trademarkEntity, trademarkClassesList);
         }
 
         /// <summary>
@@ -73,7 +68,7 @@ namespace IPNoticeHub.Tests.TestUtilities
             return new ApplicationUser
             {
                 Id = id,
-                UserName = "tester@example.com",
+                UserName = "testerUserName",
                 Email = "tester@example.com"
             };
         }

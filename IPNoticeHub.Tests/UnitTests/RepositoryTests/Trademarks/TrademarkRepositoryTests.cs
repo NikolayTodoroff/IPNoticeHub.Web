@@ -1,9 +1,11 @@
-﻿using System.Linq;
-using FluentAssertions;
-using NUnit.Framework;
+﻿using FluentAssertions;
 using IPNoticeHub.Common.EnumConstants;
-using IPNoticeHub.Tests.TestUtilities;
+using IPNoticeHub.Data.Entities.TrademarkRegistration;
+using IPNoticeHub.Data.Repositories.Trademarks.Abstractions;
 using IPNoticeHub.Data.Repositories.Trademarks.Implementations;
+using IPNoticeHub.Tests.TestUtilities;
+using NUnit.Framework;
+using System.Linq;
 
 namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks
 {
@@ -11,25 +13,30 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks
     public class TrademarkRepositoryTests
     {
         [Test]
-        public void Query_ByWordmark_ContainsVsExact_Works()
+        public void QueryRepository_FilterByWordmark_HandlesContainsAndExactMatchCorrectly()
         {
-            using var ctx = InMemoryDbFactory.Create();
-            var (a, _) = InMemoryDbFactory.MakeTrademark(1, "ZENWAVE", "Zen Corp", "123", TrademarkStatusCategory.Registered, DataProvider.USPTO, 25);
-            var (b, _) = InMemoryDbFactory.MakeTrademark(2, "ZEN", "Zen Labs", "456", TrademarkStatusCategory.Pending, DataProvider.USPTO, 30);
-            ctx.TrademarkRegistrations.AddRange(a, b);
-            ctx.SaveChanges();
+            using var testdbContext = InMemoryDbFactory.CreateTestDbContext();
 
-            var repo = new TrademarkRepository(ctx);
+            var (entity1, _) = InMemoryDbFactory.CreateTrademark(wordmark: "ZENWAVE", owner: "Zen Corp", regNumber: "123", status: TrademarkStatusCategory.Registered, source: DataProvider.USPTO, classNumbers: new[] { 25 });
+            var (entity2, _) = InMemoryDbFactory.CreateTrademark(wordmark: "ZEN", owner: "Zen Labs", regNumber: "456", status: TrademarkStatusCategory.Pending, source: DataProvider.USPTO, classNumbers: new[] { 30 });
 
-            var contains = repo.Query(new TrademarkSearchFilter { SearchBy = TrademarkSearchBy.Wordmark, SearchTerm = "ZEN", ExactMatch = false })
-                               .Select(t => t.Wordmark).ToArray();
-            contains.Should().BeEquivalentTo(new[] { "ZENWAVE", "ZEN" });
+            testdbContext.TrademarkRegistrations.AddRange(entity1, entity2);
 
-            var exact = repo.Query(new TrademarkSearchFilter { SearchBy = TrademarkSearchBy.Wordmark, SearchTerm = "ZEN", ExactMatch = true })
+            testdbContext.SaveChanges();
+
+            TrademarkRepository? testTrademarkRepository = new TrademarkRepository(testdbContext);
+
+            string[]? existingEntities = testTrademarkRepository.
+                Query(new TrademarkSearchFilter { SearchBy = TrademarkSearchBy.Wordmark, SearchTerm = "ZEN", ExactMatch = false }).
+                Select(t => t.Wordmark).
+                ToArray();
+
+            existingEntities.Should().BeEquivalentTo(new[] { "ZENWAVE", "ZEN" });
+
+            string[]? exact = testTrademarkRepository.Query(new TrademarkSearchFilter { SearchBy = TrademarkSearchBy.Wordmark, SearchTerm = "ZEN", ExactMatch = true })
                             .Select(t => t.Wordmark).ToArray();
+
             exact.Should().Equal(new[] { "ZEN" });
         }
-
-
     }
 }
