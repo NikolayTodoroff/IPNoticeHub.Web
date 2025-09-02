@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Common.EnumConstants;
+using IPNoticeHub.Data;
 using IPNoticeHub.Data.Entities.TrademarkRegistration;
 using IPNoticeHub.Data.Repositories.Trademarks.Abstractions;
 using IPNoticeHub.Data.Repositories.Trademarks.Implementations;
@@ -15,28 +16,48 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks
         [Test]
         public void QueryRepository_FilterByWordmark_HandlesContainsAndExactMatchCorrectly()
         {
-            using var testdbContext = InMemoryDbFactory.CreateTestDbContext();
+            // Arrange: Set up the in-memory database and seed it with test data
+            using IPNoticeHubDbContext? dbContext = TestDbContextFactory.CreateTestDbContext();
 
-            var (entity1, _) = InMemoryDbFactory.CreateTrademark(wordmark: "ZENWAVE", owner: "Zen Corp", regNumber: "123", status: TrademarkStatusCategory.Registered, source: DataProvider.USPTO, classNumbers: new[] { 25 });
-            var (entity2, _) = InMemoryDbFactory.CreateTrademark(wordmark: "ZEN", owner: "Zen Labs", regNumber: "456", status: TrademarkStatusCategory.Pending, source: DataProvider.USPTO, classNumbers: new[] { 30 });
+            var (firstTrademark, _) = TestDbContextFactory.CreateTrademark(
+                wordmark: "FIRSTWAVE",
+                owner: "Alan Smith",
+                regNumber: "1234567",
+                status: TrademarkStatusCategory.Registered,
+                source: DataProvider.USPTO,
+                classNumbers: new[] { 25 });
 
-            testdbContext.TrademarkRegistrations.AddRange(entity1, entity2);
+            var (secondTrademark, _) = TestDbContextFactory.CreateTrademark(
+                wordmark: "Second Tower",
+                owner: "Buddha Park Ltd",
+                regNumber: "7654321",
+                status: TrademarkStatusCategory.Pending,
+                source: DataProvider.USPTO,
+                classNumbers: new[] { 30 });
 
-            testdbContext.SaveChanges();
+            dbContext.TrademarkRegistrations.AddRange(firstTrademark, secondTrademark);
+            dbContext.SaveChanges();
 
-            TrademarkRepository? testTrademarkRepository = new TrademarkRepository(testdbContext);
+            TrademarkRepository? repository = new TrademarkRepository(dbContext);
 
-            string[]? existingEntities = testTrademarkRepository.
-                Query(new TrademarkSearchFilter { SearchBy = TrademarkSearchBy.Wordmark, SearchTerm = "ZEN", ExactMatch = false }).
-                Select(t => t.Wordmark).
-                ToArray();
+            // Act: Perform the query operations with the specified filters
+            var exactMatchResult = repository.Query(new TrademarkSearchFilter()
+            {
+                SearchBy = TrademarkSearchBy.Wordmark,
+                SearchTerm = "Second Tower",
+                ExactMatch = true
+            }).Select(t => t.Wordmark).ToArray();
 
-            existingEntities.Should().BeEquivalentTo(new[] { "ZENWAVE", "ZEN" });
+            var containsResult = repository.Query(new TrademarkSearchFilter()
+            {
+                SearchBy = TrademarkSearchBy.Wordmark,
+                SearchTerm = "FIRST",
+                ExactMatch = false
+            }).Select(t => t.Wordmark).ToArray();
 
-            string[]? exact = testTrademarkRepository.Query(new TrademarkSearchFilter { SearchBy = TrademarkSearchBy.Wordmark, SearchTerm = "ZEN", ExactMatch = true })
-                            .Select(t => t.Wordmark).ToArray();
-
-            exact.Should().Equal(new[] { "ZEN" });
+            // Assert: Verify that the results match the expected output
+            exactMatchResult.Should().Equal("Second Tower");
+            containsResult.Should().Equal("FIRSTWAVE");
         }
     }
 }

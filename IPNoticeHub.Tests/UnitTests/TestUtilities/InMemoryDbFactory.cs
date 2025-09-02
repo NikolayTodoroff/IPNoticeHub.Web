@@ -9,7 +9,7 @@ namespace IPNoticeHub.Tests.TestUtilities
     /// <summary>
     /// Provides utility methods for creating in-memory database contexts and test data for unit tests.
     /// </summary>
-    public static class InMemoryDbFactory
+    public static class TestDbContextFactory
     {
         /// <summary>
         /// Creates an in-memory database context for testing purposes.
