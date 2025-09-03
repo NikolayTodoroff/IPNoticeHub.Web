@@ -3,6 +3,7 @@ using IPNoticeHub.Data.Entities.CopyrightRegistration;
 using IPNoticeHub.Data.Entities.TrademarkRegistration;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 
 namespace IPNoticeHub.Data
 {
@@ -34,6 +35,10 @@ namespace IPNoticeHub.Data
             // Define composite primary key for UserTrademark entity
             builder.Entity<UserTrademark>().
                 HasKey(ut => new { ut.ApplicationUserId, ut.TrademarkRegistrationId });
+
+            // Adding indexes to improve query performance for RegistrationNumber and SourceId in TrademarkEntity
+            builder.Entity<TrademarkEntity>().HasIndex(t => t.RegistrationNumber);
+            builder.Entity<TrademarkEntity>().HasIndex(t => t.SourceId);
 
             // Configure relationship between UserTrademark and ApplicationUser
             builder.Entity<UserTrademark>().

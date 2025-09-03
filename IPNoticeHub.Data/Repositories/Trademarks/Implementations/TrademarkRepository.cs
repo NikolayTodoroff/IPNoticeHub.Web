@@ -2,6 +2,8 @@
 using IPNoticeHub.Data.Entities.TrademarkRegistration;
 using IPNoticeHub.Data.Repositories.Trademarks.Abstractions;
 using Microsoft.EntityFrameworkCore;
+using static IPNoticeHub.Common.Extensions.SearchNumberNormalizer;
+
 
 namespace IPNoticeHub.Data.Repositories.Trademarks.Implementations
 {
@@ -82,32 +84,91 @@ namespace IPNoticeHub.Data.Repositories.Trademarks.Implementations
 
             if (!string.IsNullOrWhiteSpace(filter.SearchTerm))
             {
-                string searchTerm = filter.SearchTerm.Trim();
+                string searchTerm = filter.SearchTerm.Trim().ToUpperInvariant();
                 bool exact = filter.ExactMatch;
 
                 if (filter.SearchBy == TrademarkSearchBy.Wordmark)
                 {
-                     trademarksQuery = exact ?
-                        trademarksQuery.Where(t => t.Wordmark == searchTerm) :
-                        trademarksQuery.Where(t => t.Wordmark.Contains(searchTerm));
+                    trademarksQuery = exact ? trademarksQuery.Where(t => (t.Wordmark ?? "").ToUpper() == searchTerm) :
+                       trademarksQuery.Where(t => (t.Wordmark ?? "").ToUpper().Contains(searchTerm));
                 }
 
                 else if (filter.SearchBy == TrademarkSearchBy.Owner)
                 {
-                    trademarksQuery = exact ?
-                        trademarksQuery.Where(t => t.Owner == searchTerm) :
-                        trademarksQuery.Where(t => t.Owner != null && t.Owner.Contains(searchTerm));
+                    trademarksQuery = exact ? trademarksQuery.Where(t => (t.Owner ?? "").ToUpper() == searchTerm) :
+                      trademarksQuery.Where(t => (t.Owner ?? "").ToUpper().Contains(searchTerm));
                 }
 
                 else if (filter.SearchBy == TrademarkSearchBy.Number)
                 {
-                    trademarksQuery = exact ?
-                        trademarksQuery.Where(t => t.RegistrationNumber == searchTerm) :
-                        trademarksQuery.Where(t => t.RegistrationNumber != null && t.RegistrationNumber.Contains(searchTerm));
+                    string normalizedSearchTerm = NormalizeSearchNumber(filter.SearchTerm);
+                 
+                        if (filter.ExactMatch)
+                        {
+                            trademarksQuery = ApplyNormalizedSearchFilter(trademarksQuery, normalizedSearchTerm, true);
+                        }
+
+                        else
+                        {
+                            trademarksQuery = ApplyNormalizedSearchFilter(trademarksQuery, normalizedSearchTerm, false);
+                        }                     
                 }
             }
 
             return trademarksQuery.AsNoTracking();
+        }
+
+        /// <summary>
+        /// Applies a normalized search filter to the provided trademark query based on the given search term.
+        /// </summary>
+        private static IQueryable<TrademarkEntity> ApplyNormalizedSearchFilter(IQueryable<TrademarkEntity> query,
+            string normalizedSearchTerm, bool exactMatch)
+        {
+            if (exactMatch)
+            {
+                return query.Where(trademark =>
+                    ((trademark.RegistrationNumber ?? "")
+                        .Replace("-", "")
+                        .Replace("/", "")
+                        .Replace(" ", "")
+                        .Replace(".", "")
+                        .Replace("_", "")
+                        .ToUpper()) == normalizedSearchTerm
+
+                    ||
+
+                    ((trademark.SourceId ?? "")
+                        .Replace("-", "")
+                        .Replace("/", "")
+                        .Replace(" ", "")
+                        .Replace(".", "")
+                        .Replace("_", "")
+                        .ToUpper()) == normalizedSearchTerm
+                );
+            }
+
+            else
+            {
+                return query.Where(trademark =>
+                    ((trademark.RegistrationNumber ?? "")
+                        .Replace("-", "")
+                        .Replace("/", "")
+                        .Replace(" ", "")
+                        .Replace(".", "")
+                        .Replace("_", "")
+                        .ToUpper()).Contains(normalizedSearchTerm)
+
+                    ||
+
+                    ((trademark.SourceId ?? "")
+                        .Replace("-", "")
+                        .Replace("/", "")
+                        .Replace(" ", "")
+                        .Replace(".", "")
+                        .Replace("_", "")
+                        .ToUpper()).Contains(normalizedSearchTerm)
+                );
+            }
         }
     }
 }
