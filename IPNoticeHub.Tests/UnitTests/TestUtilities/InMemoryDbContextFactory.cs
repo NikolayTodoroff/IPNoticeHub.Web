@@ -15,18 +15,17 @@ namespace IPNoticeHub.Tests.TestUtilities
         /// <summary>
         /// Creates a clean in-memory database context for testing purposes.
         /// </summary>
-        public static IPNoticeHubDbContext CreateTestDbContext(string? dbContextName = null, bool clearSeed = true)
+        public static IPNoticeHubDbContext CreateTestDbContext(string? dbContextName = null)
         {
             DbContextOptions<IPNoticeHubDbContext>? options = new DbContextOptionsBuilder<IPNoticeHubDbContext>()
                 .UseInMemoryDatabase(dbContextName ?? Guid.NewGuid().ToString())
                 .EnableSensitiveDataLogging()
                 .Options;
 
+            IPNoticeHubDbContext.DisableSeedData = true;
+
             var testDbContext = new IPNoticeHubDbContext(options);
             testDbContext.Database.EnsureCreated();
-
-            if (clearSeed)
-                ClearAllData(testDbContext);
 
             return testDbContext;
         }
@@ -76,42 +75,6 @@ namespace IPNoticeHub.Tests.TestUtilities
                 UserName = "testerUserName",
                 Email = "tester@example.com"
             };
-        }
-
-        /// <summary>
-        /// Removes all rows from all mapped DbSets in the provided DbContext.
-        /// Ensures that tests start with a clean slate, even if the model includes HasData seeding.
-        /// </summary>
-        private static void ClearAllData(IPNoticeHubDbContext testDbContext)
-        {
-            // Clear the change tracker to avoid tracking issues during data removal
-            testDbContext.ChangeTracker.Clear();
-
-            // Retrieve the generic DbContext.Set<TEntity>() method for accessing DbSets dynamically
-            MethodInfo? setMethod = typeof(DbContext).GetMethod(nameof(DbContext.Set), Type.EmptyTypes)!;
-
-            // Iterate through all entity types in the model, excluding owned types
-            foreach (var entityType in testDbContext.Model.GetEntityTypes().Where(t => !t.IsOwned()))
-            {
-                var clrType = entityType.ClrType; // Get the CLR type of the entity
-                if (clrType == null) continue;
-
-                // Dynamically invoke Set<TEntity>() to get the DbSet for the entity type
-                var genericSet = setMethod.MakeGenericMethod(clrType).Invoke(testDbContext, null)!;
-
-                // Treat the dynamically retrieved DbSet as an IQueryable for enumeration
-                var queryable = (IQueryable)genericSet;
-
-                // Convert the IQueryable to a list of objects representing all rows in the DbSet
-                var entities = queryable.Cast<object>().ToList();
-
-                // Remove all entities from the DbSet if any exist
-                if (entities.Count > 0)
-                    testDbContext.RemoveRange(entities);
-            }
-
-            testDbContext.SaveChanges();
-            testDbContext.ChangeTracker.Clear();
         }
     }
 }

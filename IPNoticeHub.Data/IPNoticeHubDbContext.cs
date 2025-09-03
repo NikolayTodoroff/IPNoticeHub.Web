@@ -18,6 +18,8 @@ namespace IPNoticeHub.Data
         public DbSet<UserTrademark> UserTrademarks { get; set; }
         public DbSet<UserCopyright> UserCopyrights { get; set; }
 
+
+        public static bool DisableSeedData { get; set; } = false;
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -88,7 +90,10 @@ namespace IPNoticeHub.Data
                 IsUnique();
 
             //Only seed in Debug builds (not in production)
-            Seed.FakeDataSeeder.Seed(builder);
+            if (!DisableSeedData)
+            {
+                Seed.FakeDataSeeder.Seed(builder);
+            }  
         }
     }
 }
