@@ -3,7 +3,6 @@ using IPNoticeHub.Data.Entities.CopyrightRegistration;
 using IPNoticeHub.Data.Entities.TrademarkRegistration;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Emit;
 
 namespace IPNoticeHub.Data
 {
@@ -18,8 +17,7 @@ namespace IPNoticeHub.Data
         public DbSet<UserTrademark> UserTrademarks { get; set; }
         public DbSet<UserCopyright> UserCopyrights { get; set; }
 
-
-        public static bool DisableSeedData { get; set; } = false;
+        
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -89,11 +87,27 @@ namespace IPNoticeHub.Data
                 HasIndex(x => new { x.ApplicationUserId, x.CopyrightRegistrationId }).
                 IsUnique();
 
-            //Only seed in Debug builds (not in production)
-            if (!DisableSeedData)
+            // Only seed data if not disabled by an environment variable AND the database is not an in-memory or SQLite test database.
+
+            bool disableSeeding = Environment.GetEnvironmentVariable("IPNOTICEHUB_DISABLE_SEED") == "1";
+
+            if (disableSeeding)
             {
+                Console.WriteLine("[DbContext] Seeding disabled via environment variable (IPNOTICEHUB_DISABLE_SEED=1).");
+            }
+            else if (Database.ProviderName == "Microsoft.EntityFrameworkCore.InMemory")
+            {
+                Console.WriteLine("[DbContext] Seeding skipped (InMemory provider detected).");
+            }
+            else if (Database.ProviderName == "Microsoft.EntityFrameworkCore.Sqlite")
+            {
+                Console.WriteLine("[DbContext] Seeding skipped (SQLite provider detected).");
+            }
+            else
+            {
+                Console.WriteLine("[DbContext] Running seed data (real relational provider).");
                 Seed.FakeDataSeeder.Seed(builder);
-            }  
+            }
         }
     }
 }

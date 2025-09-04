@@ -20,9 +20,7 @@ namespace IPNoticeHub.Tests.TestUtilities
             DbContextOptions<IPNoticeHubDbContext>? options = new DbContextOptionsBuilder<IPNoticeHubDbContext>()
                 .UseInMemoryDatabase(dbContextName ?? Guid.NewGuid().ToString())
                 .EnableSensitiveDataLogging()
-                .Options;
-
-            IPNoticeHubDbContext.DisableSeedData = true;
+                .Options;          
 
             var testDbContext = new IPNoticeHubDbContext(options);
             testDbContext.Database.EnsureCreated();
