@@ -6,7 +6,7 @@ namespace IPNoticeHub.Data.Repositories.Trademarks.Abstractions
     {
         IQueryable<TrademarkEntity> Query(TrademarkSearchFilter filter, bool includeNav = false);
 
-        Task<TrademarkEntity?> GetByPublicIdAsync(Guid publicId, CancellationToken cancellationToken, bool asNoTracking = true);
+        Task<TrademarkEntity?> GetByPublicIdAsync(Guid publicId, bool asNoTracking = true, CancellationToken cancellationToken=default);
 
         Task<int?> GetIdByPublicIdAsync(Guid publicId, CancellationToken cancellationToken);
 

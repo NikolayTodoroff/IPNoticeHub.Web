@@ -23,7 +23,7 @@ namespace IPNoticeHub.Data.Repositories.Trademarks.Implementations
                 AnyAsync(t => t.Id == id, cancellationToken);
         }
 
-        public async Task<TrademarkEntity?> GetByPublicIdAsync(Guid publicId, CancellationToken cancellationToken, bool asNoTracking = true)
+        public async Task<TrademarkEntity?> GetByPublicIdAsync(Guid publicId, bool asNoTracking = true, CancellationToken cancellationToken=default)
         {
             var trademarksQuery = dbContext.TrademarkRegistrations.
                Include(t => t.Classes).
