@@ -153,7 +153,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks
         }
 
         [Test]
-        public async void ExistsAsync_Throws_WhenCancellationRequested()
+        public async Task ExistsAsync_Throws_WhenCancellationRequested()
         {
             using var testDbContext = InMemoryDbContextFactory.CreateTestDbContext();
             var trademarkRepository = new TrademarkRepository(testDbContext);
@@ -161,8 +161,8 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks
             using var cancellationToken = new CancellationTokenSource();
             cancellationToken.Cancel();
 
-            await trademarkRepository.Invoking(r => r.ExistsAsync(1, cancellationToken.Token)).
-                Should(). ThrowAsync<OperationCanceledException>();
+            await trademarkRepository.Invoking(r => r.ExistsAsync(id: 1, cancellationToken.Token))
+                .Should().ThrowAsync<OperationCanceledException>();
         }
     }
 }
