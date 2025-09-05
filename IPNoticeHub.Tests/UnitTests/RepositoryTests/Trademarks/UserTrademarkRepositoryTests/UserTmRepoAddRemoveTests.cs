@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Common.EnumConstants;
 using IPNoticeHub.Data;
+using IPNoticeHub.Data.Entities.ApplicationUser;
 using IPNoticeHub.Data.Repositories.Trademarks.Implementations;
 using IPNoticeHub.Tests.TestUtilities;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,10 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.UserTrademarkRe
     /// - Inserts a new link when none exists (active, not deleted).
     /// - Does not create duplicates on repeated calls when already active (idempotent).
     /// - When a soft-deleted link exists, it flips IsDeleted=false and refreshes
+    /// - Calling AddOrUndeleteAsync again on an already-active link does NOT create duplicates
+    ///   and does NOT modify DateAdded/AddedToWatchlist.
+    /// - When link is soft-deleted, calling AddOrUndeleteAsync sets IsDeleted=false and 
+    /// refreshes AddedToWatchlist=true and DateAdded to "now".
     /// Ensures that SoftRemove:
     /// - Returns true and flips IsDeleted=true when an active link exists.
     /// - Returns false when the link is missing or already soft-deleted (idempotent).
@@ -31,8 +36,8 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.UserTrademarkRe
             testDbContext.Users.Add(user);
 
             var (trademarkEntity, _) = InMemoryDbContextFactory.CreateTrademark(
-                wordmark: "ZEN",
-                owner: "Owner",
+                wordmark: "Spiritfarer",
+                owner: "Obama B.L.",
                 regNumber: "123",
                 TrademarkStatusCategory.Registered,
                 DataProvider.USPTO,
@@ -64,7 +69,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.UserTrademarkRe
 
             var (trademarkEntity, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "ZEN",
-                owner: "Owner",
+                owner: "Ruud G.",
                 regNumber: "123",
                 TrademarkStatusCategory.Registered,
                 DataProvider.USPTO,
@@ -96,9 +101,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.UserTrademarkRe
             testDbContext.Users.Add(user);
 
             var (trademarkEntity, _) = InMemoryDbContextFactory.CreateTrademark(
-                wordmark: "ZEN",
-                owner: "Owner",
-                regNumber: "123",
+                wordmark: "Seven Days Later",
+                owner: "Michael Owen",
+                regNumber: "1234567",
                 TrademarkStatusCategory.Registered,
                 DataProvider.USPTO);
 
@@ -118,5 +123,98 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.UserTrademarkRe
             bool failedRemovedLink = await userTmRepository.SoftRemoveAsync(user.Id, trademarkEntity.Id, CancellationToken.None);
             failedRemovedLink.Should().BeFalse("calling SoftRemove on an already-deleted link should be a no-op");
         }
+
+        [Test]
+        public async Task AddOrUndeleteAsync_IsIdempotent_WhenAlreadyActive_DoesNotChangeDateAdded()
+        {
+            using var testDbContext = InMemoryDbContextFactory.CreateTestDbContext();
+
+            var user = InMemoryDbContextFactory.CreateApplicationUser("user1");
+            testDbContext.Users.Add(user);
+
+            var (trademarkEntity, _) = InMemoryDbContextFactory.CreateTrademark(
+                wordmark: "Swinging Back",
+                owner: "The Chosen One",
+                regNumber: "1234567",
+                TrademarkStatusCategory.Registered, 
+                DataProvider.USPTO,
+                classNumbers: new[] { 25 });
+
+            testDbContext.TrademarkRegistrations.Add(trademarkEntity);
+            await testDbContext.SaveChangesAsync();
+
+            var userTmRepository = new UserTrademarkRepository(testDbContext);
+
+            await userTmRepository.AddOrUndeleteAsync(user.Id, trademarkEntity.Id, CancellationToken.None);
+
+            var userTmLink = await testDbContext.UserTrademarks
+                .SingleAsync(ut => ut.ApplicationUserId == user.Id && ut.TrademarkRegistrationId == trademarkEntity.Id);
+
+            DateTime initialDateAdded = userTmLink.DateAdded;
+            bool initialAddedFlag = userTmLink.AddedToWatchlist;
+
+            // Introduce a small delay to ensure timestamp precision and detect unintended updates
+            await Task.Delay(50);
+
+            // Attempting to add the same link again — should have no effect on an already active link 
+            await userTmRepository.AddOrUndeleteAsync(user.Id, trademarkEntity.Id, CancellationToken.None);
+
+            var queryLinksResult = await testDbContext.UserTrademarks
+                .Where(ut => ut.ApplicationUserId == user.Id && ut.TrademarkRegistrationId == trademarkEntity.Id)
+                .ToListAsync();
+
+            queryLinksResult.Count.Should().Be(1);
+
+            var singleQueryResult = queryLinksResult.Single();
+            singleQueryResult.IsDeleted.Should().BeFalse();
+            singleQueryResult.AddedToWatchlist.Should().Be(initialAddedFlag);
+            singleQueryResult.DateAdded.Should().Be(initialDateAdded);
+        }
+
+        [Test]
+        public async Task AddOrUndeleteAsync_UndeletesAndRefreshesFlagsAndDate()
+        {
+            using var testDbContext = InMemoryDbContextFactory.CreateTestDbContext();
+
+            var user = InMemoryDbContextFactory.CreateApplicationUser("user1");
+            testDbContext.Users.Add(user);
+
+            var (trademarkEntity, _) = InMemoryDbContextFactory.CreateTrademark(
+                wordmark: "Chimaira",
+                owner: "Default User",
+                regNumber: "1234567",
+                TrademarkStatusCategory.Registered,
+                DataProvider.USPTO,
+                classNumbers: new[] { 25 });
+
+            testDbContext.TrademarkRegistrations.Add(trademarkEntity);
+            await testDbContext.SaveChangesAsync();
+
+            var userTmRepository = new UserTrademarkRepository(testDbContext);
+
+            await userTmRepository.AddOrUndeleteAsync(user.Id, trademarkEntity.Id, CancellationToken.None);
+
+            var userTmLink = await testDbContext.UserTrademarks
+                .SingleAsync(ut => ut.ApplicationUserId == user.Id && ut.TrademarkRegistrationId == trademarkEntity.Id);
+
+            DateTime initialDateAdded = userTmLink.DateAdded;
+            userTmLink.IsDeleted.Should().BeFalse();
+
+            await userTmRepository.SoftRemoveAsync(user.Id, trademarkEntity.Id, CancellationToken.None);
+
+            // Introduce a small delay to ensure timestamp precision and detect unintended updates
+            await Task.Delay(50);
+
+            // Triggering Undelete operation via AddOrUndeleteAsync 
+            await userTmRepository.AddOrUndeleteAsync(user.Id, trademarkEntity.Id, CancellationToken.None);
+
+            UserTrademark? undeletedLink = await testDbContext.UserTrademarks
+                .SingleAsync(ut => ut.ApplicationUserId == user.Id && ut.TrademarkRegistrationId == trademarkEntity.Id);
+
+            undeletedLink.IsDeleted.Should().BeFalse();
+            undeletedLink.AddedToWatchlist.Should().BeTrue();
+            undeletedLink.DateAdded.Should().BeAfter(initialDateAdded);
+        }
+
     }
 }

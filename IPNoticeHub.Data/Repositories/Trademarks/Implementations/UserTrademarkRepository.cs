@@ -88,16 +88,16 @@ namespace IPNoticeHub.Data.Repositories.Trademarks.Implementations
         /// </summary>
         public async Task<bool> SoftRemoveAsync(string userId, int trademarkId, CancellationToken cancellationToken = default)
         {
-            UserTrademark? collectionLink = await dbContext.UserTrademarks
+            UserTrademark? userTrademarkLink = await dbContext.UserTrademarks
                 .FirstOrDefaultAsync(ut => ut.ApplicationUserId == userId &&
                 ut.TrademarkRegistrationId == trademarkId, cancellationToken);
 
-            if (collectionLink == null || collectionLink.IsDeleted)
+            if (userTrademarkLink == null || userTrademarkLink.IsDeleted)
             {
                 return false;
             }             
 
-            collectionLink.IsDeleted = true;
+            userTrademarkLink.IsDeleted = true;
             await dbContext.SaveChangesAsync(cancellationToken);
             return true;
         }
