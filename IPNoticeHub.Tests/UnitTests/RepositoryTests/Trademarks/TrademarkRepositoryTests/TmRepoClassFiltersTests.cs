@@ -6,7 +6,7 @@ using IPNoticeHub.Data.Repositories.Trademarks.Implementations;
 using IPNoticeHub.Tests.TestUtilities;
 using NUnit.Framework;
 
-namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks
+namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkRepositoryTests
 {
     [TestFixture]
     public class TmRepoClassFiltersTests

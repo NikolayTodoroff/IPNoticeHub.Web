@@ -1,14 +1,12 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Common.EnumConstants;
-using IPNoticeHub.Data;
 using IPNoticeHub.Data.Entities.TrademarkRegistration;
-using IPNoticeHub.Data.Repositories.Trademarks.Abstractions;
 using IPNoticeHub.Data.Repositories.Trademarks.Implementations;
 using IPNoticeHub.Tests.TestUtilities;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 
-namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks
+namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkRepositoryTests
 {
     public class TmRepoLookupsTests
     {

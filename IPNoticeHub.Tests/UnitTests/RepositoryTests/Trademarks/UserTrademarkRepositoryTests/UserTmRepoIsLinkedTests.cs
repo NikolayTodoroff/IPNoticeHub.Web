@@ -4,7 +4,7 @@ using IPNoticeHub.Tests.TestUtilities;
 using IPNoticeHub.Common.EnumConstants;
 using IPNoticeHub.Data.Repositories.Trademarks.Implementations;
 
-namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks
+namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.UserTrademarkRepositoryTests
 {
     /// <summary>
     /// Section: IsLinkedAsync checks (active vs soft-deleted vs missing)

@@ -6,7 +6,7 @@ using IPNoticeHub.Tests.TestUtilities;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 
-namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks
+namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.UserTrademarkRepositoryTests
 {
     /// <summary>
     /// Section: Add - Undelete / Soft Removal semantics
@@ -51,7 +51,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks
 
             userTmLink.IsDeleted.Should().BeFalse();
             userTmLink.AddedToWatchlist.Should().BeTrue();
-            userTmLink.DateAdded.Should().BeOnOrAfter(System.DateTime.UtcNow.AddMinutes(-1));
+            userTmLink.DateAdded.Should().BeOnOrAfter(DateTime.UtcNow.AddMinutes(-1));
         }
 
         [Test]

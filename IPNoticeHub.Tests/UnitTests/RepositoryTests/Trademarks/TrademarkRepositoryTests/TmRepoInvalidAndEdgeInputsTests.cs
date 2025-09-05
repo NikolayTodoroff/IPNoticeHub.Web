@@ -8,7 +8,7 @@ using IPNoticeHub.Tests.TestUtilities;
 using NUnit.Framework;
 using System.Text;
 
-namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks
+namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkRepositoryTests
 {
     [TestFixture]
     public class TmRepoInvalidAndEdgeInputsTests
@@ -34,7 +34,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks
 
             for (int i = 0; i < 5000; i++)
             {
-                stringBuilder.Append((char)('A' + (i % 26)));
+                stringBuilder.Append((char)('A' + i % 26));
             }
 
             var longSearchTerm = stringBuilder.ToString();
