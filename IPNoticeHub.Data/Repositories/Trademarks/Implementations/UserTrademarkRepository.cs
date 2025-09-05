@@ -67,7 +67,7 @@ namespace IPNoticeHub.Data.Repositories.Trademarks.Implementations
             return dbContext.UserTrademarks.
                 Where(ut => ut.ApplicationUserId == userId && !ut.IsDeleted).
                 Include(ut=>ut.TrademarkRegistration.Classes).
-                Select(ut => ut.TrademarkRegistration).               
+                Select(ut => ut.TrademarkRegistration).
                 AsSplitQuery().
                 AsNoTracking();
         }
