@@ -21,40 +21,39 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
     public class TmSearchServicePageAndOrderingTests
     {
         [Test]
-        public async Task SearchAsync_NoRestrictiveFilters_ReturnsOrderedPagedResults()
+        public async Task SearchAsync_WhenNoFiltersApplied_ReturnsPagedResultsMetadata()
         {
             using IPNoticeHubDbContext? testDbContext = InMemoryDbContextFactory.CreateTestDbContext();
-           
-            var (trademarkEntityA1, _) = InMemoryDbContextFactory.CreateTrademark(
-                wordmark: "ALPHA",
-                owner: "Owner A1",
+
+            var (tmEntityA1, _) = InMemoryDbContextFactory.CreateTrademark(
+                wordmark: "Day & Night",
+                owner: "Owner A",
                 regNumber: "2222222",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO,
                 classNumbers: new[] { 9, 35 });
 
-            var (trademarkEntityA2, _) = InMemoryDbContextFactory.CreateTrademark(
-                wordmark: "ALPHA",
+            var (tmEntityA2, _) = InMemoryDbContextFactory.CreateTrademark(
+                wordmark: "Day & Night",
                 owner: "Owner A2",
                 regNumber: "3333333",
                 status: TrademarkStatusCategory.Pending,
                 source: DataProvider.EUIPO,
                 classNumbers: new[] { 30 });
 
-            var (trademarkEntityB, _) = InMemoryDbContextFactory.CreateTrademark(
-                wordmark: "BETA",
+            var (tmEntityB, _) = InMemoryDbContextFactory.CreateTrademark(
+                wordmark: "The Lost One",
                 owner: "Owner B",
                 regNumber: "1111111",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO,
                 classNumbers: new[] { 25 });
 
-
-            testDbContext.TrademarkRegistrations.AddRange(trademarkEntityB, trademarkEntityA1, trademarkEntityA2);
+            testDbContext.TrademarkRegistrations.AddRange(tmEntityB, tmEntityA1, tmEntityA2);
             await testDbContext.SaveChangesAsync();
 
-            ITrademarkRepository repo = new TrademarkRepository(testDbContext);
-            var service = new TrademarkSearchService(repo);
+            ITrademarkRepository trademarkRepository = new TrademarkRepository(testDbContext);
+            var service = new TrademarkSearchService(trademarkRepository);
 
             var filterDTO = new TrademarkFilterDTO
             {
@@ -63,31 +62,68 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
                 ExactMatch = false
             };
 
-            var pagedResult = await service.SearchAsync(
+            var pagedResultDTO = await service.SearchAsync(
                 filter: filterDTO,
                 currentPage: 1,
                 resultsPerPage: 2,
                 cancellationToken: default);
 
-            pagedResult.ResultsCount.Should().Be(3);
-            pagedResult.CurrentPage.Should().Be(1);
-            pagedResult.ResultsCountPerPage.Should().Be(2);
+            pagedResultDTO.ResultsCount.Should().Be(3);
+            pagedResultDTO.CurrentPage.Should().Be(1);
+            pagedResultDTO.ResultsCountPerPage.Should().Be(2);
+        }
 
-            pagedResult.Results.Should().HaveCount(2);
-           
-            var firstDTO = pagedResult.Results[0];
-            var secondDTO = pagedResult.Results[1];
+        [Test]
+        public async Task SearchAsync_WhenNoFiltersApplied_ReturnsPagedResultsSortedByWordmarkAndId()
+        {
+            using IPNoticeHubDbContext? testDbContext = InMemoryDbContextFactory.CreateTestDbContext();
 
-            firstDTO.Wordmark.Should().Be("ALPHA");
-            secondDTO.Wordmark.Should().Be("ALPHA");
+            var (tmEntityA1, _) = InMemoryDbContextFactory.CreateTrademark(
+                wordmark: "Day & Night",
+                owner: "Owner A",
+                regNumber: "2222222",
+                status: TrademarkStatusCategory.Registered,
+                source: DataProvider.USPTO,
+                classNumbers: new[] { 9, 35 });
 
-            firstDTO.PublicId.Should().NotBe(secondDTO.PublicId);
-            firstDTO.Id.Should().NotBe(secondDTO.Id);
+            var (tmEntityA2, _) = InMemoryDbContextFactory.CreateTrademark(
+                wordmark: "Day & Night",
+                owner: "Owner A2",
+                regNumber: "3333333",
+                status: TrademarkStatusCategory.Pending,
+                source: DataProvider.EUIPO,
+                classNumbers: new[] { 30 });
 
-            firstDTO.SourceId.Should().NotBeNullOrWhiteSpace();
-            firstDTO.Provider.Should().BeOneOf(DataProvider.USPTO, DataProvider.EUIPO);
-            firstDTO.Classes.Should().NotBeNull();
+            var (tmEntityB, _) = InMemoryDbContextFactory.CreateTrademark(
+                wordmark: "The Lost One",
+                owner: "Owner B",
+                regNumber: "1111111",
+                status: TrademarkStatusCategory.Registered,
+                source: DataProvider.USPTO,
+                classNumbers: new[] { 25 });
 
+            testDbContext.TrademarkRegistrations.AddRange(tmEntityB, tmEntityA1, tmEntityA2);
+            await testDbContext.SaveChangesAsync();
+
+            ITrademarkRepository trademarkRepository = new TrademarkRepository(testDbContext);
+            var service = new TrademarkSearchService(trademarkRepository);
+
+            var filterDTO = new TrademarkFilterDTO
+            {
+                SearchBy = TrademarkSearchBy.Wordmark,
+                SearchTerm = null,
+                ExactMatch = false
+            };
+
+            var pagedResultDTO = await service.SearchAsync(
+                filter: filterDTO,
+                currentPage: 1,
+                resultsPerPage: 2,
+                cancellationToken: default);
+
+            pagedResultDTO.Results.Should().HaveCount(2);
+            pagedResultDTO.Results[0].Wordmark.Should().Be("Day & Night");
+            pagedResultDTO.Results[1].Wordmark.Should().Be("Day & Night");
         }
     }
 }

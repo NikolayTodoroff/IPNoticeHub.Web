@@ -1,0 +1,114 @@
+﻿using FluentAssertions;
+using IPNoticeHub.Common.EnumConstants;
+using IPNoticeHub.Data.Repositories.Trademarks.Abstractions;
+using IPNoticeHub.Data.Repositories.Trademarks.Implementations;
+using IPNoticeHub.Services.Trademarks.DTOs;
+using IPNoticeHub.Services.Trademarks.Implementations;
+using IPNoticeHub.Tests.TestUtilities;
+using NUnit.Framework;
+
+namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchServiceTests
+{
+    /// <summary>
+    /// Section: TrademarkSearchService – Wordmark Semantics
+    /// Ensures that the SearchAsync method:
+    ///  - Returns only exact matches when ExactMatch is true.
+    ///  - Returns partial matches when ExactMatch is false.
+    ///  - Correctly filters results based on the provided SearchTerm.
+    ///  - Maps data to TrademarkSummaryDTO with the expected field values.
+    /// </summary>
+    [TestFixture]
+    public class TmSearchServiceSearchByWordmarkSemanticsTests
+    {
+        [Test]
+        public async Task SearchAsync_WhenExactMatchTrue_ReturnsOnlyExactWordmark()
+        {
+            using var testDbContext = InMemoryDbContextFactory.CreateTestDbContext();
+
+            var (tmEntity1, _) = InMemoryDbContextFactory.CreateTrademark(
+                wordmark: "Here & Now",
+                owner: "Owner A",
+                regNumber: "1234567",
+                status: TrademarkStatusCategory.Registered,
+                source: DataProvider.USPTO,
+                classNumbers: new[] { 9, 35 });
+
+            var (tmEntity2, _) = InMemoryDbContextFactory.CreateTrademark(
+                wordmark: "Gone With The Wind",
+                owner: "Owner B",
+                regNumber: "7654321",
+                status: TrademarkStatusCategory.Pending,
+                source: DataProvider.EUIPO,
+                classNumbers: new[] { 30 });
+
+            testDbContext.TrademarkRegistrations.AddRange(tmEntity1, tmEntity2);
+
+            await testDbContext.SaveChangesAsync();
+
+            ITrademarkRepository trademarkRepository = new TrademarkRepository(testDbContext);
+            var service = new TrademarkSearchService(trademarkRepository);
+
+            var filterDTO = new TrademarkFilterDTO
+            {
+                SearchBy = TrademarkSearchBy.Wordmark,
+                SearchTerm = "here & now",
+                ExactMatch = true
+            };
+
+            var pagedResultDTO = await service.SearchAsync(
+                filter: filterDTO,
+                currentPage: 1,
+                resultsPerPage: 10,
+                cancellationToken: default);
+
+            pagedResultDTO.ResultsCount.Should().Be(1);
+            pagedResultDTO.Results.Should().ContainSingle();
+            pagedResultDTO.Results[0].Wordmark.Should().Be("Here & Now");
+        }
+
+        [Test]
+        public async Task SearchAsync_WhenExactMatchFalse_ReturnsPartialMatches()
+        {
+            using var testDbContext = InMemoryDbContextFactory.CreateTestDbContext();
+
+            var (tmEntity1, _) = InMemoryDbContextFactory.CreateTrademark(
+                wordmark: "Gone Forever",
+                owner: "Owner A",
+                regNumber: "1234567",
+                status: TrademarkStatusCategory.Registered,
+                source: DataProvider.USPTO,
+                classNumbers: new[] { 9, 35 });
+
+            var (tmEntity2, _) = InMemoryDbContextFactory.CreateTrademark(
+                wordmark: "Gone With The Wind",
+                owner: "Owner B",
+                regNumber: "7654321",
+                status: TrademarkStatusCategory.Pending,
+                source: DataProvider.EUIPO,
+                classNumbers: new[] { 30 });
+
+            testDbContext.TrademarkRegistrations.AddRange(tmEntity1, tmEntity2);
+
+            await testDbContext.SaveChangesAsync();
+
+            ITrademarkRepository trademarkRepository = new TrademarkRepository(testDbContext);
+            var service = new TrademarkSearchService(trademarkRepository);
+
+            var filterDTO = new TrademarkFilterDTO
+            {
+                SearchBy = TrademarkSearchBy.Wordmark,
+                SearchTerm = "gone",
+                ExactMatch = false
+            };
+
+            var pagedResultDTO = await service.SearchAsync(
+                filter: filterDTO,
+                currentPage: 1,
+                resultsPerPage: 10,
+                cancellationToken: default);
+
+            pagedResultDTO.ResultsCount.Should().Be(2);
+            pagedResultDTO.Results.Select(r => r.Wordmark).Should().Contain(new[] { "Gone Forever", "Gone With The Wind" });
+        }
+    }
+}
