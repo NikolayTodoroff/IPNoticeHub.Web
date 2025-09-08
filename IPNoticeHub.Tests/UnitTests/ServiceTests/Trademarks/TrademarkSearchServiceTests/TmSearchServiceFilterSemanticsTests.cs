@@ -5,7 +5,6 @@ using IPNoticeHub.Data.Repositories.Trademarks.Implementations;
 using IPNoticeHub.Services.Trademarks.DTOs;
 using IPNoticeHub.Services.Trademarks.Implementations;
 using IPNoticeHub.Tests.TestUtilities;
-using Moq;
 using NUnit.Framework;
 
 namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchServiceTests
