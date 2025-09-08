@@ -7,15 +7,9 @@ using IPNoticeHub.Data.Repositories.Trademarks.Implementations;
 using IPNoticeHub.Services.Trademarks.Implementations;
 using IPNoticeHub.Tests.TestUtilities;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkCollectionServiceTests
 {
-    [TestFixture]
     /// <summary>
     /// Section: TrademarkCollectionService - AddAsync behaviour.
     /// - Verifies that when a trademark is not already in the user's collection, it is added successfully,
@@ -23,7 +17,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkCollectio
     /// - Verifies that if a soft-deleted link exists, AddAsync reactivates the same link (IsDeleted=false).
     /// </summary>
     [TestFixture]
-    public class TmSearchServiceAddAsyncTests
+    public class TmCollectionServiceAddAsyncTests
     {
         [Test]
         public async Task AddAsync_WhenNotInCollection_AddsLink_ThenIsInCollectionReturnsTrue()
@@ -115,7 +109,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkCollectio
                 x => x.ApplicationUserId == user.Id && x.TrademarkRegistrationId == trademarkEntity.Id).ToList();
 
             softDeletedLinks.Should().HaveCount(1);
-            softDeletedLinks[ index: 0 ].IsDeleted.Should().BeTrue();
+            softDeletedLinks[0].IsDeleted.Should().BeTrue();
 
             // AddAsync again should "undelete" the same link, assert that the link is active again
             await service.AddAsync(
