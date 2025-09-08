@@ -1,0 +1,168 @@
+﻿using FluentAssertions;
+using IPNoticeHub.Common.EnumConstants;
+using IPNoticeHub.Data.Repositories.Trademarks.Abstractions;
+using IPNoticeHub.Data.Repositories.Trademarks.Implementations;
+using IPNoticeHub.Services.Trademarks.DTOs;
+using IPNoticeHub.Services.Trademarks.Implementations;
+using IPNoticeHub.Tests.TestUtilities;
+using NUnit.Framework;
+
+namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchServiceTests
+{
+    /// <summary>
+    /// Section: TrademarkSearchService - Search by Owner Semantics
+    /// When ExactMatch is set to true, the search returns only the exact registri number or sourceId.
+    /// When ExactMatch is set to false, the search includes partial matches.
+    /// </summary>
+    [TestFixture]
+    public class TmSearchServiceSearchByNumberSemanticsTests
+    {
+        [Test]
+        public async Task SearchAsync_WhenNumberExactMatchTrue_MatchesRegistrationNumber()
+        {
+            using var testDbContext = InMemoryDbContextFactory.CreateTestDbContext();
+
+            var (tmEntity1, _) = InMemoryDbContextFactory.CreateTrademark(
+                wordmark: "First WM",
+                owner: "Owner A",
+                regNumber: "1234567",
+                status: TrademarkStatusCategory.Registered,
+                source: DataProvider.USPTO,
+                classNumbers: new[] { 9, 35 });
+
+            var (tmEntity2, _) = InMemoryDbContextFactory.CreateTrademark(
+                wordmark: "Second WM",
+                owner: "Owner B",
+                regNumber: "7654321",
+                status: TrademarkStatusCategory.Pending,
+                source: DataProvider.EUIPO,
+                classNumbers: new[] { 30 });
+
+            testDbContext.TrademarkRegistrations.AddRange(tmEntity1, tmEntity2);
+
+            await testDbContext.SaveChangesAsync();
+
+            ITrademarkRepository trademarkRepository = new TrademarkRepository(testDbContext);
+            var service = new TrademarkSearchService(trademarkRepository);
+
+            var filterDTO = new TrademarkFilterDTO
+            {
+                SearchBy = TrademarkSearchBy.Number,
+                SearchTerm = "1234567",
+                ExactMatch = true
+            };
+
+            var pagedResultDTO = await service.SearchAsync(
+                filter: filterDTO,
+                currentPage: 1,
+                resultsPerPage: 10,
+                cancellationToken: default);
+
+            pagedResultDTO.ResultsCount.Should().Be(1);
+            pagedResultDTO.Results.Should().ContainSingle();
+
+            var singlePagedResultDTO = pagedResultDTO.Results.Single();
+            singlePagedResultDTO.Id.Should().Be(tmEntity1.Id);              
+            singlePagedResultDTO.Wordmark.Should().Be("First WM");
+        }
+
+        [Test]
+        public async Task SearchAsync_WhenNumberExactMatchTrue_MatchesSourceId()
+        {
+            using var testDbContext = InMemoryDbContextFactory.CreateTestDbContext();
+
+            var (tmEntity1, _) = InMemoryDbContextFactory.CreateTrademark(
+                wordmark: "First WM",
+                owner: "Owner A",
+                regNumber: null,
+                status: TrademarkStatusCategory.Registered,
+                source: DataProvider.EUIPO,
+                classNumbers: new[] { 9, 35 });
+            tmEntity1.SourceId = "EU4546576454333";
+
+            var (tmEntity2, _) = InMemoryDbContextFactory.CreateTrademark(
+                wordmark: "Second WM",
+                owner: "Owner B",
+                regNumber: "7654321",
+                status: TrademarkStatusCategory.Pending,
+                source: DataProvider.EUIPO,
+                classNumbers: new[] { 30 });
+
+            testDbContext.TrademarkRegistrations.AddRange(tmEntity1, tmEntity2);
+
+            await testDbContext.SaveChangesAsync();
+
+            ITrademarkRepository trademarkRepository = new TrademarkRepository(testDbContext);
+            var service = new TrademarkSearchService(trademarkRepository);
+
+            var filterDTO = new TrademarkFilterDTO
+            {
+                SearchBy = TrademarkSearchBy.Number,
+                SearchTerm = "EU4546576454333",
+                ExactMatch = true
+            };
+
+            var pagedResultDTO = await service.SearchAsync(
+                filter: filterDTO,
+                currentPage: 1,
+                resultsPerPage: 10,
+                cancellationToken: default);
+
+            pagedResultDTO.ResultsCount.Should().Be(1);
+            pagedResultDTO.Results.Should().ContainSingle();
+
+            var singlePagedResultDTO = pagedResultDTO.Results.Single();
+            singlePagedResultDTO.Id.Should().Be(tmEntity1.Id);
+            singlePagedResultDTO.Wordmark.Should().Be("First WM");
+        }
+
+        [Test]
+        public async Task SearchAsync_WhenNumberExactMatchFalse_AllowsPartialMatches()
+        {
+            using var testDbContext = InMemoryDbContextFactory.CreateTestDbContext();
+
+            var (tmEntity1, _) = InMemoryDbContextFactory.CreateTrademark(
+                wordmark: "First WM",
+                owner: "Owner A",
+                regNumber: "1234567",
+                status: TrademarkStatusCategory.Registered,
+                source: DataProvider.USPTO,
+                classNumbers: new[] { 9, 35 });
+
+            var (tmEntity2, _) = InMemoryDbContextFactory.CreateTrademark(
+                wordmark: "Second WM",
+                owner: "Owner B",
+                regNumber: "7654321",
+                status: TrademarkStatusCategory.Pending,
+                source: DataProvider.EUIPO,
+                classNumbers: new[] { 30 });
+
+            testDbContext.TrademarkRegistrations.AddRange(tmEntity1, tmEntity2);
+
+            await testDbContext.SaveChangesAsync();
+
+            ITrademarkRepository trademarkRepository = new TrademarkRepository(testDbContext);
+            var service = new TrademarkSearchService(trademarkRepository);
+
+            var filterDTO = new TrademarkFilterDTO
+            {
+                SearchBy = TrademarkSearchBy.Number,
+                SearchTerm = "123",
+                ExactMatch = false
+            };
+
+            var pagedResultDTO = await service.SearchAsync(
+                filter: filterDTO,
+                currentPage: 1,
+                resultsPerPage: 10,
+                cancellationToken: default);
+
+            pagedResultDTO.ResultsCount.Should().Be(1);
+            pagedResultDTO.Results.Should().ContainSingle();
+
+            var singlePagedResultDTO = pagedResultDTO.Results.Single();
+            singlePagedResultDTO.Id.Should().Be(tmEntity1.Id);
+            singlePagedResultDTO.Wordmark.Should().Be("First WM");
+        }
+    }
+}

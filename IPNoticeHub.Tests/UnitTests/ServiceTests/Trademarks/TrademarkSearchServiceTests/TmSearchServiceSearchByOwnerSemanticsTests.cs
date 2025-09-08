@@ -10,23 +10,20 @@ using NUnit.Framework;
 namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchServiceTests
 {
     /// <summary>
-    /// Section: TrademarkSearchService – Search by Wordmark Semantics
-    /// Ensures that the SearchAsync method:
-    ///  - Returns only exact matches when ExactMatch is true.
-    ///  - Returns partial matches when ExactMatch is false.
-    ///  - Correctly filters results based on the provided SearchTerm.
-    ///  - Maps data to TrademarkSummaryDTO with the expected field values.
+    /// Section: TrademarkSearchService - Search by Owner Semantics
+    /// When ExactMatch is set to true, the search returns only the exact owner, ignoring case sensitivity.  
+    /// When ExactMatch is set to false, the search includes partial matches, also ignoring case sensitivity.
     /// </summary>
     [TestFixture]
-    public class TmSearchServiceSearchByWordmarkSemanticsTests
+    public class TmSearchServiceSearchByOwnerSemanticsTests
     {
         [Test]
-        public async Task SearchAsync_WhenExactMatchTrue_ReturnsOnlyExactWordmark()
+        public async Task SearchAsync_WhenOwnerExactMatchTrue_ReturnsOnlyExactOwner()
         {
             using var testDbContext = InMemoryDbContextFactory.CreateTestDbContext();
 
             var (tmEntity1, _) = InMemoryDbContextFactory.CreateTrademark(
-                wordmark: "Here & Now",
+                wordmark: "First WM",
                 owner: "Owner A",
                 regNumber: "1234567",
                 status: TrademarkStatusCategory.Registered,
@@ -34,7 +31,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
                 classNumbers: new[] { 9, 35 });
 
             var (tmEntity2, _) = InMemoryDbContextFactory.CreateTrademark(
-                wordmark: "Gone With The Wind",
+                wordmark: "Second WM",
                 owner: "Owner B",
                 regNumber: "7654321",
                 status: TrademarkStatusCategory.Pending,
@@ -50,11 +47,11 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
 
             var filterDTO = new TrademarkFilterDTO
             {
-                SearchBy = TrademarkSearchBy.Wordmark,
-                SearchTerm = "here & now",
+                SearchBy = TrademarkSearchBy.Owner,
+                SearchTerm = "Owner A",
                 ExactMatch = true
             };
-
+          
             var pagedResultDTO = await service.SearchAsync(
                 filter: filterDTO,
                 currentPage: 1,
@@ -63,16 +60,16 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
 
             pagedResultDTO.ResultsCount.Should().Be(1);
             pagedResultDTO.Results.Should().ContainSingle();
-            pagedResultDTO.Results[0].Wordmark.Should().Be("Here & Now");
+            pagedResultDTO.Results[0].Owner.Should().Be("Owner A");
         }
 
         [Test]
-        public async Task SearchAsync_WhenExactMatchFalse_ReturnsPartialMatches()
+        public async Task SearchAsync_WhenOwnerExactMatchFalse_ReturnsPartialMatches()
         {
             using var testDbContext = InMemoryDbContextFactory.CreateTestDbContext();
 
             var (tmEntity1, _) = InMemoryDbContextFactory.CreateTrademark(
-                wordmark: "Gone Forever",
+                wordmark: "First WM",
                 owner: "Owner A",
                 regNumber: "1234567",
                 status: TrademarkStatusCategory.Registered,
@@ -80,7 +77,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
                 classNumbers: new[] { 9, 35 });
 
             var (tmEntity2, _) = InMemoryDbContextFactory.CreateTrademark(
-                wordmark: "Gone With The Wind",
+                wordmark: "Second WM",
                 owner: "Owner B",
                 regNumber: "7654321",
                 status: TrademarkStatusCategory.Pending,
@@ -96,8 +93,8 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
 
             var filterDTO = new TrademarkFilterDTO
             {
-                SearchBy = TrademarkSearchBy.Wordmark,
-                SearchTerm = "gone",
+                SearchBy = TrademarkSearchBy.Owner,
+                SearchTerm = "owner",
                 ExactMatch = false
             };
 
@@ -108,7 +105,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
                 cancellationToken: default);
 
             pagedResultDTO.ResultsCount.Should().Be(2);
-            pagedResultDTO.Results.Select(r => r.Wordmark).Should().Contain(new[] { "Gone Forever", "Gone With The Wind" });
+            pagedResultDTO.Results.Select(r => r.Owner).Should().Contain(new[] { "Owner A", "Owner B" });
         }
     }
 }
