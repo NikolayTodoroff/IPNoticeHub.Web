@@ -12,8 +12,8 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
     {
         /// <summary>
         /// Section: TrademarkSearchService – GetDetailsAsync behaviour
-        ///  - Returns results sorted by Wordmark and then by Id to maintain stable ordering.
-        ///  - Provides accurate paging metadata, including ResultsCount, CurrentPage, and ResultsCountPerPage.
+        ///  - Verifies that GetDetailsAsync returns the correct details when a valid PublicId exists.
+        ///  - Ensures that GetDetailsAsync returns null when the provided PublicId does not exist in the database.
         /// </summary>
         [Test]
         public async Task GetDetailsAsync_WhenPublicIdExists_ReturnsDetailsDto()
