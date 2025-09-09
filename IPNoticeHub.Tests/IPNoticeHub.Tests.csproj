@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Folder Include="IntegrationTests\APITests\" />
+    <Folder Include="UnitTests\ControllerTests\CopyrightControllerTests\" />
   </ItemGroup>
 
   <ItemGroup>
