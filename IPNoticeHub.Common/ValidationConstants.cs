@@ -47,6 +47,9 @@
 
         public static class StatusMessages
         {
+            public const string TrademarkAddedMessage = "TrademarkAdded added to your collection.";
+            public const string TrademarkRemovedMessage = "TrademarkAdded removed from your collection.";
+
             public const string CopyrightAddedMessage = "Copyright added to your collection.";
             public const string CopyrightRemovedMessage = "Copyright removed from your collection.";
         }

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
 using IPNoticeHub.Common.Extensions;
+using static IPNoticeHub.Common.ValidationConstants.StatusMessages;
 
 namespace IPNoticeHub.Web.Controllers
 {
@@ -72,7 +73,7 @@ namespace IPNoticeHub.Web.Controllers
 
             await tmCollectionService.AddAsync(userId, trademarkId, cancellationToken);
 
-            TempData["StatusMessage"] = "Trademark added to your collection.";
+            TempData["StatusMessage"] = TrademarkAddedMessage;
             return RedirectToLocal(returnUrl) ?? RedirectToAction(nameof(MyCollection));
         }
 
@@ -85,7 +86,7 @@ namespace IPNoticeHub.Web.Controllers
 
             await tmCollectionService.RemoveAsync(userId, trademarkId, cancellationToken);
 
-            TempData["StatusMessage"] = "Trademark removed from your collection.";
+            TempData["StatusMessage"] = TrademarkRemovedMessage;
             return RedirectToLocal(returnUrl) ?? RedirectToAction(nameof(MyCollection));
         }
 

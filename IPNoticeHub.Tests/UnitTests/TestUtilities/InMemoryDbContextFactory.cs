@@ -3,7 +3,6 @@ using IPNoticeHub.Data;
 using IPNoticeHub.Data.Entities.TrademarkRegistration;
 using IPNoticeHub.Data.Entities.ApplicationUser;
 using IPNoticeHub.Common.EnumConstants;
-using System.Reflection;
 
 namespace IPNoticeHub.Tests.TestUtilities
 {
