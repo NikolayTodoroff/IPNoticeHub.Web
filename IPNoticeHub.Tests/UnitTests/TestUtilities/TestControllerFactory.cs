@@ -1,51 +1,106 @@
-﻿using IPNoticeHub.Services.Trademarks.Abstractions;
+﻿using System.Security.Claims;
+using IPNoticeHub.Services.Trademarks.Abstractions;
 using IPNoticeHub.Web.Controllers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Moq;
-using System.Security.Claims;
 
 namespace IPNoticeHub.Tests.UnitTests.TestUtilities
 {
     /// <summary>
-    /// Provides utility methods for creating and configuring instances of controllers for unit testing.
+    /// Provides utility methods to create and configure instances of TrademarksController for unit testing.
     /// </summary>
     public static class TestControllerFactory
     {
-        public static TrademarksController CreateTrademarksController(ITrademarkCollectionService tmCollectionService,
-            out ITempDataDictionary tempData, string? userId = null, ITrademarkSearchService? tmSearchService = null)
+        /// <summary>
+        /// Creates a fully configured instance of TrademarksController with TempData and UrlHelper.
+        /// This version is typically used in tests that require TempData and UrlHelper,
+        /// such as TmControllerAddRemoveTests.
+        /// </summary>
+        public static TrademarksController CreateTrademarksController(
+            ITrademarkCollectionService collectionService,
+            out ITempDataDictionary tempData,
+            ITrademarkSearchService? searchService = null,
+            string? userId = null)
+        {
+            return CreateTrademarksControllerCore(
+                collectionService,
+                searchService,
+                userId,
+                out tempData,
+                includeTempData: true,
+                includeUrlHelper: true);
+        }
+
+        /// <summary>
+        /// Creates a simplified instance of TrademarksController without TempData and UrlHelper.
+        /// This version is typically used in tests that do not require TempData or UrlHelper, 
+        /// such as TmControllerMyCollectionTests.
+        /// </summary>
+        public static TrademarksController CreateTrademarksController(
+            ITrademarkCollectionService collectionService,
+            ITrademarkSearchService? searchService = null,
+            string? userId = null)
+        {
+            return CreateTrademarksControllerCore(
+                collectionService,
+                searchService,
+                userId,
+                out _,
+                includeTempData: true,
+                includeUrlHelper: false);
+        }
+
+        /// <summary>
+        /// Core method for creating and configuring an instance of TrademarksController.
+        /// Allows customization of TempData and UrlHelper inclusion.
+        /// </summary>
+        private static TrademarksController CreateTrademarksControllerCore(
+            ITrademarkCollectionService collectionService,
+            ITrademarkSearchService? searchService,
+            string? userId,
+            out ITempDataDictionary tempData,
+            bool includeTempData,
+            bool includeUrlHelper)
         {
             var httpContext = new DefaultHttpContext();
 
-            // Simulate an authenticated user if a userId is provided
+            // Simulate an authenticated user if a user ID is provided.
             if (!string.IsNullOrEmpty(userId))
             {
-                var identity = new ClaimsIdentity(
-                    new[] { new Claim(ClaimTypes.NameIdentifier, userId) },
-                    authenticationType: "TestAuth");
-
-                httpContext.User = new ClaimsPrincipal(identity);
+                httpContext.User = new ClaimsPrincipal(
+                    new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, userId) }, "TestAuth"));
             }
 
-            // Create the controller with the provided or mocked services
             var controller = new TrademarksController(
-                tmSearchService ?? Mock.Of<ITrademarkSearchService>(), tmCollectionService);
+                searchService ?? Mock.Of<ITrademarkSearchService>(), collectionService)
+            {
+                ControllerContext = new ControllerContext { HttpContext = httpContext }
+            };
 
-            controller.ControllerContext = new ControllerContext { HttpContext = httpContext };
+            // Configure TempData if requested.
+            if (includeTempData)
+            {
+                tempData = new TempDataDictionary(httpContext, Mock.Of<ITempDataProvider>());
+                controller.TempData = tempData;
+            }
+            else
+            {
+                tempData = null!;
+            }
 
-            // Configure TempData for the controller
-            tempData = new TempDataDictionary(httpContext, Mock.Of<ITempDataProvider>());
-            controller.TempData = tempData;
+            // Configure UrlHelper if requested.
+            if (includeUrlHelper)
+            {
+                var urlHelperMock = new Mock<IUrlHelper>();
+                urlHelperMock.Setup(u => u.IsLocalUrl(It.IsAny<string>()))
+                    .Returns<string>(url => !string.IsNullOrEmpty(url) && url.StartsWith("/"));
 
-            // Configure a mocked UrlHelper for the controller
-            var urlHelperMock = new Mock<IUrlHelper>();
-
-            urlHelperMock.Setup(u => u.IsLocalUrl(It.IsAny<string>()))
-                .Returns<string>(url => !string.IsNullOrEmpty(url) && url.StartsWith("/"));
-            controller.Url = urlHelperMock.Object;
+                controller.Url = urlHelperMock.Object;
+            }
 
             return controller;
-        }
+        }  
     }
 }

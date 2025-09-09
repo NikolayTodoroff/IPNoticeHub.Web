@@ -120,5 +120,128 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
 
             tmCollectionService.VerifyNoOtherCalls();
         }
+
+        [Test]
+        public async Task Index_WhenSearchTermIsNull_ReturnsEmptyViewModel_WithHasSearchFalse()
+        {
+            var tmSearchService = new Mock<ITrademarkSearchService>(MockBehavior.Strict);
+            var tmCollectionService = new Mock<ITrademarkCollectionService>(MockBehavior.Strict);
+
+            var controller = new IPNoticeHub.Web.Controllers.TrademarksController(tmSearchService.Object, tmCollectionService.Object);
+
+            var filterViewModel = new TrademarkFilterViewModel
+            {
+                SearchBy = TrademarkSearchBy.Wordmark,
+                SearchTerm = null,
+                ExactMatch = false,
+                CurrentPage = 1,
+                ResultsPerPage = 10
+            };
+
+            var indexActionResult = await controller.Index(filterViewModel, default);
+
+            var indexView = indexActionResult as ViewResult;
+
+            indexView.Should().NotBeNull();
+            ((bool)controller.ViewBag.HasSearch).Should().BeFalse();
+            indexView!.Model.Should().BeOfType<TrademarksIndexViewModel>();
+
+            tmSearchService.VerifyNoOtherCalls();
+            tmCollectionService.VerifyNoOtherCalls();
+        }
+
+        [Test]
+        public async Task Index_WhenClassNumbersNull_NormalizesToEmptyArray()
+        {
+            TrademarkFilterDTO? filterDTO = null;
+
+            var pagedResult = new PagedResult<TrademarkSummaryDTO>
+            {
+                ResultsCount = 0,
+                CurrentPage = 1,
+                ResultsCountPerPage = 10,
+                Results = new List<TrademarkSummaryDTO>()
+            };
+
+            var tmSearchService = new Mock<ITrademarkSearchService>();
+
+            tmSearchService.Setup(s => s.SearchAsync(
+                It.IsAny<TrademarkFilterDTO>(),
+                It.IsAny<int>(),
+                It.IsAny<int>(),
+                It.IsAny<CancellationToken>())).
+            Callback((TrademarkFilterDTO filter, int _, int _, CancellationToken __) =>
+            {
+                filterDTO = filter;
+            }).
+            ReturnsAsync(pagedResult);
+
+            var controller = new TrademarksController(
+                tmSearchService.Object, Mock.Of<ITrademarkCollectionService>());
+
+            var filterViewModel = new TrademarkFilterViewModel
+            {
+                SearchBy = TrademarkSearchBy.Wordmark,
+                SearchTerm = "alpha",
+                ExactMatch = true,
+                CurrentPage = 1,
+                ResultsPerPage = 10,
+                ClassNumbers = null
+            };
+
+            await controller.Index(filterViewModel, default);
+
+            filterDTO.Should().NotBeNull();
+            filterDTO!.ClassNumbers.Should().NotBeNull();
+            filterDTO.ClassNumbers.Should().BeEmpty();
+            filterDTO.ExactMatch.Should().BeTrue();
+        }
+
+        [Test]
+        public async Task Index_WhenAllClassNumbersInvalid_NormalizesToEmptyArray()
+        {
+            TrademarkFilterDTO? filterDTO = null;
+
+            var pagedResult = new PagedResult<TrademarkSummaryDTO>
+            {
+                ResultsCount = 0,
+                CurrentPage = 1,
+                ResultsCountPerPage = 10,
+                Results = new List<TrademarkSummaryDTO>()
+            };
+
+            var tmSearchService = new Mock<ITrademarkSearchService>();
+
+            tmSearchService.Setup(s => s.SearchAsync(
+                It.IsAny<TrademarkFilterDTO>(),
+                It.IsAny<int>(),
+                It.IsAny<int>(),
+                It.IsAny<CancellationToken>())).
+            Callback((TrademarkFilterDTO filter, int _, int _, CancellationToken __) =>
+            {
+                filterDTO = filter;
+            }).
+            ReturnsAsync(pagedResult);
+
+            var controller = new TrademarksController(
+                tmSearchService.Object, Mock.Of<ITrademarkCollectionService>());
+
+            var filterViewModel = new TrademarkFilterViewModel
+            {
+                SearchBy = TrademarkSearchBy.Wordmark,
+                SearchTerm = "alpha",
+                ExactMatch = false,
+                CurrentPage = 1,
+                ResultsPerPage = 10,
+                ClassNumbers = new[] { -1, 0, 999 }
+            };
+
+            await controller.Index(filterViewModel, default);
+
+            filterDTO.Should().NotBeNull();
+            filterDTO!.ClassNumbers.Should().NotBeNull();
+            filterDTO.ClassNumbers.Should().BeEmpty();
+            filterDTO.ExactMatch.Should().BeFalse();
+        }
     }
 }

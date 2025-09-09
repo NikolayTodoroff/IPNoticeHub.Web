@@ -1,10 +1,13 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Services.Trademarks.Abstractions;
 using IPNoticeHub.Tests.UnitTests.TestUtilities;
+using IPNoticeHub.Web.Controllers;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using static IPNoticeHub.Common.ValidationConstants.StatusMessages;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Moq;
 using NUnit.Framework;
+using static IPNoticeHub.Common.ValidationConstants.StatusMessages;
 
 namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
 {
@@ -88,6 +91,31 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
 
             removeActionResult.Should().BeOfType<ForbidResult>();
             tmCollectionService.VerifyNoOtherCalls();
+        }
+
+        [Test]
+        public async Task Add_WithNullReturnUrl_RedirectsToMyCollection()
+        {
+            const string userId = "u1";
+            const int trademarkId = 42;
+
+            var tmCollectionService = new Mock<ITrademarkCollectionService>();
+            tmCollectionService
+                .Setup(s => s.AddAsync(userId, trademarkId, It.IsAny<CancellationToken>()))
+                .Returns(Task.CompletedTask);
+
+            var controller = TestControllerFactory.CreateTrademarksController(
+                tmCollectionService.Object,
+                userId: userId);
+
+            var addActionResult = await controller.Add(trademarkId, null, CancellationToken.None);
+
+            var redirectResult = addActionResult.Should().BeOfType<RedirectToActionResult>().Subject;
+            redirectResult.ActionName.Should().Be(nameof(TrademarksController.MyCollection));
+
+            tmCollectionService.Verify(
+                s => s.AddAsync(userId, trademarkId, It.IsAny<CancellationToken>()),
+                Times.Once);
         }
     }
 }
