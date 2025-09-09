@@ -24,9 +24,9 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
 
         public async Task AddAsync(string userId, int trademarkId, CancellationToken cancellationToken = default)
         {
-            bool exists = await trademarkRepository.ExistsAsync(trademarkId, cancellationToken);
+            bool linkExists = await trademarkRepository.ExistsAsync(trademarkId, cancellationToken);
 
-            if (!exists) return;
+            if (!linkExists) return;
 
             await userTrademarkRepository.AddOrUndeleteAsync(userId, trademarkId, cancellationToken);
         }
