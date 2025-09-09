@@ -62,15 +62,15 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
                 ExactMatch = false
             };
 
-            var pagedResultDTO = await service.SearchAsync(
+            var pagedResult = await service.SearchAsync(
                 filter: filterDTO,
                 currentPage: 1,
                 resultsPerPage: 2,
                 cancellationToken: default);
 
-            pagedResultDTO.ResultsCount.Should().Be(3);
-            pagedResultDTO.CurrentPage.Should().Be(1);
-            pagedResultDTO.ResultsCountPerPage.Should().Be(2);
+            pagedResult.ResultsCount.Should().Be(3);
+            pagedResult.CurrentPage.Should().Be(1);
+            pagedResult.ResultsCountPerPage.Should().Be(2);
         }
 
         [Test]
@@ -115,15 +115,15 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
                 ExactMatch = false
             };
 
-            var pagedResultDTO = await service.SearchAsync(
+            var pagedResult = await service.SearchAsync(
                 filter: filterDTO,
                 currentPage: 1,
                 resultsPerPage: 2,
                 cancellationToken: default);
 
-            pagedResultDTO.Results.Should().HaveCount(2);
-            pagedResultDTO.Results[0].Wordmark.Should().Be("Day & Night");
-            pagedResultDTO.Results[1].Wordmark.Should().Be("Day & Night");
+            pagedResult.Results.Should().HaveCount(2);
+            pagedResult.Results[0].Wordmark.Should().Be("Day & Night");
+            pagedResult.Results[1].Wordmark.Should().Be("Day & Night");
         }
     }
 }

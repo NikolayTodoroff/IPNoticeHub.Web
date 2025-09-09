@@ -147,15 +147,15 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkCollectio
                 trademarkId: tmEntity3.Id,
                 cancellationToken: default);
 
-            var pagedResultDTO = await service.GetUserCollectionAsync(
+            var pagedResult = await service.GetUserCollectionAsync(
                 userId:user.Id, currentPage: 1, resultsPerPage: 2, cancellationToken: default);
 
-            pagedResultDTO.ResultsCount.Should().Be(3);
-            pagedResultDTO.CurrentPage.Should().Be(1);
-            pagedResultDTO.ResultsCountPerPage.Should().Be(2);
+            pagedResult.ResultsCount.Should().Be(3);
+            pagedResult.CurrentPage.Should().Be(1);
+            pagedResult.ResultsCountPerPage.Should().Be(2);
 
-            pagedResultDTO.Results.Should().HaveCount(2);
-            var returnedPublicIds = pagedResultDTO.Results.Select(r => r.PublicId).ToHashSet();
+            pagedResult.Results.Should().HaveCount(2);
+            var returnedPublicIds = pagedResult.Results.Select(r => r.PublicId).ToHashSet();
             returnedPublicIds.Should().BeSubsetOf(new[] { tmEntity1.PublicId, tmEntity2.PublicId, tmEntity3.PublicId }.ToHashSet());
         }
 
@@ -220,17 +220,17 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkCollectio
                 trademarkId: tmEntity3.Id,
                 cancellationToken: default);
 
-            var wordmarkAscPagedResultDTO = await service.GetUserCollectionAsync(
+            var wordmarkAscPagedResult = await service.GetUserCollectionAsync(
                 userId: user.Id, currentPage: 1, resultsPerPage: 10, cancellationToken: default, sortBy: CollectionSortBy.WordmarkAsc);
 
-            var wordmarksOrderedAsc = wordmarkAscPagedResultDTO.Results.Select(r => r.Wordmark).ToList();
+            var wordmarksOrderedAsc = wordmarkAscPagedResult.Results.Select(r => r.Wordmark).ToList();
             wordmarksOrderedAsc.Should().ContainInOrder("AAA", "BBB", "CCC");
 
 
-            var wordmarkDescPagedResultDTO = await service.GetUserCollectionAsync(
+            var wordmarkDescPagedResult = await service.GetUserCollectionAsync(
                 userId: user.Id, currentPage: 1, resultsPerPage: 10, cancellationToken: default, sortBy: CollectionSortBy.WordmarkDesc);
 
-            var wordmarksOrderedDesc = wordmarkDescPagedResultDTO.Results.Select(r => r.Wordmark).ToList();
+            var wordmarksOrderedDesc = wordmarkDescPagedResult.Results.Select(r => r.Wordmark).ToList();
             wordmarksOrderedDesc.Should().ContainInOrder("CCC", "BBB","AAA");
         }
 
@@ -299,17 +299,17 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkCollectio
                 trademarkId: tmEntity3.Id,
                 cancellationToken: default);
 
-            var dateAddedAscPagedResultDTO = await service.GetUserCollectionAsync(
+            var dateAddedAscPagedResult = await service.GetUserCollectionAsync(
                 userId: user.Id, currentPage: 1, resultsPerPage: 10, cancellationToken: default, sortBy: CollectionSortBy.DateAddedAsc);
 
-            var datesAddedOrderedAsc = dateAddedAscPagedResultDTO.Results.Select(r => r.Wordmark).ToList();
+            var datesAddedOrderedAsc = dateAddedAscPagedResult.Results.Select(r => r.Wordmark).ToList();
             datesAddedOrderedAsc.Should().ContainInOrder("AAA", "BBB", "CCC");
 
 
-            var dateAddedDescPagedResultDTO = await service.GetUserCollectionAsync(
+            var dateAddedDescPagedResult = await service.GetUserCollectionAsync(
                 userId: user.Id, currentPage: 1, resultsPerPage: 10, cancellationToken: default, sortBy: CollectionSortBy.DateAddedDesc);
 
-            var wordmarksOrderedDesc = dateAddedDescPagedResultDTO.Results.Select(r => r.Wordmark).ToList();
+            var wordmarksOrderedDesc = dateAddedDescPagedResult.Results.Select(r => r.Wordmark).ToList();
             wordmarksOrderedDesc.Should().ContainInOrder("CCC", "BBB", "AAA");
 
         }

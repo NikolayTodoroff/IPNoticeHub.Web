@@ -70,13 +70,13 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkCollectio
 
             var service = new TrademarkCollectionService(tmRepository, userTmRepository);
 
-            var pagedResultDTO = await service.GetUserCollectionAsync(
+            var pagedResult = await service.GetUserCollectionAsync(
                 user.Id, currentPage: 1, resultsPerPage: 10, default);
 
-            pagedResultDTO.ResultsCount.Should().Be(0);
-            pagedResultDTO.Results.Should().BeEmpty();
-            pagedResultDTO.CurrentPage.Should().Be(1);
-            pagedResultDTO.ResultsCountPerPage.Should().Be(10);
+            pagedResult.ResultsCount.Should().Be(0);
+            pagedResult.Results.Should().BeEmpty();
+            pagedResult.CurrentPage.Should().Be(1);
+            pagedResult.ResultsCountPerPage.Should().Be(10);
         }
 
         [Test]

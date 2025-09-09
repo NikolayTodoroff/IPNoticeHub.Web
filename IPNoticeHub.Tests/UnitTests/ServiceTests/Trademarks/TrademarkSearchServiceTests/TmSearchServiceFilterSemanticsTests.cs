@@ -56,15 +56,15 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
                 Provider = DataProvider.USPTO
             };
 
-            var pagedResultDTO = await service.SearchAsync(
+            var pagedResult = await service.SearchAsync(
                 filter: filterDTO,
                 currentPage: 1,
                 resultsPerPage: 10,
                 cancellationToken: default);
 
-            pagedResultDTO.ResultsCount.Should().Be(1);
-            pagedResultDTO.Results.Should().ContainSingle();
-            pagedResultDTO.Results.Single().Provider.Should().Be(DataProvider.USPTO);
+            pagedResult.ResultsCount.Should().Be(1);
+            pagedResult.Results.Should().ContainSingle();
+            pagedResult.Results.Single().Provider.Should().Be(DataProvider.USPTO);
         }
 
         [Test]
@@ -103,15 +103,15 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
                 Status = TrademarkStatusCategory.Registered
             };
 
-            var pagedResultDTO = await service.SearchAsync(
+            var pagedResult = await service.SearchAsync(
                 filter: filterDTO,
                 currentPage: 1,
                 resultsPerPage: 10,
                 cancellationToken: default);
 
-            pagedResultDTO.ResultsCount.Should().Be(1);
-            pagedResultDTO.Results.Should().ContainSingle();
-            pagedResultDTO.Results.Single().Status.Should().Be(TrademarkStatusCategory.Registered);
+            pagedResult.ResultsCount.Should().Be(1);
+            pagedResult.Results.Should().ContainSingle();
+            pagedResult.Results.Single().Status.Should().Be(TrademarkStatusCategory.Registered);
         }
 
         [Test]
@@ -150,16 +150,16 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
                 ClassNumbers = new[] { 25 }
             };
 
-            var pagedResultDTO = await service.SearchAsync(
+            var pagedResult = await service.SearchAsync(
                 filter: filterDTO,
                 currentPage: 1,
                 resultsPerPage: 10,
                 cancellationToken: default);
 
-            pagedResultDTO.ResultsCount.Should().Be(1);
-            pagedResultDTO.Results.Should().ContainSingle();
+            pagedResult.ResultsCount.Should().Be(1);
+            pagedResult.Results.Should().ContainSingle();
 
-            var targetTrademarkDTO = pagedResultDTO.Results.Single();
+            var targetTrademarkDTO = pagedResult.Results.Single();
             targetTrademarkDTO.Wordmark.Should().Be("AAA");
             targetTrademarkDTO.Classes.Should().Contain(25);
             targetTrademarkDTO.Classes.Should().Contain(35);
@@ -220,16 +220,16 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
                 ClassNumbers = new[] { 25 }
             };
 
-            var pagedResultDTO = await service.SearchAsync(
+            var pagedResult = await service.SearchAsync(
                 filter: filterDTO,
                 currentPage: 1,
                 resultsPerPage: 10,
                 cancellationToken: default);
 
-            pagedResultDTO.ResultsCount.Should().Be(1);
-            pagedResultDTO.Results.Should().ContainSingle();
+            pagedResult.ResultsCount.Should().Be(1);
+            pagedResult.Results.Should().ContainSingle();
 
-            var targetTmEntity = pagedResultDTO.Results.Single();
+            var targetTmEntity = pagedResult.Results.Single();
             targetTmEntity.Wordmark.Should().Be("AAA");
             targetTmEntity.Provider.Should().Be(DataProvider.USPTO);
             targetTmEntity.Status.Should().Be(TrademarkStatusCategory.Registered);

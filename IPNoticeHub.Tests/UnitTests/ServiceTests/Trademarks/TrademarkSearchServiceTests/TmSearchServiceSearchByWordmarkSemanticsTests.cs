@@ -55,15 +55,15 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
                 ExactMatch = true
             };
 
-            var pagedResultDTO = await service.SearchAsync(
+            var pagedResult = await service.SearchAsync(
                 filter: filterDTO,
                 currentPage: 1,
                 resultsPerPage: 10,
                 cancellationToken: default);
 
-            pagedResultDTO.ResultsCount.Should().Be(1);
-            pagedResultDTO.Results.Should().ContainSingle();
-            pagedResultDTO.Results[0].Wordmark.Should().Be("Here & Now");
+            pagedResult.ResultsCount.Should().Be(1);
+            pagedResult.Results.Should().ContainSingle();
+            pagedResult.Results[0].Wordmark.Should().Be("Here & Now");
         }
 
         [Test]
@@ -101,14 +101,14 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
                 ExactMatch = false
             };
 
-            var pagedResultDTO = await service.SearchAsync(
+            var pagedResult = await service.SearchAsync(
                 filter: filterDTO,
                 currentPage: 1,
                 resultsPerPage: 10,
                 cancellationToken: default);
 
-            pagedResultDTO.ResultsCount.Should().Be(2);
-            pagedResultDTO.Results.Select(r => r.Wordmark).Should().Contain(new[] { "Gone Forever", "Gone With The Wind" });
+            pagedResult.ResultsCount.Should().Be(2);
+            pagedResult.Results.Select(r => r.Wordmark).Should().Contain(new[] { "Gone Forever", "Gone With The Wind" });
         }
     }
 }

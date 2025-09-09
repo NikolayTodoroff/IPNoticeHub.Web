@@ -23,17 +23,17 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             using IPNoticeHubDbContext? testDbContext = InMemoryDbContextFactory.CreateTestDbContext();
 
             var (A1, _) = InMemoryDbContextFactory.CreateTrademark(
-                wordmark: "ALPHA", 
-                owner: "user1", 
+                wordmark: "ALPHA",
+                owner: "user1",
                 regNumber: "1111111",
-                status: TrademarkStatusCategory.Registered, 
+                status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO);
 
             var (B2, _) = InMemoryDbContextFactory.CreateTrademark(
-                wordmark: "BETA", 
-                owner: "user2", 
+                wordmark: "BETA",
+                owner: "user2",
                 regNumber: "2222222",
-                status: TrademarkStatusCategory.Registered, 
+                status: TrademarkStatusCategory.Registered,
                 source: DataProvider.EUIPO);
 
             var (C3, _) = InMemoryDbContextFactory.CreateTrademark(

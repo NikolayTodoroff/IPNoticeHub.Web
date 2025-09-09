@@ -52,18 +52,18 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
                 ExactMatch = true
             };
 
-            var pagedResultDTO = await service.SearchAsync(
+            var pagedResult = await service.SearchAsync(
                 filter: filterDTO,
                 currentPage: 1,
                 resultsPerPage: 10,
                 cancellationToken: default);
 
-            pagedResultDTO.ResultsCount.Should().Be(1);
-            pagedResultDTO.Results.Should().ContainSingle();
+            pagedResult.ResultsCount.Should().Be(1);
+            pagedResult.Results.Should().ContainSingle();
 
-            var singlePagedResultDTO = pagedResultDTO.Results.Single();
-            singlePagedResultDTO.Id.Should().Be(tmEntity1.Id);              
-            singlePagedResultDTO.Wordmark.Should().Be("First WM");
+            var singleTmSummaryDTO = pagedResult.Results.Single();
+            singleTmSummaryDTO.Id.Should().Be(tmEntity1.Id);
+            singleTmSummaryDTO.Wordmark.Should().Be("First WM");
         }
 
         [Test]
@@ -102,18 +102,18 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
                 ExactMatch = true
             };
 
-            var pagedResultDTO = await service.SearchAsync(
+            var pagedResult = await service.SearchAsync(
                 filter: filterDTO,
                 currentPage: 1,
                 resultsPerPage: 10,
                 cancellationToken: default);
 
-            pagedResultDTO.ResultsCount.Should().Be(1);
-            pagedResultDTO.Results.Should().ContainSingle();
+            pagedResult.ResultsCount.Should().Be(1);
+            pagedResult.Results.Should().ContainSingle();
 
-            var singlePagedResultDTO = pagedResultDTO.Results.Single();
-            singlePagedResultDTO.Id.Should().Be(tmEntity1.Id);
-            singlePagedResultDTO.Wordmark.Should().Be("First WM");
+            var singleTmSummaryDTO = pagedResult.Results.Single();
+            singleTmSummaryDTO.Id.Should().Be(tmEntity1.Id);
+            singleTmSummaryDTO.Wordmark.Should().Be("First WM");
         }
 
         [Test]
@@ -151,18 +151,18 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
                 ExactMatch = false
             };
 
-            var pagedResultDTO = await service.SearchAsync(
+            var pagedResult = await service.SearchAsync(
                 filter: filterDTO,
                 currentPage: 1,
                 resultsPerPage: 10,
                 cancellationToken: default);
 
-            pagedResultDTO.ResultsCount.Should().Be(1);
-            pagedResultDTO.Results.Should().ContainSingle();
+            pagedResult.ResultsCount.Should().Be(1);
+            pagedResult.Results.Should().ContainSingle();
 
-            var singlePagedResultDTO = pagedResultDTO.Results.Single();
-            singlePagedResultDTO.Id.Should().Be(tmEntity1.Id);
-            singlePagedResultDTO.Wordmark.Should().Be("First WM");
+            var singleTmSummaryDTO = pagedResult.Results.Single();
+            singleTmSummaryDTO.Id.Should().Be(tmEntity1.Id);
+            singleTmSummaryDTO.Wordmark.Should().Be("First WM");
         }
     }
 }
