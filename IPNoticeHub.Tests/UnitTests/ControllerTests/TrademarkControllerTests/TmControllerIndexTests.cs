@@ -1,0 +1,127 @@
+﻿using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using FluentAssertions;
+using IPNoticeHub.Common.EnumConstants;
+using IPNoticeHub.Services.Common;
+using IPNoticeHub.Services.Trademarks.DTOs;
+using IPNoticeHub.Services.Trademarks.Abstractions;
+using IPNoticeHub.Web.Models.Trademarks;
+using IPNoticeHub.Web.Controllers;
+using Microsoft.AspNetCore.Mvc;
+using Moq;
+using NUnit.Framework;
+
+namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
+{
+    /// <summary>
+    /// Section: TrademarksController – Index
+    /// - Verifies that Index with empty/whitespace search term returns view 
+    ///  with empty page model and ViewBag.HasSearch = false.
+    /// - Verifies that Index with valid search term calls ITrademarkSearchService.SearchAsync
+    ///  and returns populated view model with ViewBag.HasSearch = true.
+    /// </summary>
+    [TestFixture]
+    public class TmControllerIndexTests
+    {
+        [Test]
+        public async Task Index_WhenSearchTermIsEmpty_ReturnsEmptyViewModel_WithHasSearchFalse()
+        {
+            var tmSearchService = new Mock<ITrademarkSearchService>(MockBehavior.Strict);
+            var tmCollectionService = new Mock<ITrademarkCollectionService>(MockBehavior.Strict);
+
+            var controller = new TrademarksController(tmSearchService.Object, tmCollectionService.Object);
+
+            var filterViewModel = new TrademarkFilterViewModel
+            {
+                SearchBy = TrademarkSearchBy.Wordmark,
+                SearchTerm = "   ",     
+                ExactMatch = false,
+                CurrentPage = 1,
+                ResultsPerPage = 10
+            };
+
+            var indexResult = await controller.Index(filterViewModel, default);
+
+            var indexView = indexResult as ViewResult;
+            indexView.Should().NotBeNull();
+
+            ((bool)controller.ViewBag.HasSearch).Should().BeFalse();
+            indexView!.Model.Should().BeOfType<TrademarksIndexViewModel>();
+
+            tmSearchService.VerifyNoOtherCalls();
+            tmCollectionService.VerifyNoOtherCalls();
+        }
+
+        [Test]
+        public async Task Index_WhenValidSearchTerm_CallsServiceAndReturnsPopulatedView_WithHasSearchTrue()
+        {
+            var pagedResult = new PagedResult<TrademarkSummaryDTO>
+            {
+                ResultsCount = 2,
+                CurrentPage = 1,
+                ResultsCountPerPage = 10,
+                Results = new[]
+               {
+                    new TrademarkSummaryDTO { 
+                        Id = 1, 
+                        PublicId = Guid.NewGuid(),
+                        Wordmark = "ALPHA",
+                        Provider = DataProvider.USPTO,
+                        Classes = new[] { 9 } },
+
+                    new TrademarkSummaryDTO {
+                        Id = 2, 
+                        PublicId = Guid.NewGuid(),
+                        Wordmark = "BETA",
+                        Provider = DataProvider.EUIPO,
+                        Classes = new[] { 25 } }
+                }.ToList()
+            };
+
+            var tmSearchService = new Mock<ITrademarkSearchService>();
+
+            var filter = new TrademarkFilterDTO
+            {
+                SearchBy = TrademarkSearchBy.Wordmark,
+                SearchTerm = "alpha",
+                ExactMatch = false
+            };
+
+            tmSearchService.Setup(service => service.SearchAsync(
+                It.Is<TrademarkFilterDTO>(f =>
+                    f.SearchBy == filter.SearchBy &&
+                    f.SearchTerm == filter.SearchTerm &&
+                    f.ExactMatch == filter.ExactMatch),
+                1,
+                10,
+                It.IsAny<CancellationToken>())).ReturnsAsync(pagedResult);
+
+            var tmCollectionService = new Mock<ITrademarkCollectionService>(MockBehavior.Strict);
+
+            var controller = new TrademarksController(tmSearchService.Object, tmCollectionService.Object);
+
+            var filterViewModel = new TrademarkFilterViewModel
+            {
+                SearchBy = TrademarkSearchBy.Wordmark,
+                SearchTerm = " alpha ",
+                ExactMatch = false,
+                CurrentPage = 1,
+                ResultsPerPage = 10
+            };
+
+            var indexResult = await controller.Index(filterViewModel, default);
+
+            var indexView = indexResult as ViewResult;
+
+            indexView.Should().NotBeNull();
+            ((bool)controller.ViewBag.HasSearch).Should().BeTrue();
+            indexView.Model.Should().BeOfType<TrademarksIndexViewModel>();
+
+            tmSearchService.Verify(s => s.SearchAsync(
+                It.IsAny<TrademarkFilterDTO>(), 1, 10, It.IsAny<CancellationToken>()), Times.Once);
+
+            tmCollectionService.VerifyNoOtherCalls();
+        }
+    }
+}
