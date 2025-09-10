@@ -1,9 +1,8 @@
-﻿using System.Threading.Tasks;
-using FluentAssertions;
+﻿using FluentAssertions;
 using IPNoticeHub.Data;
-using IPNoticeHub.Data.Repositories.Copyrights.Abstractions;      
-using IPNoticeHub.Data.Repositories.Copyrights.Implementations;  
-using IPNoticeHub.Tests.TestUtilities;                           
+using IPNoticeHub.Data.Repositories.Copyrights.Abstractions;
+using IPNoticeHub.Data.Repositories.Copyrights.Implementations;
+using IPNoticeHub.Tests.TestUtilities;
 using NUnit.Framework;
 
 namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Copyrights
