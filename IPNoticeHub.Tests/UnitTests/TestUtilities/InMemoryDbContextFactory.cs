@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using IPNoticeHub.Data;
 using IPNoticeHub.Data.Entities.TrademarkRegistration;
+using IPNoticeHub.Data.Entities.CopyrightRegistration;
 using IPNoticeHub.Data.Entities.ApplicationUser;
 using IPNoticeHub.Common.EnumConstants;
 
@@ -59,6 +60,31 @@ namespace IPNoticeHub.Tests.TestUtilities
 
             trademarkEntity.Classes = trademarkClassesList;
             return (trademarkEntity, trademarkClassesList);
+        }
+
+        /// <summary>
+        /// Creates a CopyrightRegistration entity for testing.
+        /// Only sets the core fields you use in tests; everything else stays default/null.
+        /// </summary>
+        public static CopyrightEntity CreateCopyright(
+            string registrationNumber = "TX-0000000",
+            string title = "Test Title",
+            string typeOfWork = "Literary Work",
+            string owner = "Test Owner",
+            int? yearOfCreation = null,
+            DateTime? dateOfPublication = null,
+            string? nationOfFirstPublication = null)
+        {
+            return new CopyrightEntity
+            {
+                RegistrationNumber = registrationNumber ?? string.Empty,
+                TypeOfWork = typeOfWork ?? string.Empty,
+                Title = title ?? string.Empty,
+                YearOfCreation = yearOfCreation,
+                DateOfPublication = dateOfPublication,
+                Owner = owner ?? string.Empty,
+                NationOfFirstPublication = nationOfFirstPublication
+            };
         }
 
         /// <summary>
