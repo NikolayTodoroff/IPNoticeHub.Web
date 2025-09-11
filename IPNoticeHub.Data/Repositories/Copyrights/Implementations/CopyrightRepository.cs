@@ -21,6 +21,12 @@ namespace IPNoticeHub.Data.Repositories.Copyrights.Implementations
             await dbContext.SaveChangesAsync(cancellationToken);
         }
 
+        public Task UpdateAsync(CopyrightEntity entity, CancellationToken cancellationToken = default)
+        {
+            dbContext.CopyrightRegistrations.Update(entity);
+            return dbContext.SaveChangesAsync(cancellationToken);
+        }
+
         public Task<bool> ExistsByRegNumberAsync(string registrationNumber, CancellationToken cancellationToken = default)
         {
             var regNumber = NormalizeReg(registrationNumber);

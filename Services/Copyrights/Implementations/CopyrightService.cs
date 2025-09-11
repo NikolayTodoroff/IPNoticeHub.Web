@@ -33,7 +33,7 @@ namespace IPNoticeHub.Services.Copyrights.Implementations
                 newEntity = new CopyrightEntity()
                 {
                     RegistrationNumber = dto.RegistrationNumber,
-                    TypeOfWork = NormalizeWorkType(dto),
+                    TypeOfWork = NormalizeWorkType(dto.WorkType, dto.OtherWorkType),
                     Title = dto.Title,
                     YearOfCreation = dto.YearOfCreation,
                     DateOfPublication = dto.DateOfPublication,
@@ -52,6 +52,48 @@ namespace IPNoticeHub.Services.Copyrights.Implementations
             await userCopyrightRepository.AddOrUndeleteAsync(userId, newEntity.Id, cancellationToken);
 
             return newEntity.PublicId;
+        }
+
+        public async Task<bool> EditAsync(string userId, Guid publicId, CopyrightEditDTO dto, CancellationToken cancellationToken = default)
+        {
+            var copyrightEntity = await copyrightRepository.
+                GetByPublicIdAsync(publicId, asNoTracking: false, cancellationToken: cancellationToken);
+
+            if (copyrightEntity is null)
+            {
+                return false;
+            }
+
+            var linkedInCollection = await userCopyrightRepository.
+                IsLinkedAsync(userId, copyrightEntity.Id, includeSoftDeleted: false, cancellationToken: cancellationToken);
+
+            if (!linkedInCollection)
+            {
+                return false;
+            }   
+
+            // Preventing duplicate registration numbers if changed
+            if (!string.Equals(copyrightEntity.RegistrationNumber, dto.RegistrationNumber, StringComparison.OrdinalIgnoreCase))
+            {
+                var registrationExists = await copyrightRepository.ExistsByRegNumberAsync(dto.RegistrationNumber, cancellationToken);
+
+                if (registrationExists)
+                {
+                    return false;
+                }
+
+                copyrightEntity.RegistrationNumber = dto.RegistrationNumber;
+            }
+
+            copyrightEntity.TypeOfWork = NormalizeWorkType(dto.WorkType, dto.OtherWorkType);
+            copyrightEntity.Title = dto.Title;
+            copyrightEntity.YearOfCreation = dto.YearOfCreation;
+            copyrightEntity.DateOfPublication = dto.DateOfPublication;
+            copyrightEntity.Owner = dto.Owner;
+            copyrightEntity.NationOfFirstPublication = dto.NationOfFirstPublication;
+
+            await copyrightRepository.UpdateAsync(copyrightEntity, cancellationToken);
+            return true;
         }
 
         public async Task<CopyrightDetailsDTO?> GetDetailsAsync(string userId, Guid publicId, CancellationToken cancellationToken = default)
@@ -135,14 +177,9 @@ namespace IPNoticeHub.Services.Copyrights.Implementations
             return await userCopyrightRepository.SoftRemoveAsync(userId,entity.Id, cancellationToken);
         }
 
-        private static string NormalizeWorkType(CopyrightCreateDTO dto)
+        private static string NormalizeWorkType(CopyrightWorkType workType, string? other = null)
         {
-            if (dto.WorkType == CopyrightWorkType.Other)
-            {
-                return (dto.OtherWorkType ?? string.Empty).Trim();
-            }          
-
-            return dto.WorkType.ToString();
+            return workType == CopyrightWorkType.Other ? (other ?? string.Empty).Trim() : workType.ToString();
         }
     }
 }
