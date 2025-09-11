@@ -70,7 +70,7 @@ namespace IPNoticeHub.Services.Copyrights.Implementations
             if (!linkedInCollection)
             {
                 return false;
-            }   
+            }
 
             // Preventing duplicate registration numbers if changed
             if (!string.Equals(copyrightEntity.RegistrationNumber, dto.RegistrationNumber, StringComparison.OrdinalIgnoreCase))

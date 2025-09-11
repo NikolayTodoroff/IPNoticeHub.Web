@@ -8,6 +8,8 @@ namespace IPNoticeHub.Services.Copyrights.Abstractions
     {
         Task<Guid> CreateAsync(string userId, CopyrightCreateDTO dto, CancellationToken cancellationToken = default);
 
+        Task<bool> EditAsync(string userId, Guid publicId, CopyrightEditDTO dto, CancellationToken cancellationToken = default)
+
         Task<bool> RemoveAsync(string userId, Guid publicId, CancellationToken cancellationToken = default);
 
         Task<CopyrightDetailsDTO?> GetDetailsAsync(string userId, Guid publicId, CancellationToken cancellationToken = default);
