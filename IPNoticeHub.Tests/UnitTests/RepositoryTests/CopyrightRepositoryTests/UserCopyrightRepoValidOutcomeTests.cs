@@ -11,12 +11,12 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Copyrights
 {
     /// <summary>
     /// Section: UserCopyrightRepository Valid Outcome
-    ///  - AddOrUndeleteAsync creates a new active link.
-    ///  - AddOrUndeleteAsync on soft-deleted link undeletes it and refreshes DateAdded.
-    ///  - IsLinkedAsync respects includeSoftDeleted flag.
-    ///  - QueryUserCollection returns only active (non-deleted) copyright entities.
-    ///  - QueryUserLinks returns active link rows with included CopyrightRegistration.
-    ///  - SoftRemoveAsync soft-deletes an existing active link and returns true.
+    /// - Confirms AddOrUndeleteAsync creates a new active link when none exists.
+    /// - Validates AddOrUndeleteAsync restores soft-deleted links and updates the DateAdded field.
+    /// - Ensures IsLinkedAsync correctly handles the includeSoftDeleted flag.
+    /// - Verifies QueryUserCollection retrieves only active (non-deleted) copyright entities.
+    /// - Confirms QueryUserLinks returns active link rows with associated CopyrightRegistration data.
+    /// - Validates SoftRemoveAsync marks an active link as soft-deleted and returns true.
     /// </summary>
     [TestFixture]
     public class UserCopyrightRepoValidOutcomeTests

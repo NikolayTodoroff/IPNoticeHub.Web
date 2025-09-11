@@ -10,12 +10,12 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.CopyrightRepositoryTests
 {
     /// <summary>
     /// Section: UserCopyrightRepository Edge Cases
-    /// - AddOrUndeleteAsync on already-active link does not duplicate rows.
-    /// - SoftRemoveAsync on missing link returns false.
-    /// - SoftRemoveAsync on already soft-deleted link returns false.
-    /// - IsLinkedAsync for missing link returns false (both include/exclude soft-deleted).
-    /// - QueryUserCollection/QueryUserLinks return empty for users with no links.
-    /// - Multi-user isolation: results are per-user.
+    /// - Ensures AddOrUndeleteAsync does not create duplicate rows for already active links.
+    /// - Confirms SoftRemoveAsync returns false when the link is missing.
+    /// - Verifies SoftRemoveAsync returns false for links already soft-deleted.
+    /// - Validates IsLinkedAsync returns false for non-existent links, regardless of the includeSoftDeleted flag.
+    /// - Ensures QueryUserCollection and QueryUserLinks return empty results for users without links.
+    /// - Confirms multi-user isolation, ensuring results are scoped to individual users.
     /// </summary>
     [TestFixture]
     public class UserCopyrightRepoEdgeCasesTests

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using IPNoticeHub.Common.EnumConstants;
+using System.ComponentModel.DataAnnotations;
 using static IPNoticeHub.Common.ValidationConstants.CopyrightRegistrationConstants;
 
 namespace IPNoticeHub.Services.Copyrights.DTOs
@@ -8,8 +9,11 @@ namespace IPNoticeHub.Services.Copyrights.DTOs
         [Required, MaxLength(RegistrationNumberMaxLength)]
         public string RegistrationNumber { get; init; } = string.Empty;
 
-        [Required, MaxLength(WorkTypeMaxLength)]
-        public string TypeOfWork { get; init; } = string.Empty;
+        [Required]
+        public CopyrightWorkType WorkType { get; init; }
+
+        [MaxLength(WorkTypeMaxLength)]
+        public string? OtherWorkType { get; init; }
 
         [Required, MaxLength(TitleMaxLength)]
         public string Title { get; init; } = string.Empty;

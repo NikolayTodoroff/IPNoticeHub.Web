@@ -33,7 +33,7 @@ namespace IPNoticeHub.Services.Copyrights.Implementations
                 newEntity = new CopyrightEntity()
                 {
                     RegistrationNumber = dto.RegistrationNumber,
-                    TypeOfWork = dto.TypeOfWork,
+                    TypeOfWork = NormalizeWorkType(dto),
                     Title = dto.Title,
                     YearOfCreation = dto.YearOfCreation,
                     DateOfPublication = dto.DateOfPublication,
@@ -133,6 +133,16 @@ namespace IPNoticeHub.Services.Copyrights.Implementations
             if (entity is null) return false;
 
             return await userCopyrightRepository.SoftRemoveAsync(userId,entity.Id, cancellationToken);
+        }
+
+        private static string NormalizeWorkType(CopyrightCreateDTO dto)
+        {
+            if (dto.WorkType == CopyrightWorkType.Other)
+            {
+                return (dto.OtherWorkType ?? string.Empty).Trim();
+            }          
+
+            return dto.WorkType.ToString();
         }
     }
 }
