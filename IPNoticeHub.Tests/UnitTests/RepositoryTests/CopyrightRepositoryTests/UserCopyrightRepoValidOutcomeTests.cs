@@ -6,9 +6,6 @@ using IPNoticeHub.Data.Repositories.Copyrights.Implementations;
 using IPNoticeHub.Tests.TestUtilities;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Copyrights
 {
