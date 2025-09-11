@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-
 using IPNoticeHub.Data.Entities.CopyrightRegistration;
 using IPNoticeHub.Data.Repositories.Copyrights.Abstractions;
 

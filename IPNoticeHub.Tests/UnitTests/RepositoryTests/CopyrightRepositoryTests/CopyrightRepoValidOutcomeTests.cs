@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Copyrights
 {
     /// <summary>
-    /// Section: CopyrightRepository
+    /// Section: CopyrightRepository Valid Outcome
     /// - Verifies  thatAdd + GetByPublicId persists and fetches a single copyright by PublicId.
     /// - Ensures that GetByRegistrationNumberAsync retrieves the entity by its reg number.
     /// - Verifies that ExistsByRegistrationNumber reports correctly for existing and missing numbers.
