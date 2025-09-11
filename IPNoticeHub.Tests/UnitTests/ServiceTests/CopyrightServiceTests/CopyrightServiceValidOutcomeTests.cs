@@ -24,6 +24,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Copyrights
     /// - Confirms that CreateAsync with an existing registration number avoids duplication, reuses the existing entity, and links it to the user.
     /// - Ensures GetDetailsAsync for a linked copyright returns a fully populated details DTO.
     /// - Verifies that RemoveAsync for a linked and existing entity returns true and performs a soft delete of the link.
+    /// - Validates that GetUserCollectionAsync normalizes invalid page or size inputs and returns the correct data.
     /// </summary>
     [TestFixture]
     public class CopyrightServiceValidOutcomeTests
@@ -190,6 +191,42 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Copyrights
                 SingleAsync(l => l.ApplicationUserId == user.Id && l.CopyrightRegistrationId == copyrightEntity.Id);
 
             link.IsDeleted.Should().BeTrue();
+        }
+
+        [Test]
+        public async Task GetUserCollectionAsync_WhenPageOrSizeInvalid_NormalizesAndReturnsData()
+        {
+            using var testDbContext = InMemoryDbContextFactory.CreateTestDbContext();
+
+            var user = new ApplicationUser { Id = "111", UserName = "newUser", Email = "defaultUser@test.com" };
+            testDbContext.Users.Add(user);
+
+            var copyrightEntity1 = InMemoryDbContextFactory.CreateCopyright("TX-N1", "Alpha");
+            var copyrightEntity2 = InMemoryDbContextFactory.CreateCopyright("TX-N2", "Beta");
+
+            testDbContext.CopyrightRegistrations.AddRange(copyrightEntity1, copyrightEntity2);
+            await testDbContext.SaveChangesAsync();
+
+
+            var userCopyrightRepo = new UserCopyrightRepository(testDbContext);
+
+            await userCopyrightRepo.AddOrUndeleteAsync(user.Id, copyrightEntity1.Id);
+            await userCopyrightRepo.AddOrUndeleteAsync(user.Id, copyrightEntity2.Id);
+
+            var service = new CopyrightService(new CopyrightRepository(testDbContext), userCopyrightRepo);
+
+            // invalid inputs -> NormalizePaging should clamp them to sane values
+            var pagedResult = await service.GetUserCollectionAsync(
+                userId: user.Id,
+                sortBy: CollectionSortBy.DateAddedDesc,
+                page: 0,
+                resultsPerPage: 0,
+                cancellationToken: default);
+
+            pagedResult.ResultsCount.Should().Be(2);
+            pagedResult.CurrentPage.Should().BeGreaterThan(0);
+            pagedResult.ResultsCountPerPage.Should().BeGreaterThan(0);
+            pagedResult.Results.Should().NotBeEmpty();
         }
     }
 }
