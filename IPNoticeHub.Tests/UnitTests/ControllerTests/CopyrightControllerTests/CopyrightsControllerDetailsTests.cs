@@ -1,15 +1,11 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Services.Copyrights.Abstractions;
 using IPNoticeHub.Services.Copyrights.DTOs;
-using IPNoticeHub.Tests.TestUtilities;
 using IPNoticeHub.Tests.UnitTests.TestUtilities;
-using IPNoticeHub.Web.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
+
 
 namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
 {

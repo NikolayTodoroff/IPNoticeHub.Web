@@ -4,6 +4,7 @@ using IPNoticeHub.Services.Common;
 using IPNoticeHub.Services.Copyrights.Abstractions;
 using IPNoticeHub.Services.Copyrights.DTOs;
 using IPNoticeHub.Tests.UnitTests.TestUtilities;
+using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
@@ -59,6 +60,37 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
 
             myCollectionActionResult.Should().BeOfType<ForbidResult>();
             copyrightService.VerifyNoOtherCalls();
+        }
+
+        [Test]
+        public async Task MyCollection_UsesDefaultPaging_WhenNoArgumentsProvided()
+        {
+            var pagedResult = new PagedResult<CopyrightListItemDTO>
+            {
+                ResultsCount = 0,
+                CurrentPage = 1,
+                ResultsCountPerPage = 10,
+                Results = new List<CopyrightListItemDTO>()
+            };
+
+            var copyrightService = new Mock<ICopyrightService>();
+            copyrightService.Setup(s => s.GetUserCollectionAsync(
+                "u1",CollectionSortBy.DateAddedDesc,1,10,It.IsAny<CancellationToken>())).
+                ReturnsAsync(pagedResult);
+
+            var controller = TestCopyrightControllerFactory.CreateController(copyrightService.Object, userId: "u1");
+
+            var myCollectionActionResult = await controller.MyCollection();
+
+            myCollectionActionResult.Should().BeOfType<ViewResult>();
+
+            copyrightService.Verify(
+                s => s.GetUserCollectionAsync(
+                "u1",
+                CollectionSortBy.DateAddedDesc,
+                DefaultPage,
+                DefaultPageSize,
+                It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }

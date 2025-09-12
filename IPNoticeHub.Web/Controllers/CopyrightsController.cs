@@ -5,10 +5,8 @@ using IPNoticeHub.Services.Copyrights.DTOs;
 using IPNoticeHub.Web.Models.Copyrights;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
 using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
 using static IPNoticeHub.Common.ValidationConstants.StatusMessages;
-
 
 namespace IPNoticeHub.Web.Controllers
 {
@@ -155,15 +153,28 @@ namespace IPNoticeHub.Web.Controllers
             TempData["StatusMessage"] = CopyrightRemovedMessage;
             return RedirectToLocal(returnUrl)
                 ?? RedirectToAction(nameof(MyCollection));
-        }       
-
-        private IActionResult? RedirectToLocal(string? returnUrl)
-        {
-            if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
-                return Redirect(returnUrl);
-            return null;
         }
 
+        /// <summary>
+        /// Redirects to a local URL if the provided returnUrl is valid and local.
+        /// Returns null if the returnUrl is null, empty, or not a local URL.
+        /// </summary>
+        private IActionResult? RedirectToLocal(string? returnUrl)
+        {
+
+            if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+
+                return Redirect(returnUrl);
+
+            return null;
+
+        }
+
+        /// <summary>
+        /// Maps the stored type of work string to a CopyrightWorkType enum value and an optional "other" text.
+        /// If the stored value matches a predefined enum value, it returns the enum value and null for "other".
+        /// Otherwise, it returns CopyrightWorkType.Other and the stored value as "other".
+        /// </summary>
         private static (CopyrightWorkType workType, string? other) TypeOfWorkMapper(string stored)
         {
             if (Enum.TryParse<CopyrightWorkType>(stored, ignoreCase: true, out var parsedWorkType) &&

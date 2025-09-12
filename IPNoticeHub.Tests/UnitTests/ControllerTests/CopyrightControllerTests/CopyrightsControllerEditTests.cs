@@ -224,5 +224,59 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
             editActionResult.Should().BeOfType<ForbidResult>();
             copyrightService.VerifyNoOtherCalls();
         }
+
+        [Test]
+        public async Task Get_Edit_MapsKnownEnumString_ToThatEnum_WithoutOtherText()
+        {
+            var id = Guid.NewGuid();
+            var copyrightService = new Mock<ICopyrightService>();
+
+            copyrightService.Setup(s => s.GetDetailsAsync("u1", id, It.IsAny<CancellationToken>()))
+                   .ReturnsAsync(new CopyrightDetailsDTO
+                   {
+                       PublicId = id,
+                       RegistrationNumber = "TX-KNOWN",
+                       TypeOfWork = "VisualArts",
+                       Title = "Title",
+                       Owner = "Owner"
+                   });
+
+            var controller = TestCopyrightControllerFactory.CreateController(copyrightService.Object, userId: "u1");
+
+            var editActionResult = await controller.Edit(id);
+            var view = editActionResult.Should().BeOfType<ViewResult>().Subject;
+
+            var editViewModel = view.Model.Should().BeOfType<CopyrightEditViewModel>().Subject;
+
+            editViewModel.WorkType.Should().Be(CopyrightWorkType.VisualArts);
+            editViewModel.OtherWorkType.Should().BeNull();
+        }
+
+        [Test]
+        public async Task Get_Edit_MapsEmptyStoredString_ToOther_WithNullOtherText()
+        {
+            var id = Guid.NewGuid();
+
+            var copyrightService = new Mock<ICopyrightService>();
+
+            copyrightService.Setup(s => s.GetDetailsAsync("u1", id, It.IsAny<CancellationToken>()))
+                   .ReturnsAsync(new CopyrightDetailsDTO
+                   {
+                       PublicId = id,
+                       RegistrationNumber = "TX-EMPTY",
+                       TypeOfWork = "",
+                       Title = "Title",
+                       Owner = "Owner"
+                   });
+
+            var controller = TestCopyrightControllerFactory.CreateController(copyrightService.Object, userId: "u1");
+
+            var editActionResult = await controller.Edit(id);
+            var editView = editActionResult.Should().BeOfType<ViewResult>().Subject;
+
+            var editViewModel = editView.Model.Should().BeOfType<CopyrightEditViewModel>().Subject;
+            editViewModel.WorkType.Should().Be(CopyrightWorkType.Other);
+            editViewModel.OtherWorkType.Should().BeNull();
+        }
     }
 }
