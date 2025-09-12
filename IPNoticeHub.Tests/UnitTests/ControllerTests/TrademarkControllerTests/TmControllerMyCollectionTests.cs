@@ -23,7 +23,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
         public async Task MyCollection_WhenUserMissing_ReturnsForbid()
         {
             var tmCollectionService = new Mock<ITrademarkCollectionService>(MockBehavior.Strict);
-            var controller = TestControllerFactory.CreateTrademarksController(tmCollectionService.Object, userId: null);
+            var controller = TestTrademarkControllerFactory.CreateTrademarksController(tmCollectionService.Object, userId: null);
 
             var myCollectionActionResult = await controller.MyCollection();
 
@@ -52,7 +52,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
                 .Setup(s => s.GetUserCollectionAsync(userId, sortBy, currentPage, resultsPerPage, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(pagedResult);
 
-            var controller = TestControllerFactory.CreateTrademarksController(tmCollectionService.Object, userId: "u1");
+            var controller = TestTrademarkControllerFactory.CreateTrademarksController(tmCollectionService.Object, userId: "u1");
 
             var result = await controller.MyCollection(sortBy, currentPage, resultsPerPage);
 
@@ -85,7 +85,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
             tmCollectionService.Setup(s => s.GetUserCollectionAsync(
                 userId, sortBy, 1, 10, It.IsAny<CancellationToken>())).ReturnsAsync(pagedResult);
 
-            var controller = TestControllerFactory.CreateTrademarksController(tmCollectionService.Object, userId: userId);
+            var controller = TestTrademarkControllerFactory.CreateTrademarksController(tmCollectionService.Object, userId: userId);
 
             var myCollectionActionResult = await controller.MyCollection(sortBy, currentPage: 1, resultsPerPage: 10);
 

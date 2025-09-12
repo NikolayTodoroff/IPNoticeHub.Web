@@ -52,6 +52,7 @@
 
             public const string CopyrightAddedMessage = "Copyright added to your collection.";
             public const string CopyrightRemovedMessage = "Copyright removed from your collection.";
+            public const string CopyrightUpdatesMessage = "Copyright updated.";
         }
     }
 }

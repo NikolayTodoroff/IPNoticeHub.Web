@@ -11,7 +11,7 @@ namespace IPNoticeHub.Tests.UnitTests.TestUtilities
     /// <summary>
     /// Provides utility methods to create and configure instances of TrademarksController for unit testing.
     /// </summary>
-    public static class TestControllerFactory
+    public static class TestTrademarkControllerFactory
     {
         /// <summary>
         /// Creates a fully configured instance of TrademarksController with TempData and UrlHelper.
