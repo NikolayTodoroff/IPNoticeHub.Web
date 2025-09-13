@@ -12,9 +12,10 @@ namespace IPNoticeHub.Tests.IntegrationTests.TestUtilities
         public TestAuthHandler(
         IOptionsMonitor<AuthenticationSchemeOptions> options,
         ILoggerFactory logger,
-        UrlEncoder encoder,
-        TimeProvider timeProvider)      
-        : base(options, logger, encoder, timeProvider) { }
+        UrlEncoder encoder) : base(options, logger, encoder)
+        {
+            var currentUtc = TimeProvider.GetUtcNow();
+        }
 
         protected override Task<AuthenticateResult> HandleAuthenticateAsync()
         {
