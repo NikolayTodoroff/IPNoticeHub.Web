@@ -294,7 +294,6 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
             var effectiveUri = uriLocation.IsAbsoluteUri ? uriLocation : new Uri(client.BaseAddress!, uriLocation);
             effectiveUri.AbsolutePath.Should().StartWith("/Copyrights/Details");
 
-            // Extract GUID id
             var idSegment = effectiveUri.Segments[^1].TrimEnd('/');
             Guid.TryParse(idSegment, out var publicId).Should().BeTrue();
 
@@ -352,8 +351,6 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                 .AnyAsync(c => c.RegistrationNumber == regNumber);
 
             entityExists.Should().BeFalse("Unauthenticated users are not allowed not create registrations");
-        }
-
-        
+        }   
     }
 }
