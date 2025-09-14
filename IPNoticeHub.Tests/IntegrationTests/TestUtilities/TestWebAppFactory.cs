@@ -1,7 +1,10 @@
-﻿using IPNoticeHub.Data;
+﻿using System.Net.Http;
+using System.Linq;
+using IPNoticeHub.Data;
 using IPNoticeHub.Web;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace IPNoticeHub.Tests.IntegrationTests.TestUtilities
 {
-    public class TestWebAppFactory : WebApplicationFactory<Program>
+    public sealed class TestWebAppFactory : WebApplicationFactory<Program>
     {
         private readonly string inMemoryTestDb = $"testdb_{Guid.NewGuid()}";
         private string? currentUserId;
@@ -24,7 +27,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.TestUtilities
         {
             builder.ConfigureTestServices(services =>
             {
-                // 1) Replace the real DB with SQLite in-memory (closer to EF Core reality than InMemory provider)
+                // ---- Replace real DB with SQLite in-memory ----
                 var descriptor = services.SingleOrDefault(s => s.ServiceType == typeof(DbContextOptions<IPNoticeHubDbContext>));
                 if (descriptor is not null) services.Remove(descriptor);
 
@@ -33,26 +36,35 @@ namespace IPNoticeHub.Tests.IntegrationTests.TestUtilities
                     opts.UseSqlite($"DataSource={inMemoryTestDb};Mode=Memory;Cache=Shared");
                 });
 
-                // Ensure database is created for each test run
-                using var serviceScope = services.BuildServiceProvider().CreateScope();
+                // Ensure database exists and stays open for the in-memory connection lifetime
+                using (var scope = services.BuildServiceProvider().CreateScope())
+                {
+                    var db = scope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                    db.Database.OpenConnection();
+                    db.Database.EnsureCreated();
+                }
 
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-
-                testDbContext.Database.OpenConnection();
-                testDbContext.Database.EnsureCreated();
+                // Allow TestAuthHandler to read current user id
                 services.AddSingleton(new TestWebAppFactoryAccessor { Factory = this });
 
-                // 2) Fake authentication so [Authorize] passes and TryGetUserId works
+                // ---- Fake authentication ----
                 services.AddAuthentication("TestAuth")
                         .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("TestAuth", _ => { });
+
+                // ---- Force MVC to use our no-op view engine (no .cshtml needed) ----
+                services.PostConfigure<MvcViewOptions>(opts =>
+                {
+                    opts.ViewEngines.Clear();
+                    opts.ViewEngines.Add(new NoOpViewEngine());
+                });
             });
 
-            // 3) Use our fake scheme by default
+            // Use our fake scheme by default
             builder.UseSetting("Authentication:DefaultScheme", "TestAuth");
         }
 
-        // Small hook so the handler can read the current user id
         internal string? GetCurrentUserId() => currentUserId;
     }
-}
 
+    
+}
