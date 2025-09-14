@@ -11,9 +11,6 @@ using NUnit.Framework;
 
 namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
 {
-    /// <summary>
-    /// Integration tests for /Copyrights/Create.
-    /// </summary>
     public class CopyrightsCreateIntTests
     {
         private TestWebAppFactory appFactory = null!;
@@ -86,11 +83,55 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                 entity.Title.Should().Be("Test Title");
                 entity.Owner.Should().Be("Test Owner");
 
-                bool linkExists = await testDbContext.Set<UserCopyright>()
+                bool anyExistingLinks = await testDbContext.Set<UserCopyright>()
                                          .AnyAsync(uc => uc.ApplicationUserId == userId
                                                       && uc.CopyrightRegistrationId == entity.Id
                                                       && !uc.IsDeleted);
-                linkExists.Should().BeTrue();
+                anyExistingLinks.Should().BeTrue();
+            }
+        }
+
+        [Test]
+        public async Task Post_Create_WithInvalidModel_ReturnsHttpStatus200_AndDoesNotPersistEntity()
+        {
+            var userId = "u1";
+            var client = appFactory.CreateClientAs(userId);
+
+            using (var serviceScope = appFactory.Services.CreateScope())
+            {
+                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+            }
+
+            const string regNumber = "TX-9-INVALID-000";
+            var form = new Dictionary<string, string?>
+            {
+                ["RegistrationNumber"] = regNumber,
+                ["WorkType"] = "Literary",
+                ["OtherWorkType"] = "",
+                ["Title"] = "",                // invalid
+                ["Owner"] = "Test Owner",
+                ["YearOfCreation"] = "2024",
+                ["DateOfPublication"] = "2024-12-31",
+                ["NationOfFirstPublication"] = "US"
+            };
+            var content = new FormUrlEncodedContent(form!);
+
+            var response = await client.PostAsync("/Copyrights/Create", content);
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            using (var serviceScope = appFactory.Services.CreateScope())
+            {
+                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+
+                bool anyWithReg = await testDbContext.CopyrightRegistrations.AsNoTracking().AnyAsync(c => c.RegistrationNumber == regNumber);
+
+                anyWithReg.Should().BeFalse("invalid model must not create a registration");
+
+                bool anyExistingLinks = await testDbContext.Set<UserCopyright>().AnyAsync(uc => uc.ApplicationUserId == userId);
+
+                anyExistingLinks.Should().BeFalse("invalid model must not create a user–copyright link");
             }
         }
     }
