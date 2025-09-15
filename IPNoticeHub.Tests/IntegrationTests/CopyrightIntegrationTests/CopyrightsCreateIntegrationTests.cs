@@ -9,7 +9,7 @@ using NUnit.Framework;
 
 namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
 {
-    public class CopyrightsCreateIntTests
+    public class CopyrightsCreateIntegrationTests
     {
         private TestWebAppFactory appFactory = null!;
 
@@ -60,12 +60,12 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
 
             // Handle relative Location header safely
             var location = response.Headers.Location!;
-            var effectiveUri = location.IsAbsoluteUri ? location : new Uri(client.BaseAddress!, location);
+            var resolvedUri = location.IsAbsoluteUri ? location : new Uri(client.BaseAddress!, location);
 
-            effectiveUri.AbsolutePath.Should().StartWith("/Copyrights/Details");
+            resolvedUri.AbsolutePath.Should().StartWith("/Copyrights/Details");
 
             // Extracting the GUID Id
-            var idSegment = effectiveUri.Segments[^1].TrimEnd('/');
+            var idSegment = resolvedUri.Segments[^1].TrimEnd('/');
             Guid.TryParse(idSegment, out var publicId).Should().BeTrue("Details redirect must include a Guid id");
 
             // Assert DB: entity + user link
@@ -166,10 +166,10 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
             response.Headers.Location.Should().NotBeNull();
 
             var uriLocation = response.Headers.Location!;
-            var effectiveUri = uriLocation.IsAbsoluteUri ? uriLocation : new Uri(client.BaseAddress!, uriLocation);
-            effectiveUri.AbsolutePath.Should().StartWith("/Copyrights/Details");
+            var resolvedUri = uriLocation.IsAbsoluteUri ? uriLocation : new Uri(client.BaseAddress!, uriLocation);
+            resolvedUri.AbsolutePath.Should().StartWith("/Copyrights/Details");
 
-            var idSegment = effectiveUri.Segments[^1].TrimEnd('/');
+            var idSegment = resolvedUri.Segments[^1].TrimEnd('/');
             Guid.TryParse(idSegment, out var publicId).Should().BeTrue();
 
             using (var scope = appFactory.Services.CreateScope())
@@ -230,8 +230,8 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
             response.Headers.Location.Should().NotBeNull();
 
             var uriLocation = response.Headers.Location!;
-            var effectiveUri = uriLocation.IsAbsoluteUri ? uriLocation : new Uri(client.BaseAddress!, uriLocation);
-            effectiveUri.PathAndQuery.Should().Be(returnUrl);
+            var resolvedUri = uriLocation.IsAbsoluteUri ? uriLocation : new Uri(client.BaseAddress!, uriLocation);
+            resolvedUri.PathAndQuery.Should().Be(returnUrl);
 
             using (var serviceScope = appFactory.Services.CreateScope())
             {
@@ -287,10 +287,10 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
             response.Headers.Location.Should().NotBeNull();
 
             var uriLocation = response.Headers.Location!;
-            var effectiveUri = uriLocation.IsAbsoluteUri ? uriLocation : new Uri(client.BaseAddress!, uriLocation);
-            effectiveUri.AbsolutePath.Should().StartWith("/Copyrights/Details");
+            var resolvedUri = uriLocation.IsAbsoluteUri ? uriLocation : new Uri(client.BaseAddress!, uriLocation);
+            resolvedUri.AbsolutePath.Should().StartWith("/Copyrights/Details");
 
-            var idSegment = effectiveUri.Segments[^1].TrimEnd('/');
+            var idSegment = resolvedUri.Segments[^1].TrimEnd('/');
             Guid.TryParse(idSegment, out var publicId).Should().BeTrue();
 
             using (var scope = appFactory.Services.CreateScope())

@@ -9,7 +9,7 @@ using NUnit.Framework;
 
 namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
 {
-    public class CopyrightsDetailsIntTests
+    public class CopyrightsDetailsIntegrationTests
     {
         private TestWebAppFactory appFactory = null!;
 
@@ -31,10 +31,8 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
             {
                 var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
 
-                // Seeds the user into the database
                 await TestDbSeeder.SeedUserAsync(testDbContext, userId);
 
-                // Seeds the copyright entity into the database, and links it to the user
                 var entity = await TestDbSeeder.SeedCopyrightAsync(
                     testDbContext,
                     regNumber: "TX-9-DET-200",
@@ -73,14 +71,12 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                 await TestDbSeeder.SeedUserAsync(testDbContext, userId);
                 await TestDbSeeder.SeedUserAsync(testDbContext, randomUserId);
 
-                // Seeds the copyright entity into the database, and links it to the user
                 var entity = await TestDbSeeder.SeedCopyrightAsync(
                     testDbContext,
                     regNumber: "TX-9-DET-404",
                     typeOfWork: "Literary",
                     title: "Unlinked Title");
 
-                // Links the entity to a random user, not the target user
                 testDbContext.Set<UserCopyright>().Add(new UserCopyright
                 {
                     ApplicationUserId = randomUserId,
