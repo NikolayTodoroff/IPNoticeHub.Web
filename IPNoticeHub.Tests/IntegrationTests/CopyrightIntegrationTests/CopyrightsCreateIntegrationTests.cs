@@ -347,6 +347,104 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                 .AnyAsync(c => c.RegistrationNumber == regNumber);
 
             entityExists.Should().BeFalse("Unauthenticated users are not allowed not create registrations");
-        }   
+        }
+
+        [Test]
+        public async Task Post_Create_WithWorkTypeOther_WithoutOtherWorkType_Returns200_AndDoesNotPersist()
+        {
+            var userId = "u1";
+            var client = appFactory.CreateClientAs(userId);
+
+            using (var serviceScope = appFactory.Services.CreateScope())
+            {
+                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+            }
+
+            const string regNumber = "TX-9-CRT-OTHER-MISSING";
+            var form = new Dictionary<string, string?>
+            {
+                ["RegistrationNumber"] = regNumber,
+                ["WorkType"] = "Other",         // triggers conditional validation
+                ["OtherWorkType"] = "",         // string value missing; should cause ModelState error
+                ["Title"] = "Should Not Insert",
+                ["Owner"] = "Should Not Insert",
+                ["YearOfCreation"] = "2024",
+                ["DateOfPublication"] = "2024-12-31",
+                ["NationOfFirstPublication"] = "US"
+            };
+
+            var response = await client.PostAsync("/Copyrights/Create", new FormUrlEncodedContent(form));
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            using (var serviceScope = appFactory.Services.CreateScope())
+            {
+                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+
+                var entityExists = await testDbContext.CopyrightRegistrations.AsNoTracking()
+                    .AnyAsync(c => c.RegistrationNumber == regNumber);
+
+                entityExists.Should().BeFalse("Missing OtherWorkType must block the creation of the copyright entity");
+
+                var anyLinksExist = await testDbContext.Set<UserCopyright>().AnyAsync(uc => uc.ApplicationUserId == userId);
+
+                anyLinksExist.Should().BeFalse();
+            }
+        }
+
+        [Test]
+        public async Task Post_Create_DuplicateRegistrationNumber_Returns200_AndDoesNotInsert()
+        {
+            var userId = "u1";
+            var client = appFactory.CreateClientAs(userId);
+
+            const string existingRegNumber = "TX-9-CRT-DUPLICATE-EXIST";
+
+            using (var serviceScope = appFactory.Services.CreateScope())
+            {
+                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+
+                // Seed an existing registration with the conflicting number
+                var existing = await TestDbSeeder.SeedCopyrightAsync(
+                    testDbContext,
+                    regNumber: existingRegNumber,
+                    typeOfWork: "Literary",
+                    title: "Existing Entity"
+                );
+
+                await testDbContext.SaveChangesAsync();
+            }
+
+            var form = new Dictionary<string, string?>
+            {
+                ["RegistrationNumber"] = existingRegNumber,
+                ["WorkType"] = "Literary",
+                ["OtherWorkType"] = "",
+                ["Title"] = "Should Not Insert",
+                ["Owner"] = "Should Not Insert",
+                ["YearOfCreation"] = "2024",
+                ["DateOfPublication"] = "2024-12-31",
+                ["NationOfFirstPublication"] = "US"
+            };
+
+            var response = await client.PostAsync("/Copyrights/Create", new FormUrlEncodedContent(form));
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            using (var serviceScope = appFactory.Services.CreateScope())
+            {
+                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+
+                int entitiesCount = await testDbContext.CopyrightRegistrations.AsNoTracking()
+                    .CountAsync(c => c.RegistrationNumber == existingRegNumber);
+
+                entitiesCount.Should().Be(1, "duplicate create must not insert a second record");
+
+                var anyLinksExist = await testDbContext.Set<UserCopyright>().AnyAsync(uc => uc.ApplicationUserId == userId);
+                anyLinksExist.Should().BeFalse("no user–copyright link should be created on failed create");
+            }
+        }
     }
 }

@@ -365,5 +365,77 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
+
+        [TestCase(0)]
+        [TestCase(-3)]
+        public async Task Get_MyCollection_CurrentPage_NonPositive_Returns200(int currentPage)
+        {
+            var userId = "u1";
+            var client = appFactory.CreateClientAs(userId);
+
+            using (var serviceScope = appFactory.Services.CreateScope())
+            {
+                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+
+                var entity1 = await TestDbSeeder.SeedCopyrightAsync(
+                    testDbContext,
+                    regNumber: "TX-9-COLL-PAGE-NEG-A",
+                    typeOfWork: "Literary", 
+                    title: "Alpha");
+
+                var entity2 = await TestDbSeeder.SeedCopyrightAsync(
+                    testDbContext, 
+                    regNumber: "TX-9-COLL-PAGE-NEG-B",
+                    typeOfWork: "VisualArts", 
+                    title: "Bravo");
+
+                testDbContext.Set<UserCopyright>().AddRange(
+                    new UserCopyright { ApplicationUserId = userId, CopyrightRegistrationId = entity1.Id, IsDeleted = false },
+                    new UserCopyright { ApplicationUserId = userId, CopyrightRegistrationId = entity2.Id, IsDeleted = false }
+                );
+
+                await testDbContext.SaveChangesAsync();
+            }
+
+            var response = await client.GetAsync($"/Copyrights/MyCollection?sortBy=TitleAsc&currentPage={currentPage}&resultsPerPage=10");
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+        }
+
+        [Test]
+        public async Task Get_MyCollection_CurrentPage_NonNumeric_Returns200()
+        {
+            var userId = "u1";
+            var client = appFactory.CreateClientAs(userId);
+
+            using (var serviceScope = appFactory.Services.CreateScope())
+            {
+                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+
+                var entity1 = await TestDbSeeder.SeedCopyrightAsync(
+                    testDbContext, 
+                    regNumber: "TX-9-COLL-PAGE-NONNUM-A",
+                    typeOfWork: "Literary", 
+                    title: "Alpha");
+
+                var entity2 = await TestDbSeeder.SeedCopyrightAsync(
+                    testDbContext, 
+                    regNumber: "TX-9-COLL-PAGE-NONNUM-B",
+                    typeOfWork: "VisualArts", 
+                    title: "Bravo");
+
+                testDbContext.Set<UserCopyright>().AddRange(
+                    new UserCopyright { ApplicationUserId = userId, CopyrightRegistrationId = entity1.Id, IsDeleted = false },
+                    new UserCopyright { ApplicationUserId = userId, CopyrightRegistrationId = entity2.Id, IsDeleted = false }
+                );
+                await testDbContext.SaveChangesAsync();
+            }
+
+            var response = await client.GetAsync("/Copyrights/MyCollection?sortBy=TitleAsc&currentPage=abc&resultsPerPage=10");
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+        }
     }
 }
