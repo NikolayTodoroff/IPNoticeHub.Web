@@ -9,9 +9,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.TestUtilities
 {
     public sealed class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
-        public TestAuthHandler(
-        IOptionsMonitor<AuthenticationSchemeOptions> options,
-        ILoggerFactory logger,
+        public TestAuthHandler(IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger,
         UrlEncoder encoder) : base(options, logger, encoder)
         {
             var currentUtc = TimeProvider.GetUtcNow();
@@ -19,12 +17,15 @@ namespace IPNoticeHub.Tests.IntegrationTests.TestUtilities
 
         protected override Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            // Resolve factory from DI to know which user we want
-            var factory = Context.RequestServices.GetService<TestWebAppFactoryAccessor>();
-            var userId = factory?.Factory?.GetCurrentUserId();
+            // Retrieve the TestWebAppFactory instance from the dependency injection container 
+            // to determine the current user ID for authentication.
+            var testAppFactory = Context.RequestServices.GetService<TestWebAppFactoryAccessor>();
+            var userId = testAppFactory?.Factory?.GetCurrentUserId();
 
             if (string.IsNullOrWhiteSpace(userId))
+            {
                 return Task.FromResult(AuthenticateResult.NoResult());
+            }            
 
             var claims = new[] { new Claim(ClaimTypes.NameIdentifier, userId) };
             var identity = new ClaimsIdentity(claims, authenticationType: "TestAuth");

@@ -1,15 +1,11 @@
-﻿using FluentAssertions;
+﻿using System.Net;
+using FluentAssertions;
 using IPNoticeHub.Data;
 using IPNoticeHub.Data.Entities.ApplicationUser;
 using IPNoticeHub.Tests.IntegrationTests.TestUtilities;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Collections.Generic;
-using System.Net;
-using System.Net.Http;
 
 namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
 {
@@ -133,7 +129,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
 
                 bool anyExistingLinks = await testDbContext.Set<UserCopyright>().AnyAsync(uc => uc.ApplicationUserId == userId);
 
-                anyExistingLinks.Should().BeFalse("invalid model must not create a user–copyright link");
+                anyExistingLinks.Should().BeFalse("Invalid model must not create a user–copyright link");
             }
         }
 

@@ -23,7 +23,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.TestUtilities
     /// </summary>
     public sealed class TestWebAppFactory : WebApplicationFactory<Program>
     {
-        private SqliteConnection? _keepAlive;
+        private SqliteConnection? activeSQLiteConnection;
         private string? currentUserId;
 
         /// <summary>
@@ -49,19 +49,19 @@ namespace IPNoticeHub.Tests.IntegrationTests.TestUtilities
                     services.Remove(descriptor);
                 }
 
-                _keepAlive = new SqliteConnection("DataSource=:memory:");
-                _keepAlive.Open();
+                activeSQLiteConnection = new SqliteConnection("DataSource=:memory:");
+                activeSQLiteConnection.Open();
 
-                services.AddDbContext<IPNoticeHubDbContext>(opts =>
+                services.AddDbContext<IPNoticeHubDbContext>(optionsBuilder =>
                 {
-                    opts.UseSqlite(_keepAlive);
+                    optionsBuilder.UseSqlite(activeSQLiteConnection);
                 });
 
                 // Ensure schema exists while the shared connection is open
-                using (var scope = services.BuildServiceProvider().CreateScope())
+                using (var serviceScope = services.BuildServiceProvider().CreateScope())
                 {
-                    var db = scope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                    db.Database.EnsureCreated();
+                    var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                    testDbContext.Database.EnsureCreated();
                 }
 
                 // Allow TestAuthHandler to read current user id
@@ -94,8 +94,8 @@ namespace IPNoticeHub.Tests.IntegrationTests.TestUtilities
 
             if (disposing)
             {
-                _keepAlive?.Dispose();
-                _keepAlive = null;
+                activeSQLiteConnection?.Dispose();
+                activeSQLiteConnection = null;
             }
         }
     }
