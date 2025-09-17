@@ -387,13 +387,13 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                     SourceId = "US-1111",
                     RegistrationNumber = "RN-A",
                     GoodsAndServices = "Software",
-                    Owner = "Acme", 
+                    Owner = "Acme",
                     StatusCategory = TrademarkStatusCategory.Registered,
                     StatusDetail = "Registered",
                     Source = DataProvider.USPTO };
 
                 var entity2 = new TrademarkEntity
-                { 
+                {
                     Wordmark = "B2",
                     SourceId = "US-2222",
                     RegistrationNumber = "RN-B",
@@ -404,7 +404,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                     Source = DataProvider.USPTO };
 
                 var entity3 = new TrademarkEntity
-                { 
+                {
                     Wordmark = "C3",
                     SourceId = "US-3333",
                     RegistrationNumber = "RN-C",
@@ -429,6 +429,115 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
             var response = await client.GetAsync($"/Trademarks/MyCollection?sortBy=WordmarkAsc&currentPage=1&resultsPerPage={resultsPerPage}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
+        }
+
+        [TestCase(0)]
+        [TestCase(-3)]
+        public async Task Get_MyCollection_WhenCurrentPage_NonPositive_Returns200(int currentPage)
+        {
+            var userId = "u1";
+            var client = appFactory.CreateClientAs(userId);
+
+            using (var serviceScope = appFactory.Services.CreateScope())
+            {
+                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+
+                var entity1 = new TrademarkEntity
+                {
+                    Wordmark = "Zebrea1000",
+                    SourceId = "US-1111-A",
+                    RegistrationNumber = "RN-A",
+                    GoodsAndServices = "Software",
+                    Owner = "Acme",
+                    StatusCategory = TrademarkStatusCategory.Registered,
+                    StatusDetail = "Registered",
+                    Source = DataProvider.USPTO
+                };
+
+                var entity2 = new TrademarkEntity
+                {
+                    Wordmark = "DADA200",
+                    SourceId = "US-2222-B",
+                    RegistrationNumber = "RN-B",
+                    GoodsAndServices = "Software",
+                    Owner = "Acme",
+                    StatusCategory = TrademarkStatusCategory.Registered,
+                    StatusDetail = "Registered",
+                    Source = DataProvider.USPTO
+                };
+
+                testDbContext.TrademarkRegistrations.AddRange(entity1, entity2);
+                await testDbContext.SaveChangesAsync();
+
+                testDbContext.UserTrademarks.AddRange(
+                    new UserTrademark { ApplicationUserId = userId, TrademarkRegistrationId = entity1.Id, IsDeleted = false },
+                    new UserTrademark { ApplicationUserId = userId, TrademarkRegistrationId = entity2.Id, IsDeleted = false }
+                );
+                await testDbContext.SaveChangesAsync();
+            }
+
+            var response = await client.GetAsync($"/Trademarks/MyCollection?sortBy=WordmarkAsc&currentPage={currentPage}&resultsPerPage=10");
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+        }
+
+        [Test]
+        public async Task Get_MyCollection_WhenCurrentPage_NonNumeric_Returns200()
+        {
+            var userId = "u1";
+            var client = appFactory.CreateClientAs(userId);
+
+            using (var serviceScope = appFactory.Services.CreateScope())
+            {
+                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+
+                var entity1 = new TrademarkEntity
+                {
+                    Wordmark = "ALPHA",
+                    SourceId = "US-CPSTR-A",
+                    RegistrationNumber = "RN-A",
+                    GoodsAndServices = "Software",
+                    Owner = "Acme",
+                    StatusCategory = TrademarkStatusCategory.Registered,
+                    StatusDetail = "Registered",
+                    Source = DataProvider.USPTO };
+
+                var entity2 = new TrademarkEntity
+                {
+                    Wordmark = "BRAVO",
+                    SourceId = "US-CPSTR-B",
+                    RegistrationNumber = "RN-B",
+                    GoodsAndServices = "Software",
+                    Owner = "Acme",
+                    StatusCategory = TrademarkStatusCategory.Registered,
+                    StatusDetail = "Registered",
+                    Source = DataProvider.USPTO };
+
+                testDbContext.TrademarkRegistrations.AddRange(entity1, entity2);
+                await testDbContext.SaveChangesAsync();
+
+                testDbContext.UserTrademarks.AddRange(
+                    new UserTrademark { ApplicationUserId = userId, TrademarkRegistrationId = entity1.Id, IsDeleted = false },
+                    new UserTrademark { ApplicationUserId = userId, TrademarkRegistrationId = entity2.Id, IsDeleted = false }
+                );
+                await testDbContext.SaveChangesAsync();
+            }
+
+            var response = await client.GetAsync("/Trademarks/MyCollection?sortBy=WordmarkAsc&currentPage=abc&resultsPerPage=10");
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+        }
+
+        [Test]
+        public async Task Get_TrademarksSearch_Path_Returns404()
+        {
+            var client = appFactory.CreateClient(new() { AllowAutoRedirect = false });
+
+            var response = await client.GetAsync("/Trademarks/Search");
+
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
     }
 }

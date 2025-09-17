@@ -4,10 +4,16 @@ using IPNoticeHub.Data;
 using IPNoticeHub.Data.Entities.ApplicationUser;
 using IPNoticeHub.Data.Entities.TrademarkRegistration;
 using IPNoticeHub.Tests.IntegrationTests.TestUtilities;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using NUnit.Framework;
 using System.Net;
+using System.Security.Claims;
+using System.Text.Encodings.Web;
+using Microsoft.Extensions.Logging;
 
 namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
 {
@@ -253,7 +259,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
         }
 
         [Test]
-        public async Task Post_AddTrademark_SoftDeletedLink_RestoresLink_AndRedirects()
+        public async Task Post_AddTrademark_SoftDeletedLink_RestoresAndRedirectsToMyCollection()
         {
             var userId = "u1";
             var client = appFactory.CreateClientAs(userId);
@@ -318,6 +324,182 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
 
                 links.Count.Should().Be(1);
                 links.Single().IsDeleted.Should().BeFalse();
+            }
+        }
+
+        [Test]
+        public async Task Post_AddTrademark_WithInvalidTrademarkId_RedirectsToMyCollection_AndNoLinkCreated()
+        {
+            var userId = "u1";
+            var client = appFactory.CreateClientAs(userId);
+
+            using (var serviceScope = appFactory.Services.CreateScope())
+            {
+                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+            }
+
+            var form = new Dictionary<string, string?>
+            {
+                ["trademarkId"] = "999999"
+            };
+
+            var response = await client.PostAsync("/Trademarks/Add", new FormUrlEncodedContent(form));
+
+            response.StatusCode.Should().Be(HttpStatusCode.Found);
+
+            var uriLocation = response.Headers.Location!;
+            var resolvedUri = uriLocation.IsAbsoluteUri ? uriLocation : new Uri(client.BaseAddress!, uriLocation);
+
+            resolvedUri.AbsolutePath.Should().Be("/Trademarks/MyCollection");
+
+            using (var serviceScope = appFactory.Services.CreateScope())
+            {
+                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var linkCount = await testDbContext.UserTrademarks.AsNoTracking().CountAsync();
+
+                linkCount.Should().Be(0);
+            }
+        }
+
+        [Test]
+        public async Task Post_AddTrademark_AuthenticatedMissingNameIdentifier_Returns403_AndNoLinkCreated()
+        {
+            int entityId;
+
+            using (var serviceScope = appFactory.Services.CreateScope())
+            {
+                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+
+                var entity = new TrademarkEntity
+                {
+                    Wordmark = "NoId WM",
+                    SourceId = "US-NOIDWM-001",
+                    RegistrationNumber = "RN-NOIDWM-1",
+                    GoodsAndServices = "Software",
+                    Owner = "ARW100",
+                    StatusCategory = TrademarkStatusCategory.Pending,
+                    StatusDetail = "Pending",
+                    Source = DataProvider.USPTO
+                };
+
+                testDbContext.TrademarkRegistrations.Add(entity);
+                await testDbContext.SaveChangesAsync();
+                entityId = entity.Id;
+            }
+
+            var layeredFactory = appFactory.WithWebHostBuilder(builder =>
+            {
+                builder.ConfigureTestServices(services =>
+                {
+                    services.AddAuthentication(o =>
+                    {
+                        o.DefaultAuthenticateScheme = "NoId";
+                        o.DefaultChallengeScheme = "NoId";
+                    })
+                    .AddScheme<AuthenticationSchemeOptions, NoIdAuthHandler>("NoId", _ => { });
+                });
+            });
+
+            await using (layeredFactory)
+            {
+                var client = layeredFactory.CreateClient(new() { AllowAutoRedirect = false });
+
+                var form = new Dictionary<string, string?> { ["trademarkId"] = entityId.ToString() };
+                var response = await client.PostAsync("/Trademarks/Add", new FormUrlEncodedContent(form));
+
+                response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+
+                using (var serviceScope = layeredFactory.Services.CreateScope())
+                {
+                    var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                    var linkCount = await testDbContext.UserTrademarks.AsNoTracking().CountAsync();
+                    linkCount.Should().Be(0);
+                }
+            }
+        }
+
+        private sealed class NoIdAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
+        {
+            public NoIdAuthHandler(IOptionsMonitor<AuthenticationSchemeOptions> options,
+                                   ILoggerFactory logger,
+                                   UrlEncoder encoder) : base(options, logger, encoder) { }
+            protected override Task<AuthenticateResult> HandleAuthenticateAsync()
+            {
+                var identity = new ClaimsIdentity(new[]
+                {
+                    new Claim(ClaimTypes.Name, "AuthNoId"),
+                    new Claim(ClaimTypes.Email, "authnoid@test.local")
+                }, "NoId");
+
+                var principal = new ClaimsPrincipal(identity);
+                var ticket = new AuthenticationTicket(principal, "NoId");
+                return Task.FromResult(AuthenticateResult.Success(ticket));
+            }
+        }
+
+        [Test]
+        public async Task Post_AddTrademark_WithMissingTrademarkId_RedirectsToMyCollection_NoLinkCreated()
+        {
+            var userId = "u1";
+            var client = appFactory.CreateClientAs(userId);
+
+            using (var serviceScope = appFactory.Services.CreateScope())
+            {
+                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+            }
+
+            var response = await client.PostAsync("/Trademarks/Add",
+                new FormUrlEncodedContent(new Dictionary<string, string?>()));
+
+            response.StatusCode.Should().Be(HttpStatusCode.Found);
+
+            var uriLocation = response.Headers.Location!;
+            var resolvedUri = uriLocation.IsAbsoluteUri ? uriLocation : new Uri(client.BaseAddress!, uriLocation);
+
+            resolvedUri.AbsolutePath.Should().Be("/Trademarks/MyCollection");
+
+            using (var serviceScope = appFactory.Services.CreateScope())
+            {
+                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var linkCount = await testDbContext.UserTrademarks.AsNoTracking()
+                    .CountAsync(ut => ut.ApplicationUserId == userId);
+                linkCount.Should().Be(0);
+            }
+        }
+
+        [TestCase("abc", TestName = "Post_Add_NonNumericId_Redirects_NoLinkCreated")]
+        [TestCase("-1", TestName = "Post_Add_NegativeId_Redirects_NoLinkCreated")]
+        public async Task Post_Add_InvalidTrademarkId_RedirectsToMyCollection_NoLinkCreated(string badId)
+        {
+            var userId = "u1";
+            var client = appFactory.CreateClientAs(userId);
+
+            using (var serviceScope = appFactory.Services.CreateScope())
+            {
+                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+            }
+
+            var form = new Dictionary<string, string?> { ["trademarkId"] = badId };
+
+            var response = await client.PostAsync("/Trademarks/Add", new FormUrlEncodedContent(form));
+
+            response.StatusCode.Should().Be(HttpStatusCode.Found);
+
+            var uriLocation = response.Headers.Location!;
+            var resolvedUri = uriLocation.IsAbsoluteUri ? uriLocation : new Uri(client.BaseAddress!, uriLocation);
+            resolvedUri.AbsolutePath.Should().Be("/Trademarks/MyCollection");
+
+            using (var serviceScope = appFactory.Services.CreateScope())
+            {
+                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+
+                var linksCount = await testDbContext.UserTrademarks.AsNoTracking()
+                    .CountAsync(ut => ut.ApplicationUserId == userId);
+
+                linksCount.Should().Be(0);
             }
         }
     }
