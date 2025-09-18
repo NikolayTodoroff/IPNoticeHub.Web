@@ -28,7 +28,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
         }
 
         [Test]
-        public async Task Post_Create_WithValidData_RedirectsToDetailsPage_AndPersistsEntityAndUserLink()
+        public async Task Post_CreateEntity_WithValidData_RedirectsToDetailsPage_AndPersistsEntityAndUserLink()
         {
             var userId = "u1";
             var client = appFactory.CreateClientAs(userId);
@@ -196,7 +196,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
         }
 
         [Test]
-        public async Task Post_Create_Valid_WithLocalReturnUrl_RedirectsToReturnUrl_AndPersists()
+        public async Task Post_Create_ValidEntity_WithLocalReturnUrl_RedirectsToReturnUrl_AndPersistsEntity()
         {
             var userId = "u1";
             var client = appFactory.CreateClientAs(userId);
@@ -225,7 +225,6 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
 
             var response = await client.PostAsync("/Copyrights/Create", new FormUrlEncodedContent(form!));
 
-            // Assert redirect to the provided local URL
             response.StatusCode.Should().Be(HttpStatusCode.Found);
             response.Headers.Location.Should().NotBeNull();
 
@@ -253,7 +252,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
         }
 
         [Test]
-        public async Task Post_Create_Valid_WithExternalReturnUrl_IgnoresReturnUrl_AndRedirectsToDetails()
+        public async Task Post_Create_ValidEntity_WithExternalReturnUrl_IgnoresReturnUrl_AndRedirectsToDetails()
         {
             var userId = "u1";
             var client = appFactory.CreateClientAs(userId);
@@ -316,7 +315,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
         }
 
         [Test]
-        public async Task Post_Create_Unauthenticated_ReturnsUnauthorizedStatus_AndDoesNotPersistEntity()
+        public async Task Post_Create_WithUnauthenticatedUser_ReturnsUnauthorizedStatus_AndDoesNotPersistEntity()
         {
             // No user is authenticated, so do not call CreateClientAs(...) to simulate an unauthenticated request.
             var client = appFactory.CreateClient();

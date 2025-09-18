@@ -124,5 +124,15 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
+
+        [Test]
+        public async Task Get_Details_InvalidRouteToken_Returns404()
+        {
+            var client = appFactory.CreateClient(new() { AllowAutoRedirect = false });
+
+            var response = await client.GetAsync("/Trademarks/Details/not-a-guid");
+
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        }
     }
 }

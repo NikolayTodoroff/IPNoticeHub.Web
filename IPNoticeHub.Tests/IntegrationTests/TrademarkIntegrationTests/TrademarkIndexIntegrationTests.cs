@@ -293,7 +293,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
 
                 testDbContext.TrademarkRegistrations.AddRange(
                     new TrademarkEntity
-                    { 
+                    {
                         Wordmark = "ALPHA",
                         SourceId = "US-RPPL-1",
                         RegistrationNumber = "RN-1",
@@ -304,7 +304,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                         Source = DataProvider.USPTO },
 
                     new TrademarkEntity
-                    { 
+                    {
                         Wordmark = "ALPHABET",
                         SourceId = "US-RPPL-2",
                         RegistrationNumber = "RN-2",
@@ -391,6 +391,80 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
 
             var url = $"/Trademarks?SearchTerm=E&sortBy={sortBy}&currentPage=1&resultsPerPage=10";
             var response = await client.GetAsync(url);
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+        }
+
+        [Test]
+        public async Task Get_Index_WhitespaceSearchTerm_Returns200()
+        {
+            using (var serviceScope = appFactory.Services.CreateScope())
+            {
+                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                testDbContext.TrademarkRegistrations.AddRange(
+                    new TrademarkEntity
+                    { 
+                        Wordmark = "ALPHA",
+                        SourceId = "US-WS-1",
+                        RegistrationNumber = "RN-1",
+                        GoodsAndServices = "Software",
+                        Owner = "Acme",
+                        StatusCategory = TrademarkStatusCategory.Registered, 
+                        StatusDetail = "Registered",
+                        Source = DataProvider.USPTO },
+
+                    new TrademarkEntity 
+                    { 
+                        Wordmark = "BRAVO",
+                        SourceId = "US-WS-2", 
+                        RegistrationNumber = "RN-2",
+                        GoodsAndServices = "Games",
+                        Owner = "Beta", 
+                        StatusCategory = TrademarkStatusCategory.Pending,
+                        StatusDetail = "Pending", 
+                        Source = DataProvider.USPTO }
+                );
+                await testDbContext.SaveChangesAsync();
+            }
+
+            var client = appFactory.CreateClient(new() { AllowAutoRedirect = false });
+
+            var response = await client.GetAsync("/Trademarks?SearchTerm=%20%20%20");
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+        }
+
+        [Test]
+        public async Task Get_Index_LargeDataset_Paging_Returns200()
+        {
+            // Arrange
+            using (var serviceScope = appFactory.Services.CreateScope())
+            {
+                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+
+                var bulkEntities = new List<TrademarkEntity>(200);
+                for (int i = 0; i < 200; i++)
+                {
+                    bulkEntities.Add(new TrademarkEntity
+                    {
+                        Wordmark = $"BULK-{i:D3}",
+                        SourceId = $"US-IX-BULK-{i:D5}",
+                        RegistrationNumber = $"RN-{i:D6}",
+                        GoodsAndServices = "Software; services",
+                        Owner = "Bulk Inc.",
+                        StatusCategory = TrademarkStatusCategory.Registered,
+                        StatusDetail = "Registered",
+                        Source = DataProvider.USPTO
+                    });
+                }
+
+                testDbContext.TrademarkRegistrations.AddRange(bulkEntities);
+                await testDbContext.SaveChangesAsync();
+            }
+
+            var client = appFactory.CreateClient(new() { AllowAutoRedirect = false });
+
+            var response = await client.GetAsync("/Trademarks?SearchTerm=BULK&sortBy=WordmarkAsc&currentPage=3&resultsPerPage=25");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
         }

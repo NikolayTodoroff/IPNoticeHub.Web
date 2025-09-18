@@ -1,9 +1,7 @@
-﻿using System.Net;
-using System.Security.Claims;
-using System.Text.Encodings.Web;
-using FluentAssertions;
+﻿using FluentAssertions;
 using IPNoticeHub.Data;
 using IPNoticeHub.Data.Entities.ApplicationUser;
+using IPNoticeHub.Data.Entities.CopyrightRegistration;
 using IPNoticeHub.Tests.IntegrationTests.TestUtilities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.TestHost;
@@ -11,6 +9,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NUnit.Framework;
+using System.Net;
+using System.Security.Claims;
+using System.Text.Encodings.Web;
 
 namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
 {
@@ -404,7 +405,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
         }
 
         [Test]
-        public async Task Get_MyCollection_CurrentPage_NonNumeric_Returns200()
+        public async Task Get_MyCollection_WithCurrentPage_NonNumeric_Returns200()
         {
             var userId = "u1";
             var client = appFactory.CreateClientAs(userId);
@@ -415,14 +416,14 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                 await TestDbSeeder.SeedUserAsync(testDbContext, userId);
 
                 var entity1 = await TestDbSeeder.SeedCopyrightAsync(
-                    testDbContext, 
-                    regNumber: "TX-9-COLL-PAGE-NONNUM-A",
+                    testDbContext,
+                    regNumber: "TX-9-COLL-PAGE-A",
                     typeOfWork: "Literary", 
                     title: "Alpha");
 
                 var entity2 = await TestDbSeeder.SeedCopyrightAsync(
                     testDbContext, 
-                    regNumber: "TX-9-COLL-PAGE-NONNUM-B",
+                    regNumber: "TX-9-COLL-PAGE-B",
                     typeOfWork: "VisualArts", 
                     title: "Bravo");
 
@@ -436,6 +437,169 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
             var response = await client.GetAsync("/Copyrights/MyCollection?sortBy=TitleAsc&currentPage=abc&resultsPerPage=10");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
+        }
+
+        [TestCase("TitleAsc")]
+        [TestCase("TitleDesc")]
+        public async Task Get_MyCollection_SortBy_Title_Variants_Return200(string sortBy)
+        {
+            var userId = "u1";
+            var client = appFactory.CreateClientAs(userId);
+
+            using (var serviceScope = appFactory.Services.CreateScope())
+            {
+                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+
+                var entity1 = new CopyrightEntity
+                {
+                    PublicId = Guid.NewGuid(),
+                    RegistrationNumber = "VA-CP-SORT-001",
+                    TypeOfWork = "Literary Work",
+                    Title = "AAA",
+                    YearOfCreation = 2021,
+                    Owner = "AZ LLC"
+                };
+                var entity2 = new CopyrightEntity
+                {
+                    PublicId = Guid.NewGuid(),
+                    RegistrationNumber = "VA-CP-SORT-002",
+                    TypeOfWork = "Literary Work",
+                    Title = "BBB",
+                    YearOfCreation = 2022,
+                    Owner = "AZ LLC"
+                };
+                var entity3 = new CopyrightEntity
+                {
+                    PublicId = Guid.NewGuid(),
+                    RegistrationNumber = "VA-CP-SORT-003",
+                    TypeOfWork = "Literary Work",
+                    Title = "CCC",
+                    YearOfCreation = 2023,
+                    Owner = "AZ LLC"
+                };
+
+                testDbContext.CopyrightRegistrations.AddRange(entity1, entity2, entity3);
+                await testDbContext.SaveChangesAsync();
+
+                testDbContext.UserCopyrights.AddRange(
+                    new UserCopyright { ApplicationUserId = userId, CopyrightRegistrationId = entity1.Id, IsDeleted = false, DateAdded = DateTime.UtcNow.AddDays(-2) },
+                    new UserCopyright { ApplicationUserId = userId, CopyrightRegistrationId = entity2.Id, IsDeleted = false, DateAdded = DateTime.UtcNow.AddDays(-1) },
+                    new UserCopyright { ApplicationUserId = userId, CopyrightRegistrationId = entity3.Id, IsDeleted = false, DateAdded = DateTime.UtcNow }
+                );
+                await testDbContext.SaveChangesAsync();
+            }
+
+            var response = await client.GetAsync($"/Copyrights/MyCollection?sortBy={sortBy}&currentPage=1&resultsPerPage=10");
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+        }
+
+        [Test]
+        public async Task Get_MyCollection_CurrentPage_NonNumeric_Returns200()
+        {
+            var userId = "u1";
+            var client = appFactory.CreateClientAs(userId);
+
+            using (var serviceScope = appFactory.Services.CreateScope())
+            {
+                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+
+                var entity1 = new CopyrightEntity
+                {
+                    PublicId = Guid.NewGuid(),
+                    RegistrationNumber = "VA-CP-PAGE-001",
+                    TypeOfWork = "Literary Work",
+                    Title = "AAA",
+                    YearOfCreation = 2022,
+                    Owner = "AZ LLC"
+                };
+                var entity2 = new CopyrightEntity
+                {
+                    PublicId = Guid.NewGuid(),
+                    RegistrationNumber = "VA-CP-PAGE-002",
+                    TypeOfWork = "Literary Work",
+                    Title = "BBB",
+                    YearOfCreation = 2023,
+                    Owner = "AZ LLC"
+                };
+
+                testDbContext.CopyrightRegistrations.AddRange(entity1, entity2);
+                await testDbContext.SaveChangesAsync();
+
+                testDbContext.UserCopyrights.AddRange(
+                    new UserCopyright { ApplicationUserId = userId, CopyrightRegistrationId = entity1.Id, IsDeleted = false, DateAdded = DateTime.UtcNow.AddDays(-1) },
+                    new UserCopyright { ApplicationUserId = userId, CopyrightRegistrationId = entity2.Id, IsDeleted = false, DateAdded = DateTime.UtcNow }
+                );
+                await testDbContext.SaveChangesAsync();
+            }
+
+            var response = await client.GetAsync("/Copyrights/MyCollection?sortBy=TitleAsc&currentPage=abc&resultsPerPage=10");
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+        }
+
+        [Test]
+        public async Task Get_MyCollection_LargeDataset_Paging_Returns200()
+        {
+            var userId = "u1";
+            var client = appFactory.CreateClientAs(userId);
+
+            using (var serviceScope = appFactory.Services.CreateScope())
+            {
+                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+
+                var list = new List<CopyrightEntity>(120);
+                for (int i = 0; i < 120; i++)
+                {
+                    list.Add(new CopyrightEntity
+                    {
+                        PublicId = Guid.NewGuid(),
+                        RegistrationNumber = $"VA-BULK-{i:D6}",
+                        TypeOfWork = "Literary Work",
+                        Title = $"BULK-{i:D3}",
+                        YearOfCreation = 2020 + (i % 5),
+                        Owner = "Bulk Inc."
+                    });
+                }
+
+                testDbContext.CopyrightRegistrations.AddRange(list);
+                await testDbContext.SaveChangesAsync();
+
+                testDbContext.UserCopyrights.AddRange(
+                    list.Select(uc => new UserCopyright
+                    {
+                        ApplicationUserId = userId,
+                        CopyrightRegistrationId = uc.Id,
+                        IsDeleted = false,
+                        DateAdded = DateTime.UtcNow.AddMinutes(-uc.Id % 60)
+                    })
+                );
+                await testDbContext.SaveChangesAsync();
+            }
+
+            var response = await client.GetAsync("/Copyrights/MyCollection?sortBy=TitleAsc&currentPage=2&resultsPerPage=50");
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+        }
+
+        [Test]
+        public async Task Get_Details_WithInvalidRouteToken_Returns404()
+        {
+            var userId = "u1";
+            var client = appFactory.CreateClientAs(userId);
+
+            using (var serviceScope = appFactory.Services.CreateScope())
+            {
+                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+            }
+
+            var response = await client.GetAsync("/Copyrights/Details/not-a-guid");
+
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
     }
 }
