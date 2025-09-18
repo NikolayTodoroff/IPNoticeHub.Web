@@ -58,7 +58,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
         }
 
         [Test]
-        public async Task Get_Details_MissingId_Returns404()
+        public async Task Get_Details_WithMissingEntityId_Returns404()
         {
             var missingId = Guid.NewGuid();
             var client = appFactory.CreateClient(new() { AllowAutoRedirect = false });
@@ -81,7 +81,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
 
                 var entity1 = new TrademarkEntity
                 {
-                    Wordmark = "ALPHA",
+                    Wordmark = "FIRST WM",
                     SourceId = "US-ALPHA-001",
                     RegistrationNumber = "RN-A1",
                     GoodsAndServices = "Software; services",
@@ -96,7 +96,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
 
                 var entity2 = new TrademarkEntity
                 {
-                    Wordmark = "BRAVO",
+                    Wordmark = "LAST WM",
                     SourceId = "US-BRAVO-002",
                     RegistrationNumber = "RN-B2",
                     GoodsAndServices = "Games; media",

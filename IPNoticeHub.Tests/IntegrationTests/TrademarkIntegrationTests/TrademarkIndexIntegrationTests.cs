@@ -161,7 +161,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
         }
 
         [Test]
-        public async Task Get_Index_OutOfRangePaging_Returns200()
+        public async Task Get_Index_WithOutOfRangePaging_Returns200()
         {
             using (var serviceScope = appFactory.Services.CreateScope())
             {
@@ -285,7 +285,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
 
         [TestCase(5000)]
         [TestCase(10000)]
-        public async Task Get_Index_ResultsPerPage_VeryLarge_Returns200(int resultsPerPage)
+        public async Task Get_Index_WhenResultsPerPage_VeryLarge_Returns200(int resultsPerPage)
         {
             using (var serviceScope = appFactory.Services.CreateScope())
             {
@@ -331,6 +331,65 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
             var client = appFactory.CreateClient(new() { AllowAutoRedirect = false });
 
             var url = $"/Trademarks?SearchTerm=ALPHA&sortBy=WordmarkAsc&currentPage=1&resultsPerPage={resultsPerPage}";
+            var response = await client.GetAsync(url);
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+        }
+
+        [TestCase("RegistrationDateAsc")]
+        [TestCase("RegistrationDateDesc")]
+        public async Task Get_Index_SortBy_RegistrationDateVariants_Returns200(string sortBy)
+        {
+            using (var serviceScope = appFactory.Services.CreateScope())
+            {
+                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+
+                var initianEntity = new TrademarkEntity
+                {
+                    Wordmark = "Initial WM",
+                    SourceId = "US-IX-RD-1",
+                    RegistrationNumber = "RN-OLD",
+                    GoodsAndServices = "Software",
+                    Owner = "AZ LLC",
+                    StatusCategory = TrademarkStatusCategory.Registered,
+                    StatusDetail = "Registered",
+                    RegistrationDate = new DateTime(2020, 1, 1),
+                    Source = DataProvider.USPTO
+                };
+
+                var newEntity = new TrademarkEntity
+                {
+                    Wordmark = "New WM",
+                    SourceId = "US-IX-RD-2",
+                    RegistrationNumber = "RN-NEW",
+                    GoodsAndServices = "Software",
+                    Owner = "AZ LLC",
+                    StatusCategory = TrademarkStatusCategory.Registered,
+                    StatusDetail = "Registered",
+                    RegistrationDate = new DateTime(2022, 6, 15),
+                    Source = DataProvider.USPTO
+                };
+
+                var noRegDateEntity = new TrademarkEntity
+                {
+                    Wordmark = "No RegDate WM",
+                    SourceId = "US-IX-RD-3",
+                    RegistrationNumber = "RN-ND",
+                    GoodsAndServices = "Software",
+                    Owner = "AZ LLC",
+                    StatusCategory = TrademarkStatusCategory.Pending,
+                    StatusDetail = "Pending",
+                    RegistrationDate = null,
+                    Source = DataProvider.USPTO
+                };
+
+                testDbContext.TrademarkRegistrations.AddRange(initianEntity, newEntity, noRegDateEntity);
+                await testDbContext.SaveChangesAsync();
+            }
+
+            var client = appFactory.CreateClient(new() { AllowAutoRedirect = false });
+
+            var url = $"/Trademarks?SearchTerm=E&sortBy={sortBy}&currentPage=1&resultsPerPage=10";
             var response = await client.GetAsync(url);
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);

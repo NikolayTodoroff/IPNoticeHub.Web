@@ -502,5 +502,63 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                 linksCount.Should().Be(0);
             }
         }
+
+        [Test]
+        public async Task Post_AddTrademark_AlreadyLinkedActive_DoesNotCreateDuplicate_RedirectsToMyCollection()
+        {
+            var userId = "u1";
+            var client = appFactory.CreateClientAs(userId);
+            int entityId;
+
+            using (var serviceScope = appFactory.Services.CreateScope())
+            {
+                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+
+                var entity = new TrademarkEntity
+                {
+                    Wordmark = "No Duplicate WM",
+                    SourceId = "US-NODUP-001",
+                    RegistrationNumber = "RN-1234567-1",
+                    GoodsAndServices = "Software",
+                    Owner = "AZ1",
+                    StatusCategory = TrademarkStatusCategory.Registered,
+                    StatusDetail = "Registered",
+                    Source = DataProvider.USPTO
+                };
+                testDbContext.TrademarkRegistrations.Add(entity);
+                await testDbContext.SaveChangesAsync();
+                entityId = entity.Id;
+
+                testDbContext.UserTrademarks.Add(new UserTrademark
+                {
+                    ApplicationUserId = userId,
+                    TrademarkRegistrationId = entityId,
+                    IsDeleted = false
+                });
+                await testDbContext.SaveChangesAsync();
+            }
+
+            var form = new Dictionary<string, string?> { ["trademarkId"] = entityId.ToString() };
+
+            var response = await client.PostAsync("/Trademarks/Add", new FormUrlEncodedContent(form));
+
+            response.StatusCode.Should().Be(HttpStatusCode.Found);
+            var uriLocation = response.Headers.Location!;
+            var resolvedUri = uriLocation.IsAbsoluteUri ? uriLocation : new Uri(client.BaseAddress!, uriLocation);
+            resolvedUri.AbsolutePath.Should().Be("/Trademarks/MyCollection");
+
+            using (var serviceScope = appFactory.Services.CreateScope())
+            {
+                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+
+                var links = await testDbContext.UserTrademarks.AsNoTracking()
+                    .Where(ut => ut.ApplicationUserId == userId && ut.TrademarkRegistrationId == entityId)
+                    .ToListAsync();
+
+                links.Count.Should().Be(1);
+                links[0].IsDeleted.Should().BeFalse();
+            }
+        }
     }
 }
