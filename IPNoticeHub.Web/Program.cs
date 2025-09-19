@@ -10,6 +10,7 @@ using IPNoticeHub.Services.Copyrights.Implementations;
 using IPNoticeHub.Services.Trademarks.Abstractions;
 using IPNoticeHub.Services.Trademarks.Implementations;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace IPNoticeHub.Web
 {
@@ -53,6 +54,10 @@ namespace IPNoticeHub.Web
             builder.Services.AddScoped<ICopyrightRepository, CopyrightRepository>();
             builder.Services.AddScoped<IUserCopyrightRepository, UserCopyrightRepository>();
             builder.Services.AddScoped<ICopyrightService, CopyrightService>();
+
+            // Temporary no-op email sender while theming
+            builder.Services.AddSingleton<IEmailSender, NoOpEmailSender>();
+
 
             var app = builder.Build();
 
