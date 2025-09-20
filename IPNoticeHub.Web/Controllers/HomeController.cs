@@ -29,24 +29,16 @@ namespace IPNoticeHub.Web.Controllers
             return View();
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Results(string? trademark, TrademarkClass? classNumber, TrademarkStatusCategory? status,
-        TrademarkSearchBy? searchByItem, DataProvider? office, SearchMode? mode,int currentPage = 1, int pageSize = DefaultPageSize)
-        {
-            var searchTerm = (trademark ?? string.Empty).Trim();
-            var searchByFilter = searchByItem ?? TrademarkSearchBy.Wordmark;
+        //[HttpGet]
+        //public async Task<IActionResult> Results(string? trademark, TrademarkClass? classNumber, TrademarkStatusCategory? status,
+        //TrademarkSearchBy? searchByItem, DataProvider? office, SearchMode? mode,int currentPage = 1, int pageSize = DefaultPageSize)
+        //{
+        //    var searchTerm = (trademark ?? string.Empty).Trim();
+        //    var searchByFilter = searchByItem ?? TrademarkSearchBy.Wordmark;
 
-            IQueryable<TrademarkEntity> q = dbContext.TrademarkRegistrations.AsNoTracking();
-
-
-
-
-
-
-
-
-            
-        }
+        //    IQueryable<TrademarkEntity> q = dbContext.TrademarkRegistrations.AsNoTracking();
+  
+        //}
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
