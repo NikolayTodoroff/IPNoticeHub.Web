@@ -7,14 +7,14 @@
     var statusItems = Enum.GetValues(typeof(TrademarkStatusCategory)).Cast<TrademarkStatusCategory>();
     var searchByItems = Enum.GetValues(typeof(TrademarkSearchBy)).Cast<TrademarkSearchBy>();
     var officeItems = Enum.GetValues(typeof(DataProvider)).Cast<DataProvider>();
-    var modeItems = new[] { "Identical", "Contains" };
-    // Preserve query values on return navigation (nice UX)
-    string q = Context.Request.Query["q"];
-    string cls = Context.Request.Query["class"];
-    string status = Context.Request.Query["status"];
-    string by = Context.Request.Query["by"];
-    string office = Context.Request.Query["office"];
-    string mode = Context.Request.Query["mode"];
+    var searchModeItems = new[] { "Identical", "Contains" };
+
+    string searchQuery = Context.Request.Query["tmQuery"];
+    string classNumberFilter = Context.Request.Query["tmClass"];
+    string statusFilter = Context.Request.Query["tmStatus"];
+    string searchByFilter = Context.Request.Query["tmSearchItem"];
+    string officeFilter = Context.Request.Query["tmOffice"];
+    string modeFilter = Context.Request.Query["tmMode"];
 }
 
 <section class="py-5">
@@ -22,18 +22,18 @@
 
     <!-- Search hero -->
     <div class="text-center mb-4">
-      <h1 class="h3 mb-3">Search trademarks</h1>
+      <h1 class="h3 mb-3">Search Trademarks</h1>
       <!-- Submit to Trademarks/Index (results page) -->
       <form method="get" asp-controller="Trademarks" asp-action="Index" class="d-flex justify-content-center">
         <div class="input-group input-group-lg" style="max-width: 820px;">
-          <input name="q" value="@q"
-                 class="form-control" type="search"
-                 placeholder="Enter mark, owner, or reg. no." aria-label="Search trademarks" />
+          <input name="tmQuery" value="@searchQuery"
+           class="form-control" type="search"
+           placeholder="Enter mark, owner, or reg. no." aria-label="Search trademarks" />
           <button class="btn btn-primary" type="submit">Search</button>
         </div>
       </form>
       <div class="text-muted small mt-2">
-        Type a mark, owner name, or registration number. We’ll wire advanced logic next.
+        Search for trademark wordmarks, registration number, or owners
       </div>
     </div>
 
@@ -44,28 +44,30 @@
           <div class="row g-3">
             <!-- Search By -->
             <div class="col-12 col-md-6 col-lg-4">
-              <label class="form-label" for="f-by">Search By</label>
-              <select id="f-by" name="by" class="form-select">
-                <option value="">Trademark</option>
-                @foreach (var b in searchByItems)
+              <label class="form-label" for="f-tmSearchItem">Search By</label>
+              <select id="f-tmSearchItem" name="tmSearchItem" class="form-select">
+                @foreach (var searchByItem in searchByItems)
                 {
-                        <option value="@b" selected="@(by == b.ToString())">
-                            @b
-                        </option>
+                         var optionIsSelected =
+                         (!Context.Request.Query.ContainsKey("tmSearchItem") && searchByItem == TrademarkSearchBy.Wordmark)
+                         || (searchByFilter == searchByItem.ToString());
+
+                         <option value="@searchByItem" selected="@(optionIsSelected)">
+                             @searchByItem
+                         </option>
                 }
               </select>
           </div>
 
-                        <!-- Trademark Status -->
+            <!-- Trademark Status -->
             <div class="col-12 col-md-6 col-lg-4">
-              <label class="form-label" for="f-status">Trademark Status</label>
-              <select id="f-status" name="status" class="form-select">
+              <label class="form-label" for="f-tmStatus">Trademark Status</label>
+              <select id="f-tmStatus" name="tmStatus" class="form-select">
                 <option value="">All</option>
-                @foreach (var s in statusItems)
+                @foreach (var statusItem in statusItems)
                 {
-                        // Display: Pending, Registered, Canceled, Abandoned (enum names should match)
-                        <option value="@s" selected="@(status == s.ToString())">
-                            @s
+                        <option value="@statusItem" selected="@(statusFilter == statusItem.ToString())">
+                            @statusItem
                         </option>
                 }
               </select>
@@ -73,13 +75,13 @@
 
             <!-- Class Numbers -->
             <div class="col-12 col-md-6 col-lg-4">
-              <label class="form-label" for="f-class">Class Numbers</label>
-              <select id="f-class" name="class" class="form-select">
+              <label class="form-label" for="f-tmClass">Class Numbers</label>
+              <select id="f-tmClass" name="tmClass" class="form-select">
                 <option value="">All classes</option>
-                @foreach (var c in classNumbers)
+                @foreach (var classNumber in classNumbers)
                 {
-                       <option value="@c" selected="@(cls == c.ToString())">
-                            @c
+                       <option value="@classNumber" selected="@(classNumberFilter == classNumber.ToString())">
+                           @classNumber
                        </option>
                 }
               </select>
@@ -87,24 +89,24 @@
 
             <!-- Registration Office (bonus) -->
             <div class="col-12 col-md-6 col-lg-4">
-              <label class="form-label" for="f-office">Registration Office</label>
-              <select id="f-office" name="office" class="form-select">
+              <label class="form-label" for="f-tmOffice">Registration Office</label>
+              <select id="f-tmOffice" name="tmOffice" class="form-select">
                 <option value="">Any</option>
-                @foreach (var o in officeItems)
+                @foreach (var office in officeItems)
                 {
-                        <option value="@o" selected="@(office == o.ToString())">@o</option>
+                       <option value="@office" selected="@(officeFilter == office.ToString())">@office</option>
                 }
               </select>
             </div>
 
             <!-- Search Mode (bonus) -->
             <div class="col-12 col-md-6 col-lg-4">
-              <label class="form-label" for="f-mode">Search Mode</label>
-              <select id="f-mode" name="mode" class="form-select">
-                <option value="">Default</option>
-                @foreach (var m in modeItems)
+              <label class="form-label" for="f-tmMode">Search Mode</label>
+              <select id="f-tmMode" name="tmMode" class="form-select">
+                <option value="">Any</option>
+                @foreach (var mode in searchModeItems)
                 {
-                        <option value="@m" selected="@(mode == m)">@m</option>
+                       <option value="@mode" selected="@(modeFilter == mode)">@mode</option>
                 }
               </select>
             </div>
