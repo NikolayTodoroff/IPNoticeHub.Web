@@ -8,7 +8,7 @@
     var statusItems = Enum.GetValues(typeof(TrademarkStatusCategory)).Cast<TrademarkStatusCategory>();
     var searchByItems = Enum.GetValues(typeof(TrademarkSearchBy)).Cast<TrademarkSearchBy>();
     var officeItems = Enum.GetValues(typeof(DataProvider)).Cast<DataProvider>();
-    var searchModeItems = new[] { "Identical", "Contains" };
+    var searchModeItems = Enum.GetValues(typeof(SearchMode)).Cast<SearchMode>();
 
     string searchQuery = Context.Request.Query["tmQuery"];
     string classNumberFilter = Context.Request.Query["tmClass"];
@@ -83,7 +83,7 @@
                 {
                         <option value="@classNumber"
                             selected="@(classNumberFilter == classNumber.ToString())">
-                            @GetDisplayName(classNumber)
+                            @DisplayClassNumberNames(classNumber)
                         </option>
                 }
               </select>
@@ -91,14 +91,14 @@
 
             @functions 
             {
-              string GetDisplayName(Enum value)
+              string DisplayClassNumberNames(Enum value)
               {
-              var member = value.GetType().GetMember(value.ToString()).First();
+                 var member = value.GetType().GetMember(value.ToString()).First();
 
-              var display = member.GetCustomAttributes(typeof(DisplayAttribute), false)
-              .OfType<DisplayAttribute>().FirstOrDefault();
+                 var display = member.GetCustomAttributes(typeof(DisplayAttribute), false)
+                 .OfType<DisplayAttribute>().FirstOrDefault();
 
-              return display?.Name ?? value.ToString();
+                 return display?.Name ?? value.ToString();
               }
             }
 
@@ -122,10 +122,25 @@
                 <option value="">Any</option>
                 @foreach (var mode in searchModeItems)
                 {
-                       <option value="@mode" selected="@(modeFilter == mode)">@mode</option>
+                       <option value="@mode" selected="@(modeFilter == mode.ToString())">
+                           @DisplaySearchModeNames(mode)
+                       </option>
                 }
               </select>
             </div>
+
+            @functions 
+            {
+               string DisplaySearchModeNames(Enum value)
+               {
+               var member = value.GetType().GetMember(value.ToString()).First();
+
+                  var display = member.GetCustomAttributes(typeof(DisplayAttribute), false)
+                  .OfType<DisplayAttribute>().FirstOrDefault();
+
+                  return display?.Name ?? value.ToString();
+               }
+            }
 
             <div class="col-12 col-lg-4 d-flex align-items-end">
               <button class="btn btn-outline-secondary me-2" type="reset">Clear</button>
