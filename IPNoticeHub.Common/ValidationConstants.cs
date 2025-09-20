@@ -26,7 +26,7 @@
             public const int TrademarkSearchTermMaxLength = 100;
             public const int TrademarkCurrentPageMinValue = 1;
             public const int TrademarkResultsPerPageMinValue = 20;
-            public const int TrademarkResultsPerPageMaxValue = 100;   
+            public const int TrademarkResultsPerPageMaxValue = 100;
         }
 
         public static class CopyrightRegistrationConstants
