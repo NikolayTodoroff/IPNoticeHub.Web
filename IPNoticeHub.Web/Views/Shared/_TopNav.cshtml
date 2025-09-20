@@ -1,0 +1,36 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+    <div class="container">
+        <!-- Brand -->
+        <a class="navbar-brand fw-semibold" asp-controller="Home" asp-action="Index">
+            IPNoticeHub
+        </a>
+
+        <!-- Mobile toggler -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+                aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Collapsible content -->
+        <div class="collapse navbar-collapse" id="mainNav">
+            <!-- Left nav -->
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Trademarks" asp-action="Index">Trademarks</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Copyrights" asp-action="Index">Copyrights</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                </li>
+            </ul>
+
+            <!-- Right side: identity login/register/logout -->
+            <ul class="navbar-nav ms-auto">
+                <partial name="_LoginPartial" />
+            </ul>
+        </div>
+    </div>
+</nav>
