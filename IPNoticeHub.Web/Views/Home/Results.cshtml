@@ -1,0 +1,9 @@
+﻿@using IPNoticeHub.Web.Models.Trademarks;
+@model TrademarkSearchResultsViewModel;
+@{
+    ViewData["Title"] = "Search Results";
+    Layout = "_Layout";
+}
+
+@await Html.PartialAsync("_TrademarkSearch")
+@await Html.PartialAsync("_TrademarkSearchResults", Model)
