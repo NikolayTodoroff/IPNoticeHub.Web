@@ -35,7 +35,7 @@
             public const int WorkTypeMaxLength = 50;
             public const int TitleMaxLength = 300;
             public const int OwnerNameMaxLength = 255;
-            public const int NationOfFirstPublicationMaxLength = 100;         
+            public const int NationOfFirstPublicationMaxLength = 100;
         }
 
         public static class PagingConstants

@@ -7,12 +7,12 @@
     var officeItems = Enum.GetValues(typeof(DataProvider)).Cast<DataProvider>();
     var searchModeItems = Enum.GetValues(typeof(SearchMode)).Cast<SearchMode>();
 
-    string searchQuery = Context.Request.Query["tmQuery"];
-    string classNumberFilter = Context.Request.Query["tmClass"];
-    string statusFilter = Context.Request.Query["tmStatus"];
-    string searchByFilter = Context.Request.Query["tmSearchItem"];
-    string officeFilter = Context.Request.Query["tmOffice"];
-    string modeFilter = Context.Request.Query["tmMode"];
+    string searchQuery = Context.Request.Query["trademark"];
+    string classNumberFilter = Context.Request.Query["classNumber"];
+    string statusFilter = Context.Request.Query["status"];
+    string searchByFilter = Context.Request.Query["searchByItem"];
+    string officeFilter = Context.Request.Query["office"];
+    string modeFilter = Context.Request.Query["mode"];
 }
 
 <section class="py-5">
@@ -24,7 +24,7 @@
             <!-- Submit to Trademarks/Index (results page) -->
             <form method="get" asp-controller="Home" asp-action="Results" class="d-flex justify-content-center">
                 <div class="input-group input-group-lg" style="max-width: 820px;">
-                    <input name="tmQuery" value="@searchQuery"
+                    <input name="trademark" value="@searchQuery"
                            class="form-control" type="search"
                            placeholder="Enter mark, owner, or reg. no." aria-label="Search trademarks" />
                     <button class="btn btn-primary" type="submit">Search</button>
@@ -35,6 +35,16 @@
             </div>
         </div>
 
+        @functions {
+            string GetDisplayName(Enum value)
+            {
+                var member = value.GetType().GetMember(value.ToString()).First();
+                var display = member.GetCustomAttributes(typeof(DisplayAttribute), false)
+                .OfType<DisplayAttribute>().FirstOrDefault();
+                return display?.Name ?? value.ToString();
+            }
+        }
+
         <!-- Filters -->
         <div class="card shadow-sm">
             <div class="card-body">
@@ -42,13 +52,13 @@
                     <div class="row g-3">
                         <!-- Search By Trademark Filter -->
                         <div class="col-12 col-md-6 col-lg-4">
-                            <label class="form-label" for="f-tmSearchItem">Search By</label>
-                            <select id="f-tmSearchItem" name="tmSearchItem" class="form-select">
+                            <label class="form-label" for="f-searchByItem">Search By</label>
+                            <select id="f-searchByItem" name="searchByItem" class="form-select">
                                 @foreach (var searchByItem in searchByItems)
                                 {
                                     var optionIsSelected =
-                                    (!Context.Request.Query.ContainsKey("tmSearchItem") && searchByItem == TrademarkSearchBy.Wordmark)
-                                    || (searchByFilter == searchByItem.ToString());
+                                        (!Context.Request.Query.ContainsKey("searchByItem") && searchByItem == TrademarkSearchBy.Wordmark)
+                                        || (searchByFilter == searchByItem.ToString());
 
                                     <option value="@searchByItem" selected="@(optionIsSelected)">
                                         @searchByItem
@@ -59,13 +69,13 @@
 
                         <!-- Trademark Status Filter -->
                         <div class="col-12 col-md-6 col-lg-4">
-                            <label class="form-label" for="f-tmStatus">Trademark Status</label>
-                            <select id="f-tmStatus" name="tmStatus" class="form-select">
+                            <label class="form-label" for="f-status">Trademark Status</label>
+                            <select id="f-status" name="status" class="form-select">
                                 <option value="">All</option>
-                                @foreach (var statusItem in statusItems)
+                                @foreach (var status in statusItems)
                                 {
-                                    <option value="@statusItem" selected="@(statusFilter == statusItem.ToString())">
-                                        @statusItem
+                                    <option value="@status" selected="@(statusFilter == status.ToString())">
+                                        @status
                                     </option>
                                 }
                             </select>
@@ -73,8 +83,8 @@
 
                         <!-- Trademark Class Numbers Filter -->
                         <div class="col-12 col-md-6 col-lg-4">
-                            <label class="form-label" for="f-tmClass">Class Numbers</label>
-                            <select id="f-tmClass" name="tmClass" class="form-select">
+                            <label class="form-label" for="f-classNumber">Class Numbers</label>
+                            <select id="f-classNumber" name="classNumber" class="form-select">
                                 <option value="">All classes</option>
                                 @foreach (var classNumber in classNumbers)
                                 {
@@ -88,40 +98,32 @@
 
                         <!-- Trademark Registration Office Filter -->
                         <div class="col-12 col-md-6 col-lg-4">
-                            <label class="form-label" for="f-tmOffice">Registration Office</label>
-                            <select id="f-tmOffice" name="tmOffice" class="form-select">
+                            <label class="form-label" for="f-office">Registration Office</label>
+                            <select id="f-office" name="office" class="form-select">
                                 <option value="">Any</option>
                                 @foreach (var office in officeItems)
                                 {
-                                    <option value="@office" selected="@(officeFilter == office.ToString())">@office</option>
+                                    <option value="@office" selected="@(officeFilter == office.ToString())">
+                                        @office
+                                    </option>
                                 }
                             </select>
                         </div>
 
                         <!-- Trademark Search Mode Filter -->
                         <div class="col-12 col-md-6 col-lg-4">
-                            <label class="form-label" for="f-tmMode">Search Mode</label>
-                            <select id="f-tmMode" name="tmMode" class="form-select">
+                            <label class="form-label" for="f-mode">Search Mode</label>
+                            <select id="f-mode" name="mode" class="form-select">
                                 <option value="">Any</option>
                                 @foreach (var mode in searchModeItems)
                                 {
                                     <option value="@mode" selected="@(modeFilter == mode.ToString())">
-                                        @GetDisplayName(mode)
+                                        @mode
                                     </option>
                                 }
                             </select>
                         </div>
-
-                        @functions {
-                            string GetDisplayName(Enum value)
-                            {
-                                var member = value.GetType().GetMember(value.ToString()).First();
-                                var display = member.GetCustomAttributes(typeof(DisplayAttribute), false)
-                                .OfType<DisplayAttribute>().FirstOrDefault();
-                                return display?.Name ?? value.ToString();
-                            }
-                        }
-               
+                        
                         <div class="col-12 col-lg-4 d-flex align-items-end">
                             <button class="btn btn-outline-secondary me-2" type="reset">Clear</button>
                             <button class="btn btn-primary" type="submit">Apply</button>

@@ -10,12 +10,12 @@ namespace IPNoticeHub.Web.Models.Trademarks
         public TrademarkSearchBy? SearchBy { get; set; }
         public DataProvider? Office { get; set; }
         public SearchMode? Mode { get; set; }
-        public IEnumerable<TrademarkResultRowViewModel> Results { get; set; } = 
-            Enumerable.Empty<TrademarkResultRowViewModel>();
+        public IEnumerable<TmSearchResultSingleItemViewModel> Results { get; set; } =
+            Enumerable.Empty<TmSearchResultSingleItemViewModel>();
         public int Total { get; set; }
     }
 
-    public class TrademarkResultRowViewModel
+    public class TmSearchResultSingleItemViewModel
     {
         public string RegistrationNumber { get; set; } = "";
         public string Mark { get; set; } = "";

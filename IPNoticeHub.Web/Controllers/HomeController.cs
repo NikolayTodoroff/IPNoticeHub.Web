@@ -1,19 +1,22 @@
 using IPNoticeHub.Common.EnumConstants;
+using IPNoticeHub.Data;
+using IPNoticeHub.Data.Entities.TrademarkRegistration;
 using IPNoticeHub.Web.Models;
-using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
-
 using IPNoticeHub.Web.Models.Trademarks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
+using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
 
 namespace IPNoticeHub.Web.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly IPNoticeHubDbContext dbContext;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(IPNoticeHubDbContext dbContext)
         {
-            _logger = logger;
+            this.dbContext = dbContext;
         }
 
         public IActionResult Index()
@@ -27,18 +30,30 @@ namespace IPNoticeHub.Web.Controllers
         }
 
         [HttpGet]
-        public IActionResult Results(string? tmQuery, TrademarkClass? tmClass, TrademarkStatusCategory? tmStatus,
-        TrademarkSearchBy? tmSearchItem, DataProvider? tmOffice, SearchMode? tmMode,int currentPage = 1, int pageSize = 25)
+        public async Task<IActionResult> Results(string? trademark, TrademarkClass? classNumber, TrademarkStatusCategory? status,
+        TrademarkSearchBy? searchByItem, DataProvider? office, SearchMode? mode,int currentPage = 1, int pageSize = DefaultPageSize)
         {
+            var searchTerm = (trademark ?? string.Empty).Trim();
+            var searchByFilter = searchByItem ?? TrademarkSearchBy.Wordmark;
+
+            IQueryable<TrademarkEntity> q = dbContext.TrademarkRegistrations.AsNoTracking();
+
+
+
+
+
+
+
+
             var resultViewModel = new TrademarkSearchResultsViewModel
             {
-                Query = tmQuery,
-                Class = tmClass,
-                Status = tmStatus,
-                SearchBy = tmSearchItem,
-                Office = tmOffice,
-                Mode = tmMode,
-                Results = Enumerable.Empty<TrademarkResultRowViewModel>(),
+                Query = trademark,
+                Class = classNumber,
+                Status = status,
+                SearchBy = searchByItem,
+                Office = office,
+                Mode = mode,
+                Results = Enumerable.Empty<TmSearchResultSingleItemViewModel>(),
                 Total = 0
             };
             return View(resultViewModel);

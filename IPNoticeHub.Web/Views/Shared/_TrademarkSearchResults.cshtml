@@ -28,18 +28,18 @@
                             @if (Model.Results == null || !Model.Results.Any())
                             {
                                 <tr class="text-muted">
-                                    <td colspan="5" class="text-center py-5">No results yet. Try a search above.</td>
+                                    <td colspan="5" class="text-center py-5">No trademarks matched your search.</td>
                                 </tr>
                             }
                             else
                             {
-                                foreach (var r in Model.Results)
+                                foreach (var result in Model.Results)
                                 {
                                     <tr>
-                                        <td>@r.RegistrationNumber</td>
-                                        <td>@r.Mark</td>
-                                        <td>@r.Owner</td>
-                                        <td>@r.Status</td>
+                                        <td>@result.RegistrationNumber</td>
+                                        <td>@result.Mark</td>
+                                        <td>@result.Owner</td>
+                                        <td>@result.Status</td>
                                         <td class="text-end">
                                             <a class="btn btn-sm btn-outline-primary" href="#">Details</a>
                                             <a class="btn btn-sm btn-outline-secondary ms-2" href="#">Save</a>
