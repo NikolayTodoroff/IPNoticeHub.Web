@@ -45,18 +45,7 @@ namespace IPNoticeHub.Web.Controllers
 
 
 
-            var resultViewModel = new TrademarkSearchResultsViewModel
-            {
-                Query = trademark,
-                Class = classNumber,
-                Status = status,
-                SearchBy = searchByItem,
-                Office = office,
-                Mode = mode,
-                Results = Enumerable.Empty<TmSearchResultSingleItemViewModel>(),
-                Total = 0
-            };
-            return View(resultViewModel);
+            
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

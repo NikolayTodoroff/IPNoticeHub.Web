@@ -1,8 +1,9 @@
 ﻿using IPNoticeHub.Common.EnumConstants;
 using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
-namespace IPNoticeHub.Web.Models.Trademarks
+
+namespace IPNoticeHub.Services.Trademarks.DTOs
 {
-    public class TrademarkSearchResultsViewModel
+    public sealed class TrademarkSearchQuery
     {
         public string? Query { get; init; }
         public TrademarkClass? Class { get; init; }
@@ -12,13 +13,5 @@ namespace IPNoticeHub.Web.Models.Trademarks
         public SearchMode? Mode { get; init; }
         public int Page { get; init; } = DefaultPage;
         public int PageSize { get; init; } = DefaultPageSize;
-
-        public class TmSearchResultSingleItemViewModel
-        {
-            public string RegistrationNumber { get; set; } = "";
-            public string Mark { get; set; } = "";
-            public string Owner { get; set; } = "";
-            public string Status { get; set; } = "";
-        }
     }
 }
