@@ -1,4 +1,5 @@
-﻿@using IPNoticeHub.Common.EnumConstants;
+﻿@using System.ComponentModel.DataAnnotations
+@using IPNoticeHub.Common.EnumConstants;
 @{
     ViewData["Title"] = "Search";
     Layout = "_Layout";
@@ -42,7 +43,7 @@
       <div class="card-body">
         <form method="get" asp-controller="Trademarks" asp-action="Index">
           <div class="row g-3">
-            <!-- Search By -->
+            <!-- Search By Trademark Filter -->
             <div class="col-12 col-md-6 col-lg-4">
               <label class="form-label" for="f-tmSearchItem">Search By</label>
               <select id="f-tmSearchItem" name="tmSearchItem" class="form-select">
@@ -59,7 +60,7 @@
               </select>
           </div>
 
-            <!-- Trademark Status -->
+            <!-- Trademark Status Filter -->
             <div class="col-12 col-md-6 col-lg-4">
               <label class="form-label" for="f-tmStatus">Trademark Status</label>
               <select id="f-tmStatus" name="tmStatus" class="form-select">
@@ -73,21 +74,36 @@
               </select>
             </div>
 
-            <!-- Class Numbers -->
+            <!-- Trademark Class Numbers Filter -->
             <div class="col-12 col-md-6 col-lg-4">
               <label class="form-label" for="f-tmClass">Class Numbers</label>
               <select id="f-tmClass" name="tmClass" class="form-select">
                 <option value="">All classes</option>
                 @foreach (var classNumber in classNumbers)
                 {
-                       <option value="@classNumber" selected="@(classNumberFilter == classNumber.ToString())">
-                           @classNumber
-                       </option>
+                        <option value="@classNumber"
+                            selected="@(classNumberFilter == classNumber.ToString())">
+                            @GetDisplayName(classNumber)
+                        </option>
                 }
               </select>
-          </div>
+            </div>
 
-            <!-- Registration Office (bonus) -->
+            @functions 
+            {
+              string GetDisplayName(Enum value)
+              {
+              var member = value.GetType().GetMember(value.ToString()).First();
+
+              var display = member.GetCustomAttributes(typeof(DisplayAttribute), false)
+              .OfType<DisplayAttribute>().FirstOrDefault();
+
+              return display?.Name ?? value.ToString();
+              }
+            }
+
+
+            <!-- Trademark Registration Office Filter -->
             <div class="col-12 col-md-6 col-lg-4">
               <label class="form-label" for="f-tmOffice">Registration Office</label>
               <select id="f-tmOffice" name="tmOffice" class="form-select">
@@ -99,7 +115,7 @@
               </select>
             </div>
 
-            <!-- Search Mode (bonus) -->
+            <!-- Trademark Search Mode Filter -->
             <div class="col-12 col-md-6 col-lg-4">
               <label class="form-label" for="f-tmMode">Search Mode</label>
               <select id="f-tmMode" name="tmMode" class="form-select">
