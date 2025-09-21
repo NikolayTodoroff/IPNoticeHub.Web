@@ -1,10 +1,32 @@
 ﻿@using IPNoticeHub.Web.Models.Application
-@using IPNoticeHub.Web.Models.Trademarks;
-@model TrademarkSearchResultsViewModel;
+@model TrademarkSearchResultsViewModel
+
 @{
     ViewData["Title"] = "Search Results";
     Layout = "_Layout";
+
+    // So action links (Details) can navigate back to this exact query
+    var returnUrl = Context.Request.Path + Context.Request.QueryString;
 }
 
-@await Html.PartialAsync("_TrademarkSearch")
-@await Html.PartialAsync("_TrademarkSearchResults", Model)
+<main class="py-4">
+    <!-- Search UI (hero + filters) -->
+    @await Html.PartialAsync("_TrademarkSearch")
+
+    <div class="container mt-4">
+        @if (Model is not null)
+        {
+            @await Html.PartialAsync(
+            "_TrademarkSearchResults",
+                Model,
+                new ViewDataDictionary(ViewData) { ["ReturnUrl"] = returnUrl }
+                )
+                }
+        else
+        {
+            <div class="alert alert-info">
+                Enter a query above to see results.
+            </div>
+        }
+    </div>
+</main>

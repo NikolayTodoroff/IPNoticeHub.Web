@@ -42,7 +42,13 @@
                                         <td>@result.Owner</td>
                                         <td>@result.Status</td>
                                         <td class="text-end">
-                                            <a class="btn btn-sm btn-outline-primary" href="#">Details</a>
+                                            <a class="btn btn-outline-primary btn-sm"
+                                               asp-controller="Trademarks"
+                                               asp-action="Details"
+                                               asp-route-id="@result.Id"
+                                               asp-route-returnUrl="@(ViewData["ReturnUrl"]?.ToString() ?? string.Empty)">
+                                                Details
+                                            </a>
                                             <a class="btn btn-sm btn-outline-secondary ms-2" href="#">Save</a>
                                             <a class="btn btn-sm btn-outline-secondary ms-2" href="#">Add To Watchlist</a>
                                         </td>

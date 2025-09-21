@@ -2,6 +2,7 @@
 {
     public class TmSearchResultSingleItemViewModel
     {
+        public Guid Id { get; set; }
         public string RegistrationNumber { get; set; } = string.Empty;
         public string Wordmark { get; set; } = string.Empty;
         public string Owner { get; set; } = string.Empty;
