@@ -32,6 +32,7 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
                 SourceId = entity.SourceId,
                 RegistrationNumber = entity.RegistrationNumber,
                 Status = entity.StatusCategory,
+                GoodsAndServices = entity.GoodsAndServices,
                 FilingDate = entity.FilingDate,
                 RegistrationDate = entity.RegistrationDate,
                 MarkImageUrl = entity.MarkImageUrl,

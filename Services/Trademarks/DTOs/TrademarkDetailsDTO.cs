@@ -16,6 +16,8 @@ namespace IPNoticeHub.Services.Trademarks.DTOs
 
         public TrademarkStatusCategory Status { get; init; }
 
+        public string? GoodsAndServices { get; init; }
+
         public DateTime? FilingDate { get; init; }
 
         public DateTime? RegistrationDate { get; init; }

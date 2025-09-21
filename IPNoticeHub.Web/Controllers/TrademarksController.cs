@@ -43,13 +43,16 @@ namespace IPNoticeHub.Web.Controllers
         }
 
         [HttpGet("Trademarks/Details/{id:guid}")]
-        public async Task<IActionResult> Details(Guid id, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> Details(Guid id, string? returnUrl = null, CancellationToken cancellationToken = default)
         {
-            TrademarkDetailsDTO? detailsModel = await tmSearchService.GetDetailsAsync(id, cancellationToken);
+            TrademarkDetailsDTO? detailsDTO = await tmSearchService.GetDetailsAsync(id, cancellationToken);
 
-            if (detailsModel is null) return NotFound();
+            if (detailsDTO is null) return NotFound();
 
-            return View(detailsModel);
+            if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+                ViewBag.ReturnUrl = returnUrl;
+
+            return View(detailsDTO);
         }
 
         [Authorize(Policy = "HasUserId")]
