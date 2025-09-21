@@ -2,9 +2,9 @@
 {
     public sealed class TrademarkSearchResultDTO
     {
-        public string RegistrationNumber { get; init; } = "";
-        public string Wordmark { get; init; } = "";
-        public string Owner { get; init; } = "";
-        public string Status { get; init; } = "";
+        public string RegistrationNumber { get; init; } = string.Empty;
+        public string Wordmark { get; init; } = string.Empty;
+        public string Owner { get; init; } = string.Empty;
+        public string Status { get; init; } = string.Empty;
     }
 }

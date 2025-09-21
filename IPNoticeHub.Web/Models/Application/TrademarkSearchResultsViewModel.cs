@@ -11,6 +11,6 @@ namespace IPNoticeHub.Web.Models.Application
         public DataProvider? Office { get; set; }
         public SearchMode? Mode { get; set; }
         public IEnumerable<TmSearchResultSingleItemViewModel> Results { get; set; } = Enumerable.Empty<TmSearchResultSingleItemViewModel>();
-        public int ResultsCount { get; set; }
+        public int Total { get; set; }
     }
 }

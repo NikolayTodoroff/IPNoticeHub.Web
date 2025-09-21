@@ -2,9 +2,9 @@
 {
     public class TmSearchResultSingleItemViewModel
     {
-        public string RegistrationNumber { get; set; } = "";
-        public string Wordmark { get; set; } = "";
-        public string Owner { get; set; } = "";
-        public string Status { get; set; } = "";
+        public string RegistrationNumber { get; set; } = string.Empty;
+        public string Wordmark { get; set; } = string.Empty;
+        public string Owner { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
     }
 }

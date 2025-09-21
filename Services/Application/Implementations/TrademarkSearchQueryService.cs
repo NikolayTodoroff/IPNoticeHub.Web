@@ -3,20 +3,14 @@ using IPNoticeHub.Common.EnumConstants;
 using IPNoticeHub.Services.Application.Abstractions;
 using IPNoticeHub.Services.Application.DTOs;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace IPNoticeHub.Services.Application.Implementations
 {
-    public sealed class TrademarkSearchService : ITrademarkSearchService
+    public sealed class TrademarkSearchQueryService : ITrademarkSearchQueryService
     {
         private readonly ITrademarkReadRepository tmSearchServiceRepo;
 
-        public TrademarkSearchService(ITrademarkReadRepository tmSearchServiceRepository)
+        public TrademarkSearchQueryService(ITrademarkReadRepository tmSearchServiceRepository)
         {
             this.tmSearchServiceRepo = tmSearchServiceRepository;
         }

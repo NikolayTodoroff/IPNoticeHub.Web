@@ -11,9 +11,9 @@ namespace IPNoticeHub.Web.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ITrademarkSearchService searchService;
+        private readonly ITrademarkSearchQueryService searchService;
 
-        public HomeController(ITrademarkSearchService searchService)
+        public HomeController(ITrademarkSearchQueryService searchService)
         {
             this.searchService = searchService;
         }
@@ -62,7 +62,7 @@ namespace IPNoticeHub.Web.Controllers
                     Owner = s.Owner,
                     Status = s.Status
                 }).ToList(),
-                ResultsCount = resultsCount
+                Total = resultsCount
             };
 
             return View(searchResultsViewModel);

@@ -11,7 +11,9 @@ using IPNoticeHub.Services.Trademarks.Abstractions;
 using IPNoticeHub.Services.Trademarks.Implementations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.UI.Services;
-
+using IPNoticeHub.Data.Repositories.Application.Implementations;
+using IPNoticeHub.Services.Application.Abstractions;
+using IPNoticeHub.Services.Application.Implementations;
 namespace IPNoticeHub.Web
 {
     public class Program
@@ -43,8 +45,7 @@ namespace IPNoticeHub.Web
                 options.AddPolicy("HasUserId", p => p.RequireClaim(ClaimTypes.NameIdentifier));
             });
 
-            builder.Services.AddControllersWithViews();           
-            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddControllersWithViews();
             builder.Services.AddSwaggerGen();
 
             builder.Services.AddScoped<ITrademarkRepository, TrademarkRepository>();
@@ -54,8 +55,8 @@ namespace IPNoticeHub.Web
             builder.Services.AddScoped<ICopyrightRepository, CopyrightRepository>();
             builder.Services.AddScoped<IUserCopyrightRepository, UserCopyrightRepository>();
             builder.Services.AddScoped<ICopyrightService, CopyrightService>();
-            builder.Services.AddScoped<ITrademarkReadRepository, ITrademarkReadRepository>();
-            builder.Services.AddScoped<ITrademarkSearchService, TrademarkSearchService>();
+            builder.Services.AddScoped<ITrademarkReadRepository, TrademarkReadRepository>();
+            builder.Services.AddScoped<ITrademarkSearchQueryService, TrademarkSearchQueryService>();
 
             // Temporary no-op email sender while theming
             builder.Services.AddSingleton<IEmailSender, NoOpEmailSender>();

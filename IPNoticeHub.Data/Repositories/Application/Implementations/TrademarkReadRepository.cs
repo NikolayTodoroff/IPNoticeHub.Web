@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IPNoticeHub.Data.Repositories.Application.Implementations
 {
-    public class TrademarkReadRepository : ITrademarkReadRepository
+    public sealed class TrademarkReadRepository : ITrademarkReadRepository
     {
         private readonly IPNoticeHubDbContext dbContext;
         public TrademarkReadRepository(IPNoticeHubDbContext dbContext)
@@ -13,7 +13,9 @@ namespace IPNoticeHub.Data.Repositories.Application.Implementations
 
         public IQueryable<TrademarkEntity> TrademarkQueryNoTracking()
         {
-            return dbContext.TrademarkRegistrations.AsNoTracking();
+            return dbContext.TrademarkRegistrations.
+              Include(t => t.Classes).
+              AsNoTracking();
         }
     }
 }
