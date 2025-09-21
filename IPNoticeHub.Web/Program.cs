@@ -54,6 +54,8 @@ namespace IPNoticeHub.Web
             builder.Services.AddScoped<ICopyrightRepository, CopyrightRepository>();
             builder.Services.AddScoped<IUserCopyrightRepository, UserCopyrightRepository>();
             builder.Services.AddScoped<ICopyrightService, CopyrightService>();
+            builder.Services.AddScoped<ITrademarkReadRepository, ITrademarkReadRepository>();
+            builder.Services.AddScoped<ITrademarkSearchService, TrademarkSearchService>();
 
             // Temporary no-op email sender while theming
             builder.Services.AddSingleton<IEmailSender, NoOpEmailSender>();

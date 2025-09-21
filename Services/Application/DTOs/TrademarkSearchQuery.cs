@@ -1,7 +1,7 @@
 ﻿using IPNoticeHub.Common.EnumConstants;
 using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
 
-namespace IPNoticeHub.Services.Trademarks.DTOs
+namespace IPNoticeHub.Services.Application.DTOs
 {
     public sealed class TrademarkSearchQuery
     {

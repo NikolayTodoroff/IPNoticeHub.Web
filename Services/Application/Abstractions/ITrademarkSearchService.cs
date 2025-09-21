@@ -1,4 +1,4 @@
-﻿using IPNoticeHub.Services.Trademarks.DTOs;
+﻿using IPNoticeHub.Services.Application.DTOs;
 
 namespace IPNoticeHub.Services.Application.Abstractions
 {
