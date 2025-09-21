@@ -1,10 +1,9 @@
 using IPNoticeHub.Common.EnumConstants;
-using IPNoticeHub.Data;
-using IPNoticeHub.Data.Entities.TrademarkRegistration;
+using IPNoticeHub.Services.Application.Abstractions;
+using IPNoticeHub.Services.Application.DTOs;
 using IPNoticeHub.Web.Models;
-using IPNoticeHub.Web.Models.Trademarks;
+using IPNoticeHub.Web.Models.Application;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
 
@@ -12,11 +11,11 @@ namespace IPNoticeHub.Web.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IPNoticeHubDbContext dbContext;
+        private readonly ITrademarkSearchService searchService;
 
-        public HomeController(IPNoticeHubDbContext dbContext)
+        public HomeController(ITrademarkSearchService searchService)
         {
-            this.dbContext = dbContext;
+            this.searchService = searchService;
         }
 
         public IActionResult Index()
@@ -29,16 +28,45 @@ namespace IPNoticeHub.Web.Controllers
             return View();
         }
 
-        //[HttpGet]
-        //public async Task<IActionResult> Results(string? trademark, TrademarkClass? classNumber, TrademarkStatusCategory? status,
-        //TrademarkSearchBy? searchByItem, DataProvider? office, SearchMode? mode,int currentPage = 1, int pageSize = DefaultPageSize)
-        //{
-        //    var searchTerm = (trademark ?? string.Empty).Trim();
-        //    var searchByFilter = searchByItem ?? TrademarkSearchBy.Wordmark;
+        [HttpGet]
+        public async Task<IActionResult> Results(string? trademark, TrademarkClass? classNumber, TrademarkStatusCategory? status,
+        TrademarkSearchBy? searchByItem, DataProvider? office, SearchMode? mode,
+        int currentPage = DefaultPage, int pageSize = DefaultPageSize,CancellationToken cancellationToken = default)
+        {
+            var request = new TrademarkSearchQuery
+            {
+                Query = trademark,
+                Class = classNumber,
+                Status = status,
+                SearchBy = searchByItem,
+                Office = office,
+                Mode = mode,
+                Page = currentPage,
+                PageSize = pageSize
+            };
 
-        //    IQueryable<TrademarkEntity> q = dbContext.TrademarkRegistrations.AsNoTracking();
-  
-        //}
+            var (searchResults,resultsCount) = await searchService.SearchAsync(request,cancellationToken);
+
+            var searchResultsViewModel = new TrademarkSearchResultsViewModel
+            {
+                Query = trademark,
+                Class = classNumber,
+                Status = status,
+                SearchBy = searchByItem,
+                Office = office,
+                Mode = mode,
+                Results = searchResults.Select(s => new TmSearchResultSingleItemViewModel
+                {
+                    RegistrationNumber = s.RegistrationNumber,
+                    Wordmark = s.Wordmark,
+                    Owner = s.Owner,
+                    Status = s.Status
+                }).ToList(),
+                ResultsCount = resultsCount
+            };
+
+            return View(searchResultsViewModel);
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
