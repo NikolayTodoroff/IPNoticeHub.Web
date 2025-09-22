@@ -16,7 +16,7 @@ namespace IPNoticeHub.Services.Application.Implementations
         }
 
         public async Task<(IReadOnlyList<TrademarkSearchResultDTO> Items, int Total)>
-            SearchAsync(TrademarkSearchQuery requestQuery, CancellationToken cancellationToken = default)
+            SearchAsync(TrademarkSearchQueryDTO requestQuery, CancellationToken cancellationToken = default)
         {
             var trademarkQuery = tmSearchServiceRepo.TrademarkQueryNoTracking();
 

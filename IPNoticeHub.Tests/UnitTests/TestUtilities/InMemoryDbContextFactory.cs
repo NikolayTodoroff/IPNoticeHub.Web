@@ -20,7 +20,7 @@ namespace IPNoticeHub.Tests.TestUtilities
             DbContextOptions<IPNoticeHubDbContext>? options = new DbContextOptionsBuilder<IPNoticeHubDbContext>()
                 .UseInMemoryDatabase(dbContextName ?? Guid.NewGuid().ToString())
                 .EnableSensitiveDataLogging()
-                .Options;          
+                .Options;
 
             var testDbContext = new IPNoticeHubDbContext(options);
             testDbContext.Database.EnsureCreated();
@@ -41,10 +41,10 @@ namespace IPNoticeHub.Tests.TestUtilities
                 Wordmark = wordmark,
                 Owner = owner,
                 RegistrationNumber = regNumber,
-                GoodsAndServices = "Test goods and services",
+                GoodsAndServices = "Sample Goods and Services",
                 StatusCategory = status,
                 Source = source,
-                FilingDate = filingDate ?? DateTime.UtcNow.Date              
+                FilingDate = filingDate ?? DateTime.UtcNow.Date
             };
 
             List<TrademarkClassAssignment>? trademarkClassesList = new List<TrademarkClassAssignment>();

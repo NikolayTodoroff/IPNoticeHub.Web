@@ -33,7 +33,7 @@ namespace IPNoticeHub.Web.Controllers
         TrademarkSearchBy? searchByItem, DataProvider? office, SearchMode? mode,
         int currentPage = DefaultPage, int pageSize = DefaultPageSize,CancellationToken cancellationToken = default)
         {
-            var request = new TrademarkSearchQuery
+            var request = new TrademarkSearchQueryDTO
             {
                 Query = trademark,
                 Class = classNumber,

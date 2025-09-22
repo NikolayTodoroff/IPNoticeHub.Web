@@ -95,7 +95,6 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
 
             var details = await service.GetDetailsAsync(tmAAA.PublicId, default);
 
-            // Assert
             details.Should().NotBeNull();
             details!.Events.Should().HaveCount(2);
             details.Events.Select(e => e.Code).Should().ContainInOrder("E2", "E1");

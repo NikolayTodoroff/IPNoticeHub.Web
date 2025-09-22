@@ -3,7 +3,7 @@ using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
 
 namespace IPNoticeHub.Services.Application.DTOs
 {
-    public sealed class TrademarkSearchQuery
+    public sealed class TrademarkSearchQueryDTO
     {
         public string? Query { get; init; }
         public TrademarkClass? Class { get; init; }
