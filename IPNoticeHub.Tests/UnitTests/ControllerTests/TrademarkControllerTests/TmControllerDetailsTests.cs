@@ -1,9 +1,10 @@
-﻿using IPNoticeHub.Common.EnumConstants;
+﻿using FluentAssertions;
+using IPNoticeHub.Common.EnumConstants;
 using IPNoticeHub.Services.Trademarks.Abstractions;
 using IPNoticeHub.Services.Trademarks.DTOs;
+using IPNoticeHub.Tests.UnitTests.TestUtilities;
 using IPNoticeHub.Web.Controllers;
 using Microsoft.AspNetCore.Mvc;
-using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 
@@ -73,6 +74,87 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
             var detailsResult = await controller.Details(id, default);
 
             detailsResult.Should().BeOfType<NotFoundResult>();
+            tmSearchService.Verify(s => s.GetDetailsAsync(id, It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Test]
+        public async Task Details_WhenReturnUrlIsLocal_SetsReturnUrlInViewData()
+        {
+            var id = Guid.NewGuid();
+            var safeReturnUrl = "/Home/Results?trademark=chimaira";
+
+            var detailsDTO = new TrademarkDetailsDTO
+            {
+                PublicId = id,
+                Wordmark = "Chimaira",
+                Owner = "Armstrong LLC",
+                Provider = DataProvider.USPTO,
+                Classes = new[] { 25 }
+            };
+
+            var tmSearchService = new Mock<ITrademarkSearchService>();
+            tmSearchService.Setup(s => s.GetDetailsAsync(id, It.IsAny<CancellationToken>()))
+                     .ReturnsAsync(detailsDTO);
+
+            var collectionService = new Mock<ITrademarkCollectionService>();
+
+            // Including UrlHelper via the factory overload with TempData/Url enabled
+            var controller = TestTrademarkControllerFactory.CreateTrademarksController(
+                collectionService.Object,
+                out _,
+                tmSearchService.Object,
+                userId: null
+            );
+
+            var actionResult = await controller.Details(id, safeReturnUrl, default);
+
+            var view = actionResult as ViewResult;
+            view.Should().NotBeNull();
+            view!.Model.Should().BeOfType<TrademarkDetailsDTO>();
+
+
+            view.ViewData["ReturnUrl"]!.ToString().Should().Be(safeReturnUrl);
+
+            tmSearchService.Verify(s => s.GetDetailsAsync(id, It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Test]
+        public async Task Details_WhenReturnUrlIsExternal_DoesNotSetReturnUrl()
+        {
+            var id = Guid.NewGuid();
+            var externalUrl = "https://custom.example/demo";
+
+            var detailsDTO = new TrademarkDetailsDTO
+            {
+                PublicId = id,
+                Wordmark = "Chimaira",
+                Owner = "Armstrong LLC",
+                Provider = DataProvider.USPTO,
+                Classes = new[] { 25 }
+            };
+
+            var tmSearchService = new Mock<ITrademarkSearchService>();
+            tmSearchService.Setup(s => s.GetDetailsAsync(id, It.IsAny<CancellationToken>()))
+                     .ReturnsAsync(detailsDTO);
+
+            var collectionService = new Mock<ITrademarkCollectionService>();
+
+            var controller = TestTrademarkControllerFactory.CreateTrademarksController(
+                collectionService.Object,
+                out _,
+                tmSearchService.Object,
+                userId: null
+            );
+
+            var actionResult = await controller.Details(id, externalUrl, default);
+
+            var resultView = actionResult as ViewResult;
+            resultView.Should().NotBeNull();
+            resultView!.Model.Should().BeOfType<TrademarkDetailsDTO>();
+
+            // Unsafe URL should be ignored (no ReturnUrl provided to the view)
+            resultView.ViewData.ContainsKey("ReturnUrl").Should().BeFalse();
+
             tmSearchService.Verify(s => s.GetDetailsAsync(id, It.IsAny<CancellationToken>()), Times.Once);
         }
     }

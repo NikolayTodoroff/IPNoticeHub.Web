@@ -2,12 +2,13 @@
 using IPNoticeHub.Common.EnumConstants;
 using IPNoticeHub.Services.Application.Abstractions;
 using IPNoticeHub.Services.Application.DTOs;
+using IPNoticeHub.Tests.UnitTests.TestUtilities;
 using IPNoticeHub.Web.Controllers;
 using IPNoticeHub.Web.Models.Application;
 using Microsoft.AspNetCore.Mvc;
-using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
 using Moq;
 using NUnit.Framework;
+using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
 
 namespace IPNoticeHub.Tests.UnitTests.ControllerTests.HomeControllerTests
 {
@@ -40,7 +41,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.HomeControllerTests
             tmSearchService.Setup(s => s.SearchAsync(It.IsAny<TrademarkSearchQueryDTO>(),It.IsAny<CancellationToken>())).
                 ReturnsAsync((searchResultsDTO, 1));
 
-            var controller = new HomeController(tmSearchService.Object);
+            var controller = TestHomeControllerFactory.CreateHomeController(tmSearchService.Object);
 
             var actionResult = await controller.Results(
                 trademark: "Anu",
@@ -83,7 +84,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.HomeControllerTests
             tmSearchService.Setup(s => s.SearchAsync(It.IsAny<TrademarkSearchQueryDTO>(), It.IsAny<CancellationToken>())).
                 ReturnsAsync((new List<TrademarkSearchResultDTO>(), 0));
 
-            var controller = new HomeController(tmSearchService.Object);
+            var controller = TestHomeControllerFactory.CreateHomeController(tmSearchService.Object);
 
             var actionResult = await controller.Results(
                 trademark: "",
@@ -116,7 +117,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.HomeControllerTests
             tmSearchService.Setup(s => s.SearchAsync(It.IsAny<TrademarkSearchQueryDTO>(), It.IsAny<CancellationToken>())).
                 ReturnsAsync((new List<TrademarkSearchResultDTO>(), 0));
 
-            var controller = new HomeController(tmSearchService.Object);
+            var controller = TestHomeControllerFactory.CreateHomeController(tmSearchService.Object);
 
             var actionResult = await controller.Results(
                 trademark: null,

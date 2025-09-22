@@ -1,5 +1,4 @@
-﻿using Azure.Core;
-using IPNoticeHub.Common.EnumConstants;
+﻿using IPNoticeHub.Common.EnumConstants;
 using IPNoticeHub.Services.Application.Abstractions;
 using IPNoticeHub.Services.Application.DTOs;
 using Microsoft.EntityFrameworkCore;
