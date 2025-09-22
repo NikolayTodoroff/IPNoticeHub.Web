@@ -2,9 +2,7 @@
 using IPNoticeHub.Services.Trademarks.Abstractions;
 using IPNoticeHub.Tests.UnitTests.TestUtilities;
 using IPNoticeHub.Web.Controllers;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Moq;
 using NUnit.Framework;
 using static IPNoticeHub.Common.ValidationConstants.StatusMessages;
@@ -13,9 +11,9 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
 {
     /// <summary>
     /// Section: TrademarksController – Add/Remove
-    /// - Verifies that Add and Remove with provided valid user id call service,
+    ///  - Verifies that Add and Remove with provided valid user id call service,
     /// sets TempData status, redirects to local returnUrl (if provided) or MyCollection.
-    /// - Verifies that Add and Remove without provided valid user id return Forbid() .
+    ///  - Verifies that Add and Remove without provided valid user id return Forbid() .
     /// </summary>
     [TestFixture]
     public class TmControllerAddRemoveTests

@@ -11,9 +11,9 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
 {
     /// <summary>
     /// Section: CopyrightsController – Details
-    /// - If no user is authenticated, returns Forbid.
-    /// - If the service cannot find the requested item, returns NotFound.
-    /// - If successful, returns a View with the details.
+    ///  - If no user is authenticated, returns Forbid.
+    ///  - If the service cannot find the requested item, returns NotFound.
+    ///  - If successful, returns a View with the details.
     /// </summary>
     [TestFixture]
     public class CopyrightsControllerDetailsTests

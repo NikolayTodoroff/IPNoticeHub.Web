@@ -3,7 +3,6 @@ using IPNoticeHub.Common.EnumConstants;
 using IPNoticeHub.Services.Application.Abstractions;
 using IPNoticeHub.Services.Application.DTOs;
 using IPNoticeHub.Tests.UnitTests.TestUtilities;
-using IPNoticeHub.Web.Controllers;
 using IPNoticeHub.Web.Models.Application;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -14,9 +13,9 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.HomeControllerTests
 {
     /// <summary>
     /// Section: HomeController – Trademark Search Results
-    /// - Verifies that the Results action maps the query parameters correctly, calls the service, and returns a populated view model with the expected data.
-    /// - Verifies that the Results action returns an empty view model with zero total when the service returns no results.
-    /// - Verifies that the Results action in the HomeController uses default values for query parameters when they are not provided.
+    ///  - Verifies that the Results action maps the query parameters correctly, calls the service, and returns a populated view model with the expected data.
+    ///  - Verifies that the Results action returns an empty view model with zero total when the service returns no results.
+    ///  - Verifies that the Results action in the HomeController uses default values for query parameters when they are not provided.
     /// </summary>
     [TestFixture]
     public class HomeControllerResultsTests

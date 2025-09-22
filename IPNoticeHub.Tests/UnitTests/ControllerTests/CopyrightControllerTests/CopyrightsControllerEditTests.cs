@@ -14,13 +14,13 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
 {
     /// <summary>
     /// Section: CopyrightsController – Edit (GET/POST)
-    /// - GET Edit: Returns NotFound if the service returns null (missing or unlinked resource).
-    /// - GET Edit: Maps the stored TypeOfWork string to an enum bucket and additional text.
-    /// - POST Edit: Returns a view with a ModelState error if WorkType is "Other" and OtherWorkType is missing.
-    /// - POST Edit: Returns a view with an error if the service operation fails.
-    /// - POST Edit: On success, sets TempData and redirects to either a local returnUrl or the Details page.
-    /// - GET Edit without user returns Forbid
-    /// - POST Edit without user returns Forbid
+    ///  - GET Edit: Returns NotFound if the service returns null (missing or unlinked resource).
+    ///  - GET Edit: Maps the stored TypeOfWork string to an enum bucket and additional text.
+    ///  - POST Edit: Returns a view with a ModelState error if WorkType is "Other" and OtherWorkType is missing.
+    ///  - POST Edit: Returns a view with an error if the service operation fails.
+    ///  - POST Edit: On success, sets TempData and redirects to either a local returnUrl or the Details page.
+    ///  - GET Edit without user returns Forbid
+    ///  - POST Edit without user returns Forbid
     /// </summary>
     [TestFixture]
     public class CopyrightsControllerEditTests

@@ -14,9 +14,9 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
 {
     /// <summary>
     /// Section: CopyrightsController – Remove
-    /// - If no user is authenticated, return ForbidResult.
-    /// - On success, invoke the service, set TempData, and redirect to the provided local returnUrl.
-    /// - On success with no or invalid returnUrl, redirect to the "MyCollection" page.
+    ///  - If no user is authenticated, return ForbidResult.
+    ///  - On success, invoke the service, set TempData, and redirect to the provided local returnUrl.
+    ///  - On success with no or invalid returnUrl, redirect to the "MyCollection" page.
     /// </summary>
     [TestFixture]
     public class CopyrightsControllerRemoveTests

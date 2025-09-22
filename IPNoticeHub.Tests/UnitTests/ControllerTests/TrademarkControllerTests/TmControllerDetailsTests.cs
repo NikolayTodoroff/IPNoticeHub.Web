@@ -12,8 +12,10 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
 {
     /// <summary>
     /// Section: TrademarksController – Details
-    /// - Verifies that Details(publicId) returns ViewResult with TrademarkDetailsDTO model when found.
-    /// - Verifies that Details(publicId) returns NotFoundResult when not found.
+    ///  - Verifies that Details(publicId) returns ViewResult with TrademarkDetailsDTO model when found.
+    ///  - Verifies that Details(publicId) returns NotFoundResult when not found.
+    ///  - Verifies that Details sets the ReturnUrl in ViewData when the provided URL is local.
+    ///  - Verifies that Details does not set the ReturnUrl in ViewData when the provided URL is external.
     /// </summary>
     [TestFixture]
     public class TmControllerDetailsTests
@@ -21,11 +23,11 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
         [Test]
         public async Task Details_WhenPublicIdExists_ReturnsViewWithDetailsModel()
         {
-            var id = Guid.NewGuid();
+            var entityId = Guid.NewGuid();
 
             var detailsDTO = new TrademarkDetailsDTO
             {
-                PublicId = id,
+                PublicId = entityId,
                 Wordmark = "Target",
                 Owner = "Owner A",
                 Provider = DataProvider.USPTO,
@@ -34,14 +36,14 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
 
             var tmSearchService = new Mock<ITrademarkSearchService>();
 
-            tmSearchService.Setup(s => s.GetDetailsAsync(id, It.IsAny<CancellationToken>())).
+            tmSearchService.Setup(s => s.GetDetailsAsync(entityId, It.IsAny<CancellationToken>())).
                 ReturnsAsync(detailsDTO);
 
             var tmCollectionService = new Mock<ITrademarkCollectionService>();
 
             var controller = new TrademarksController(tmSearchService.Object, tmCollectionService.Object);
 
-            var detailsResult = await controller.Details(id, default);
+            var detailsResult = await controller.Details(entityId, default);
 
             var viewResult = detailsResult as ViewResult;
 
@@ -51,41 +53,41 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
 
             var viewModel = viewResult.Model as TrademarkDetailsDTO;
 
-            viewModel!.PublicId.Should().Be(id);
+            viewModel!.PublicId.Should().Be(entityId);
             viewModel.Wordmark.Should().Be("Target");
 
-            tmSearchService.Verify(s => s.GetDetailsAsync(id, It.IsAny<CancellationToken>()), Times.Once);
+            tmSearchService.Verify(s => s.GetDetailsAsync(entityId, It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Test]
         public async Task Details_WhenPublicIdDoesNotExist_ReturnsNotFound()
         {
-            var id = Guid.NewGuid();
+            var entityId = Guid.NewGuid();
 
             var tmSearchService = new Mock<ITrademarkSearchService>();
 
-            tmSearchService.Setup(s => s.GetDetailsAsync(id, It.IsAny<CancellationToken>())).
+            tmSearchService.Setup(s => s.GetDetailsAsync(entityId, It.IsAny<CancellationToken>())).
                 ReturnsAsync((TrademarkDetailsDTO?)null);
 
             var tmCollectionService = new Mock<ITrademarkCollectionService>();
 
             var controller = new TrademarksController(tmSearchService.Object, tmCollectionService.Object);
 
-            var detailsResult = await controller.Details(id, default);
+            var detailsResult = await controller.Details(entityId, default);
 
             detailsResult.Should().BeOfType<NotFoundResult>();
-            tmSearchService.Verify(s => s.GetDetailsAsync(id, It.IsAny<CancellationToken>()), Times.Once);
+            tmSearchService.Verify(s => s.GetDetailsAsync(entityId, It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Test]
         public async Task Details_WhenReturnUrlIsLocal_SetsReturnUrlInViewData()
         {
-            var id = Guid.NewGuid();
+            var entityId = Guid.NewGuid();
             var safeReturnUrl = "/Home/Results?trademark=chimaira";
 
             var detailsDTO = new TrademarkDetailsDTO
             {
-                PublicId = id,
+                PublicId = entityId,
                 Wordmark = "Chimaira",
                 Owner = "Armstrong LLC",
                 Provider = DataProvider.USPTO,
@@ -93,7 +95,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
             };
 
             var tmSearchService = new Mock<ITrademarkSearchService>();
-            tmSearchService.Setup(s => s.GetDetailsAsync(id, It.IsAny<CancellationToken>()))
+            tmSearchService.Setup(s => s.GetDetailsAsync(entityId, It.IsAny<CancellationToken>()))
                      .ReturnsAsync(detailsDTO);
 
             var collectionService = new Mock<ITrademarkCollectionService>();
@@ -106,7 +108,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
                 userId: null
             );
 
-            var actionResult = await controller.Details(id, safeReturnUrl, default);
+            var actionResult = await controller.Details(entityId, safeReturnUrl, default);
 
             var view = actionResult as ViewResult;
             view.Should().NotBeNull();
@@ -115,18 +117,18 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
 
             view.ViewData["ReturnUrl"]!.ToString().Should().Be(safeReturnUrl);
 
-            tmSearchService.Verify(s => s.GetDetailsAsync(id, It.IsAny<CancellationToken>()), Times.Once);
+            tmSearchService.Verify(s => s.GetDetailsAsync(entityId, It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Test]
         public async Task Details_WhenReturnUrlIsExternal_DoesNotSetReturnUrl()
         {
-            var id = Guid.NewGuid();
+            var entityId = Guid.NewGuid();
             var externalUrl = "https://custom.example/demo";
 
             var detailsDTO = new TrademarkDetailsDTO
             {
-                PublicId = id,
+                PublicId = entityId,
                 Wordmark = "Chimaira",
                 Owner = "Armstrong LLC",
                 Provider = DataProvider.USPTO,
@@ -134,7 +136,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
             };
 
             var tmSearchService = new Mock<ITrademarkSearchService>();
-            tmSearchService.Setup(s => s.GetDetailsAsync(id, It.IsAny<CancellationToken>()))
+            tmSearchService.Setup(s => s.GetDetailsAsync(entityId, It.IsAny<CancellationToken>()))
                      .ReturnsAsync(detailsDTO);
 
             var collectionService = new Mock<ITrademarkCollectionService>();
@@ -146,16 +148,17 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
                 userId: null
             );
 
-            var actionResult = await controller.Details(id, externalUrl, default);
+            var actionResult = await controller.Details(entityId, externalUrl, default);
 
             var resultView = actionResult as ViewResult;
             resultView.Should().NotBeNull();
             resultView!.Model.Should().BeOfType<TrademarkDetailsDTO>();
 
-            // Unsafe URL should be ignored (no ReturnUrl provided to the view)
+            // Unsafe URL should be ignored (no ReturnUrl provided to the View)
             resultView.ViewData.ContainsKey("ReturnUrl").Should().BeFalse();
 
-            tmSearchService.Verify(s => s.GetDetailsAsync(id, It.IsAny<CancellationToken>()), Times.Once);
+            tmSearchService.Verify(s => s.GetDetailsAsync(entityId, It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }
+

@@ -13,11 +13,11 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
 {
     /// <summary>
     /// Section: CopyrightsController – Create
-    /// - GET Create returns view with empty DTO.
-    /// - POST invalid ModelState returns same view with DTO.
-    /// - POST no user returns Forbid.
-    /// - POST success returns calls service, sets TempData, redirects to local returnUrl.
-    /// - POST success with no/invalid returnUrl return redirects to Details(publicId).
+    ///  - GET Create returns view with empty DTO.
+    ///  - POST invalid ModelState returns same view with DTO.
+    ///  - POST no user returns Forbid.
+    ///  - POST success returns calls service, sets TempData, redirects to local returnUrl.
+    ///  - POST success with no/invalid returnUrl return redirects to Details(publicId).
     /// </summary>
     /// [TestFixture]
     public class CopyrightsControllerCreateTests

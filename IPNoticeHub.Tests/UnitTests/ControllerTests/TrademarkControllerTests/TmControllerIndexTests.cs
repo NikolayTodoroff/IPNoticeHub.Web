@@ -13,10 +13,10 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
 {
     /// <summary>
     /// Section: TrademarksController – Index   
-    /// - Verifies that Index with valid search term calls ITrademarkSearchService.SearchAsync
-    ///  and returns populated view model with ViewBag.HasSearch = true.
-    /// - Verifies that Index with empty/whitespace search term returns view
-    ///  with empty page model and ViewBag.HasSearch = false.
+    ///  - Verifies that Index with valid search term calls ITrademarkSearchService.SearchAsync
+    /// and returns populated view model with ViewBag.HasSearch = true.
+    ///  - Verifies that Index with empty/whitespace search term returns view
+    /// with empty page model and ViewBag.HasSearch = false.
     /// </summary>
     [TestFixture]
     public class TmControllerIndexTests

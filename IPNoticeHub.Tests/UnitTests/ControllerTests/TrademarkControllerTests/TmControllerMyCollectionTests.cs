@@ -12,9 +12,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
 {
     /// <summary>
     /// Section: TrademarksController – MyCollection
-    /// - MyCollection (when user id is missing) returns Forbid().
-    /// - MyCollection (when user id present) returns calls service and 
-    /// returns View with page model; ViewBag.SortBy is set.
+    ///  - MyCollection (when user id is missing) returns Forbid().
+    ///  - MyCollection (when user id present) returns calls service and returns View with page model; ViewBag.SortBy is set.
     /// </summary>
     [TestFixture]
     public class TmControllerMyCollectionTests
