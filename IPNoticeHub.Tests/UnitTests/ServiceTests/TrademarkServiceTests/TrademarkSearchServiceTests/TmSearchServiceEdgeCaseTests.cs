@@ -14,11 +14,11 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
     {
         /// <summary>
         /// Section: TrademarkSearchService – Edge Cases For The SearchAsync Method.
-        /// - Verifies that the service returns all records when no search term is provided, ensuring default behavior is functional.
-        /// - Ensures that invalid values for currentPage and resultsPerPage are normalized to defaults, maintaining stability under improper inputs.
-        /// - Confirms that when no records match the search criteria, the result is empty, but metadata (e.g., CurrentPage, ResultsCountPerPage) remains correct.
-        /// - Each test uses an in-memory database to ensure isolation and reproducibility, with specific test data simulating real-world scenarios.
-        /// - Tests not only the result content but also the metadata (e.g., CurrentPage, ResultsCountPerPage, ResultsCount) to ensure accurate pagination information.
+        ///  - Verifies that the service returns all records when no search term is provided, ensuring default behavior is functional.
+        ///  - Ensures that invalid values for currentPage and resultsPerPage are normalized to defaults, maintaining stability under improper inputs.
+        ///  - Confirms that when no records match the search criteria, the result is empty, but metadata (e.g., CurrentPage, ResultsCountPerPage) remains correct.
+        ///  - Each test uses an in-memory database to ensure isolation and reproducibility, with specific test data simulating real-world scenarios.
+        ///  - Tests not only the result content but also the metadata (e.g., CurrentPage, ResultsCountPerPage, ResultsCount) to ensure accurate pagination information.
         /// </summary>
         [Test]
         public async Task SearchAsync_WhenSearchTermIsNullOrEmpty_ReturnsAllItems()

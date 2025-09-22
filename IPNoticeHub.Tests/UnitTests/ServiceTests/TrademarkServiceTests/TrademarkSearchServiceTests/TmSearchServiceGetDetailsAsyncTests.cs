@@ -13,8 +13,8 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
     {
         /// <summary>
         /// Section: TrademarkSearchService – GetDetailsAsync behaviour
-        ///  - Verifies that GetDetailsAsync returns the correct details when a valid PublicId exists.
-        ///  - Ensures that GetDetailsAsync returns null when the provided PublicId does not exist in the database.
+        /// - Verifies that GetDetailsAsync returns the correct details when a valid PublicId exists.
+        /// - Ensures that GetDetailsAsync returns null when the provided PublicId does not exist in the database.
         /// </summary>
         [Test]
         public async Task GetDetailsAsync_WhenPublicIdExists_ReturnsDetailsDto()

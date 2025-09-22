@@ -38,6 +38,7 @@ namespace IPNoticeHub.Services.Application.Implementations
                         trademarkQuery = trademarkQuery.Where(t => EF.Functions.Like(t.RegistrationNumber, $"%{searchTerm}%"));
                     }
                 }
+
                 else if (searchByFilter == TrademarkSearchBy.Owner)
                 {
                     if (isSearchModeIdentical)
@@ -49,6 +50,7 @@ namespace IPNoticeHub.Services.Application.Implementations
                         trademarkQuery = trademarkQuery.Where(t => EF.Functions.Like(t.Owner, $"%{searchTerm}%"));
                     }
                 }
+
                 else
                 {
                     if (isSearchModeIdentical)
