@@ -15,9 +15,6 @@ namespace IPNoticeHub.Data.Entities.ApplicationUser
         public TrademarkEntity TrademarkRegistration { get; set; } = null!;
 
 
-        [Comment("Indicates whether the trademark is on a watchlist")]
-        public bool AddedToWatchlist { get; set; } = false;
-
 
         [Comment("Date when the user added this trademark registration to their account")]
         public DateTime DateAdded { get; set; } = DateTime.UtcNow;
@@ -25,5 +22,21 @@ namespace IPNoticeHub.Data.Entities.ApplicationUser
 
         [Comment("Indicates whether the user has removed this registration from their collection or watchlist (soft delete).")]
         public bool IsDeleted { get; set; } = false;
+
+        // Watchlist Specific
+        [Comment("Indicates whether the trademark is on a watchlist")]
+        public bool AddedToWatchlist { get; set; } = false;
+
+
+        [Comment("The UTC date and time when the trademark was added to the watchlist.")]
+        public DateTime? WatchlistAddedOnDate { get; set; }
+
+
+        [Comment("The initial status code of the trademark when it was added to the watchlist.")]
+        public string? WatchlistInitialStatusCode { get; set; }
+
+
+        [Comment("Indicates whether notifications are enabled for this trademark on the watchlist.")]
+        public bool WatchlistNotificationsEnabled { get; set; } = false;
     }
 }

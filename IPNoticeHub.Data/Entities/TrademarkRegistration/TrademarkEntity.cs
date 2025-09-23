@@ -78,7 +78,7 @@ namespace IPNoticeHub.Data.Entities.TrademarkRegistration
 
 
         [Comment("Collection of events related to this trademark registration")]
-        public ICollection<TrademarkEvent> Events { get; set; } = new List<TrademarkEvent>();       
+        public ICollection<TrademarkEvent> Events { get; set; } = new List<TrademarkEvent>();
 
 
         [Comment("Navigation property for the many - to - many relationship between TrademarkRegistration and UserTrademark")]
