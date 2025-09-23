@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 
 namespace IPNoticeHub.Services.Application.Implementations
 {
-    public sealed class TrademarkWatchlistService : ITrademarkWatchlistService
-    {
+    //public sealed class TrademarkWatchlistService : ITrademarkWatchlistService
+    //{
 
 
         
-    }
+    //}
 }
