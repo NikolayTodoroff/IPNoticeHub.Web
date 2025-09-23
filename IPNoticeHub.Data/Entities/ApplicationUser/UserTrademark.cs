@@ -33,7 +33,7 @@ namespace IPNoticeHub.Data.Entities.ApplicationUser
 
 
         [Comment("The initial status code of the trademark when it was added to the watchlist.")]
-        public string? WatchlistInitialStatusCode { get; set; }
+        public string? WatchlistInitialStatusCategory { get; set; }
 
 
         [Comment("Indicates whether notifications are enabled for this trademark on the watchlist.")]
