@@ -48,7 +48,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
 
             var query = new TrademarkSearchQueryDTO
             {
-                Query = "First",
+                Query = "first",
                 SearchBy = TrademarkSearchBy.Wordmark,
                 Mode = SearchMode.Contains,
                 Page = DefaultPage,
