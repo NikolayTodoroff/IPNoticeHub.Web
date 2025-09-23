@@ -21,6 +21,18 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.HomeControllerTests
     public class HomeControllerResultsTests
     {
         [Test]
+        public void HomeControllerIndex_ReturnsView()
+        {
+            var tmSearchService = new Mock<ITrademarkSearchQueryService>(MockBehavior.Strict);
+            var controller = TestHomeControllerFactory.CreateHomeController(tmSearchService.Object);
+
+            var indexResult = controller.Index();
+
+            indexResult.Should().BeOfType<ViewResult>();
+            ((ViewResult)indexResult).Model.Should().BeNull();
+        }
+
+        [Test]
         public async Task SearchResults_MapsQueryAndReturnsViewModel()
         {
             var tmSearchService = new Mock<ITrademarkSearchQueryService>(MockBehavior.Strict);
