@@ -7,11 +7,12 @@
             public const int WordmarkMaxLength = 300;
             public const int SourceIdMaxLength = 50;
             public const int RegistrationNumberMaxLength = 50;
-            public const int GoodsAndServicesMaxLength = 1000;
+            public const int GoodsAndServicesMaxLength = 5000;
             public const int OwnerNameMaxLength = 255;
-            public const int TrademarkStatusDetailsMaxLength = 500;
+            public const int TrademarkStatusDetailsMaxLength = 1000;
             public const int MarkImageUrlMaxLength = 2048;
             public const int FilterSearchTermMaxLength = 500;
+            public const int WatchlistInitialStatusTextMaxLength = 1000;
         }
 
         public static class TrademarkEventConstants

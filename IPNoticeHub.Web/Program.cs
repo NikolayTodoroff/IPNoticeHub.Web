@@ -1,19 +1,20 @@
-using System.Security.Claims;
 using IPNoticeHub.Data;
 using IPNoticeHub.Data.Entities.ApplicationUser;
+using IPNoticeHub.Data.Repositories.Application.Abstractions;
+using IPNoticeHub.Data.Repositories.Application.Implementations;
 using IPNoticeHub.Data.Repositories.Copyrights.Abstractions;
 using IPNoticeHub.Data.Repositories.Copyrights.Implementations;
 using IPNoticeHub.Data.Repositories.Trademarks.Abstractions;
 using IPNoticeHub.Data.Repositories.Trademarks.Implementations;
+using IPNoticeHub.Services.Application.Abstractions;
+using IPNoticeHub.Services.Application.Implementations;
 using IPNoticeHub.Services.Copyrights.Abstractions;
 using IPNoticeHub.Services.Copyrights.Implementations;
 using IPNoticeHub.Services.Trademarks.Abstractions;
 using IPNoticeHub.Services.Trademarks.Implementations;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.UI.Services;
-using IPNoticeHub.Data.Repositories.Application.Implementations;
-using IPNoticeHub.Services.Application.Abstractions;
-using IPNoticeHub.Services.Application.Implementations;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 namespace IPNoticeHub.Web
 {
     public class Program
@@ -57,6 +58,9 @@ namespace IPNoticeHub.Web
             builder.Services.AddScoped<ICopyrightService, CopyrightService>();
             builder.Services.AddScoped<ITrademarkReadRepository, TrademarkReadRepository>();
             builder.Services.AddScoped<ITrademarkSearchQueryService, TrademarkSearchQueryService>();
+            builder.Services.AddScoped<ITrademarkStatusSnapshotRepository, TrademarkStatusSnapshotRepository>();
+            builder.Services.AddScoped<IUserTrademarkWatchlistRepository, UserTrademarkWatchlistRepository>();
+            builder.Services.AddScoped<ITrademarkWatchlistService, TrademarkWatchlistService>();
 
             // Temporary no-op email sender while theming
             builder.Services.AddSingleton<IEmailSender, NoOpEmailSender>();

@@ -56,6 +56,14 @@ namespace IPNoticeHub.Data.Entities.TrademarkRegistration
         public string StatusDetail { get; set; } = string.Empty;
 
 
+        [Comment("Raw status code from source header (e.g., USPTO <status-code>)")]
+        public int? StatusCodeRaw { get; set; }
+
+
+        [Comment("Raw status date from source header (e.g., USPTO <status-date>) in UTC")]
+        public DateTime? StatusDateUtc { get; set; }
+
+
         [Comment("Filing date of the trademark application (optional)")]
         public DateTime? FilingDate { get; set; }
 

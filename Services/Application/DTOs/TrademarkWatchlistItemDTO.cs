@@ -9,7 +9,7 @@
         public DateTime? AddedOnDate { get; init; }
         public string? InitialStatus { get; init; }
         public string CurrentStatus { get; init; } = "";
-        public bool HasStatusChange => !string.IsNullOrEmpty(InitialStatus) && !string.Equals(InitialStatus, CurrentStatus, StringComparison.OrdinalIgnoreCase);
+        public bool HasStatusChange { get; init; }
         public bool NotificationsEnabled { get; init; }
     }
 }

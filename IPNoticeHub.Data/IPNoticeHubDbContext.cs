@@ -3,6 +3,7 @@ using IPNoticeHub.Data.Entities.CopyrightRegistration;
 using IPNoticeHub.Data.Entities.TrademarkRegistration;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 
 namespace IPNoticeHub.Data
 {
@@ -26,6 +27,11 @@ namespace IPNoticeHub.Data
             builder.Entity<TrademarkEntity>().
                 HasIndex(t => new { t.Source, t.SourceId }).
                 IsUnique();
+
+            builder.Entity<TrademarkEntity>().
+                HasIndex(e => new { e.Source, e.SourceId }).
+                IsUnique().
+                HasDatabaseName("UX_Trademark_Source_SourceId");
 
             // Ensure that the RegistrationNumber is unique for CopyrightRegistration
             builder.Entity<CopyrightEntity>().
@@ -86,6 +92,7 @@ namespace IPNoticeHub.Data
             builder.Entity<UserCopyright>().
                 HasIndex(x => new { x.ApplicationUserId, x.CopyrightRegistrationId }).
                 IsUnique();
+
 
             // Only seed data if not disabled by an environment variable AND the database is not an in-memory or SQLite test database.
 
