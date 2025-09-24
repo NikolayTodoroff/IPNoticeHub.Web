@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace IPNoticeHub.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class UserTrademark_Watchlist_ColumnsAndDefaults : Migration
+    public partial class UpdateSeed_UserTrademarks_WatchlistNotifications : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -104,7 +104,7 @@ namespace IPNoticeHub.Data.Migrations
                     TrademarkRegistrationId = table.Column<int>(type: "int", nullable: false),
                     DateAdded = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "Date when the user added this trademark registration to their account"),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, comment: "Indicates whether the user has removed this registration from their collection or watchlist (soft delete)."),
-                    AddedToWatchlist = table.Column<bool>(type: "bit", nullable: false, comment: "Indicates whether the trademark is on a watchlist"),
+                    AddedToWatchlist = table.Column<bool>(type: "bit", nullable: false, defaultValue: false, comment: "Indicates whether the trademark is on a watchlist"),
                     WatchlistNotificationsEnabled = table.Column<bool>(type: "bit", nullable: false, defaultValue: false, comment: "Indicates whether notifications are enabled for this trademark on the watchlist."),
                     WatchlistAddedOnUtc = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "The UTC date and time when the trademark was added to the watchlist."),
                     WatchlistInitialStatusCodeRaw = table.Column<int>(type: "int", nullable: true, comment: "The raw status code of the trademark as retrieved from the USPTO database or API."),
@@ -145,16 +145,17 @@ namespace IPNoticeHub.Data.Migrations
             migrationBuilder.InsertData(
                 table: "UserCopyrights",
                 columns: new[] { "ApplicationUserId", "CopyrightRegistrationId", "DateAdded", "IsDeleted" },
-                values: new object[] { "2b195b12-9690-46b9-ac8e-50118a7102ea", 1, new DateTime(2025, 9, 24, 13, 27, 48, 364, DateTimeKind.Utc).AddTicks(8503), false });
+                values: new object[] { "2b195b12-9690-46b9-ac8e-50118a7102ea", 1, new DateTime(2025, 9, 24, 13, 50, 8, 780, DateTimeKind.Utc).AddTicks(9903), false });
 
             migrationBuilder.InsertData(
                 table: "UserTrademarks",
                 columns: new[] { "ApplicationUserId", "TrademarkRegistrationId", "AddedToWatchlist", "DateAdded", "IsDeleted", "WatchlistAddedOnUtc", "WatchlistInitialStatusCodeRaw", "WatchlistInitialStatusDateUtc", "WatchlistInitialStatusText" },
-                values: new object[,]
-                {
-                    { "2b195b12-9690-46b9-ac8e-50118a7102ea", 1, true, new DateTime(2025, 9, 24, 13, 27, 48, 364, DateTimeKind.Utc).AddTicks(8426), false, null, null, null, null },
-                    { "4d8f7a3e-cb13-42f4-bf61-0a8c301a3f8b", 2, false, new DateTime(2025, 9, 24, 13, 27, 48, 364, DateTimeKind.Utc).AddTicks(8430), false, null, null, null, null }
-                });
+                values: new object[] { "2b195b12-9690-46b9-ac8e-50118a7102ea", 1, true, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), false, null, null, null, null });
+
+            migrationBuilder.InsertData(
+                table: "UserTrademarks",
+                columns: new[] { "ApplicationUserId", "TrademarkRegistrationId", "DateAdded", "IsDeleted", "WatchlistAddedOnUtc", "WatchlistInitialStatusCodeRaw", "WatchlistInitialStatusDateUtc", "WatchlistInitialStatusText" },
+                values: new object[] { "4d8f7a3e-cb13-42f4-bf61-0a8c301a3f8b", 2, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), false, null, null, null, null });
 
             migrationBuilder.CreateIndex(
                 name: "IX_TrademarkRegistrations_RegistrationNumber",

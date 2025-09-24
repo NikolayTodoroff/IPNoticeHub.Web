@@ -151,7 +151,7 @@ namespace IPNoticeHub.Data.Migrations
                         {
                             ApplicationUserId = "2b195b12-9690-46b9-ac8e-50118a7102ea",
                             CopyrightRegistrationId = 1,
-                            DateAdded = new DateTime(2025, 9, 24, 13, 27, 48, 364, DateTimeKind.Utc).AddTicks(8503),
+                            DateAdded = new DateTime(2025, 9, 24, 13, 50, 8, 780, DateTimeKind.Utc).AddTicks(9903),
                             IsDeleted = false
                         });
                 });
@@ -165,7 +165,9 @@ namespace IPNoticeHub.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<bool>("AddedToWatchlist")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
+                        .HasDefaultValue(false)
                         .HasComment("Indicates whether the trademark is on a watchlist");
 
                     b.Property<DateTime>("DateAdded")
@@ -211,16 +213,18 @@ namespace IPNoticeHub.Data.Migrations
                             ApplicationUserId = "2b195b12-9690-46b9-ac8e-50118a7102ea",
                             TrademarkRegistrationId = 1,
                             AddedToWatchlist = true,
-                            DateAdded = new DateTime(2025, 9, 24, 13, 27, 48, 364, DateTimeKind.Utc).AddTicks(8426),
-                            IsDeleted = false
+                            DateAdded = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsDeleted = false,
+                            WatchlistNotificationsEnabled = false
                         },
                         new
                         {
                             ApplicationUserId = "4d8f7a3e-cb13-42f4-bf61-0a8c301a3f8b",
                             TrademarkRegistrationId = 2,
                             AddedToWatchlist = false,
-                            DateAdded = new DateTime(2025, 9, 24, 13, 27, 48, 364, DateTimeKind.Utc).AddTicks(8430),
-                            IsDeleted = false
+                            DateAdded = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsDeleted = false,
+                            WatchlistNotificationsEnabled = false
                         });
                 });
 

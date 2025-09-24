@@ -1,10 +1,4 @@
 {
-  "StatusCodeCatalogs": {
-    "USPTO": "Configurations/uspto-status-codes.json"
-  }
-}
-
-{
   "source": "USPTO",
   "version": "2025-09-01",
   "codes": [
