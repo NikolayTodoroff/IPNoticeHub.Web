@@ -4,6 +4,7 @@ using IPNoticeHub.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IPNoticeHub.Data.Migrations
 {
     [DbContext(typeof(IPNoticeHubDbContext))]
-    partial class IPNoticeHubDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250924132750_UserTrademark_Watchlist_ColumnsAndDefaults")]
+    partial class UserTrademark_Watchlist_ColumnsAndDefaults
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -13,7 +13,8 @@ namespace IPNoticeHub.Data.Seed
         {
             var user1Id = "2b195b12-9690-46b9-ac8e-50118a7102ea";
             var user2Id = "4d8f7a3e-cb13-42f4-bf61-0a8c301a3f8b";
-                       
+            var seedDateUtc = new DateTime(2025, 01, 01, 0, 0, 0, DateTimeKind.Utc);
+
             builder.Entity<ApplicationUser>().HasData(
                 new ApplicationUser
                 {
@@ -94,10 +95,26 @@ namespace IPNoticeHub.Data.Seed
                     NationOfFirstPublication = "United States"
                 }
             );
-          
+         
             builder.Entity<UserTrademark>().HasData(
-                new { ApplicationUserId = user1Id, TrademarkRegistrationId = 1, AddedToWatchlist = true, DateAdded = DateTime.UtcNow, IsDeleted = false },
-                new { ApplicationUserId = user2Id, TrademarkRegistrationId = 2, AddedToWatchlist = false, DateAdded = DateTime.UtcNow, IsDeleted = false }
+                new
+                {
+                    ApplicationUserId = user1Id,
+                    TrademarkRegistrationId = 1,
+                    AddedToWatchlist = true,
+                    DateAdded = seedDateUtc,
+                    IsDeleted = false,
+                    WatchlistNotificationsEnabled = false
+                },
+                new
+                {
+                    ApplicationUserId = user2Id,
+                    TrademarkRegistrationId = 2,
+                    AddedToWatchlist = false,
+                    DateAdded = seedDateUtc,
+                    IsDeleted = false,
+                    WatchlistNotificationsEnabled = false
+                }
             );
 
             builder.Entity<UserCopyright>().HasData(

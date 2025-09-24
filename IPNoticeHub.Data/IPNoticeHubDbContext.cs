@@ -60,6 +60,16 @@ namespace IPNoticeHub.Data
                 HasForeignKey(ut => ut.TrademarkRegistrationId).
                 OnDelete(DeleteBehavior.Restrict);
 
+            // Set default value for WatchlistNotificationsEnabled property to false
+            builder.Entity<UserTrademark>().
+                Property(x => x.WatchlistNotificationsEnabled).
+                HasDefaultValue(false);
+
+            // Set default value for AddedToWatchlist property to false
+            builder.Entity<UserTrademark>().
+                Property(x => x.AddedToWatchlist).
+                HasDefaultValue(false);
+
             // Define composite primary key for UserCopyright entity
             builder.Entity<UserCopyright>().
                 HasKey(uc => new { uc.ApplicationUserId, uc.CopyrightRegistrationId });
