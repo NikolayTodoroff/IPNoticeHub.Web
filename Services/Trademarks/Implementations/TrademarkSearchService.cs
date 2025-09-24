@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-
-using IPNoticeHub.Common.AdditionalConfigurations;
+using IPNoticeHub.Common.Infrastructure;
 using IPNoticeHub.Data.Entities.TrademarkRegistration;
 using IPNoticeHub.Data.Repositories.Trademarks.Abstractions;
 using IPNoticeHub.Services.Common;

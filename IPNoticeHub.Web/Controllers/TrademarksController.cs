@@ -5,7 +5,7 @@ using IPNoticeHub.Services.Trademarks.DTOs;
 using IPNoticeHub.Web.Models.Trademarks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using IPNoticeHub.Common.Extensions;
+using IPNoticeHub.Common.Infrastructure;
 using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
 using static IPNoticeHub.Common.ValidationConstants.StatusMessages;
 

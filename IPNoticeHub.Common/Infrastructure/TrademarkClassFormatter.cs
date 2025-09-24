@@ -2,7 +2,7 @@
 using System.Reflection;
 using IPNoticeHub.Common.EnumConstants;
 
-namespace IPNoticeHub.Common.AdditionalConfigurations
+namespace IPNoticeHub.Common.Infrastructure
 {
     /// <summary>
     /// Provides utility methods for formatting trademark classes.

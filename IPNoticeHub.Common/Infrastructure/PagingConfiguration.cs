@@ -1,6 +1,6 @@
 ﻿using static IPNoticeHub.Common.ValidationConstants;
 
-namespace IPNoticeHub.Common.AdditionalConfigurations
+namespace IPNoticeHub.Common.Infrastructure
 {
     public static class PagingConfiguration
     {

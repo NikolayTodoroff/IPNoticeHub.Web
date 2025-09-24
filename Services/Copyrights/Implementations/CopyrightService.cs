@@ -1,4 +1,4 @@
-﻿using IPNoticeHub.Common.AdditionalConfigurations;
+﻿using IPNoticeHub.Common.Infrastructure;
 using IPNoticeHub.Common.EnumConstants;
 using IPNoticeHub.Data.Entities.ApplicationUser;
 using IPNoticeHub.Data.Entities.CopyrightRegistration;

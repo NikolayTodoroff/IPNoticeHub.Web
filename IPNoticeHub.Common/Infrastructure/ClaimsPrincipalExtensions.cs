@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Security.Claims;
 
-namespace IPNoticeHub.Common.Extensions
+namespace IPNoticeHub.Common.Infrastructure
 {
     /// <summary>
     /// Attempts to retrieve the user ID from the claims of the current user.
