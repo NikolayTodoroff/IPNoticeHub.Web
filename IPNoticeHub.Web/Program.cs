@@ -7,6 +7,7 @@ using IPNoticeHub.Data.Repositories.Copyrights.Implementations;
 using IPNoticeHub.Data.Repositories.Trademarks.Abstractions;
 using IPNoticeHub.Data.Repositories.Trademarks.Implementations;
 using IPNoticeHub.Services.Application.Abstractions;
+using IPNoticeHub.Services.Application.Extensions;
 using IPNoticeHub.Services.Application.Implementations;
 using IPNoticeHub.Services.Copyrights.Abstractions;
 using IPNoticeHub.Services.Copyrights.Implementations;
@@ -61,6 +62,7 @@ namespace IPNoticeHub.Web
             builder.Services.AddScoped<ITrademarkStatusSnapshotRepository, TrademarkStatusSnapshotRepository>();
             builder.Services.AddScoped<IUserTrademarkWatchlistRepository, UserTrademarkWatchlistRepository>();
             builder.Services.AddScoped<ITrademarkWatchlistService, ITrademarkWatchlistService>();
+            builder.Services.AddSingleton<IStatusLabelProvider, StatusLabelProvider>();
 
             // Temporary no-op email sender while theming
             builder.Services.AddSingleton<IEmailSender, NoOpEmailSender>();

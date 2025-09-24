@@ -1,0 +1,525 @@
+{
+  "StatusCodeCatalogs": {
+    "USPTO": "Configurations/uspto-status-codes.json"
+  }
+}
+
+{
+  "source": "USPTO",
+  "version": "2025-09-01",
+  "codes": [
+    {
+      "code": 600,
+      "label": "Abandoned-Incomplete"
+    },
+    {
+      "code": 601,
+      "label": "Abandoned-Express"
+    },
+    {
+      "code": 602,
+      "label": "Abandoned-Failure to Respond"
+    },
+    {
+      "code": 603,
+      "label": "Abandoned-After ex parte Appeal"
+    },
+    {
+      "code": 604,
+      "label": "Abandoned-After inter partes decision"
+    },
+    {
+      "code": 605,
+      "label": "Abandoned-After Publication"
+    },
+    {
+      "code": 606,
+      "label": "Abandoned-No Statement of Use filed"
+    },
+    {
+      "code": 607,
+      "label": "Abandoned-Defective Statement of use"
+    },
+    {
+      "code": 608,
+      "label": "Abandoned-After Petition Decision"
+    },
+    {
+      "code": 609,
+      "label": "Abandoned-Defective Divided Application"
+    },
+    {
+      "code": 612,
+      "label": "Petition to Revive-received"
+    },
+    {
+      "code": 614,
+      "label": "Abandoned-Petition to revive denied"
+    },
+    {
+      "code": 616,
+      "label": "Revived-Awaiting Further Action"
+    },
+    {
+      "code": 618,
+      "label": "Abandoned File-Backfile"
+    },
+    {
+      "code": 620,
+      "label": "Backfile application added to database"
+    },
+    {
+      "code": 622,
+      "label": "Misassigned Serial Number"
+    },
+    {
+      "code": 624,
+      "label": "Registered-Backfile"
+    },
+    {
+      "code": 625,
+      "label": "Registration added to the data base Status unclear"
+    },
+    {
+      "code": 626,
+      "label": "Registered-Backfile cancelled or expired"
+    },
+    {
+      "code": 630,
+      "label": "New Application-Record initialized not assigned to examiner"
+    },
+    {
+      "code": 631,
+      "label": "New Application-Divided-Initial processing"
+    },
+    {
+      "code": 632,
+      "label": "Informal Application"
+    },
+    {
+      "code": 638,
+      "label": "New Application-Assigned to an examiner"
+    },
+    {
+      "code": 640,
+      "label": "Non-final action counted-Not mailed"
+    },
+    {
+      "code": 641,
+      "label": "Non-final action-Mailed"
+    },
+    {
+      "code": 643,
+      "label": "Previous action/approval count withdrawn"
+    },
+    {
+      "code": 644,
+      "label": "Final refusal counted-Not mailed"
+    },
+    {
+      "code": 645,
+      "label": "Final refusal-Mailed"
+    },
+    {
+      "code": 646,
+      "label": "Examiner's amendment counted-Not mailed"
+    },
+    {
+      "code": 647,
+      "label": "Examiner's amendment-Mailed"
+    },
+    {
+      "code": 648,
+      "label": "Action continuing Final counted-Not mailed"
+    },
+    {
+      "code": 649,
+      "label": "Action continuing Final-Mailed"
+    },
+    {
+      "code": 650,
+      "label": "Suspension inquiry counted-Not mailed"
+    },
+    {
+      "code": 651,
+      "label": "Suspension inquiry-Mailed"
+    },
+    {
+      "code": 652,
+      "label": "Suspension letter counted-Not mailed"
+    },
+    {
+      "code": 653,
+      "label": "Suspension letter-Mailed"
+    },
+    {
+      "code": 654,
+      "label": "Report completed suspension check-Case still suspended"
+    },
+    {
+      "code": 661,
+      "label": "Response after non-Final action-Entered"
+    },
+    {
+      "code": 663,
+      "label": "Response after Final rejection-Entered"
+    },
+    {
+      "code": 665,
+      "label": "Notice of unresponsive amendment-Counted"
+    },
+    {
+      "code": 666,
+      "label": "Notice of unresponsive amendment-Mailed"
+    },
+    {
+      "code": 667,
+      "label": "Refusal withdrawal letter-Counted"
+    },
+    {
+      "code": 668,
+      "label": "Refusal withdrawal letter-Mailed"
+    },
+    {
+      "code": 672,
+      "label": "Reinstated-Awaiting further action"
+    },
+    {
+      "code": 680,
+      "label": "Approved for publication"
+    },
+    {
+      "code": 681,
+      "label": "Publication/Registration review complete"
+    },
+    {
+      "code": 686,
+      "label": "Published for Opposition"
+    },
+    {
+      "code": 688,
+      "label": "Notice of Allowance-Issued"
+    },
+    {
+      "code": 689,
+      "label": "Notice of Allowance-Withdrawn"
+    },
+    {
+      "code": 690,
+      "label": "Notice of Allowance-Cancelled"
+    },
+    {
+      "code": 692,
+      "label": "Withdrawn from publication"
+    },
+    {
+      "code": 693,
+      "label": "Withdrawn from registration-Jurisdiction restored"
+    },
+    {
+      "code": 694,
+      "label": "Withdrawn from registration"
+    },
+    {
+      "code": 700,
+      "label": "Registered"
+    },
+    {
+      "code": 701,
+      "label": "Section 8-Accepted"
+    },
+    {
+      "code": 702,
+      "label": "Section 8 and 15-accepted and acknowledged"
+    },
+    {
+      "code": 703,
+      "label": "Section 15-acknowledged"
+    },
+    {
+      "code": 704,
+      "label": "Partial Section 8 accepted"
+    },
+    {
+      "code": 705,
+      "label": "Partial Section 8 and 15 accepted and acknowledged"
+    },
+    {
+      "code": 710,
+      "label": "Cancelled-Section 8"
+    },
+    {
+      "code": 711,
+      "label": "Cancelled-Section 7(d)"
+    },
+    {
+      "code": 712,
+      "label": "Cancelled by court Order under Section 37"
+    },
+    {
+      "code": 713,
+      "label": "Cancelled-Section 18"
+    },
+    {
+      "code": 714,
+      "label": "Cancelled-Section 24"
+    },
+    {
+      "code": 715,
+      "label": "Cancelled-Restored to Pendency"
+    },
+    {
+      "code": 716,
+      "label": "Inadvertently issued registration number-Cancelled"
+    },
+    {
+      "code": 718,
+      "label": "Request for first extension-Filed"
+    },
+    {
+      "code": 719,
+      "label": "Request for second extension-Filed"
+    },
+    {
+      "code": 720,
+      "label": "Request for third extension-Filed"
+    },
+    {
+      "code": 721,
+      "label": "Request for fourth extension-Filed"
+    },
+    {
+      "code": 722,
+      "label": "Request for fifth extension-Filed"
+    },
+    {
+      "code": 724,
+      "label": "Extension request refusal-Counted not mailed"
+    },
+    {
+      "code": 725,
+      "label": "Extension request refusal-Mailed"
+    },
+    {
+      "code": 730,
+      "label": "First Extension-Granted"
+    },
+    {
+      "code": 731,
+      "label": "Second Extension-Granted"
+    },
+    {
+      "code": 732,
+      "label": "Third Extension-Granted"
+    },
+    {
+      "code": 733,
+      "label": "Fourth Extension-Granted"
+    },
+    {
+      "code": 734,
+      "label": "Fifth Extension-Granted"
+    },
+    {
+      "code": 740,
+      "label": "Post registration paper filed-Assigned to paralegal"
+    },
+    {
+      "code": 744,
+      "label": "Statement of Use-Filed"
+    },
+    {
+      "code": 745,
+      "label": "Statement of Use-Informal-Letter mailed"
+    },
+    {
+      "code": 746,
+      "label": "Statement of Use-Informal-Response entered"
+    },
+    {
+      "code": 747,
+      "label": "Statement of Use-ITU processing complete"
+    },
+    {
+      "code": 748,
+      "label": "Statement of Use-To examiner (For Examination)"
+    },
+    {
+      "code": 752,
+      "label": "Statement of Use-Examiner statement counted-Not mailed"
+    },
+    {
+      "code": 753,
+      "label": "Statement of Use-Examiner Statement-Mailed"
+    },
+    {
+      "code": 756,
+      "label": "Examiner statement counted-Not mailed"
+    },
+    {
+      "code": 757,
+      "label": "Examiner statement-Mailed"
+    },
+    {
+      "code": 760,
+      "label": "Ex parte appeal pending"
+    },
+    {
+      "code": 762,
+      "label": "Ex parte appeal-Refusal reversed"
+    },
+    {
+      "code": 763,
+      "label": "Ex parte appeal-Refusal affirmed"
+    },
+    {
+      "code": 764,
+      "label": "Ex parte appeal dismissed as moot"
+    },
+    {
+      "code": 765,
+      "label": "Concurrant use proceeding terminated-Granted"
+    },
+    {
+      "code": 766,
+      "label": "Concurrant use proceeding terminated-Denied"
+    },
+    {
+      "code": 771,
+      "label": "Concurrent use proceeding pending"
+    },
+    {
+      "code": 772,
+      "label": "Interference proceeding pending"
+    },
+    {
+      "code": 773,
+      "label": "Interference proceeding terminated"
+    },
+    {
+      "code": 774,
+      "label": "Opposition pending"
+    },
+    {
+      "code": 775,
+      "label": "Opposition dismissed"
+    },
+    {
+      "code": 777,
+      "label": "Opposition terminated-See TTAB records"
+    },
+    {
+      "code": 778,
+      "label": "Cancellation dismissed"
+    },
+    {
+      "code": 779,
+      "label": "Opposition sustained"
+    },
+    {
+      "code": 780,
+      "label": "Cancellation terminated-See TTAB records"
+    },
+    {
+      "code": 782,
+      "label": "Statement of Use-Opposition Decided-Entry of Judgement Deferred"
+    },
+    {
+      "code": 783,
+      "label": "Statement of Use-Cancellation Decided-Entry of Judgement Deferred"
+    },
+    {
+      "code": 784,
+      "label": "Statement of Use-Interference Decided-Entry of judgement deferred"
+    },
+    {
+      "code": 785,
+      "label": "Statement of Use-Concurrant Use Decided-Entry of Judgement Deferred"
+    },
+    {
+      "code": 790,
+      "label": "Cancellation Pending"
+    },
+    {
+      "code": 794,
+      "label": "Jurisdiction restored to examiner"
+    },
+    {
+      "code": 800,
+      "label": "Renewed"
+    },
+    {
+      "code": 801,
+      "label": "Opposition instituted"
+    },
+    {
+      "code": 802,
+      "label": "Request for extension of time to file opposition"
+    },
+    {
+      "code": 803,
+      "label": "Amendment after publication"
+    },
+    {
+      "code": 806,
+      "label": "Statement of Use-Non-final action counted-Not mailed"
+    },
+    {
+      "code": 807,
+      "label": "Statement of Use-Non-final action-Mailed"
+    },
+    {
+      "code": 808,
+      "label": "Statement of Use-Final refusal counted-Not mailed"
+    },
+    {
+      "code": 809,
+      "label": "Statement of Use-Final refusal-Mailed"
+    },
+    {
+      "code": 810,
+      "label": "Statement of Use-Examiner's amendment counted-Not mailed"
+    },
+    {
+      "code": 811,
+      "label": "Statement of Use-Examiner's amendment-Mailed"
+    },
+    {
+      "code": 812,
+      "label": "Statement of Use-Action continuing final counted-Not mailed"
+    },
+    {
+      "code": 813,
+      "label": "Statement of Use-Action continuing final-Mailed"
+    },
+    {
+      "code": 814,
+      "label": "Statement of Use-Response after non-final action-Entered"
+    },
+    {
+      "code": 815,
+      "label": "Statement of Use-Response after final rejection-Entered"
+    },
+    {
+      "code": 816,
+      "label": "Statement of Use-Notice of unresponsive amendment-Counted-Not mailed"
+    },
+    {
+      "code": 817,
+      "label": "Statement of Use-Notice of unresponsive amendment-Mailed"
+    },
+    {
+      "code": 818,
+      "label": "Statement of Use accepted-Approved for Registration"
+    },
+    {
+      "code": 819,
+      "label": "Statement of Use-Registration review complete"
+    },
+    {
+      "code": 900,
+      "label": "Expired"
+    }
+  ]
+}
+
