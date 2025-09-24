@@ -1,0 +1,102 @@
+﻿@using IPNoticeHub.Services.Application.DTOs
+@model IReadOnlyList<TrademarkWatchlistItemDTO>
+
+@{
+    ViewData["Title"] = "Watchlist";
+    var returnUrl = Context.Request.Path + Context.Request.QueryString;
+}
+
+<h2 class="mb-3">Watchlist</h2>
+
+@if (TempData["Success"] is string s && !string.IsNullOrWhiteSpace(s))
+{
+    <div class="alert alert-success" role="alert">@s</div>
+}
+
+@if (TempData["Error"] is string e && !string.IsNullOrWhiteSpace(e))
+{
+    <div class="alert alert-danger" role="alert">@e</div>
+}
+
+@if (Model is null || !Model.Any())
+{
+    <p class="text-muted">Your watchlist is empty.</p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-sm align-middle mb-2">
+            <thead>
+                <tr>
+                    <th scope="col">Reg. No</th>
+                    <th scope="col">Mark</th>
+                    <th scope="col">Owner</th>
+                    <th scope="col">Added On</th>
+                    <th scope="col">Initial Status</th>
+                    <th scope="col">Current Status</th>
+                    <th scope="col" class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@(string.IsNullOrWhiteSpace(item.RegistrationNumber) ? "—" : item.RegistrationNumber)</td>
+                        <td>@(string.IsNullOrWhiteSpace(item.Wordmark) ? "—" : item.Wordmark)</td>
+                        <td>@(string.IsNullOrWhiteSpace(item.Owner) ? "—" : item.Owner)</td>
+                        <td>@(item.AddedOnDate?.ToLocalTime().ToString("yyyy-MM-dd") ?? "—")</td>
+                        <td>@(string.IsNullOrWhiteSpace(item.InitialStatus) ? "—" : item.InitialStatus)</td>
+                        <td>
+                            @if (!string.IsNullOrWhiteSpace(item.CurrentStatus))
+                            {
+                                @item.CurrentStatus
+                            }
+                            else
+                            {
+                                @:—
+                            }
+                            @if (item.HasStatusChange)
+                            {
+                                <span class="ms-1" title="Status changed since added" aria-label="Status changed">⚡</span>
+                            }
+                        </td>
+                        <td class="text-end">
+                            <!-- Toggle notifications -->
+                            <form asp-controller="Trademarks"
+                                  asp-action="ToggleNotifications"
+                                  method="post"
+                                  class="d-inline">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="returnUrl" value="@returnUrl" />
+                                <input type="hidden" name="trademarkId" value="@item.Id" />
+                                <input type="hidden" name="enabled" value="@(!item.NotificationsEnabled)" />
+                                <button type="submit"
+                                        class="btn btn-outline-secondary btn-sm"
+                                        title="Toggle notifications">
+                                    @(item.NotificationsEnabled ? "🔔" : "🔕")
+                                </button>
+                            </form>
+
+                            <!-- Remove from watchlist -->
+                            <form asp-controller="Trademarks"
+                                  asp-action="Remove"
+                                  method="post"
+                                  class="d-inline ms-2">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="returnUrl" value="@returnUrl" />
+                                <input type="hidden" name="trademarkId" value="@item.Id" />
+                                <button type="submit" class="btn btn-outline-danger btn-sm">
+                                    Remove
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <p class="text-muted small mt-2">
+        ⚡ indicates the trademark’s status changed since you added it.
+    </p>
+}

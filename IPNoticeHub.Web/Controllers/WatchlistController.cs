@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using IPNoticeHub.Services.Application.Abstractions;
+﻿using IPNoticeHub.Services.Application.Abstractions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using IPNoticeHub.Common.Infrastructure;
