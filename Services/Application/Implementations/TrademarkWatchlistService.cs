@@ -11,10 +11,13 @@ namespace IPNoticeHub.Services.Application.Implementations
         private readonly IUserTrademarkWatchlistRepository watchlistRepo;
         private readonly ITrademarkStatusSnapshotRepository snapshotRepo;
 
-        public TrademarkWatchlistService(IUserTrademarkWatchlistRepository watchlistRepo, ITrademarkStatusSnapshotRepository snapshotRepo)
+        private readonly IStatusLabelProvider statusLabels;
+
+        public TrademarkWatchlistService(IUserTrademarkWatchlistRepository watchlistRepo, ITrademarkStatusSnapshotRepository snapshotRepo, IStatusLabelProvider statusLabels)
         {
             this.watchlistRepo = watchlistRepo;
             this.snapshotRepo = snapshotRepo;
+            this.statusLabels = statusLabels;
         }
 
         public async Task AddAsync(string userId, int trademarkId, CancellationToken cancellationToken)
@@ -98,20 +101,13 @@ namespace IPNoticeHub.Services.Application.Implementations
             if (string.IsNullOrWhiteSpace(text))
                 return string.Empty;
 
-            // Lowercase, trim ends, and collapse internal whitespace to single spaces
-            return Regex.Replace(text.Trim().ToLowerInvariant(), @"\s+", " ");
+            return Regex.Replace(  
+                text.Trim().ToLowerInvariant(),pattern: @"\s+",replacement: " ");
         }
 
-        private static string LabelFromCode(int? code)
+        private string LabelFromCode(int? statusCode)
         {
-            if (!code.HasValue) return "";
-
-            return code.Value switch
-            {
-                630 => "New application entered",
-                638 => "Assigned to examiner",
-                _ => $"Status {code.Value}"
-            };
+            return statusCode.HasValue ? statusLabels.GetStatusLabel("USPTO", statusCode.Value) : string.Empty;
         }
     }
 }

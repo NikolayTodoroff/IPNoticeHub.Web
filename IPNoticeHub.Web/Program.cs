@@ -61,7 +61,7 @@ namespace IPNoticeHub.Web
             builder.Services.AddScoped<ITrademarkSearchQueryService, TrademarkSearchQueryService>();
             builder.Services.AddScoped<ITrademarkStatusSnapshotRepository, TrademarkStatusSnapshotRepository>();
             builder.Services.AddScoped<IUserTrademarkWatchlistRepository, UserTrademarkWatchlistRepository>();
-            builder.Services.AddScoped<ITrademarkWatchlistService, ITrademarkWatchlistService>();
+            builder.Services.AddScoped<ITrademarkWatchlistService, TrademarkWatchlistService>();
             builder.Services.AddSingleton<IStatusLabelProvider, StatusLabelProvider>();
 
             // Temporary no-op email sender while theming

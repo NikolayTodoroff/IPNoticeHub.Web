@@ -25,15 +25,15 @@ namespace IPNoticeHub.Services.Application.Extensions
             }
         }
 
-        public string GetStatusLabel(string source, int code)
+        public string GetStatusLabel(string source, int statusCode)
         {
             if (string.Equals(source, "USPTO", StringComparison.OrdinalIgnoreCase) &&
-                usptoStatusClassLabels.TryGetValue(code, out var label))
+                usptoStatusClassLabels.TryGetValue(statusCode, out string? statusLabel))
             {
-                return label;
+                return statusLabel;
             }
 
-            return $"Status {code}";
+            return $"Status {statusCode}";
         }
     }
 }
