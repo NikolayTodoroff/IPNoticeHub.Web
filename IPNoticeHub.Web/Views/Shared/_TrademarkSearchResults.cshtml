@@ -45,13 +45,23 @@
                                             <a class="btn btn-outline-primary btn-sm"
                                                asp-controller="Trademarks"
                                                asp-action="Details"
-                                               asp-route-id="@result.Id"
+                                               asp-route-id="@result.PublicId"
                                                asp-route-returnUrl="@(ViewData["ReturnUrl"]?.ToString() ?? string.Empty)">
                                                 Details
                                             </a>
-                                            <a class="btn btn-sm btn-outline-secondary ms-2" href="#">Save</a>
-                                            <a class="btn btn-sm btn-outline-secondary ms-2" href="#">Add To Watchlist</a>
-                                        </td>
+
+                                            <a class="btn btn-sm btn-outline-secondary ms-2" href="#" aria-disabled="true">Save</a>
+
+                                            <form method="post"
+                                                  asp-controller="Watchlist"
+                                                  asp-action="Add"
+                                                  class="d-inline ms-2">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="trademarkId" value="@result.Id" />
+                                                <button type="submit" class="btn btn-sm btn-outline-secondary">
+                                                    Add To Watchlist
+                                                </button>
+                                            </form>
                                     </tr>
                                 }
                             }

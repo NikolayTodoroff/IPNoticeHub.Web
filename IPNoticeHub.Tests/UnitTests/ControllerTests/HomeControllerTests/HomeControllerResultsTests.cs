@@ -41,7 +41,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.HomeControllerTests
             {
                 new TrademarkSearchResultDTO
                 {
-                    Id = Guid.NewGuid(),
+                    Id = 1,
+                    PublicId = Guid.NewGuid(),
                     RegistrationNumber = "1234567",
                     Wordmark = "Anubis",
                     Owner = "Egypt Inc.",

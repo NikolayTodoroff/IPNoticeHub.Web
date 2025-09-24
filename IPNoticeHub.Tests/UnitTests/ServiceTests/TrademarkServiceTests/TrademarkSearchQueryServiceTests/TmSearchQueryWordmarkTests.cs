@@ -64,7 +64,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
             queryItem.Owner.Should().Be("Diablo Inc.");
             queryItem.RegistrationNumber.Should().Be("54321");
             queryItem.Status.Should().Be(TrademarkStatusCategory.Registered.ToString());
-            queryItem.Id.Should().Be(tmAAA.PublicId);
+            queryItem.Id.Should().Be(tmAAA.Id);
         }
 
         [Test]
@@ -112,7 +112,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
             queryItem.Owner.Should().Be("Diablo Inc.");
             queryItem.RegistrationNumber.Should().Be("54321");
             queryItem.Status.Should().Be(TrademarkStatusCategory.Registered.ToString());
-            queryItem.Id.Should().Be(tmAAA.PublicId);
+            queryItem.Id.Should().Be(tmAAA.Id);
         }
 
         [Test]

@@ -58,6 +58,7 @@ namespace IPNoticeHub.Web.Controllers
                 Results = searchResults.Select(s => new TmSearchResultSingleItemViewModel
                 {
                     Id = s.Id,
+                    PublicId = s.PublicId,
                     RegistrationNumber = s.RegistrationNumber,
                     Wordmark = s.Wordmark,
                     Owner = s.Owner,

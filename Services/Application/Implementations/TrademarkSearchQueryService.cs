@@ -87,7 +87,8 @@ namespace IPNoticeHub.Services.Application.Implementations
                 .Skip(skipItems).Take(requestQuery.PageSize)
                 .Select(t => new TrademarkSearchResultDTO
                 {
-                    Id = t.PublicId,
+                    Id = t.Id,
+                    PublicId = t.PublicId,
                     RegistrationNumber = t.RegistrationNumber ?? string.Empty,
                     Wordmark = t.Wordmark,
                     Owner = t.Owner,
