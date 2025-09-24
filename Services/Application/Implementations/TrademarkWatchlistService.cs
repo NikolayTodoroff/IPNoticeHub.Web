@@ -1,6 +1,7 @@
 ﻿using IPNoticeHub.Data.Repositories.Application.Abstractions;
 using IPNoticeHub.Services.Application.Abstractions;
 using IPNoticeHub.Services.Application.DTOs;
+using Microsoft.EntityFrameworkCore;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -63,7 +64,6 @@ namespace IPNoticeHub.Services.Application.Implementations
 
             return items;
         }
-
         public async Task RemoveAsync(string userId, int trademarkId, CancellationToken cancellationToken)
         {
             await watchlistRepo.SoftRemoveAsync(userId, trademarkId, cancellationToken);
@@ -72,6 +72,11 @@ namespace IPNoticeHub.Services.Application.Implementations
         public async Task ToggleNotificationsAsync(string userId, int trademarkId, bool enabled, CancellationToken cancellationToken)
         {
             await watchlistRepo.ToggleNotificationsAsync(userId, trademarkId, enabled, cancellationToken);
+        }
+
+        public async Task<bool> ExistsAsync(string userId, int trademarkId, CancellationToken cancelllationToken)
+        {
+            return await watchlistRepo.ExistsAsync(userId, trademarkId, cancelllationToken);
         }
 
         /// <summary>

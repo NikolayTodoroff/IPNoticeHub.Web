@@ -25,6 +25,7 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
 
             return new TrademarkDetailsDTO
             {
+                Id = entity.Id,
                 PublicId = entity.PublicId,
                 Wordmark = entity.Wordmark,
                 Owner = entity.Owner,

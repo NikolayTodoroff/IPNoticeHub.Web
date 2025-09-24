@@ -1,11 +1,14 @@
-﻿using IPNoticeHub.Common.EnumConstants;
+﻿using Humanizer;
+using IPNoticeHub.Common.EnumConstants;
+using IPNoticeHub.Common.Infrastructure;
+using IPNoticeHub.Services.Application.Abstractions;
 using IPNoticeHub.Services.Common;
 using IPNoticeHub.Services.Trademarks.Abstractions;
 using IPNoticeHub.Services.Trademarks.DTOs;
 using IPNoticeHub.Web.Models.Trademarks;
+using IPNoticeHub.Web.ViewModels.Trademarks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using IPNoticeHub.Common.Infrastructure;
 using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
 using static IPNoticeHub.Common.ValidationConstants.StatusMessages;
 
@@ -15,11 +18,13 @@ namespace IPNoticeHub.Web.Controllers
     {
         private readonly ITrademarkCollectionService tmCollectionService;
         private readonly ITrademarkSearchService tmSearchService;
+        private readonly ITrademarkWatchlistService tmWatchlistService;
 
-        public TrademarksController(ITrademarkSearchService searchService, ITrademarkCollectionService collectionService)
+        public TrademarksController(ITrademarkSearchService searchService, ITrademarkCollectionService collectionService, ITrademarkWatchlistService tmWatchlistService)
         {
             this.tmSearchService = searchService;
             this.tmCollectionService = collectionService;
+            this.tmWatchlistService = tmWatchlistService;
         }
 
         [HttpGet]
@@ -48,6 +53,30 @@ namespace IPNoticeHub.Web.Controllers
             TrademarkDetailsDTO? detailsDTO = await tmSearchService.GetDetailsAsync(id, cancellationToken);
 
             if (detailsDTO is null) return NotFound();
+
+            bool isInWatchlist = false;
+
+            if (User.TryGetUserId(out var userId))
+                isInWatchlist = await tmWatchlistService.ExistsAsync(userId, dto.Id, ct);
+
+            var vm = new TrademarkDetailsViewModel
+            {
+                Id = detailsDTO.Id,
+                PublicId = detailsDTO.PublicId,
+                Wordmark = detailsDTO.Wordmark,
+                Owner = detailsDTO.Owner,
+                SourceId = detailsDTO.SourceId,
+                RegistrationNumber = detailsDTO.RegistrationNumber,
+                Status = detailsDTO.Status,
+                GoodsAndServices = detailsDTO.GoodsAndServices,
+                FilingDate = detailsDTO.FilingDate,
+                RegistrationDate = detailsDTO.RegistrationDate,
+                MarkImageUrl = detailsDTO.MarkImageUrl,
+                Provider = detailsDTO.Provider,
+                Classes = detailsDTO.Classes,
+                IsInWatchlist = isInWatchlist
+            };
+
 
             if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
                 ViewBag.ReturnUrl = returnUrl;

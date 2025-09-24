@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using IPNoticeHub.Common.EnumConstants;
+﻿using IPNoticeHub.Common.EnumConstants;
 
 namespace IPNoticeHub.Web.ViewModels.Trademarks
 {

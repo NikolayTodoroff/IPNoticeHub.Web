@@ -1,5 +1,5 @@
-﻿@using IPNoticeHub.Services.Trademarks.DTOs;
-@model TrademarkDetailsDTO
+﻿@using IPNoticeHub.Web.ViewModels.Trademarks
+@model TrademarkDetailsViewModel
 @{
     ViewData["Title"] = "Trademark Details";
     Layout = "_Layout";
@@ -88,7 +88,7 @@
 
         <form method="post" asp-controller="Watchlist" asp-action="Add" class="d-inline">
             @Html.AntiForgeryToken()
-            <input type="hidden" name="trademarkId" value="@Model.PublicId" />
+            <input type="hidden" name="trademarkId" value="@Model.Id" />
             <button type="submit" class="btn btn-outline-secondary">Add to Watchlist</button>
         </form>
 
