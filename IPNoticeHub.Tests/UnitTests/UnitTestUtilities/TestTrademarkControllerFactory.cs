@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using IPNoticeHub.Services.Application.Abstractions;
 using IPNoticeHub.Services.Trademarks.Abstractions;
 using IPNoticeHub.Web.Controllers;
 using Microsoft.AspNetCore.Http;
@@ -22,11 +23,13 @@ namespace IPNoticeHub.Tests.UnitTests.TestUtilities
             ITrademarkCollectionService collectionService,
             out ITempDataDictionary tempData,
             ITrademarkSearchService? searchService = null,
+            ITrademarkWatchlistService? watchlistService = null,
             string? userId = null)
         {
             return CreateTrademarksControllerCore(
                 collectionService,
                 searchService,
+                watchlistService,
                 userId,
                 out tempData,
                 includeTempData: true,
@@ -41,11 +44,13 @@ namespace IPNoticeHub.Tests.UnitTests.TestUtilities
         public static TrademarksController CreateTrademarksController(
             ITrademarkCollectionService collectionService,
             ITrademarkSearchService? searchService = null,
+            ITrademarkWatchlistService? watchlistService = null,
             string? userId = null)
         {
             return CreateTrademarksControllerCore(
                 collectionService,
                 searchService,
+                watchlistService,
                 userId,
                 out _,
                 includeTempData: true,
@@ -59,6 +64,7 @@ namespace IPNoticeHub.Tests.UnitTests.TestUtilities
         private static TrademarksController CreateTrademarksControllerCore(
             ITrademarkCollectionService collectionService,
             ITrademarkSearchService? searchService,
+            ITrademarkWatchlistService? watchlistService,
             string? userId,
             out ITempDataDictionary tempData,
             bool includeTempData,
@@ -74,7 +80,9 @@ namespace IPNoticeHub.Tests.UnitTests.TestUtilities
             }
 
             var controller = new TrademarksController(
-                searchService ?? Mock.Of<ITrademarkSearchService>(), collectionService)
+                searchService ?? Mock.Of<ITrademarkSearchService>(),
+                collectionService,
+                watchlistService ?? Mock.Of<ITrademarkWatchlistService>())
             {
                 ControllerContext = new ControllerContext { HttpContext = httpContext }
             };

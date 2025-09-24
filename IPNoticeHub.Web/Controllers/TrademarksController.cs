@@ -54,12 +54,10 @@ namespace IPNoticeHub.Web.Controllers
 
             if (detailsDTO is null) return NotFound();
 
-            bool isInWatchlist = false;
+            var isInWatchlist = User.TryGetUserId(out var userId) && 
+                await tmWatchlistService.ExistsAsync(userId, detailsDTO.Id, cancellationToken);
 
-            if (User.TryGetUserId(out var userId))
-                isInWatchlist = await tmWatchlistService.ExistsAsync(userId, dto.Id, ct);
-
-            var vm = new TrademarkDetailsViewModel
+            var detailsViewModel = new TrademarkDetailsViewModel
             {
                 Id = detailsDTO.Id,
                 PublicId = detailsDTO.PublicId,
@@ -77,11 +75,10 @@ namespace IPNoticeHub.Web.Controllers
                 IsInWatchlist = isInWatchlist
             };
 
-
             if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
                 ViewBag.ReturnUrl = returnUrl;
 
-            return View(detailsDTO);
+            return View(detailsViewModel);
         }
 
         [Authorize(Policy = "HasUserId")]

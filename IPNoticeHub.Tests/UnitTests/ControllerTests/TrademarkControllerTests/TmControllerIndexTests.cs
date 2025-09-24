@@ -1,10 +1,11 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Common.EnumConstants;
+using IPNoticeHub.Services.Application.Abstractions;
 using IPNoticeHub.Services.Common;
-using IPNoticeHub.Services.Trademarks.DTOs;
 using IPNoticeHub.Services.Trademarks.Abstractions;
-using IPNoticeHub.Web.Models.Trademarks;
+using IPNoticeHub.Services.Trademarks.DTOs;
 using IPNoticeHub.Web.Controllers;
+using IPNoticeHub.Web.Models.Trademarks;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
@@ -24,10 +25,11 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
         [Test]
         public async Task Index_WhenSearchTermIsEmpty_ReturnsEmptyViewModel_WithHasSearchFalse()
         {
-            var tmSearchService = new Mock<ITrademarkSearchService>(MockBehavior.Strict);
-            var tmCollectionService = new Mock<ITrademarkCollectionService>(MockBehavior.Strict);
+            var tmSearchService = new Mock<ITrademarkSearchService>();
+            var tmCollectionService = new Mock<ITrademarkCollectionService>();
+            var tmWatchlistService = new Mock<ITrademarkWatchlistService>();
 
-            var controller = new TrademarksController(tmSearchService.Object, tmCollectionService.Object);
+            var controller = new TrademarksController(tmSearchService.Object, tmCollectionService.Object, tmWatchlistService.Object);
 
             var filterViewModel = new TrademarkFilterViewModel
             {
@@ -77,6 +79,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
             };
 
             var tmSearchService = new Mock<ITrademarkSearchService>();
+            var tmCollectionService = new Mock<ITrademarkCollectionService>();
+            var tmWatchlistService = new Mock<ITrademarkWatchlistService>();
 
             var filter = new TrademarkFilterDTO
             {
@@ -94,9 +98,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
                 10,
                 It.IsAny<CancellationToken>())).ReturnsAsync(pagedResult);
 
-            var tmCollectionService = new Mock<ITrademarkCollectionService>(MockBehavior.Strict);
-
-            var controller = new TrademarksController(tmSearchService.Object, tmCollectionService.Object);
+            var controller = new TrademarksController(tmSearchService.Object, tmCollectionService.Object, tmWatchlistService.Object);
 
             var filterViewModel = new TrademarkFilterViewModel
             {
@@ -124,10 +126,11 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
         [Test]
         public async Task Index_WhenSearchTermIsNull_ReturnsEmptyViewModel_WithHasSearchFalse()
         {
-            var tmSearchService = new Mock<ITrademarkSearchService>(MockBehavior.Strict);
-            var tmCollectionService = new Mock<ITrademarkCollectionService>(MockBehavior.Strict);
+            var tmSearchService = new Mock<ITrademarkSearchService>();
+            var tmCollectionService = new Mock<ITrademarkCollectionService>();
+            var tmWatchlistService = new Mock<ITrademarkWatchlistService>();
 
-            var controller = new IPNoticeHub.Web.Controllers.TrademarksController(tmSearchService.Object, tmCollectionService.Object);
+            var controller = new TrademarksController(tmSearchService.Object, tmCollectionService.Object, tmWatchlistService.Object);
 
             var filterViewModel = new TrademarkFilterViewModel
             {
@@ -164,6 +167,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
             };
 
             var tmSearchService = new Mock<ITrademarkSearchService>();
+            var tmCollectionService = new Mock<ITrademarkCollectionService>();
+            var tmWatchlistService = new Mock<ITrademarkWatchlistService>();
 
             tmSearchService.Setup(s => s.SearchAsync(
                 It.IsAny<TrademarkFilterDTO>(),
@@ -176,8 +181,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
             }).
             ReturnsAsync(pagedResult);
 
-            var controller = new TrademarksController(
-                tmSearchService.Object, Mock.Of<ITrademarkCollectionService>());
+            var controller = new TrademarksController(tmSearchService.Object, tmCollectionService.Object, tmWatchlistService.Object);
 
             var filterViewModel = new TrademarkFilterViewModel
             {
@@ -211,6 +215,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
             };
 
             var tmSearchService = new Mock<ITrademarkSearchService>();
+            var tmCollectionService = new Mock<ITrademarkCollectionService>();
+            var tmWatchlistService = new Mock<ITrademarkWatchlistService>();
 
             tmSearchService.Setup(s => s.SearchAsync(
                 It.IsAny<TrademarkFilterDTO>(),
@@ -223,8 +229,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
             }).
             ReturnsAsync(pagedResult);
 
-            var controller = new TrademarksController(
-                tmSearchService.Object, Mock.Of<ITrademarkCollectionService>());
+            var controller = new TrademarksController(tmSearchService.Object, tmCollectionService.Object, tmWatchlistService.Object);
 
             var filterViewModel = new TrademarkFilterViewModel
             {
