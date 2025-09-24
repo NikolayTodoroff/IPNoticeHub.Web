@@ -87,9 +87,11 @@
         </form>
 
         <form method="post" asp-controller="Watchlist" asp-action="Add" class="d-inline">
-            <input type="hidden" name="id" value="@Model.PublicId" />
-            <button type="submit" class="btn btn-outline-secondary" disabled>Add to Watchlist (coming soon)</button>
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="trademarkId" value="@Model.PublicId" />
+            <button type="submit" class="btn btn-outline-secondary">Add to Watchlist</button>
         </form>
+
     </div>
 
 </div>

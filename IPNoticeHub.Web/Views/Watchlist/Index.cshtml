@@ -1,5 +1,5 @@
 ﻿@using IPNoticeHub.Services.Application.DTOs
-@model IReadOnlyList<TrademarkWatchlistItemDTO>
+@model WatchlistIndexViewModel
 
 @{
     ViewData["Title"] = "Watchlist";
@@ -18,7 +18,7 @@
     <div class="alert alert-danger" role="alert">@e</div>
 }
 
-@if (Model is null || !Model.Any())
+@if (Model is null || !Model.Items.Any())
 {
     <p class="text-muted">Your watchlist is empty.</p>
 }
@@ -29,7 +29,7 @@ else
             <thead>
                 <tr>
                     <th scope="col">Reg. No</th>
-                    <th scope="col">Mark</th>
+                    <th scope="col">Wordmark</th>
                     <th scope="col">Owner</th>
                     <th scope="col">Added On</th>
                     <th scope="col">Initial Status</th>
@@ -38,7 +38,7 @@ else
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in Model)
+                @foreach (var item in Model.Items)
                 {
                     <tr>
                         <td>@(string.IsNullOrWhiteSpace(item.RegistrationNumber) ? "—" : item.RegistrationNumber)</td>
@@ -62,33 +62,28 @@ else
                         </td>
                         <td class="text-end">
                             <!-- Toggle notifications -->
-                            <form asp-controller="Trademarks"
+                            <form asp-controller="Watchlist"
                                   asp-action="ToggleNotifications"
                                   method="post"
                                   class="d-inline">
                                 @Html.AntiForgeryToken()
-                                <input type="hidden" name="returnUrl" value="@returnUrl" />
                                 <input type="hidden" name="trademarkId" value="@item.Id" />
                                 <input type="hidden" name="enabled" value="@(!item.NotificationsEnabled)" />
-                                <button type="submit"
-                                        class="btn btn-outline-secondary btn-sm"
-                                        title="Toggle notifications">
+                                <button type="submit" class="btn btn-outline-secondary btn-sm" title="Toggle notifications">
                                     @(item.NotificationsEnabled ? "🔔" : "🔕")
                                 </button>
                             </form>
 
                             <!-- Remove from watchlist -->
-                            <form asp-controller="Trademarks"
+                            <form asp-controller="Watchlist"
                                   asp-action="Remove"
                                   method="post"
                                   class="d-inline ms-2">
                                 @Html.AntiForgeryToken()
-                                <input type="hidden" name="returnUrl" value="@returnUrl" />
                                 <input type="hidden" name="trademarkId" value="@item.Id" />
-                                <button type="submit" class="btn btn-outline-danger btn-sm">
-                                    Remove
-                                </button>
+                                <button type="submit" class="btn btn-outline-danger btn-sm">Remove</button>
                             </form>
+
                         </td>
                     </tr>
                 }

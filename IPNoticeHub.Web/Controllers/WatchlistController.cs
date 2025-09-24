@@ -21,7 +21,13 @@ namespace IPNoticeHub.Web.Controllers
             if (!User.TryGetUserId(out var userId)) return Unauthorized();
 
             var watchlistItems = await watchlistService.GetListByUserAsync(userId, cancellationToken);
-            return View(watchlistItems);
+
+            var watchlistViewModel = new WatchlistIndexViewModel
+            {
+                Items = watchlistItems
+            };
+
+            return View(watchlistViewModel);
         }
 
         [HttpPost]
