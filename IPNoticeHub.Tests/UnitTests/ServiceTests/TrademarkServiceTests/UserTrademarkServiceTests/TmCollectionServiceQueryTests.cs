@@ -7,7 +7,7 @@ using IPNoticeHub.Services.Trademarks.Implementations;
 using IPNoticeHub.Tests.TestUtilities;
 using NUnit.Framework;
 
-namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkCollectionServiceTests
+namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServiceTests
 {
     /// <summary>
     /// Section: TrademarkCollectionService - Queries behavior.

@@ -10,7 +10,7 @@ using NUnit.Framework;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkCollectionServiceTests
+namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServiceTests
 {
     /// <summary>
     /// Section: TrademarkCollectionService – Query Edge Cases

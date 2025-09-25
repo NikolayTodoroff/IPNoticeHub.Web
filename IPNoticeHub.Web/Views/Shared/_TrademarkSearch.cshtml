@@ -7,12 +7,12 @@
     var officeItems = Enum.GetValues(typeof(DataProvider)).Cast<DataProvider>();
     var searchModeItems = Enum.GetValues(typeof(SearchMode)).Cast<SearchMode>();
 
-    string searchQuery = Context.Request.Query["trademark"];
-    string classNumberFilter = Context.Request.Query["classNumber"];
-    string statusFilter = Context.Request.Query["status"];
-    string searchByFilter = Context.Request.Query["searchByItem"];
-    string officeFilter = Context.Request.Query["office"];
-    string modeFilter = Context.Request.Query["mode"];
+    string? searchQuery = Context.Request.Query["trademark"].FirstOrDefault();
+    string? classNumberFilter = Context.Request.Query["classNumber"].FirstOrDefault();
+    string? statusFilter = Context.Request.Query["status"].FirstOrDefault();
+    string? searchByFilter = Context.Request.Query["searchByItem"].FirstOrDefault();
+    string? officeFilter = Context.Request.Query["office"].FirstOrDefault();
+    string? modeFilter = Context.Request.Query["mode"].FirstOrDefault();
 }
 
 <section class="py-5">

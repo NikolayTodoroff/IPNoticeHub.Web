@@ -190,7 +190,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
                 ExactMatch = true,
                 CurrentPage = 1,
                 ResultsPerPage = 10,
-                ClassNumbers = null
+                ClassNumbers = Array.Empty<int>()
             };
 
             await controller.Index(filterViewModel, default);
