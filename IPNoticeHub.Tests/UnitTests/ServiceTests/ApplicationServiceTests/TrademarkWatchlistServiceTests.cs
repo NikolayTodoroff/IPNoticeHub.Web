@@ -344,14 +344,14 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.ApplicationServiceTests
             const int trademarkId = 456;
             const bool notificationsEnabled = true;
 
-            watchlistRepo.Setup(r => r.ToggleNotificationsAsync(userId, trademarkId, notificationEnabled, It.IsAny<CancellationToken>())).
+            watchlistRepo.Setup(r => r.ToggleNotificationsAsync(userId, trademarkId, notificationsEnabled, It.IsAny<CancellationToken>())).
                 Returns(Task.CompletedTask);
 
             var service = new TrademarkWatchlistService(watchlistRepo.Object, snapshotRepo.Object, statusLabels.Object);
 
             await service.ToggleNotificationsAsync(userId, trademarkId, notificationsEnabled, CancellationToken.None);
 
-            watchlistRepo.Verify(r => r.ToggleNotificationsAsync(userId, trademarkId, notificationEnabled, It.IsAny<CancellationToken>()), Times.Once);
+            watchlistRepo.Verify(r => r.ToggleNotificationsAsync(userId, trademarkId, notificationsEnabled, It.IsAny<CancellationToken>()), Times.Once);
             watchlistRepo.VerifyNoOtherCalls();
         }
     }

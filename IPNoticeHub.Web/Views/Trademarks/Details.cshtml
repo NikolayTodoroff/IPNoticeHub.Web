@@ -79,28 +79,18 @@
         </div>
     </div>
 
-    @* Detached POST form (not nested in any other form) *@
-    <form id="add-to-watchlist-form"
-          method="post"
-          asp-controller="Watchlist"
-          asp-action="Add">
-        @Html.AntiForgeryToken()
-        <input type="hidden" name="trademarkId" value="@Model.Id" />
-    </form>
-
     <div class="mt-3 d-flex gap-2">
         <form method="post" asp-controller="Trademarks" asp-action="Save" class="d-inline">
             <input type="hidden" name="id" value="@Model.PublicId" />
-            <button type="submit" class="btn btn-outline-secondary" disabled>
-                Save (coming soon)
-            </button>
+            <button type="submit" class="btn btn-outline-secondary" disabled>Save</button>
         </form>
 
-        <button type="submit"
-                form="add-to-watchlist-form"
-                class="btn btn-outline-secondary">
-            Add to Watchlist
-        </button>
+        <form method="post" asp-controller="Watchlist" asp-action="Add" class="d-inline">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="trademarkId" value="@Model.Id" />
+            <input type="hidden" name="returnUrl" value="@(Context.Request.Path + Context.Request.QueryString)" />
+            <button type="submit" class="btn btn-outline-secondary">Add To Watchlist</button>
+        </form>
     </div>
 
 </div>

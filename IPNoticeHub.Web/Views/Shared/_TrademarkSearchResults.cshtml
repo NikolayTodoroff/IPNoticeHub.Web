@@ -58,10 +58,10 @@
                                                   class="d-inline ms-2">
                                                 @Html.AntiForgeryToken()
                                                 <input type="hidden" name="trademarkId" value="@result.Id" />
-                                                <button type="submit" class="btn btn-sm btn-outline-secondary">
-                                                    Add To Watchlist
-                                                </button>
+                                                <input type="hidden" name="returnUrl" value="@(ViewData["ReturnUrl"]?.ToString() ?? Context.Request.Path + Context.Request.QueryString)" />
+                                                <button type="submit" class="btn btn-sm btn-outline-secondary">Add To Watchlist</button>
                                             </form>
+
                                     </tr>
                                 }
                             }

@@ -32,20 +32,34 @@ namespace IPNoticeHub.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Add(int trademarkId, CancellationToken cancellationToken)
+        public async Task<IActionResult> Add(int trademarkId, string? returnUrl, CancellationToken cancellationToken)
         {
             if (!User.TryGetUserId(out var userId)) return Unauthorized();
 
             try
             {
+                if (await watchlistService.ExistsAsync(userId, trademarkId, cancellationToken))
+                {
+                    TempData["Info"] = "Trademark is already in your watchlist.";
+
+                    if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+                        return Redirect(returnUrl);
+
+                    return RedirectToAction(nameof(Index));
+                }
+
                 await watchlistService.AddAsync(userId, trademarkId, cancellationToken);
                 TempData["Success"] = "Added to Watchlist.";
-            }
 
-            catch (Exception)
+                return RedirectToAction(nameof(Index));
+            }
+            catch
             {
                 TempData["Error"] = "Could not add to Watchlist.";
             }
+
+            if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+                return Redirect(returnUrl);
 
             return RedirectToAction(nameof(Index));
         }
@@ -63,20 +77,20 @@ namespace IPNoticeHub.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ToggleNotifications(int trademarkId, bool enabled, CancellationToken ct)
+        public async Task<IActionResult> ToggleNotifications(int trademarkId, bool notificationsEnabled, CancellationToken cancellationToken)
         {
             if (!User.TryGetUserId(out var userId)) return Unauthorized();
 
             try
             {
-                await watchlistService.ToggleNotificationsAsync(userId, trademarkId, enabled, ct);
-                TempData["Success"] = enabled 
-                    ? "Notifications enabled successfully."
-                    : "Notifications disabled successfully.";
+                await watchlistService.ToggleNotificationsAsync(userId, trademarkId, notificationsEnabled, cancellationToken);
+                TempData["Success"] = notificationsEnabled
+                    ? "Email notifications enabled successfully."
+                    : "Email notifications disabled successfully.";
             }
             catch (Exception)
             {
-                TempData["Error"] = "Failed to toggle notifications.";
+                TempData["Error"] = "Failed to toggle email notifications.";
             }
 
             return RedirectToAction(nameof(Index));
