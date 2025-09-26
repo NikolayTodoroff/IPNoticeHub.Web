@@ -69,9 +69,9 @@ namespace IPNoticeHub.Services.Application.Implementations
             await watchlistRepo.SoftRemoveAsync(userId, trademarkId, cancellationToken);
         }
 
-        public async Task ToggleNotificationsAsync(string userId, int trademarkId, bool enabled, CancellationToken cancellationToken)
+        public async Task ToggleNotificationsAsync(string userId, int trademarkId, bool notificationsEnabled, CancellationToken cancellationToken)
         {
-            await watchlistRepo.ToggleNotificationsAsync(userId, trademarkId, enabled, cancellationToken);
+            await watchlistRepo.ToggleNotificationsAsync(userId, trademarkId, notificationsEnabled, cancellationToken);
         }
 
         public async Task<bool> ExistsAsync(string userId, int trademarkId, CancellationToken cancelllationToken)

@@ -13,7 +13,7 @@ namespace IPNoticeHub.Data.Repositories.Application.Implementations
 
         public async Task<(int? StatusCodeRaw, string StatusDetail, DateTime? StatusDateUtc)?> GetStatusSnapshotAsync(int trademarkId, CancellationToken cancellationToken)
         {
-            var result = await dbContext.TrademarkRegistrations
+            var snapshotResult = await dbContext.TrademarkRegistrations
                 .AsNoTracking()
                 .Where(t => t.Id == trademarkId)
                 .Select(t => new
@@ -24,12 +24,12 @@ namespace IPNoticeHub.Data.Repositories.Application.Implementations
                 })
                 .FirstOrDefaultAsync(cancellationToken);
 
-            if (result == null)
+            if (snapshotResult == null)
             {
                 return null;
             }
 
-            return (result.StatusCodeRaw, result.StatusDetail ?? string.Empty, result.StatusDateUtc);
+            return (snapshotResult.StatusCodeRaw, snapshotResult.StatusDetail ?? string.Empty, snapshotResult.StatusDateUtc);
         }
     }
 }
