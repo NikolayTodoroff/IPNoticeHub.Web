@@ -1,20 +1,10 @@
 ﻿using FluentAssertions;
-using IPNoticeHub.Services.Application.Abstractions;
 using IPNoticeHub.Services.Application.DTOs;
-using IPNoticeHub.Tests.UnitTests.TestUtilities;
 using IPNoticeHub.Tests.UnitTests.UnitTestUtilities;
 using IPNoticeHub.Web.Controllers;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace IPNoticeHub.Tests.UnitTests.ControllerTests.WatchlistControllerTests
 {
@@ -88,27 +78,6 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.WatchlistControllerTests
 
             controller.TempData["Success"].Should().NotBeNull();
             controller.TempData["Success"]!.ToString().Should().Contain("Added to Watchlist");
-
-            watchlistService.Verify(s => s.AddAsync("user-1", trademarkId, It.IsAny<CancellationToken>()), Times.Once);
-            watchlistService.VerifyNoOtherCalls();
-        }
-
-        [Test]
-        public async Task Add_OnFailure_SetsErrorTempData_AndRedirects()
-        {
-            var (controller, watchlistService, _) =
-                TestWatchlistControllerFactory.CreateWatchlistController(userExists: true);
-
-            const int trademarkId = 123;
-
-            watchlistService.Setup(s => s.AddAsync("user-1", trademarkId, It.IsAny<CancellationToken>()))
-               .Returns(Task.CompletedTask);
-
-            var actionResult = await controller.Add(trademarkId, null,CancellationToken.None);
-
-            actionResult.Should().BeOfType<RedirectToActionResult>();
-            controller.TempData["Error"].Should().NotBeNull();
-            controller.TempData["Error"]!.ToString().Should().Contain("Failed to add to Watchlist.");
 
             watchlistService.Verify(s => s.AddAsync("user-1", trademarkId, It.IsAny<CancellationToken>()), Times.Once);
             watchlistService.VerifyNoOtherCalls();
@@ -191,6 +160,63 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.WatchlistControllerTests
             controller.TempData["Error"]!.ToString().Should().Contain("Failed");
 
             watchlistService.Verify(s => s.ToggleNotificationsAsync("user-1", trademarkId, true, It.IsAny<CancellationToken>()), Times.Once);
+            watchlistService.VerifyNoOtherCalls();
+        }
+
+        [Test]
+        public async Task Add_OnFailure_SetsErrorTempData_AndRedirects()
+        {
+            var (controller, watchlistService, _) =
+                TestWatchlistControllerFactory.CreateWatchlistController(userExists: true);
+
+            const int trademarkId = 123;
+
+            watchlistService.Setup(s => s.ExistsAsync("user-1", trademarkId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(false);
+
+            watchlistService.Setup(s => s.AddAsync("user-1", trademarkId, It.IsAny<CancellationToken>()))
+               .ThrowsAsync(new InvalidOperationException("boom"));
+
+            var actionResult = await controller.Add(trademarkId, returnUrl: null, CancellationToken.None);
+
+            var redirectResult = actionResult.Should().BeOfType<RedirectToActionResult>().Subject;
+            redirectResult.ActionName.Should().Be(nameof(controller.Index));
+
+            controller.TempData["Error"].Should().NotBeNull();
+            controller.TempData["Error"]!.ToString()!.Should().Contain("Could not add to Watchlist.");
+
+            watchlistService.Verify(s => s.ExistsAsync("user-1", trademarkId, It.IsAny<CancellationToken>()), Times.Once);
+            watchlistService.Verify(s => s.AddAsync("user-1", trademarkId, It.IsAny<CancellationToken>()), Times.Once);
+            watchlistService.VerifyNoOtherCalls();
+        }
+
+        [Test]
+        public async Task Add_WhenDuplicate_SetsInfoTempData_AndRedirectsBackToReturnUrl()
+        {
+            const int trademarkId = 456;
+            const string returnUrl = "/Trademarks/Details/00000000-0000-0000-0000-000000000001";
+
+            var (controller, watchlistService, _) =
+                TestWatchlistControllerFactory.CreateWatchlistController(userExists: true);
+
+            var url = new Mock<IUrlHelper>();
+            url.Setup(u => u.IsLocalUrl(returnUrl)).Returns(true);
+            controller.Url = url.Object;
+
+            watchlistService.Setup(s => s.ExistsAsync("user-1", trademarkId, It.IsAny<CancellationToken>())).ReturnsAsync(true);
+
+            var actionResult = await controller.Add(trademarkId, returnUrl, CancellationToken.None);
+
+            var redirectResult = actionResult.Should().BeOfType<RedirectResult>().Subject;
+            redirectResult.Url.Should().Be(returnUrl);
+
+            controller.TempData["Info"].Should().NotBeNull();
+            controller.TempData["Info"]!.ToString()!.Should().Contain("Trademark is already in your watchlist.");
+
+            controller.TempData.ContainsKey("Success").Should().BeFalse();
+
+            watchlistService.Verify(s => s.ExistsAsync("user-1", trademarkId, It.IsAny<CancellationToken>()), Times.Once);
+            watchlistService.Verify(s => s.AddAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Never);
             watchlistService.VerifyNoOtherCalls();
         }
     }
