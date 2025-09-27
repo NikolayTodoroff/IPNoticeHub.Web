@@ -50,7 +50,7 @@
                                                 Details
                                             </a>
 
-                                            <form method="post" asp-controller="Collection" asp-action="Add" class="d-inline">
+                                            <form method="post" asp-controller="TrademarkCollection" asp-action="Add" class="d-inline">
                                                 @Html.AntiForgeryToken()
                                                 <input type="hidden" name="trademarkId" value="@result.Id" />
                                                 <input type="hidden" name="returnUrl" value="@(ViewData["ReturnUrl"]?.ToString() ?? string.Empty)" />

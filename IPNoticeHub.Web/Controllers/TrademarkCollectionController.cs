@@ -34,7 +34,7 @@ namespace IPNoticeHub.Web.Controllers
             var indexViewModel = TrademarkCollectionDtoToVmMapper.Map(dtoPagedResult);
 
             ViewBag.SortBy = sortBy;
-            return View("TrademarkCollection", indexViewModel);
+            return View("Index", indexViewModel);
         }
 
         [HttpPost("Add")]
@@ -42,10 +42,33 @@ namespace IPNoticeHub.Web.Controllers
         {
             if (!User.TryGetUserId(out var userId)) return Forbid();
 
-            await tmCollectionService.AddAsync(userId, trademarkId, cancellationToken);
+            try
+            {
+                if (await tmCollectionService.IsInCollectionAsync(userId, trademarkId, false,cancellationToken))
+                {
+                    TempData["Info"] = "Trademark is already in your collection.";
 
-            TempData["StatusMessage"] = TrademarkAddedMessage;
-            return RedirectToLocal(returnUrl) ?? RedirectToAction(nameof(Index));
+                    if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+                        return LocalRedirect(returnUrl);
+
+                    return RedirectToAction(nameof(Index));
+                }
+
+                await tmCollectionService.AddAsync(userId, trademarkId, cancellationToken);
+                TempData["Success"] = "Saved to your collection.";
+
+                return RedirectToAction(nameof(Index));
+            }
+
+            catch
+            {
+                TempData["Error"] = "Could not add to collection.";
+
+                if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+                    return LocalRedirect(returnUrl);
+
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         [HttpPost("Remove")]
@@ -55,7 +78,7 @@ namespace IPNoticeHub.Web.Controllers
 
             await tmCollectionService.RemoveAsync(userId, trademarkId, cancellationToken);
 
-            TempData["StatusMessage"] = TrademarkRemovedMessage;
+            TempData["_Alerts"] = TrademarkRemovedMessage;
             return RedirectToLocal(returnUrl) ?? RedirectToAction(nameof(Index));
         }
 

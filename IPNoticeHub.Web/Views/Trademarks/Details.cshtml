@@ -80,7 +80,7 @@
     </div>
 
     <div class="mt-3 d-flex gap-2">
-        <form method="post" asp-controller="Collection" asp-action="Add" class="d-inline">
+        <form method="post" asp-controller="TrademarkCollection" asp-action="Add" class="d-inline">
             @Html.AntiForgeryToken()
             <input type="hidden" name="trademarkId" value="@Model.Id" />
             <input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" />
