@@ -17,8 +17,8 @@ namespace IPNoticeHub.Data
         public DbSet<CopyrightEntity> CopyrightRegistrations { get; set; }
         public DbSet<UserTrademark> UserTrademarks { get; set; }
         public DbSet<UserCopyright> UserCopyrights { get; set; }
+        public DbSet<UserTrademarkWatchlist> UserTrademarkWatchlists { get; set; } = null!;
 
-        
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -60,16 +60,6 @@ namespace IPNoticeHub.Data
                 HasForeignKey(ut => ut.TrademarkRegistrationId).
                 OnDelete(DeleteBehavior.Restrict);
 
-            // Set default value for WatchlistNotificationsEnabled property to false
-            builder.Entity<UserTrademark>().
-                Property(x => x.WatchlistNotificationsEnabled).
-                HasDefaultValue(false);
-
-            // Set default value for AddedToWatchlist property to false
-            builder.Entity<UserTrademark>().
-                Property(x => x.AddedToWatchlist).
-                HasDefaultValue(false);
-
             // Define composite primary key for UserCopyright entity
             builder.Entity<UserCopyright>().
                 HasKey(uc => new { uc.ApplicationUserId, uc.CopyrightRegistrationId });
@@ -88,6 +78,26 @@ namespace IPNoticeHub.Data
                 HasForeignKey(uc => uc.CopyrightRegistrationId).
                 OnDelete(DeleteBehavior.Restrict);
 
+            // Ensure that the combination of ApplicationUserId and CopyrightRegistrationId is unique for UserCopyright
+            builder.Entity<UserCopyright>().
+                HasIndex(x => new { x.ApplicationUserId, x.CopyrightRegistrationId }).
+                IsUnique();
+
+            // Set default value for WatchlistNotificationsEnabled property to false
+            builder.Entity<UserTrademarkWatchlist>().
+                Property(x => x.NotificationsEnabled).
+                HasDefaultValue(false);
+
+            // Adding a unique index on UserId and TrademarkId with a filter for non-deleted entries
+            builder.Entity<UserTrademarkWatchlist>().
+                HasIndex(x => new { x.UserId, x.TrademarkId }).
+                HasFilter("[IsDeleted] = 0").
+                IsUnique();
+
+            // Apply a global query filter to exclude soft-deleted entries from UserTrademarkWatchlist
+            builder.Entity<UserTrademarkWatchlist>().
+                HasQueryFilter(x => !x.IsDeleted);
+
             // Define composite primary key for TrademarkClassAssignment entity
             builder.Entity<TrademarkClassAssignment>().
                 HasKey(tc => new { tc.TrademarkRegistrationId, tc.ClassNumber });
@@ -97,11 +107,6 @@ namespace IPNoticeHub.Data
                 HasOne(tc => tc.TrademarkRegistration).
                 WithMany(t => t.Classes).
                 HasForeignKey(tc => tc.TrademarkRegistrationId);
-
-            // Ensure that the combination of ApplicationUserId and CopyrightRegistrationId is unique for UserCopyright
-            builder.Entity<UserCopyright>().
-                HasIndex(x => new { x.ApplicationUserId, x.CopyrightRegistrationId }).
-                IsUnique();
 
 
             // Only seed data if not disabled by an environment variable AND the database is not an in-memory or SQLite test database.

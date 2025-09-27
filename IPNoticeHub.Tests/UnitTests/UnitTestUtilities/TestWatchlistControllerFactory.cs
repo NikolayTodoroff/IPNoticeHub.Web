@@ -16,7 +16,7 @@ namespace IPNoticeHub.Tests.UnitTests.UnitTestUtilities
             {
                 new Claim(ClaimTypes.NameIdentifier, userId),
                 new Claim(ClaimTypes.Name, "tester")
-            }, authenticationType: "TestAuth");
+            },  authenticationType: "TestAuth");
             return new ClaimsPrincipal(identity);
         }
 

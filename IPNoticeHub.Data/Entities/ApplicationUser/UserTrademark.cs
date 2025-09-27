@@ -1,8 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
 using IPNoticeHub.Data.Entities.TrademarkRegistration;
-using System.ComponentModel.DataAnnotations;
-using static IPNoticeHub.Common.ValidationConstants.TrademarkRegistrationConstants;
 
 namespace IPNoticeHub.Data.Entities.ApplicationUser
 {

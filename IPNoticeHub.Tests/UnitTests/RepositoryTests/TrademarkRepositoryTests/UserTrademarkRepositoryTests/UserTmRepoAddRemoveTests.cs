@@ -55,7 +55,6 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.UserTrademarkRe
                 .SingleAsync(ut => ut.ApplicationUserId == user.Id && ut.TrademarkRegistrationId == trademarkEntity.Id);
 
             userTmLink.IsDeleted.Should().BeFalse();
-            userTmLink.AddedToWatchlist.Should().BeTrue();
             userTmLink.DateAdded.Should().BeOnOrAfter(DateTime.UtcNow.AddMinutes(-1));
         }
 
@@ -151,7 +150,6 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.UserTrademarkRe
                 .SingleAsync(ut => ut.ApplicationUserId == user.Id && ut.TrademarkRegistrationId == trademarkEntity.Id);
 
             DateTime initialDateAdded = userTmLink.DateAdded;
-            bool initialAddedFlag = userTmLink.AddedToWatchlist;
 
             // Introduce a small delay to ensure timestamp precision and detect unintended updates
             await Task.Delay(50);
@@ -167,7 +165,6 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.UserTrademarkRe
 
             var singleQueryResult = queryLinksResult.Single();
             singleQueryResult.IsDeleted.Should().BeFalse();
-            singleQueryResult.AddedToWatchlist.Should().Be(initialAddedFlag);
             singleQueryResult.DateAdded.Should().Be(initialDateAdded);
         }
 
@@ -212,7 +209,6 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.UserTrademarkRe
                 .SingleAsync(ut => ut.ApplicationUserId == user.Id && ut.TrademarkRegistrationId == trademarkEntity.Id);
 
             undeletedLink.IsDeleted.Should().BeFalse();
-            undeletedLink.AddedToWatchlist.Should().BeTrue();
             undeletedLink.DateAdded.Should().BeAfter(initialDateAdded);
         }
 

@@ -102,13 +102,12 @@ namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
 
             using var serviceScope = appFactory.Services.CreateScope();
             var dbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-            var link = dbContext.UserTrademarks.SingleOrDefault(ut =>
-                ut.ApplicationUserId == TestUserId && ut.TrademarkRegistrationId == trademarkId);
+            var link = dbContext.UserTrademarkWatchlists.SingleOrDefault(ut =>
+                ut.UserId == TestUserId && ut.TrademarkId == trademarkId);
 
             link.Should().NotBeNull();
-            link!.AddedToWatchlist.Should().BeTrue();
-            link.WatchlistNotificationsEnabled.Should().BeFalse();
-            link.WatchlistInitialStatusText.Should().Be("Live/Registered");
+            link.NotificationsEnabled.Should().BeFalse();
+            link.InitialStatusText.Should().Be("Live/Registered");
         }
 
         [Test]
@@ -148,11 +147,10 @@ namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
                 await testDbContext.SaveChangesAsync();
                 trademarkId = tm.Id;
 
-                testDbContext.UserTrademarks.Add(new UserTrademark
+                testDbContext.UserTrademarkWatchlists.Add(new UserTrademarkWatchlist
                 {
-                    ApplicationUserId = TestUserId,
-                    TrademarkRegistrationId = trademarkId,
-                    AddedToWatchlist = true
+                    UserId = TestUserId,
+                    TrademarkId = trademarkId
                 });
 
                 await testDbContext.SaveChangesAsync();
@@ -177,8 +175,8 @@ namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
             // Still only one link (no duplication)
             using var verify = appFactory.Services.CreateScope();
             var dbContext = verify.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-            var links = dbContext.UserTrademarks
-                           .Where(ut => ut.ApplicationUserId == TestUserId && ut.TrademarkRegistrationId == trademarkId)
+            var links = dbContext.UserTrademarkWatchlists
+                           .Where(ut => ut.UserId == TestUserId && ut.TrademarkId == trademarkId)
                            .ToList();
             links.Count.Should().Be(1);
         }
@@ -188,13 +186,13 @@ namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
         {
             int trademarkId;
 
-            using (var scope = appFactory.Services.CreateScope())
+            using (var serviceScope = appFactory.Services.CreateScope())
             {
-                var db = scope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
 
-                if (!db.Users.Any(u => u.Id == TestUserId))
+                if (!testDbContext.Users.Any(u => u.Id == TestUserId))
                 {
-                    db.Users.Add(new ApplicationUser
+                    testDbContext.Users.Add(new ApplicationUser
                     {
                         Id = TestUserId,
                         UserName = "tester",
@@ -215,19 +213,18 @@ namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
                     StatusDetail = "Live/Registered",
                     Source = DataProvider.USPTO
                 };
-                db.TrademarkRegistrations.Add(entity);
-                await db.SaveChangesAsync();
+                testDbContext.TrademarkRegistrations.Add(entity);
+                await testDbContext.SaveChangesAsync();
                 trademarkId = entity.Id;
 
-                db.UserTrademarks.Add(new UserTrademark
+                testDbContext.UserTrademarkWatchlists.Add(new UserTrademarkWatchlist
                 {
-                    ApplicationUserId = TestUserId,
-                    TrademarkRegistrationId = trademarkId,
-                    AddedToWatchlist = true,
-                    WatchlistNotificationsEnabled = true
+                    UserId = TestUserId,
+                    TrademarkId = trademarkId,
+                    NotificationsEnabled = true
                 });
 
-                await db.SaveChangesAsync();
+                await testDbContext.SaveChangesAsync();
             }
 
             var client = appFactory.CreateClientAs(TestUserId);
@@ -239,26 +236,29 @@ namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
             var response = await client.PostAsync("/Watchlist/Remove", form);
 
             response.StatusCode.Should().Be(HttpStatusCode.Redirect);
-            response.Headers.Location!.ToString().Should().Be("/Watchlist");
+
+            response.Headers.Location!.
+                     ToString().
+                     Should().
+                     MatchRegex(@"^/Watchlist(/Index)?/?(\?.*)?$");
 
             using (var verifyScope = appFactory.Services.CreateScope())
             {
                 var dbContext = verifyScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
 
-                var link = await dbContext.UserTrademarks
-                    .SingleOrDefaultAsync(ut => ut.ApplicationUserId == TestUserId &&
-                                                ut.TrademarkRegistrationId == trademarkId);
+                var link = await dbContext.UserTrademarkWatchlists.
+                    IgnoreQueryFilters().
+                    SingleOrDefaultAsync(ut => ut.UserId == TestUserId && ut.TrademarkId == trademarkId);
 
-                link.Should().NotBeNull("the relationship row should still exist (soft delete)");
-                link!.AddedToWatchlist.Should().BeFalse();
-                link.WatchlistNotificationsEnabled.Should().BeFalse();
+                link.Should().NotBeNull();
+                link!.IsDeleted.Should().BeTrue();
+                link.NotificationsEnabled.Should().BeFalse();
             }
         }
 
         [Test]
         public async Task Post_ToggleNotifications_OnAndOff_Persists()
         {
-            // arrange
             var userId = "user-toggle-1";
             var client = appFactory.CreateClientAs(userId);
 
@@ -283,16 +283,14 @@ namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
                 trademarkId = tm.Id;
             }
 
-            // local helper to read the link
-            async Task<UserTrademark?> ReadLinkAsync()
+            async Task<UserTrademarkWatchlist?> ReadLinkAsync()
             {
                 using var scope = appFactory.Services.CreateScope();
                 var db = scope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                return await db.UserTrademarks.AsNoTracking()
-                    .FirstOrDefaultAsync(ut => ut.ApplicationUserId == userId && ut.TrademarkRegistrationId == trademarkId);
+                return await db.UserTrademarkWatchlists.AsNoTracking()
+                    .FirstOrDefaultAsync(ut => ut.UserId == userId && ut.TrademarkId == trademarkId);
             }
 
-            // add to watchlist
             var addForm = new FormUrlEncodedContent(new[]
             {
         new KeyValuePair<string, string>("trademarkId", trademarkId.ToString())
@@ -300,9 +298,8 @@ namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
             (await client.PostAsync("/Watchlist/Add", addForm)).StatusCode.Should().Be(HttpStatusCode.Redirect);
 
             (await ReadLinkAsync()).Should().NotBeNull();
-            (await ReadLinkAsync())!.WatchlistNotificationsEnabled.Should().BeFalse();
+            (await ReadLinkAsync())!.NotificationsEnabled.Should().BeFalse();
 
-            // toggle ON
             var onForm = new FormUrlEncodedContent(new[]
             {
         new KeyValuePair<string, string>("trademarkId", trademarkId.ToString()),
@@ -310,9 +307,8 @@ namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
     });
             (await client.PostAsync("/Watchlist/ToggleNotifications", onForm))
                 .StatusCode.Should().Be(HttpStatusCode.Redirect);
-            (await ReadLinkAsync())!.WatchlistNotificationsEnabled.Should().BeTrue();
+            (await ReadLinkAsync())!.NotificationsEnabled.Should().BeTrue();
 
-            // toggle OFF
             var offForm = new FormUrlEncodedContent(new[]
             {
         new KeyValuePair<string, string>("trademarkId", trademarkId.ToString()),
@@ -320,10 +316,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
     });
             (await client.PostAsync("/Watchlist/ToggleNotifications", offForm))
                 .StatusCode.Should().Be(HttpStatusCode.Redirect);
-            (await ReadLinkAsync())!.WatchlistNotificationsEnabled.Should().BeFalse();
+            (await ReadLinkAsync())!.NotificationsEnabled.Should().BeFalse();
         }
-
-
-
     }
 }

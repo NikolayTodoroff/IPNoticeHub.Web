@@ -62,24 +62,48 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.WatchlistControllerTests
         [Test]
         public async Task Add_OnSuccess_SetsSuccessTempData_AndRedirectsToIndex()
         {
-            var (controller, watchlistService, _) =
-                TestWatchlistControllerFactory.CreateWatchlistController(userExists: true);
+            var (controller, watchlistService, _) = TestWatchlistControllerFactory.CreateWatchlistController(userExists: true);
 
             const int trademarkId = 123;
 
-            watchlistService.Setup(s => s.AddAsync("user-1", trademarkId,It.IsAny<CancellationToken>()))
+            watchlistService.Setup(s => s.ExistsAsync("user-1", trademarkId, It.IsAny<CancellationToken>()))
+               .ReturnsAsync(false);
+
+            watchlistService.Setup(s => s.AddAsync("user-1", trademarkId, It.IsAny<CancellationToken>()))
                .Returns(Task.CompletedTask);
 
-            var actionResult = await controller.Add(trademarkId, null,CancellationToken.None);
+            var actionResult = await controller.Add(trademarkId, returnUrl: null, CancellationToken.None);
 
-            actionResult.Should().BeOfType<RedirectToActionResult>();
-            var redirectToActionResult = (RedirectToActionResult) actionResult;
-            redirectToActionResult.ActionName.Should().Be(nameof(WatchlistController.Index));
+            actionResult.Should().BeOfType<RedirectToActionResult>()
+                  .Which.ActionName.Should().Be(nameof(WatchlistController.Index));
 
             controller.TempData["Success"].Should().NotBeNull();
-            controller.TempData["Success"]!.ToString().Should().Contain("Added to Watchlist");
+            controller.TempData["Success"]!.ToString()!.Should().Contain("Added to Watchlist");
 
+            watchlistService.Verify(s => s.ExistsAsync("user-1", trademarkId, It.IsAny<CancellationToken>()), Times.Once);
             watchlistService.Verify(s => s.AddAsync("user-1", trademarkId, It.IsAny<CancellationToken>()), Times.Once);
+            watchlistService.VerifyNoOtherCalls();
+        }
+
+        [Test]
+        public async Task Add_WhenAlreadyExists_SetsInfoTempData_AndDoesNotCallAdd_RedirectsToIndex()
+        {
+            var (controller, watchlistService, _) = TestWatchlistControllerFactory.CreateWatchlistController(userExists: true);
+
+            const int trademarkId = 456;
+
+            watchlistService.Setup(s => s.ExistsAsync("user-1", trademarkId, It.IsAny<CancellationToken>()))
+               .ReturnsAsync(true);
+
+            var actionResult = await controller.Add(trademarkId, returnUrl: null, CancellationToken.None);
+
+            actionResult.Should().BeOfType<RedirectToActionResult>()
+                  .Which.ActionName.Should().Be(nameof(WatchlistController.Index));
+
+            controller.TempData["Info"].Should().NotBeNull();
+
+            watchlistService.Verify(s => s.ExistsAsync("user-1", trademarkId, It.IsAny<CancellationToken>()), Times.Once);
+            watchlistService.Verify(s => s.AddAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Never);
             watchlistService.VerifyNoOtherCalls();
         }
 

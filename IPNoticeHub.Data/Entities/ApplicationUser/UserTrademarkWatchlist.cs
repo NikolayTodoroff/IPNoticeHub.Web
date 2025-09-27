@@ -27,7 +27,7 @@ namespace IPNoticeHub.Data.Entities.ApplicationUser
 
 
         [Comment("Indicates whether notifications are enabled for this trademark on the watchlist.")]
-        public bool NotificationsEnabled { get; set; } = true;
+        public bool NotificationsEnabled { get; set; } = false;
 
 
         [Comment("The UTC date and time when the trademark was added to the watchlist.")]

@@ -33,7 +33,6 @@ namespace IPNoticeHub.Data.Repositories.Trademarks.Implementations
                 {
                     ApplicationUserId = userId,
                     TrademarkRegistrationId = trademarkId,
-                    AddedToWatchlist = true,
                     DateAdded = DateTime.UtcNow,
                     IsDeleted = false
                 }, cancellationToken);
@@ -42,7 +41,6 @@ namespace IPNoticeHub.Data.Repositories.Trademarks.Implementations
             else if (collectionLink.IsDeleted)
             {
                 collectionLink.IsDeleted = false;
-                collectionLink.AddedToWatchlist = true;
                 collectionLink.DateAdded = DateTime.UtcNow;
             }
 

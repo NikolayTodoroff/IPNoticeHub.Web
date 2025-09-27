@@ -1,8 +1,6 @@
 ﻿using IPNoticeHub.Data.Repositories.Application.Abstractions;
 using IPNoticeHub.Services.Application.Abstractions;
 using IPNoticeHub.Services.Application.DTOs;
-using Microsoft.EntityFrameworkCore;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace IPNoticeHub.Services.Application.Implementations
@@ -39,25 +37,25 @@ namespace IPNoticeHub.Services.Application.Implementations
 
             var items = links.Select(l =>
             {
-                int? currentStatusCode = l.TrademarkRegistration.StatusCodeRaw;
-                string? currentStatusText = l.TrademarkRegistration.StatusDetail ?? "";
+                int? currentStatusCode = l.Trademark.StatusCodeRaw;
+                string? currentStatusText = l.Trademark.StatusDetail ?? "";
 
-                int? initialStatusCode = l.WatchlistInitialStatusCodeRaw;
-                string? initialStatusText = l.WatchlistInitialStatusText;
+                int? initialStatusCode = l.InitialStatusCodeRaw;
+                string? initialStatusText = l.InitialStatusText;
 
                 bool isStatusChanged = ComputeStatusChange(initialStatusCode, currentStatusCode, initialStatusText, currentStatusText);
 
                 return new TrademarkWatchlistItemDTO
                 {
-                    Id = l.TrademarkRegistrationId,
-                    RegistrationNumber = l.TrademarkRegistration.RegistrationNumber ?? "",
-                    Wordmark = l.TrademarkRegistration.Wordmark,
-                    Owner = l.TrademarkRegistration.Owner,
-                    AddedOnDate = l.WatchlistAddedOnUtc,
+                    Id = l.TrademarkId,
+                    RegistrationNumber = l.Trademark.RegistrationNumber ?? "",
+                    Wordmark = l.Trademark.Wordmark,
+                    Owner = l.Trademark.Owner,
+                    AddedOnDate = l.AddedOnUtc,
                     InitialStatus = initialStatusText ?? LabelFromCode(initialStatusCode),
                     CurrentStatus = string.IsNullOrWhiteSpace(currentStatusText) ? LabelFromCode(currentStatusCode) : currentStatusText,
                     HasStatusChange = isStatusChanged,
-                    NotificationsEnabled = l.WatchlistNotificationsEnabled
+                    NotificationsEnabled = l.NotificationsEnabled
                 };
             }).
             ToList();
@@ -74,9 +72,9 @@ namespace IPNoticeHub.Services.Application.Implementations
             await watchlistRepo.ToggleNotificationsAsync(userId, trademarkId, notificationsEnabled, cancellationToken);
         }
 
-        public async Task<bool> ExistsAsync(string userId, int trademarkId, CancellationToken cancelllationToken)
+        public async Task<bool> ExistsAsync(string userId, int trademarkId, CancellationToken cancellationToken)
         {
-            return await watchlistRepo.ExistsAsync(userId, trademarkId, cancelllationToken);
+            return await watchlistRepo.ExistsAsync(userId, trademarkId, cancellationToken);
         }
 
         /// <summary>

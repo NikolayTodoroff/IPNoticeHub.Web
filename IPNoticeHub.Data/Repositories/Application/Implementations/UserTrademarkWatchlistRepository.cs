@@ -16,26 +16,24 @@ namespace IPNoticeHub.Data.Repositories.Application.Implementations
         public async Task AddOrUndeleteAsync(string userId, int trademarkId, int? currentStatusCodeRaw,
             string? currentStatusText, DateTime? currentStatusDateUtc, CancellationToken cancellationToken)
         {
-            var link = await dbContext.UserTrademarks.
-                FirstOrDefaultAsync(ut => ut.ApplicationUserId == userId && ut.TrademarkRegistrationId == trademarkId, cancellationToken);
+            var link = await dbContext.UserTrademarkWatchlists.IgnoreQueryFilters().
+                FirstOrDefaultAsync(ut => ut.UserId == userId && ut.TrademarkId == trademarkId, cancellationToken);
 
             if (link is null)
             {
-                link = new UserTrademark
+                link = new UserTrademarkWatchlist
                 {
-                    ApplicationUserId = userId,
-                    TrademarkRegistrationId = trademarkId,
+                    UserId = userId,
+                    TrademarkId = trademarkId,
                     IsDeleted = false,
-
-                    AddedToWatchlist = true,
-                    WatchlistNotificationsEnabled = false,
-                    WatchlistAddedOnUtc = DateTime.UtcNow,
-                    WatchlistInitialStatusCodeRaw = currentStatusCodeRaw,
-                    WatchlistInitialStatusText = currentStatusText,
-                    WatchlistInitialStatusDateUtc = currentStatusDateUtc
+                    NotificationsEnabled = false,
+                    AddedOnUtc = DateTime.UtcNow,
+                    InitialStatusCodeRaw = currentStatusCodeRaw,
+                    InitialStatusText = currentStatusText,
+                    InitialStatusDateUtc = currentStatusDateUtc
                 };
 
-                await dbContext.UserTrademarks.AddAsync(link, cancellationToken);
+                await dbContext.UserTrademarkWatchlists.AddAsync(link, cancellationToken);
             }
 
             else
@@ -45,20 +43,17 @@ namespace IPNoticeHub.Data.Repositories.Application.Implementations
                     link.IsDeleted = false;
                 }
 
-                link.AddedToWatchlist = true;
+                if (link.AddedOnUtc == default)
+                    link.AddedOnUtc = DateTime.UtcNow;
 
+                if (link.InitialStatusCodeRaw is null)
+                    link.InitialStatusCodeRaw = currentStatusCodeRaw;
 
-                if (link.WatchlistAddedOnUtc is null)
-                    link.WatchlistAddedOnUtc = DateTime.UtcNow;
+                if (string.IsNullOrEmpty(link.InitialStatusText))
+                    link.InitialStatusText = currentStatusText;
 
-                if (link.WatchlistInitialStatusCodeRaw is null)
-                    link.WatchlistInitialStatusCodeRaw = currentStatusCodeRaw;
-
-                if (string.IsNullOrEmpty(link.WatchlistInitialStatusText))
-                    link.WatchlistInitialStatusText = currentStatusText;
-
-                if (link.WatchlistInitialStatusDateUtc is null)
-                    link.WatchlistInitialStatusDateUtc = currentStatusDateUtc;
+                if (link.InitialStatusDateUtc is null)
+                    link.InitialStatusDateUtc = currentStatusDateUtc;
             }
 
             await dbContext.SaveChangesAsync(cancellationToken);
@@ -66,61 +61,55 @@ namespace IPNoticeHub.Data.Repositories.Application.Implementations
 
         public async Task<int> CountByUserAsync(string userId, CancellationToken cancellationToken)
         {
-            return await dbContext.UserTrademarks.CountAsync(ut => ut.ApplicationUserId == userId &&
-                    !ut.IsDeleted && ut.AddedToWatchlist,  cancellationToken);
+            return await dbContext.UserTrademarkWatchlists.
+                  CountAsync(ut => ut.UserId == userId && !ut.IsDeleted, cancellationToken);
         }
 
         public async Task<bool> ExistsAsync(string userId, int trademarkId, CancellationToken cancellationToken)
         {
-            return await dbContext.UserTrademarks.AnyAsync(ut => ut.ApplicationUserId == userId &&
-                    ut.TrademarkRegistrationId == trademarkId && !ut.IsDeleted && ut.AddedToWatchlist, cancellationToken);
+            return await dbContext.UserTrademarkWatchlists.
+                 AnyAsync(ut => ut.UserId == userId && ut.TrademarkId == trademarkId && !ut.IsDeleted, cancellationToken);
         }
 
-        public async Task<IReadOnlyList<UserTrademark>> ListByUserAsync(string userId, int skip, int take, CancellationToken cancellationToken)
+        public async Task<IReadOnlyList<UserTrademarkWatchlist>> ListByUserAsync(string userId, int skip, int take, CancellationToken cancellationToken)
         {
-            return await dbContext.UserTrademarks.
+            return await dbContext.UserTrademarkWatchlists.
                 AsNoTracking().
-                Where(ut =>ut.ApplicationUserId == userId && !ut.IsDeleted && ut.AddedToWatchlist)
-                .Include(ut => ut.TrademarkRegistration)
-                .OrderByDescending(ut => ut.WatchlistAddedOnUtc)
-                .ThenByDescending(ut => ut.DateAdded)
-                .Skip(skip)
-                .Take(take)
-                .ToListAsync(cancellationToken);
+                Where(ut =>ut.UserId == userId).
+                Include(ut => ut.Trademark).
+                OrderByDescending(ut => ut.AddedOnUtc).
+                Skip(skip).
+                Take(take).
+                ToListAsync(cancellationToken);
         }
 
         public async Task SoftRemoveAsync(string userId, int trademarkId, CancellationToken cancellationToken)
         {
-            var link = await dbContext.UserTrademarks.
-                FirstOrDefaultAsync(ut => ut.ApplicationUserId == userId &&
-                          ut.TrademarkRegistrationId == trademarkId && !ut.IsDeleted, cancellationToken);
+            var link = await dbContext.UserTrademarkWatchlists.
+            FirstOrDefaultAsync(ut => ut.UserId == userId && ut.TrademarkId == trademarkId, cancellationToken);
 
-            if (link is null)
-            {
-                return;
-            }
+            if (link is null) return;
 
-            link.AddedToWatchlist = false;
-            link.WatchlistNotificationsEnabled = false;
+            link.IsDeleted = true;
+            link.NotificationsEnabled = false;
             await dbContext.SaveChangesAsync(cancellationToken);
         }
 
         public async Task ToggleNotificationsAsync(string userId, int trademarkId, bool notificationsEnabled, CancellationToken cancellationToken)
         {
-            var link = await dbContext.UserTrademarks.
-                FirstOrDefaultAsync(ut => ut.ApplicationUserId == userId && ut.TrademarkRegistrationId == trademarkId &&
-                        !ut.IsDeleted && ut.AddedToWatchlist, cancellationToken);
+            var link = await dbContext.UserTrademarkWatchlists.
+                FirstOrDefaultAsync(ut => ut.UserId == userId && ut.TrademarkId == trademarkId && !ut.IsDeleted, cancellationToken);
 
             if (link is null)
             {
                 return;
             }
 
-            if (link.WatchlistNotificationsEnabled != notificationsEnabled)
+            if (link.NotificationsEnabled != notificationsEnabled)
             {
-                link.WatchlistNotificationsEnabled = notificationsEnabled;
+                link.NotificationsEnabled = notificationsEnabled;
 
-                dbContext.Entry(link).Property(x => x.WatchlistNotificationsEnabled).IsModified = true;
+                dbContext.Entry(link).Property(x => x.NotificationsEnabled).IsModified = true;
                 await dbContext.SaveChangesAsync(cancellationToken);
             }
         }

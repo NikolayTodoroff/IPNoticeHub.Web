@@ -6,9 +6,6 @@ using IPNoticeHub.Services.Application.Abstractions;
 using IPNoticeHub.Services.Application.Implementations;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace IPNoticeHub.Tests.UnitTests.ServiceTests.ApplicationServiceTests
 {
@@ -119,17 +116,16 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.ApplicationServiceTests
 
             statusLabels.Setup(l => l.GetStatusLabel("USPTO", 700)).Returns("Registered");
 
-            var linkA = new UserTrademark
+            var linkA = new UserTrademarkWatchlist
             {
-                ApplicationUserId = userId,
-                TrademarkRegistrationId = 101,
-                AddedToWatchlist = true,
-                WatchlistNotificationsEnabled = false,
-                WatchlistAddedOnUtc = new DateTime(2025, 1, 5, 12, 0, 0, DateTimeKind.Utc),
-                WatchlistInitialStatusCodeRaw = 630,
-                WatchlistInitialStatusText = "New Application",
-                WatchlistInitialStatusDateUtc = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
-                TrademarkRegistration = new TrademarkEntity
+                UserId = userId,
+                TrademarkId = 101,
+                NotificationsEnabled = false,
+                AddedOnUtc = new DateTime(2025, 1, 5, 12, 0, 0, DateTimeKind.Utc),
+                InitialStatusCodeRaw = 630,
+                InitialStatusText = "New Application",
+                InitialStatusDateUtc = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                Trademark = new TrademarkEntity
                 {
                     Id = 101,
                     RegistrationNumber = "REG-101",
@@ -140,17 +136,16 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.ApplicationServiceTests
                 }
             };
 
-            var linkB = new UserTrademark
+            var linkB = new UserTrademarkWatchlist
             {
-                ApplicationUserId = userId,
-                TrademarkRegistrationId = 202,
-                AddedToWatchlist = true,
-                WatchlistNotificationsEnabled = true,
-                WatchlistAddedOnUtc = new DateTime(2025, 1, 4, 12, 0, 0, DateTimeKind.Utc),
-                WatchlistInitialStatusCodeRaw = 700,
-                WatchlistInitialStatusText = "Registered",
-                WatchlistInitialStatusDateUtc = new DateTime(2024, 12, 31, 0, 0, 0, DateTimeKind.Utc),
-                TrademarkRegistration = new TrademarkEntity
+                UserId = userId,
+                TrademarkId = 202,
+                NotificationsEnabled = true,
+                AddedOnUtc = new DateTime(2025, 1, 4, 12, 0, 0, DateTimeKind.Utc),
+                InitialStatusCodeRaw = 700,
+                InitialStatusText = "Registered",
+                InitialStatusDateUtc = new DateTime(2024, 12, 31, 0, 0, 0, DateTimeKind.Utc),
+                Trademark = new TrademarkEntity
                 {
                     Id = 202,
                     RegistrationNumber = null,
@@ -162,7 +157,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.ApplicationServiceTests
             };
 
             watchlistRepo.Setup(r => r.ListByUserAsync(userId, 0, 200, It.IsAny<CancellationToken>())).
-                ReturnsAsync(new List<UserTrademark> { linkA, linkB });
+                ReturnsAsync(new List<UserTrademarkWatchlist> { linkA, linkB });
 
             var watchlistService = new TrademarkWatchlistService(watchlistRepo.Object,
                 snapshotRepo.Object, statusLabels.Object);
@@ -204,15 +199,14 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.ApplicationServiceTests
             var snapshotRepo = new Mock<ITrademarkStatusSnapshotRepository>(MockBehavior.Loose);
             var statusLabels = new Mock<IStatusLabelProvider>(MockBehavior.Strict);
 
-            var linkA = new UserTrademark
+            var linkA = new UserTrademarkWatchlist
             {
-                ApplicationUserId = userId,
-                TrademarkRegistrationId = 11,
-                AddedToWatchlist = true,
-                WatchlistAddedOnUtc = DateTime.UtcNow,
-                WatchlistInitialStatusCodeRaw = null,
-                WatchlistInitialStatusText = "  Live   Registered  ", // Includes extra spaces and inconsistent casing for normalization testing
-                TrademarkRegistration = new TrademarkEntity
+                UserId = userId,
+                TrademarkId = 11,
+                AddedOnUtc = DateTime.UtcNow,
+                InitialStatusCodeRaw = null,
+                InitialStatusText = "  Live   Registered  ", // Includes extra spaces and inconsistent casing for normalization testing
+                Trademark = new TrademarkEntity
                 {
                     Id = 11,
                     RegistrationNumber = "RN-11",
@@ -223,15 +217,14 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.ApplicationServiceTests
                 }
             };
 
-            var linkB = new UserTrademark
+            var linkB = new UserTrademarkWatchlist
             {
-                ApplicationUserId = userId,
-                TrademarkRegistrationId = 22,
-                AddedToWatchlist = true,
-                WatchlistAddedOnUtc = DateTime.UtcNow.AddMinutes(-1),
-                WatchlistInitialStatusCodeRaw = null,
-                WatchlistInitialStatusText = "Abandoned — Express", // Contains an em-dash (U+2014) for testing normalization
-                TrademarkRegistration = new TrademarkEntity
+                UserId = userId,
+                TrademarkId = 22,
+                AddedOnUtc = DateTime.UtcNow.AddMinutes(-1),
+                InitialStatusCodeRaw = null,
+                InitialStatusText = "Abandoned — Express", // Contains an em-dash (U+2014) for testing normalization
+                Trademark = new TrademarkEntity
                 {
                     Id = 22,
                     RegistrationNumber = "RN-22",
@@ -243,7 +236,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.ApplicationServiceTests
             };
 
             watchlistRepo.Setup(r => r.ListByUserAsync(userId, 0, 200, It.IsAny<CancellationToken>())).
-                ReturnsAsync(new List<UserTrademark> { linkA, linkB });
+                ReturnsAsync(new List<UserTrademarkWatchlist> { linkA, linkB });
 
             var watchlistService = new TrademarkWatchlistService(watchlistRepo.Object,snapshotRepo.Object,statusLabels.Object);
 
