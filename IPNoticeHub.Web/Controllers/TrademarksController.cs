@@ -39,11 +39,11 @@ namespace IPNoticeHub.Web.Controllers
 
             TrademarkFilterDTO? filterDTO = CreateNormalizedFilterDTO(filter, searchTerm);
 
-            PagedResult<TrademarkSummaryDTO> resultsPageDTO = await tmSearchService.SearchAsync(filterDTO, filter.CurrentPage, filter.ResultsPerPage, cancellationToken);
+            PagedResult<TrademarkSummaryDTO> dtoPagedResult = await tmSearchService.SearchAsync(filterDTO, filter.CurrentPage, filter.ResultsPerPage, cancellationToken);
 
             ViewBag.HasSearch = true;
 
-            TrademarksIndexViewModel indexViewModel = TrademarksIndexDtoToVmMapper.MapToIndexViewModel(filter, resultsPageDTO);
+            TrademarksIndexViewModel indexViewModel = TrademarksIndexDtoToVmMapper.MapToIndexViewModel(filter, dtoPagedResult);
             return View(indexViewModel);
         }
 
@@ -123,7 +123,7 @@ namespace IPNoticeHub.Web.Controllers
         private IActionResult CreateEmptyViewModel(TrademarkFilterViewModel filter)
         {
             ViewBag.HasSearch = false;
-            PagedResult<TrademarkSummaryDTO>? emptyPageDTO = new PagedResult<TrademarkSummaryDTO>
+            PagedResult<TrademarkSummaryDTO>? emptyDTOPagedResult = new PagedResult<TrademarkSummaryDTO>
             {
                 Results = Array.Empty<TrademarkSummaryDTO>(),
                 ResultsCount = 0,
@@ -131,7 +131,7 @@ namespace IPNoticeHub.Web.Controllers
                 ResultsCountPerPage = filter.ResultsPerPage
             };
 
-            TrademarksIndexViewModel? viewModel = TrademarksIndexDtoToVmMapper.MapToIndexViewModel(filter, emptyPageDTO);
+            TrademarksIndexViewModel? viewModel = TrademarksIndexDtoToVmMapper.MapToIndexViewModel(filter, emptyDTOPagedResult);
             return View(viewModel);
         }
         private static TrademarkFilterDTO CreateNormalizedFilterDTO(TrademarkFilterViewModel filter, string searchTerm)
