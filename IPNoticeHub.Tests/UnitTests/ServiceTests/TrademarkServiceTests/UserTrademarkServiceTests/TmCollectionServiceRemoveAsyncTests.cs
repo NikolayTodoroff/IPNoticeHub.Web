@@ -58,7 +58,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServi
                 cancellationToken: default);
 
             var softDeletedLinks = testDbContext.UserTrademarks.Where(
-                x => x.ApplicationUserId == user.Id && x.TrademarkRegistrationId == trademarkEntity.Id).ToList();
+                x => x.UserId == user.Id && x.TrademarkId == trademarkEntity.Id).ToList();
 
             softDeletedLinks.Should().HaveCount(1);
             softDeletedLinks[0].IsDeleted.Should().BeTrue();

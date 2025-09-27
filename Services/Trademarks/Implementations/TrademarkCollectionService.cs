@@ -80,12 +80,12 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
 
             else if (sortBy == CollectionSortBy.WordmarkAsc)
             {
-                collectionLinks = collectionLinks.OrderBy(l => l.TrademarkRegistration.Wordmark);
+                collectionLinks = collectionLinks.OrderBy(l => l.Trademark.Wordmark);
             }
 
             else if (sortBy == CollectionSortBy.WordmarkDesc)
             {
-                collectionLinks = collectionLinks.OrderByDescending(l => l.TrademarkRegistration.Wordmark);
+                collectionLinks = collectionLinks.OrderByDescending(l => l.Trademark.Wordmark);
             }
 
             else
@@ -101,14 +101,14 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
                 Take(normalizedPageSize).
                 Select(l => new TrademarkSummaryDTO
                 {
-                   Id = l.TrademarkRegistrationId,
-                   PublicId = l.TrademarkRegistration.PublicId,
-                   Wordmark = l.TrademarkRegistration.Wordmark,
-                   Owner = l.TrademarkRegistration.Owner,
-                   SourceId = l.TrademarkRegistration.SourceId,
-                   Status = l.TrademarkRegistration.StatusCategory,
-                   Classes = l.TrademarkRegistration.Classes.Select(c => c.ClassNumber).ToArray(),
-                   Provider = l.TrademarkRegistration.Source
+                   Id = l.TrademarkId,
+                   PublicId = l.Trademark.PublicId,
+                   Wordmark = l.Trademark.Wordmark,
+                   Owner = l.Trademark.Owner,
+                   SourceId = l.Trademark.SourceId,
+                   Status = l.Trademark.StatusCategory,
+                   Classes = l.Trademark.Classes.Select(c => c.ClassNumber).ToArray(),
+                   Provider = l.Trademark.Source
                 }).
                    ToListAsync(cancellationToken);
 

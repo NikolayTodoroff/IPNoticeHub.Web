@@ -8,11 +8,6 @@
 
 <h2 class="mb-3">Watchlist</h2>
 
-@if (TempData["Success"] is string s && !string.IsNullOrWhiteSpace(s))
-{
-    <div class="alert alert-success" role="alert">@s</div>
-}
-
 @if (TempData["Error"] is string e && !string.IsNullOrWhiteSpace(e))
 {
     <div class="alert alert-danger" role="alert">@e</div>

@@ -51,8 +51,8 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.UserTrademarkRe
             await userTmRepository.AddOrUndeleteAsync(user.Id, trademarkEntity.Id, CancellationToken.None);
 
             var userTmLink = await testDbContext.UserTrademarks
-                .Include(ut => ut.TrademarkRegistration)
-                .SingleAsync(ut => ut.ApplicationUserId == user.Id && ut.TrademarkRegistrationId == trademarkEntity.Id);
+                .Include(ut => ut.Trademark)
+                .SingleAsync(ut => ut.UserId == user.Id && ut.TrademarkId == trademarkEntity.Id);
 
             userTmLink.IsDeleted.Should().BeFalse();
             userTmLink.DateAdded.Should().BeOnOrAfter(DateTime.UtcNow.AddMinutes(-1));
@@ -86,7 +86,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.UserTrademarkRe
             removedSuccessfully.Should().BeTrue();
 
             var userTmLink = await testDbContext.UserTrademarks
-                .SingleAsync(ut => ut.ApplicationUserId == user.Id && ut.TrademarkRegistrationId == trademarkEntity.Id);
+                .SingleAsync(ut => ut.UserId == user.Id && ut.TrademarkId == trademarkEntity.Id);
 
             userTmLink.IsDeleted.Should().BeTrue();
         }
@@ -147,7 +147,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.UserTrademarkRe
             await userTmRepository.AddOrUndeleteAsync(user.Id, trademarkEntity.Id, CancellationToken.None);
 
             var userTmLink = await testDbContext.UserTrademarks
-                .SingleAsync(ut => ut.ApplicationUserId == user.Id && ut.TrademarkRegistrationId == trademarkEntity.Id);
+                .SingleAsync(ut => ut.UserId == user.Id && ut.TrademarkId == trademarkEntity.Id);
 
             DateTime initialDateAdded = userTmLink.DateAdded;
 
@@ -158,7 +158,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.UserTrademarkRe
             await userTmRepository.AddOrUndeleteAsync(user.Id, trademarkEntity.Id, CancellationToken.None);
 
             var queryLinksResult = await testDbContext.UserTrademarks
-                .Where(ut => ut.ApplicationUserId == user.Id && ut.TrademarkRegistrationId == trademarkEntity.Id)
+                .Where(ut => ut.UserId == user.Id && ut.TrademarkId == trademarkEntity.Id)
                 .ToListAsync();
 
             queryLinksResult.Count.Should().Be(1);
@@ -192,7 +192,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.UserTrademarkRe
             await userTmRepository.AddOrUndeleteAsync(user.Id, trademarkEntity.Id, CancellationToken.None);
 
             var userTmLink = await testDbContext.UserTrademarks
-                .SingleAsync(ut => ut.ApplicationUserId == user.Id && ut.TrademarkRegistrationId == trademarkEntity.Id);
+                .SingleAsync(ut => ut.UserId == user.Id && ut.TrademarkId == trademarkEntity.Id);
 
             DateTime initialDateAdded = userTmLink.DateAdded;
             userTmLink.IsDeleted.Should().BeFalse();
@@ -206,7 +206,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.UserTrademarkRe
             await userTmRepository.AddOrUndeleteAsync(user.Id, trademarkEntity.Id, CancellationToken.None);
 
             UserTrademark? undeletedLink = await testDbContext.UserTrademarks
-                .SingleAsync(ut => ut.ApplicationUserId == user.Id && ut.TrademarkRegistrationId == trademarkEntity.Id);
+                .SingleAsync(ut => ut.UserId == user.Id && ut.TrademarkId == trademarkEntity.Id);
 
             undeletedLink.IsDeleted.Should().BeFalse();
             undeletedLink.DateAdded.Should().BeAfter(initialDateAdded);

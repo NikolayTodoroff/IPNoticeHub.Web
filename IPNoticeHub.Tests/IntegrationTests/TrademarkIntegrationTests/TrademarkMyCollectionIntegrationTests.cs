@@ -144,9 +144,9 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                 await testDbContext.SaveChangesAsync();
 
                 testDbContext.UserTrademarks.AddRange(
-                    new UserTrademark { ApplicationUserId = userId, TrademarkRegistrationId = entity1.Id, IsDeleted = false },
-                    new UserTrademark { ApplicationUserId = userId, TrademarkRegistrationId = entity2.Id, IsDeleted = false },
-                    new UserTrademark { ApplicationUserId = userId, TrademarkRegistrationId = entity3.Id, IsDeleted = false }
+                    new UserTrademark { UserId = userId, TrademarkId = entity1.Id, IsDeleted = false },
+                    new UserTrademark { UserId = userId, TrademarkId = entity2.Id, IsDeleted = false },
+                    new UserTrademark { UserId = userId, TrademarkId = entity3.Id, IsDeleted = false }
                 );
 
                 await testDbContext.SaveChangesAsync();
@@ -196,8 +196,8 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                 await testDbContext.SaveChangesAsync();
 
                 testDbContext.UserTrademarks.AddRange(
-                    new UserTrademark { ApplicationUserId = userId, TrademarkRegistrationId = entity1.Id, IsDeleted = false },
-                    new UserTrademark { ApplicationUserId = userId, TrademarkRegistrationId = entity2.Id, IsDeleted = false }
+                    new UserTrademark { UserId = userId, TrademarkId = entity1.Id, IsDeleted = false },
+                    new UserTrademark { UserId = userId, TrademarkId = entity2.Id, IsDeleted = false }
                 );
 
                 await testDbContext.SaveChangesAsync();
@@ -248,8 +248,8 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                 await testDbContext.SaveChangesAsync();
 
                 testDbContext.UserTrademarks.AddRange(
-                    new UserTrademark { ApplicationUserId = userId, TrademarkRegistrationId = entity1.Id, IsDeleted = false },
-                    new UserTrademark { ApplicationUserId = userId, TrademarkRegistrationId = entity2.Id, IsDeleted = false }
+                    new UserTrademark { UserId = userId, TrademarkId = entity1.Id, IsDeleted = false },
+                    new UserTrademark { UserId = userId, TrademarkId = entity2.Id, IsDeleted = false }
                 );
                 await testDbContext.SaveChangesAsync();
             }
@@ -298,8 +298,8 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                 await testDbContext.SaveChangesAsync();
 
                 testDbContext.UserTrademarks.AddRange(
-                    new UserTrademark { ApplicationUserId = userId, TrademarkRegistrationId = activeEntity.Id, IsDeleted = false },
-                    new UserTrademark { ApplicationUserId = userId, TrademarkRegistrationId = deletedEntity.Id, IsDeleted = true }
+                    new UserTrademark { UserId = userId, TrademarkId = activeEntity.Id, IsDeleted = false },
+                    new UserTrademark { UserId = userId, TrademarkId = deletedEntity.Id, IsDeleted = true }
                 );
                 await testDbContext.SaveChangesAsync();
             }
@@ -364,8 +364,8 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                 await testDbContext.SaveChangesAsync();
 
                 testDbContext.UserTrademarks.AddRange(
-                    new UserTrademark { ApplicationUserId = userId, TrademarkRegistrationId = entity1.Id, IsDeleted = false },
-                    new UserTrademark { ApplicationUserId = userId, TrademarkRegistrationId = entity2.Id, IsDeleted = false }
+                    new UserTrademark { UserId = userId, TrademarkId = entity1.Id, IsDeleted = false },
+                    new UserTrademark { UserId = userId, TrademarkId = entity2.Id, IsDeleted = false }
                 );
                 await testDbContext.SaveChangesAsync();
             }
@@ -424,9 +424,9 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                 await testDbContext.SaveChangesAsync();
 
                 testDbContext.UserTrademarks.AddRange(
-                    new UserTrademark { ApplicationUserId = userId, TrademarkRegistrationId = entity1.Id, IsDeleted = false },
-                    new UserTrademark { ApplicationUserId = userId, TrademarkRegistrationId = entity2.Id, IsDeleted = false },
-                    new UserTrademark { ApplicationUserId = userId, TrademarkRegistrationId = entity3.Id, IsDeleted = false }
+                    new UserTrademark { UserId = userId, TrademarkId = entity1.Id, IsDeleted = false },
+                    new UserTrademark { UserId = userId, TrademarkId = entity2.Id, IsDeleted = false },
+                    new UserTrademark { UserId = userId, TrademarkId = entity3.Id, IsDeleted = false }
                 );
 
                 await testDbContext.SaveChangesAsync();
@@ -477,8 +477,8 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                 await testDbContext.SaveChangesAsync();
 
                 testDbContext.UserTrademarks.AddRange(
-                    new UserTrademark { ApplicationUserId = userId, TrademarkRegistrationId = entity1.Id, IsDeleted = false },
-                    new UserTrademark { ApplicationUserId = userId, TrademarkRegistrationId = entity2.Id, IsDeleted = false }
+                    new UserTrademark { UserId = userId, TrademarkId = entity1.Id, IsDeleted = false },
+                    new UserTrademark { UserId = userId, TrademarkId = entity2.Id, IsDeleted = false }
                 );
                 await testDbContext.SaveChangesAsync();
             }
@@ -525,8 +525,8 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                 await testDbContext.SaveChangesAsync();
 
                 testDbContext.UserTrademarks.AddRange(
-                    new UserTrademark { ApplicationUserId = userId, TrademarkRegistrationId = entity1.Id, IsDeleted = false },
-                    new UserTrademark { ApplicationUserId = userId, TrademarkRegistrationId = entity2.Id, IsDeleted = false }
+                    new UserTrademark { UserId = userId, TrademarkId = entity1.Id, IsDeleted = false },
+                    new UserTrademark { UserId = userId, TrademarkId = entity2.Id, IsDeleted = false }
                 );
                 await testDbContext.SaveChangesAsync();
             }
@@ -601,9 +601,9 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                 await testDbContext.SaveChangesAsync();
 
                 testDbContext.UserTrademarks.AddRange(
-                    new UserTrademark { ApplicationUserId = userId, TrademarkRegistrationId = initialEntity.Id, IsDeleted = false },
-                    new UserTrademark { ApplicationUserId = userId, TrademarkRegistrationId = newEntity.Id, IsDeleted = false },
-                    new UserTrademark { ApplicationUserId = userId, TrademarkRegistrationId = noRegDateEntity.Id, IsDeleted = false }
+                    new UserTrademark { UserId = userId, TrademarkId = initialEntity.Id, IsDeleted = false },
+                    new UserTrademark { UserId = userId, TrademarkId = newEntity.Id, IsDeleted = false },
+                    new UserTrademark { UserId = userId, TrademarkId = noRegDateEntity.Id, IsDeleted = false }
                 );
                 await testDbContext.SaveChangesAsync();
             }
@@ -647,8 +647,8 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                 testDbContext.UserTrademarks.AddRange(
                     list.Select(t => new UserTrademark
                     {
-                        ApplicationUserId = userId,
-                        TrademarkRegistrationId = t.Id,
+                        UserId = userId,
+                        TrademarkId = t.Id,
                         IsDeleted = false
                     })
                 );

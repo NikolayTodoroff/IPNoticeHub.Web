@@ -24,15 +24,15 @@ namespace IPNoticeHub.Data.Repositories.Trademarks.Implementations
         public async Task AddOrUndeleteAsync(string userId, int trademarkId, CancellationToken cancellationToken = default)
         {
             UserTrademark? collectionLink = await dbContext.UserTrademarks.
-                FirstOrDefaultAsync(ut => ut.ApplicationUserId == userId && ut.TrademarkRegistrationId == trademarkId,
+                FirstOrDefaultAsync(ut => ut.UserId == userId && ut.TrademarkId == trademarkId,
                     cancellationToken);
 
             if (collectionLink == null)
             {
                 await dbContext.UserTrademarks.AddAsync(new UserTrademark()
                 {
-                    ApplicationUserId = userId,
-                    TrademarkRegistrationId = trademarkId,
+                    UserId = userId,
+                    TrademarkId = trademarkId,
                     DateAdded = DateTime.UtcNow,
                     IsDeleted = false
                 }, cancellationToken);
@@ -53,8 +53,8 @@ namespace IPNoticeHub.Data.Repositories.Trademarks.Implementations
         public Task<bool> IsLinkedAsync(string userId, int trademarkId, bool includeSoftDeleted = false, CancellationToken cancellationToken=default)
         {
             return dbContext.UserTrademarks.
-                AnyAsync(ut =>ut.ApplicationUserId == userId &&
-                ut.TrademarkRegistrationId == trademarkId &&(includeSoftDeleted || !ut.IsDeleted),cancellationToken);
+                AnyAsync(ut =>ut.UserId == userId &&
+                ut.TrademarkId == trademarkId &&(includeSoftDeleted || !ut.IsDeleted),cancellationToken);
         }
 
         /// <summary>
@@ -63,9 +63,9 @@ namespace IPNoticeHub.Data.Repositories.Trademarks.Implementations
         public IQueryable<TrademarkEntity> QueryUserCollection(string userId)
         {
             return dbContext.UserTrademarks.
-                Where(ut => ut.ApplicationUserId == userId && !ut.IsDeleted).
-                Include(ut=>ut.TrademarkRegistration.Classes).
-                Select(ut => ut.TrademarkRegistration).
+                Where(ut => ut.UserId == userId && !ut.IsDeleted).
+                Include(ut=>ut.Trademark.Classes).
+                Select(ut => ut.Trademark).
                 AsSplitQuery().
                 AsNoTracking();
         }
@@ -73,8 +73,8 @@ namespace IPNoticeHub.Data.Repositories.Trademarks.Implementations
         public IQueryable<UserTrademark> QueryUserLinks(string userId)
         {
             return dbContext.UserTrademarks.
-                Where(ut => ut.ApplicationUserId == userId && !ut.IsDeleted).
-                Include(ut => ut.TrademarkRegistration).
+                Where(ut => ut.UserId == userId && !ut.IsDeleted).
+                Include(ut => ut.Trademark).
                 ThenInclude(t => t.Classes).
                 AsSplitQuery().
                 AsNoTracking();
@@ -87,8 +87,8 @@ namespace IPNoticeHub.Data.Repositories.Trademarks.Implementations
         public async Task<bool> SoftRemoveAsync(string userId, int trademarkId, CancellationToken cancellationToken = default)
         {
             UserTrademark? userTrademarkLink = await dbContext.UserTrademarks
-                .FirstOrDefaultAsync(ut => ut.ApplicationUserId == userId &&
-                ut.TrademarkRegistrationId == trademarkId, cancellationToken);
+                .FirstOrDefaultAsync(ut => ut.UserId == userId &&
+                ut.TrademarkId == trademarkId, cancellationToken);
 
             if (userTrademarkLink == null || userTrademarkLink.IsDeleted)
             {

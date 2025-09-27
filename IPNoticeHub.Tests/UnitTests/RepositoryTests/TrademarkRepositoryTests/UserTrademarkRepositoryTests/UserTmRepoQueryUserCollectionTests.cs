@@ -130,17 +130,17 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.UserTrademarkRe
             var singleLink = queryLinksResult.Single();
 
             // Asserts that only "The Existing One" remains for user1, "The Removed One" was soft-deleted, "From Another User" belongs to user2
-            singleLink.TrademarkRegistration!.Wordmark.Should().Be("The Existing One");
+            singleLink.Trademark!.Wordmark.Should().Be("The Existing One");
 
             // Asserts that the query result includes the correct trademark classes
-            singleLink.TrademarkRegistration!.Classes!.Select(c => c.ClassNumber)
+            singleLink.Trademark!.Classes!.Select(c => c.ClassNumber)
                 .Should().BeEquivalentTo(new[] { 9, 25 });
 
             // Verifies that the entity is detached from the DbContext, ensuring AsNoTracking behavior
             testDbContext.Entry(singleLink).State.Should().Be(EntityState.Detached);
 
             // Verifies that the included entity is also detached from the DbContext
-            testDbContext.Entry(singleLink.TrademarkRegistration!).State.Should().Be(EntityState.Detached);
+            testDbContext.Entry(singleLink.Trademark!).State.Should().Be(EntityState.Detached);
         }
     }
 }

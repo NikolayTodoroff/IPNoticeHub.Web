@@ -41,7 +41,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServi
 
             await service.AddAsync(user.Id, 1234567, default);
 
-            testDbContext.UserTrademarks.Where(x => x.ApplicationUserId == user.Id).Should().BeEmpty();
+            testDbContext.UserTrademarks.Where(x => x.UserId == user.Id).Should().BeEmpty();
         }
 
         [Test]
@@ -78,7 +78,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServi
             await service.AddAsync(user.Id, tmEntity.Id, default);
 
             var links = testDbContext.UserTrademarks
-                          .Where(x => x.ApplicationUserId == user.Id && x.TrademarkRegistrationId == tmEntity.Id)
+                          .Where(x => x.UserId == user.Id && x.TrademarkId == tmEntity.Id)
                           .ToList();
 
             links.Should().HaveCount(1);
@@ -117,7 +117,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServi
 
             await service.RemoveAsync(user.Id, tmEntity.Id, default);
 
-            testDbContext.UserTrademarks.Where(x => x.ApplicationUserId == user.Id).Should().BeEmpty();
+            testDbContext.UserTrademarks.Where(x => x.UserId == user.Id).Should().BeEmpty();
         }
     }
 }

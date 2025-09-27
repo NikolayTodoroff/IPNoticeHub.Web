@@ -99,18 +99,16 @@ namespace IPNoticeHub.Data.Seed
             builder.Entity<UserTrademark>().HasData(
                 new
                 {
-                    ApplicationUserId = user1Id,
-                    TrademarkRegistrationId = 1,
-                    AddedToWatchlist = true,
+                    UserId = user1Id,
+                    TrademarkId = 1,
                     DateAdded = seedDateUtc,
                     IsDeleted = false,
                     WatchlistNotificationsEnabled = false
                 },
                 new
                 {
-                    ApplicationUserId = user2Id,
-                    TrademarkRegistrationId = 2,
-                    AddedToWatchlist = false,
+                    UserId = user2Id,
+                    TrademarkId = 2,
                     DateAdded = seedDateUtc,
                     IsDeleted = false,
                     WatchlistNotificationsEnabled = false

@@ -65,8 +65,8 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
 
                 testDbContext.Set<UserTrademark>().Add(new UserTrademark
                 {
-                    ApplicationUserId = userId,
-                    TrademarkRegistrationId = entityId,
+                    UserId = userId,
+                    TrademarkId = entityId,
                     IsDeleted = false
                 });
 
@@ -87,7 +87,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
             {
                 var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
                 var link = await testDbContext.UserTrademarks.AsNoTracking()
-                    .FirstOrDefaultAsync(ut => ut.ApplicationUserId == userId && ut.TrademarkRegistrationId == entityId);
+                    .FirstOrDefaultAsync(ut => ut.UserId == userId && ut.TrademarkId == entityId);
 
                 link.Should().NotBeNull();
                 link!.IsDeleted.Should().BeTrue();
@@ -127,8 +127,8 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
 
                 testDbContext.Set<UserTrademark>().Add(new UserTrademark
                 {
-                    ApplicationUserId = userId,
-                    TrademarkRegistrationId = entityId,
+                    UserId = userId,
+                    TrademarkId = entityId,
                     IsDeleted = false
                 });
                 await testDbContext.SaveChangesAsync();
@@ -153,7 +153,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
             {
                 var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
                 var link = await testDbContext.UserTrademarks.AsNoTracking()
-                    .FirstOrDefaultAsync(ut => ut.ApplicationUserId == userId && ut.TrademarkRegistrationId == entityId);
+                    .FirstOrDefaultAsync(ut => ut.UserId == userId && ut.TrademarkId == entityId);
 
                 link.Should().NotBeNull();
                 link!.IsDeleted.Should().BeTrue();
@@ -193,8 +193,8 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
 
                 testDbContext.Set<UserTrademark>().Add(new UserTrademark
                 {
-                    ApplicationUserId = userId,
-                    TrademarkRegistrationId = entityId,
+                    UserId = userId,
+                    TrademarkId = entityId,
                     IsDeleted = false
                 });
                 await testDbContext.SaveChangesAsync();
@@ -221,7 +221,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                 var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
 
                 var link = await testDbContext.UserTrademarks.AsNoTracking()
-                    .FirstOrDefaultAsync(ut => ut.ApplicationUserId == userId && ut.TrademarkRegistrationId == entityId);
+                    .FirstOrDefaultAsync(ut => ut.UserId == userId && ut.TrademarkId == entityId);
 
                 link.Should().NotBeNull();
                 link!.IsDeleted.Should().BeTrue();
@@ -267,7 +267,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
             {
                 var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
                 var linkCount = await testDbContext.UserTrademarks.AsNoTracking()
-                    .CountAsync(ut => ut.TrademarkRegistrationId == entityId);
+                    .CountAsync(ut => ut.TrademarkId == entityId);
 
                 linkCount.Should().Be(0);
             }
@@ -307,8 +307,8 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
 
                 testDbContext.Set<UserTrademark>().Add(new UserTrademark
                 {
-                    ApplicationUserId = randomUserId,
-                    TrademarkRegistrationId = entityId,
+                    UserId = randomUserId,
+                    TrademarkId = entityId,
                     IsDeleted = false
                 });
 
@@ -334,12 +334,12 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                 var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
 
                 var callerLink = await testDbContext.UserTrademarks.AsNoTracking()
-                    .FirstOrDefaultAsync(ut => ut.ApplicationUserId == targetUserId && ut.TrademarkRegistrationId == entityId);
+                    .FirstOrDefaultAsync(ut => ut.UserId == targetUserId && ut.TrademarkId == entityId);
 
                 callerLink.Should().BeNull("caller wasn't linked; nothing to delete");
 
                 var otherLink = await testDbContext.UserTrademarks.AsNoTracking()
-                    .FirstOrDefaultAsync(ut => ut.ApplicationUserId == randomUserId && ut.TrademarkRegistrationId == entityId);
+                    .FirstOrDefaultAsync(ut => ut.UserId == randomUserId && ut.TrademarkId == entityId);
 
                 otherLink.Should().NotBeNull();
                 otherLink!.IsDeleted.Should().BeFalse();
@@ -376,8 +376,8 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
 
                 testDbContext.Set<UserTrademark>().Add(new UserTrademark
                 {
-                    ApplicationUserId = userId,
-                    TrademarkRegistrationId = existingTmId,
+                    UserId = userId,
+                    TrademarkId = existingTmId,
                     IsDeleted = false
                 });
                 await testDbContext.SaveChangesAsync();
@@ -398,12 +398,12 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                 var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
 
                 var linksCount = await testDbContext.UserTrademarks.AsNoTracking()
-                    .CountAsync(ut => ut.ApplicationUserId == userId);
+                    .CountAsync(ut => ut.UserId == userId);
 
                 linksCount.Should().Be(1);
 
                 var link = await testDbContext.UserTrademarks.AsNoTracking()
-                    .FirstAsync(ut => ut.ApplicationUserId == userId && ut.TrademarkRegistrationId == existingTmId);
+                    .FirstAsync(ut => ut.UserId == userId && ut.TrademarkId == existingTmId);
 
                 link.IsDeleted.Should().BeFalse();
             }
@@ -442,8 +442,8 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
 
                 testDbContext.Set<UserTrademark>().Add(new UserTrademark
                 {
-                    ApplicationUserId = userId,
-                    TrademarkRegistrationId = entityId,
+                    UserId = userId,
+                    TrademarkId = entityId,
                     IsDeleted = true
                 });
                 await testDbContext.SaveChangesAsync();
@@ -465,12 +465,12 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                 var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
 
                 var linksCount = await testDbContext.UserTrademarks.AsNoTracking()
-                    .CountAsync(ut => ut.ApplicationUserId == userId && ut.TrademarkRegistrationId == entityId);
+                    .CountAsync(ut => ut.UserId == userId && ut.TrademarkId == entityId);
 
                 linksCount.Should().Be(1);
 
                 var link = await testDbContext.UserTrademarks.AsNoTracking()
-                    .FirstAsync(ut => ut.ApplicationUserId == userId && ut.TrademarkRegistrationId == entityId);
+                    .FirstAsync(ut => ut.UserId == userId && ut.TrademarkId == entityId);
 
                 link.IsDeleted.Should().BeTrue();
             }
@@ -519,8 +519,8 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
 
                     testDbContext.UserTrademarks.Add(new UserTrademark
                     {
-                        ApplicationUserId = someUserId,
-                        TrademarkRegistrationId = entityId,
+                        UserId = someUserId,
+                        TrademarkId = entityId,
                         IsDeleted = false
                     });
                     await testDbContext.SaveChangesAsync();
@@ -537,7 +537,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                 {
                     var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
                     var link = await testDbContext.UserTrademarks.AsNoTracking()
-                        .FirstOrDefaultAsync(ut => ut.ApplicationUserId == someUserId && ut.TrademarkRegistrationId == entityId);
+                        .FirstOrDefaultAsync(ut => ut.UserId == someUserId && ut.TrademarkId == entityId);
 
                     link.Should().NotBeNull();
                     link!.IsDeleted.Should().BeFalse();
@@ -596,8 +596,8 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
 
                 testDbContext.UserTrademarks.Add(new UserTrademark
                 {
-                    ApplicationUserId = userId,
-                    TrademarkRegistrationId = entityId,
+                    UserId = userId,
+                    TrademarkId = entityId,
                     IsDeleted = false
                 });
 
@@ -619,7 +619,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                 var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
 
                 var link = await testDbContext.UserTrademarks.AsNoTracking()
-                    .FirstAsync(ut => ut.ApplicationUserId == userId && ut.TrademarkRegistrationId == entityId);
+                    .FirstAsync(ut => ut.UserId == userId && ut.TrademarkId == entityId);
 
                 link.IsDeleted.Should().BeFalse();
             }
@@ -657,8 +657,8 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
 
                 testDbContext.UserTrademarks.Add(new UserTrademark
                 {
-                    ApplicationUserId = userId,
-                    TrademarkRegistrationId = entityId,
+                    UserId = userId,
+                    TrademarkId = entityId,
                     IsDeleted = false
                 });
                 await testDbContext.SaveChangesAsync();
@@ -681,7 +681,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                 var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
 
                 var link = await testDbContext.UserTrademarks.AsNoTracking()
-                    .FirstAsync(ut => ut.ApplicationUserId == userId && ut.TrademarkRegistrationId == entityId);
+                    .FirstAsync(ut => ut.UserId == userId && ut.TrademarkId == entityId);
 
                 link.IsDeleted.Should().BeFalse();
             }

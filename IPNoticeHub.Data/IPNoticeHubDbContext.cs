@@ -40,7 +40,7 @@ namespace IPNoticeHub.Data
 
             // Define composite primary key for UserTrademark entity
             builder.Entity<UserTrademark>().
-                HasKey(ut => new { ut.ApplicationUserId, ut.TrademarkRegistrationId });
+                HasKey(ut => new { ut.UserId, ut.TrademarkId });
 
             // Adding indexes to improve query performance for RegistrationNumber and SourceId in TrademarkEntity
             builder.Entity<TrademarkEntity>().HasIndex(t => t.RegistrationNumber);
@@ -48,16 +48,16 @@ namespace IPNoticeHub.Data
 
             // Configure relationship between UserTrademark and ApplicationUser
             builder.Entity<UserTrademark>().
-                HasOne(ut => ut.ApplicationUser).
+                HasOne(ut => ut.User).
                 WithMany(u => u.UserTrademarks).
-                HasForeignKey(ut => ut.ApplicationUserId).
+                HasForeignKey(ut => ut.UserId).
                 OnDelete(DeleteBehavior.Restrict);
 
             // Configure relationship between UserTrademark and TrademarkRegistration
             builder.Entity<UserTrademark>().
-                HasOne(ut => ut.TrademarkRegistration).
+                HasOne(ut => ut.Trademark).
                 WithMany(t => t.UserTrademarks).
-                HasForeignKey(ut => ut.TrademarkRegistrationId).
+                HasForeignKey(ut => ut.TrademarkId).
                 OnDelete(DeleteBehavior.Restrict);
 
             // Define composite primary key for UserCopyright entity

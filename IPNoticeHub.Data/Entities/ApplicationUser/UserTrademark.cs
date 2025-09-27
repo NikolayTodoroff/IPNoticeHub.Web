@@ -6,13 +6,13 @@ namespace IPNoticeHub.Data.Entities.ApplicationUser
 {
     public class UserTrademark
     {
-        public string ApplicationUserId { get; set; } = string.Empty;
-        public ApplicationUser ApplicationUser { get; set; } = null!;
+        public string UserId { get; set; } = string.Empty;
+        public ApplicationUser User { get; set; } = null!;
 
 
         [ForeignKey(nameof(TrademarkRegistration))]
-        public int TrademarkRegistrationId { get; set; }
-        public TrademarkEntity TrademarkRegistration { get; set; } = null!;
+        public int TrademarkId { get; set; }
+        public TrademarkEntity Trademark { get; set; } = null!;
 
 
         [Comment("Date when the user added this trademark registration to their account")]

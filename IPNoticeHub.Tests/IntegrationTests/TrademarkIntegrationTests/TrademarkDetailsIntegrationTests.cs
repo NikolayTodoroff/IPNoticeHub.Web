@@ -119,8 +119,8 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                 await testDbContext.SaveChangesAsync();
 
                 testDbContext.Set<UserTrademark>().AddRange(
-                    new UserTrademark { ApplicationUserId = userId, TrademarkRegistrationId = entity1.Id, IsDeleted = false },
-                    new UserTrademark { ApplicationUserId = userId, TrademarkRegistrationId = entity2.Id, IsDeleted = false }
+                    new UserTrademark { UserId = userId, TrademarkId = entity1.Id, IsDeleted = false },
+                    new UserTrademark { UserId = userId, TrademarkId = entity2.Id, IsDeleted = false }
                 );
 
                 await testDbContext.SaveChangesAsync();

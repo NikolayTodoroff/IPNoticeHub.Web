@@ -59,7 +59,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServi
 
             linkedInCollection.Should().BeTrue();
 
-            var existingLink = testDbContext.UserTrademarks.Where(x => x.ApplicationUserId == user.Id && x.TrademarkRegistrationId == trademarkEntity.Id).ToList();
+            var existingLink = testDbContext.UserTrademarks.Where(x => x.UserId == user.Id && x.TrademarkId == trademarkEntity.Id).ToList();
             existingLink.Should().HaveCount(1);
             existingLink[0].IsDeleted.Should().BeFalse();
         }
@@ -106,7 +106,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServi
                 cancellationToken: default);
 
             var softDeletedLinks = testDbContext.UserTrademarks.Where(
-                x => x.ApplicationUserId == user.Id && x.TrademarkRegistrationId == trademarkEntity.Id).ToList();
+                x => x.UserId == user.Id && x.TrademarkId == trademarkEntity.Id).ToList();
 
             softDeletedLinks.Should().HaveCount(1);
             softDeletedLinks[0].IsDeleted.Should().BeTrue();
@@ -118,7 +118,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServi
                cancellationToken: default);
 
             var unDeletedLinks = testDbContext.UserTrademarks.Where(
-                x => x.ApplicationUserId == user.Id && x.TrademarkRegistrationId == trademarkEntity.Id).ToList();
+                x => x.UserId == user.Id && x.TrademarkId == trademarkEntity.Id).ToList();
 
             unDeletedLinks.Should().HaveCount(1);
             unDeletedLinks[index: 0].IsDeleted.Should().BeFalse();
