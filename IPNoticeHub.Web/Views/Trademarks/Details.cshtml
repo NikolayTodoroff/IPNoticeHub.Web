@@ -80,9 +80,11 @@
     </div>
 
     <div class="mt-3 d-flex gap-2">
-        <form method="post" asp-controller="Trademarks" asp-action="Save" class="d-inline">
-            <input type="hidden" name="id" value="@Model.PublicId" />
-            <button type="submit" class="btn btn-outline-secondary" disabled>Save</button>
+        <form method="post" asp-controller="Collection" asp-action="Add" class="d-inline">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="trademarkId" value="@Model.Id" />
+            <input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" />
+            <button type="submit" class="btn btn-outline-secondary">Save</button>
         </form>
 
         <form method="post" asp-controller="Watchlist" asp-action="Add" class="d-inline">
