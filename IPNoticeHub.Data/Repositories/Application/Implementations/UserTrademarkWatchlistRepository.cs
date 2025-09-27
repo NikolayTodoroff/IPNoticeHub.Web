@@ -105,7 +105,7 @@ namespace IPNoticeHub.Data.Repositories.Application.Implementations
             await dbContext.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task ToggleNotificationsAsync(string userId, int trademarkId, bool enabled, CancellationToken cancellationToken)
+        public async Task ToggleNotificationsAsync(string userId, int trademarkId, bool notificationsEnabled, CancellationToken cancellationToken)
         {
             var link = await dbContext.UserTrademarks.
                 FirstOrDefaultAsync(ut => ut.ApplicationUserId == userId && ut.TrademarkRegistrationId == trademarkId &&
@@ -116,8 +116,13 @@ namespace IPNoticeHub.Data.Repositories.Application.Implementations
                 return;
             }
 
-            link.WatchlistNotificationsEnabled = enabled;
-            await dbContext.SaveChangesAsync(cancellationToken);
+            if (link.WatchlistNotificationsEnabled != notificationsEnabled)
+            {
+                link.WatchlistNotificationsEnabled = notificationsEnabled;
+
+                dbContext.Entry(link).Property(x => x.WatchlistNotificationsEnabled).IsModified = true;
+                await dbContext.SaveChangesAsync(cancellationToken);
+            }
         }
     }
 }

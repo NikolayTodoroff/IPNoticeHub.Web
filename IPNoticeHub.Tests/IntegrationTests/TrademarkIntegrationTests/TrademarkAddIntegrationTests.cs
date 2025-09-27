@@ -22,10 +22,16 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
         private TestWebAppFactory appFactory = null!;
 
         [SetUp]
-        public void SetUp() => appFactory = new TestWebAppFactory();
+        public void SetUp()
+        {
+            appFactory = new TestWebAppFactory();
+        }
 
         [TearDown]
-        public void TearDown() => appFactory.Dispose();
+        public void TearDown()
+        {
+            appFactory.Dispose();
+        }
 
         [Test]
         public async Task Post_AddValidTrademark_RedirectsToMyCollection_AndPersistsLink()
