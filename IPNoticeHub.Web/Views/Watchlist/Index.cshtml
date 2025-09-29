@@ -69,10 +69,11 @@ else
                                 </button>
                             </form>
 
+                            <!-- Trademark Details -->
                             <a class="btn btn-outline-primary btn-sm"
                                asp-controller="Trademarks"
                                asp-action="Details"
-                               asp-route-id="@item.Id"
+                               asp-route-id="@item.PublicId"
                                asp-route-returnUrl="@(ViewData["ReturnUrl"]?.ToString() ?? string.Empty)">
                                 Details
                             </a>

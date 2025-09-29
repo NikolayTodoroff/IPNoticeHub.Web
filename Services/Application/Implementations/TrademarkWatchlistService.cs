@@ -48,6 +48,7 @@ namespace IPNoticeHub.Services.Application.Implementations
                 return new TrademarkWatchlistItemDTO
                 {
                     Id = l.TrademarkId,
+                    PublicId = l.Trademark.PublicId,
                     RegistrationNumber = l.Trademark.RegistrationNumber ?? "",
                     Wordmark = l.Trademark.Wordmark,
                     Owner = l.Trademark.Owner,
