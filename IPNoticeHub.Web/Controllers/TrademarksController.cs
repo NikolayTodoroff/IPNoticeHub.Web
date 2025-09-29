@@ -34,7 +34,9 @@ namespace IPNoticeHub.Web.Controllers
 
             if (string.IsNullOrWhiteSpace(searchTerm) || !ModelState.IsValid)
             {
-                return CreateEmptyViewModel(filter);
+                var emptyViewModel = CreateEmptyViewModel(filter);
+                ViewBag.HasSearch = false;
+                return View(emptyViewModel);
             }
 
             TrademarkFilterDTO? filterDTO = CreateNormalizedFilterDTO(filter, searchTerm);

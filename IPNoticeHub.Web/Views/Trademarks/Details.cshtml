@@ -12,11 +12,11 @@
         <h2 class="mb-0">Trademark Details</h2>
         @if (!string.IsNullOrWhiteSpace(returnUrl))
         {
-            <a class="btn btn-outline-secondary" href="@returnUrl">Back to results</a>
+            <a class="btn btn-outline-secondary" href="@returnUrl">Back to Results</a>
         }
         else
         {
-            <a class="btn btn-outline-secondary" asp-controller="Home" asp-action="Index">Back</a>
+            <a class="btn btn-outline-secondary" asp-controller="TrademarkCollection" asp-action="Index">Back to Trademarks</a>
         }
     </div>
 
