@@ -55,9 +55,7 @@ namespace IPNoticeHub.Web.Controllers
             TrademarkDetailsDTO? detailsDTO = await tmSearchService.GetDetailsAsync(id, cancellationToken);
 
             if (detailsDTO is null) return NotFound();
-
-            var isInWatchlist = User.TryGetUserId(out var userId) && 
-                await tmWatchlistService.ExistsAsync(userId, detailsDTO.Id, cancellationToken);
+            if (!User.TryGetUserId(out var userId)) return Forbid();
 
             var detailsViewModel = new TrademarkDetailsViewModel
             {
@@ -74,7 +72,8 @@ namespace IPNoticeHub.Web.Controllers
                 MarkImageUrl = detailsDTO.MarkImageUrl,
                 Provider = detailsDTO.Provider,
                 Classes = detailsDTO.Classes,
-                IsInWatchlist = isInWatchlist
+                IsInCollection = await tmCollectionService.IsInCollectionAsync(userId, detailsDTO.Id, false, cancellationToken),
+                IsInWatchlist = await tmWatchlistService.ExistsAsync(userId, detailsDTO.Id, cancellationToken)
             };
 
             if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))

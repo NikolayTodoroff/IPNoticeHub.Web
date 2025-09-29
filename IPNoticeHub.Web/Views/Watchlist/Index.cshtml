@@ -69,6 +69,14 @@ else
                                 </button>
                             </form>
 
+                            <a class="btn btn-outline-primary btn-sm"
+                               asp-controller="Trademarks"
+                               asp-action="Details"
+                               asp-route-id="@item.Id"
+                               asp-route-returnUrl="@(ViewData["ReturnUrl"]?.ToString() ?? string.Empty)">
+                                Details
+                            </a>
+
                             <!-- Remove from watchlist -->
                             <form asp-controller="Watchlist"
                                   asp-action="Remove"

@@ -17,6 +17,8 @@ namespace IPNoticeHub.Web.ViewModels.Trademarks
         public string? MarkImageUrl { get; init; }
         public DataProvider Provider { get; init; }
         public IReadOnlyList<int> Classes { get; init; } = Array.Empty<int>();
+
+        public bool IsInCollection { get; init; }
         public bool IsInWatchlist { get; init; }
     }
 }
