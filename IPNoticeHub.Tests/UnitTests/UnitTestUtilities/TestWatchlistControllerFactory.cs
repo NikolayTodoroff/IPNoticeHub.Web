@@ -1,43 +1,89 @@
-﻿using System.Security.Claims;
+﻿// Tests/UnitTests/UnitTestUtilities/TestWatchlistControllerFactory.cs
+using IPNoticeHub.Services.Application.Abstractions;
+using IPNoticeHub.Services.Trademarks.Abstractions;
+using IPNoticeHub.Web.Controllers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Routing;
 using Moq;
-using IPNoticeHub.Web.Controllers;
-using IPNoticeHub.Services.Application.Abstractions;
+using System.Security.Claims;
 
 namespace IPNoticeHub.Tests.UnitTests.UnitTestUtilities
 {
     public static class TestWatchlistControllerFactory
     {
         public static ClaimsPrincipal CreateNewUser(string userId = "user-1")
-        {
-            var identity = new ClaimsIdentity(new[]
+            => new(new ClaimsIdentity(new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, userId),
                 new Claim(ClaimTypes.Name, "tester")
-            },  authenticationType: "TestAuth");
-            return new ClaimsPrincipal(identity);
-        }
+            }, "TestAuth"));
 
-        public static (WatchlistController ctrl, Mock<ITrademarkWatchlistService> svc, DefaultHttpContext http)
+        /// <summary>
+        /// Creates a WatchlistController with:
+        /// - Mock<ITrademarkWatchlistService> (Strict),
+        /// - HttpContext (optionally with user),
+        /// - TempData, RouteData,
+        /// - UrlHelper that treats any "/..." as local.
+        /// </summary>
+        public static (WatchlistController controller, Mock<ITrademarkWatchlistService> svc, DefaultHttpContext http)
             CreateWatchlistController(bool userExists = true)
         {
-            var watchlistService = new Mock<ITrademarkWatchlistService>(MockBehavior.Strict);
-            var watchlistController = new WatchlistController(watchlistService.Object);
+            var svc = new Mock<ITrademarkWatchlistService>(MockBehavior.Strict);
+            var ctrl = new WatchlistController(svc.Object);
 
-            var httpContext = new DefaultHttpContext();
-
+            var http = new DefaultHttpContext();
             if (userExists)
             {
-                httpContext.User = CreateNewUser();
+                http.User = CreateNewUser();
             }
 
-            var tempDataProvider = new Mock<ITempDataProvider>();
-            watchlistController.TempData = new TempDataDictionary(httpContext, tempDataProvider.Object);
+            ctrl.ControllerContext = new ControllerContext
+            {
+                HttpContext = http,
+                RouteData = new RouteData()
+            };
 
-            watchlistController.ControllerContext = new ControllerContext { HttpContext = httpContext };
-            return (watchlistController, watchlistService, httpContext);
+            ctrl.TempData = new TempDataDictionary(http, Mock.Of<ITempDataProvider>());
+
+            // Safe default: treat "/..." as local so Url.IsLocalUrl(...) never NREs.
+            ctrl.ConfigureUrlHelper();
+
+            return (ctrl, svc, http);
+        }
+
+        /// <summary>
+        /// Convenience creator when the test needs a specific returnUrl to be local/non-local.
+        /// </summary>
+        public static (WatchlistController controller, Mock<ITrademarkWatchlistService> svc, DefaultHttpContext http)
+            CreateWatchlistControllerWithReturnUrl(string returnUrl, bool isLocal = true, bool userExists = true)
+        {
+            var (controller, svc, http) = CreateWatchlistController(userExists);
+            controller.ConfigureUrlHelper(returnUrl, isLocal);
+            return (controller, svc, http);
+        }
+
+        /// <summary>
+        /// Ensures controller.Url.IsLocalUrl(...) is safe in unit tests.
+        /// If returnUrl is provided, IsLocalUrl(returnUrl) returns 'isLocal';
+        /// otherwise any string starting with '/' is treated as local.
+        /// </summary>
+        public static void ConfigureUrlHelper(this Controller controller, string? returnUrl = null, bool isLocal = true)
+        {
+            var url = new Mock<IUrlHelper>();
+
+            if (returnUrl is not null)
+            {
+                url.Setup(u => u.IsLocalUrl(returnUrl)).Returns(isLocal);
+            }
+            else
+            {
+                url.Setup(u => u.IsLocalUrl(It.IsAny<string?>()))
+                   .Returns<string?>(u => !string.IsNullOrEmpty(u) && u.StartsWith("/"));
+            }
+
+            controller.Url = url.Object;
         }
     }
 }

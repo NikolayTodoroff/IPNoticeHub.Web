@@ -3,7 +3,8 @@
 
 @{
     ViewData["Title"] = "Watchlist";
-    var returnUrl = Context.Request.Path + Context.Request.QueryString;
+    // Single source of truth for returning to this page
+    var currentUrl = (Context?.Request?.Path + Context?.Request?.QueryString) ?? Url.Action("Index", "Watchlist");
 }
 
 <h2 class="mb-3">Watchlist</h2>
@@ -64,6 +65,7 @@ else
                                 @Html.AntiForgeryToken()
                                 <input type="hidden" name="trademarkId" value="@item.Id" />
                                 <input type="hidden" name="enabled" value="@(!item.NotificationsEnabled)" />
+                                <input type="hidden" name="returnUrl" value="@currentUrl" />
                                 <button type="submit" class="btn btn-outline-secondary btn-sm" title="Toggle notifications">
                                     @(item.NotificationsEnabled ? "🔔" : "🔕")
                                 </button>
@@ -74,7 +76,7 @@ else
                                asp-controller="Trademarks"
                                asp-action="Details"
                                asp-route-id="@item.PublicId"
-                               asp-route-returnUrl="@(ViewData["ReturnUrl"]?.ToString() ?? string.Empty)">
+                               asp-route-returnUrl="@currentUrl">
                                 Details
                             </a>
 
@@ -85,6 +87,7 @@ else
                                   class="d-inline ms-2">
                                 @Html.AntiForgeryToken()
                                 <input type="hidden" name="trademarkId" value="@item.Id" />
+                                <input type="hidden" name="returnUrl" value="@currentUrl" />
                                 <button type="submit" class="btn btn-outline-danger btn-sm">Remove</button>
                             </form>
 

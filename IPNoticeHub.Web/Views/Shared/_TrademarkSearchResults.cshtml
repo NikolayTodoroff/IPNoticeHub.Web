@@ -1,6 +1,11 @@
 ﻿@using IPNoticeHub.Web.Models.Application
-@using IPNoticeHub.Web.Models.Trademarks;
-@model TrademarkSearchResultsViewModel;
+@using IPNoticeHub.Web.Models.Trademarks
+@model TrademarkSearchResultsViewModel
+
+@{
+    // Canonical return target for this page (path + query string)
+    var currentUrl = (Context?.Request?.Path + Context?.Request?.QueryString) ?? "/";
+}
 
 <section class="py-4">
     <div class="container">
@@ -46,27 +51,30 @@
                                                asp-controller="Trademarks"
                                                asp-action="Details"
                                                asp-route-id="@result.PublicId"
-                                               asp-route-returnUrl="@(ViewData["ReturnUrl"]?.ToString() ?? string.Empty)">
+                                               asp-route-returnUrl="@currentUrl">
                                                 Details
                                             </a>
 
-                                            <form method="post" asp-controller="TrademarkCollection" asp-action="Add" class="d-inline">
+                                            <form method="post"
+                                                  asp-controller="TrademarkCollection"
+                                                  asp-action="Add"
+                                                  class="d-inline">
                                                 @Html.AntiForgeryToken()
                                                 <input type="hidden" name="trademarkId" value="@result.Id" />
-                                                <input type="hidden" name="returnUrl" value="@(ViewData["ReturnUrl"]?.ToString() ?? string.Empty)" />
+                                                <input type="hidden" name="returnUrl" value="@currentUrl" />
                                                 <button type="submit" class="btn btn-sm btn-outline-secondary ms-2">Save</button>
                                             </form>
 
                                             <form method="post"
                                                   asp-controller="Watchlist"
                                                   asp-action="Add"
-                                                  class="d-inline ms-2">
+                                                  class="d-inline">
                                                 @Html.AntiForgeryToken()
                                                 <input type="hidden" name="trademarkId" value="@result.Id" />
-                                                <input type="hidden" name="returnUrl" value="@(ViewData["ReturnUrl"]?.ToString() ?? Context.Request.Path + Context.Request.QueryString)" />
-                                                <button type="submit" class="btn btn-sm btn-outline-secondary">Add To Watchlist</button>
+                                                <input type="hidden" name="returnUrl" value="@currentUrl" />
+                                                <button type="submit" class="btn btn-sm btn-outline-secondary ms-2">Add To Watchlist</button>
                                             </form>
-
+                                        </td>
                                     </tr>
                                 }
                             }

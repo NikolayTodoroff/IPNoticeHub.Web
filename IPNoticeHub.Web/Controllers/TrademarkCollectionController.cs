@@ -2,6 +2,7 @@
 using IPNoticeHub.Common.Infrastructure;
 using IPNoticeHub.Services.Common;
 using IPNoticeHub.Services.Trademarks.Abstractions;
+using IPNoticeHub.Web.Infrastructure;
 using IPNoticeHub.Web.Models.TrademarkCollection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -38,53 +39,40 @@ namespace IPNoticeHub.Web.Controllers
         }
 
         [HttpPost("Add")]
-        public async Task<IActionResult> Add(int trademarkId, string? returnUrl, CancellationToken cancellationToken = default)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Add(int trademarkId, string? returnUrl = null, CancellationToken cancellationToken = default)
         {
             if (!User.TryGetUserId(out var userId)) return Forbid();
 
             try
             {
-                if (await tmCollectionService.IsInCollectionAsync(userId, trademarkId, false,cancellationToken))
+                if (await tmCollectionService.IsInCollectionAsync(userId, trademarkId, false, cancellationToken))
                 {
                     TempData["Info"] = "Trademark is already in your collection.";
-
-                    if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
-                        return LocalRedirect(returnUrl);
-
-                    return RedirectToAction(nameof(Index));
+                    return this.RedirectToLocalOrAction(returnUrl, nameof(Index));
                 }
 
                 await tmCollectionService.AddAsync(userId, trademarkId, cancellationToken);
                 TempData["Success"] = "Saved to your collection.";
-
-                return RedirectToAction(nameof(Index));
+                return this.RedirectToLocalOrAction(returnUrl, nameof(Index));
             }
-
             catch
             {
                 TempData["Error"] = "Could not add to collection.";
-
-                if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
-                    return LocalRedirect(returnUrl);
-
-                return RedirectToAction(nameof(Index));
+                return this.RedirectToLocalOrAction(returnUrl, nameof(Index));
             }
         }
 
         [HttpPost("Remove")]
-        public async Task<IActionResult> Remove(int trademarkId, string? returnUrl, CancellationToken cancellationToken = default)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Remove(int trademarkId, string? returnUrl = null, CancellationToken cancellationToken = default)
         {
             if (!User.TryGetUserId(out var userId)) return Forbid();
 
             await tmCollectionService.RemoveAsync(userId, trademarkId, cancellationToken);
 
             TempData["_Alerts"] = TrademarkRemovedMessage;
-            return RedirectToLocal(returnUrl) ?? RedirectToAction(nameof(Index));
-        }
-
-        private IActionResult? RedirectToLocal(string? returnUrl)
-        {
-            return (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl)) ? Redirect(returnUrl) : null;
+            return this.RedirectToLocalOrAction(returnUrl, nameof(Index));
         }
     }
 }

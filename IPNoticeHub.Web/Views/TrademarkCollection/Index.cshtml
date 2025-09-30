@@ -1,8 +1,10 @@
-﻿@using IPNoticeHub.Web.Models.TrademarkCollection;
+﻿@using IPNoticeHub.Web.Models.TrademarkCollection
 @model TrademarkCollectionIndexViewModel
 
 @{
     ViewBag.Title = "My Trademark Collection";
+    // Canonical return target for this page (keeps pagination/query)
+    var currentUrl = (Context?.Request?.Path + Context?.Request?.QueryString) ?? Url.Action("Index", "TrademarkCollection");
 }
 
 <div class="container-fluid px-0">
@@ -28,8 +30,13 @@
                         <tr>
                             <td class="fw-semibold">@tm.SourceId</td>
                             <td>
-                                <a asp-controller="Trademarks" asp-action="Details" asp-route-id="@tm.PublicId"
-                                   class="link-body-emphasis text-decoration-none">@tm.Wordmark</a>
+                                <a asp-controller="Trademarks"
+                                   asp-action="Details"
+                                   asp-route-id="@tm.PublicId"
+                                   asp-route-returnUrl="@currentUrl"
+                                   class="link-body-emphasis text-decoration-none">
+                                    @tm.Wordmark
+                                </a>
                                 @if (!string.IsNullOrWhiteSpace(tm.Owner))
                                 {
                                     <div class="text-muted small">Owner: @tm.Owner</div>
@@ -58,7 +65,9 @@
                                     <a class="btn btn-outline-primary btn-sm"
                                        asp-controller="Trademarks"
                                        asp-action="Details"
-                                       asp-route-id="@tm.PublicId">Details
+                                       asp-route-id="@tm.PublicId"
+                                       asp-route-returnUrl="@currentUrl">
+                                        Details
                                     </a>
 
                                     <button type="button" class="btn btn-outline-primary btn-sm" disabled title="Coming soon">Generate DMCA</button>
@@ -66,10 +75,12 @@
                                     <form asp-controller="TrademarkCollection" asp-action="Remove" method="post" class="m-0">
                                         @Html.AntiForgeryToken()
                                         <input type="hidden" name="trademarkId" value="@tm.Id" />
-                                        <input type="hidden" name="returnUrl" value="@Url.Action("Index", "TrademarkCollection")" />
+                                        <input type="hidden" name="returnUrl" value="@currentUrl" />
                                         <button type="submit"
                                                 class="btn btn-outline-primary btn-sm"
-                                                onclick="return confirm('Remove this trademark from your collection?');">Remove</button>
+                                                onclick="return confirm('Remove this trademark from your collection?');">
+                                            Remove
+                                        </button>
                                     </form>
 
                                 </div>
@@ -88,12 +99,16 @@
                 @if (Model.CurrentPage > 1)
                 {
                     <a class="btn btn-outline-secondary btn-sm"
-                       asp-controller="TrademarkCollection" asp-action="Index" asp-route-currentPage="@(Model.CurrentPage - 1)">‹ Prev</a>
+                       asp-controller="TrademarkCollection"
+                       asp-action="Index"
+                       asp-route-currentPage="@(Model.CurrentPage - 1)">‹ Prev</a>
                 }
                 @if (Model.Results.Count == Model.ResultsPerPage)
                 {
                     <a class="btn btn-outline-secondary btn-sm"
-                       asp-controller="TrademarkCollection" asp-action="Index" asp-route-currentPage="@(Model.CurrentPage + 1)">Next ›</a>
+                       asp-controller="TrademarkCollection"
+                       asp-action="Index"
+                       asp-route-currentPage="@(Model.CurrentPage + 1)">Next ›</a>
                 }
             </div>
         </div>

@@ -29,11 +29,15 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
         [Test]
         public async Task Get_Details_Existing_Returns200()
         {
+            var userId = "user-1";
             Guid publicId;
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var scope = appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var db = scope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+
+                // optional but safe: seed the user
+                db.Users.Add(new ApplicationUser { Id = userId, UserName = "tester", Email = "tester@example.com" });
 
                 var entity = new TrademarkEntity
                 {
@@ -44,19 +48,15 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                     Owner = "Prey Corp",
                     StatusCategory = TrademarkStatusCategory.Pending,
                     StatusDetail = "Pending examination",
-                    FilingDate = null,
-                    RegistrationDate = null,
-                    MarkImageUrl = null,
                     Source = DataProvider.USPTO
                 };
-
-                testDbContext.TrademarkRegistrations.Add(entity);
-                await testDbContext.SaveChangesAsync();
+                db.TrademarkRegistrations.Add(entity);
+                await db.SaveChangesAsync();
 
                 publicId = entity.PublicId;
             }
 
-            var client = appFactory.CreateClient(new() { AllowAutoRedirect = false });
+            var client = appFactory.CreateClientAs(userId);
 
             var response = await client.GetAsync($"/Trademarks/Details/{publicId}");
 

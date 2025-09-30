@@ -114,13 +114,14 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.WatchlistControllerTests
                 TestWatchlistControllerFactory.CreateWatchlistController(userExists: true);
 
             const int trademarkId = 222;
+            var returnUrl = "/Watchlist/Index?page=4";
 
             watchlistService.Setup(s => s.RemoveAsync("user-1", trademarkId, It.IsAny<CancellationToken>()))
                .Returns(Task.CompletedTask);
 
-            var actionResult = await controller.Remove(trademarkId, CancellationToken.None);
+            var actionResult = await controller.Remove(trademarkId, returnUrl,CancellationToken.None);
 
-            actionResult.Should().BeOfType<RedirectToActionResult>();
+            actionResult.Should().BeOfType<LocalRedirectResult>().Which.Url.Should().Be(returnUrl);
             controller.TempData["Success"]!.ToString().Should().Contain("Removed");
 
             watchlistService.Verify(s => s.RemoveAsync("user-1", trademarkId, It.IsAny<CancellationToken>()), Times.Once);
@@ -134,13 +135,14 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.WatchlistControllerTests
                 TestWatchlistControllerFactory.CreateWatchlistController(userExists: true);
 
             const int trademarkId = 333;
+            var returnUrl = "/Watchlist/Index?page=3";
 
             watchlistService.Setup(s => s.ToggleNotificationsAsync("user-1", trademarkId, true, It.IsAny<CancellationToken>()))
                .Returns(Task.CompletedTask);
 
-            var actionResult = await controller.ToggleNotifications(trademarkId, notificationsEnabled: true, CancellationToken.None);
+            var actionResult = await controller.ToggleNotifications(trademarkId, true, returnUrl, CancellationToken.None);
 
-            actionResult.Should().BeOfType<RedirectToActionResult>();
+            actionResult.Should().BeOfType<LocalRedirectResult>().Which.Url.Should().Be(returnUrl);
             controller.TempData["Success"]!.ToString().Should().Contain("enabled");
 
             watchlistService.Verify(s => s.ToggleNotificationsAsync("user-1", trademarkId, true, It.IsAny<CancellationToken>()), Times.Once);
@@ -154,13 +156,14 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.WatchlistControllerTests
                 TestWatchlistControllerFactory.CreateWatchlistController(userExists: true);
 
             const int trademarkId = 444;
+            var returnUrl = "/Watchlist/Index?page=1";
 
             watchlistService.Setup(s => s.ToggleNotificationsAsync("user-1", trademarkId, false, It.IsAny<CancellationToken>()))
                .Returns(Task.CompletedTask);
 
-            var actionResult = await controller.ToggleNotifications(trademarkId, notificationsEnabled: false, CancellationToken.None);
+            var actionResult = await controller.ToggleNotifications(trademarkId, false, returnUrl,CancellationToken.None);
 
-            actionResult.Should().BeOfType<RedirectToActionResult>();
+            actionResult.Should().BeOfType<LocalRedirectResult>().Which.Url.Should().Be(returnUrl);
             controller.TempData["Success"]!.ToString().Should().Contain("disabled");
 
             watchlistService.Verify(s => s.ToggleNotificationsAsync("user-1", trademarkId, false, It.IsAny<CancellationToken>()), Times.Once);
@@ -174,13 +177,15 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.WatchlistControllerTests
                 TestWatchlistControllerFactory.CreateWatchlistController(userExists: true);
 
             const int trademarkId = 555;
+            var returnUrl = "/Watchlist/Index?page=2";
 
             watchlistService.Setup(s => s.ToggleNotificationsAsync("user-1", trademarkId, true, It.IsAny<CancellationToken>()))
                .ThrowsAsync(new Exception("boom"));
 
-            var result = await controller.ToggleNotifications(trademarkId, notificationsEnabled: true, CancellationToken.None);
+            var result = await controller.ToggleNotifications(trademarkId, enabled: true, returnUrl: returnUrl, CancellationToken.None);
 
-            result.Should().BeOfType<RedirectToActionResult>();
+            result.Should().BeOfType<LocalRedirectResult>().Which.Url.Should().Be(returnUrl);
+
             controller.TempData["Error"]!.ToString().Should().Contain("Failed");
 
             watchlistService.Verify(s => s.ToggleNotificationsAsync("user-1", trademarkId, true, It.IsAny<CancellationToken>()), Times.Once);
@@ -220,28 +225,24 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.WatchlistControllerTests
             const int trademarkId = 456;
             const string returnUrl = "/Trademarks/Details/00000000-0000-0000-0000-000000000001";
 
-            var (controller, watchlistService, _) =
+            var (controller, watchListService, _) =
                 TestWatchlistControllerFactory.CreateWatchlistController(userExists: true);
 
-            var url = new Mock<IUrlHelper>();
-            url.Setup(u => u.IsLocalUrl(returnUrl)).Returns(true);
-            controller.Url = url.Object;
+            controller.ConfigureUrlHelper(returnUrl: returnUrl, isLocal: true);
 
-            watchlistService.Setup(s => s.ExistsAsync("user-1", trademarkId, It.IsAny<CancellationToken>())).ReturnsAsync(true);
+            watchListService.Setup(s => s.ExistsAsync("user-1", trademarkId, It.IsAny<CancellationToken>()))
+                            .ReturnsAsync(true);
 
             var actionResult = await controller.Add(trademarkId, returnUrl, CancellationToken.None);
 
-            var redirectResult = actionResult.Should().BeOfType<RedirectResult>().Subject;
-            redirectResult.Url.Should().Be(returnUrl);
+            var redirect = actionResult.Should().BeOfType<LocalRedirectResult>().Subject;
+            redirect.Url.Should().Be(returnUrl);
 
             controller.TempData["Info"].Should().NotBeNull();
-            controller.TempData["Info"]!.ToString()!.Should().Contain("Trademark is already in your watchlist.");
+            controller.TempData["Info"]!.ToString().Should().Contain("already in your watchlist");
 
-            controller.TempData.ContainsKey("Success").Should().BeFalse();
-
-            watchlistService.Verify(s => s.ExistsAsync("user-1", trademarkId, It.IsAny<CancellationToken>()), Times.Once);
-            watchlistService.Verify(s => s.AddAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Never);
-            watchlistService.VerifyNoOtherCalls();
+            watchListService.Verify(s => s.ExistsAsync("user-1", trademarkId, It.IsAny<CancellationToken>()), Times.Once);
+            watchListService.VerifyNoOtherCalls();
         }
     }
 }

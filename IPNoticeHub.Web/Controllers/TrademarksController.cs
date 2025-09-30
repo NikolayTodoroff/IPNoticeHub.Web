@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
 using static IPNoticeHub.Common.ValidationConstants.StatusMessages;
+using IPNoticeHub.Web.Infrastructure;
 
 namespace IPNoticeHub.Web.Controllers
 {
@@ -34,9 +35,7 @@ namespace IPNoticeHub.Web.Controllers
 
             if (string.IsNullOrWhiteSpace(searchTerm) || !ModelState.IsValid)
             {
-                var emptyViewModel = CreateEmptyViewModel(filter);
-                ViewBag.HasSearch = false;
-                return View(emptyViewModel);
+                return CreateEmptyViewModel(filter);
             }
 
             TrademarkFilterDTO? filterDTO = CreateNormalizedFilterDTO(filter, searchTerm);
@@ -79,6 +78,11 @@ namespace IPNoticeHub.Web.Controllers
             if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
                 ViewBag.ReturnUrl = returnUrl;
 
+            if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+            {
+                ViewBag.ReturnUrl = returnUrl;
+            }
+
             return View(detailsViewModel);
         }
 
@@ -104,7 +108,7 @@ namespace IPNoticeHub.Web.Controllers
             await tmCollectionService.AddAsync(userId, trademarkId, cancellationToken);
 
             TempData["StatusMessage"] = TrademarkAddedMessage;
-            return RedirectToLocal(returnUrl) ?? RedirectToAction(nameof(MyCollection));
+            return this.RedirectToLocalOrAction(returnUrl, nameof(MyCollection));
         }
 
         [Authorize(Policy = "HasUserId")]
@@ -117,7 +121,7 @@ namespace IPNoticeHub.Web.Controllers
             await tmCollectionService.RemoveAsync(userId, trademarkId, cancellationToken);
 
             TempData["StatusMessage"] = TrademarkRemovedMessage;
-            return RedirectToLocal(returnUrl) ?? RedirectToAction(nameof(MyCollection));
+            return this.RedirectToLocalOrAction(returnUrl, nameof(MyCollection));
         }
 
         // Helper methods for internal use within the controller
@@ -149,16 +153,6 @@ namespace IPNoticeHub.Web.Controllers
                         .ToArray(),
                 ExactMatch = filter.ExactMatch
             };
-        }
-
-        private IActionResult? RedirectToLocal(string? returnUrl)
-        {
-            if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
-            {
-                return Redirect(returnUrl);
-            }       
-
-            return null;
         }
     }
 }

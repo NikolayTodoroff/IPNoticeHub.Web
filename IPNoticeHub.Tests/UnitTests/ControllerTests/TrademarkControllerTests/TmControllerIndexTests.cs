@@ -25,31 +25,34 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
         [Test]
         public async Task Index_WhenSearchTermIsEmpty_ReturnsEmptyViewModel_WithHasSearchFalse()
         {
-            var tmSearchService = new Mock<ITrademarkSearchService>();
-            var tmCollectionService = new Mock<ITrademarkCollectionService>();
-            var tmWatchlistService = new Mock<ITrademarkWatchlistService>();
+            var tmSearchService = new Mock<ITrademarkSearchService>(MockBehavior.Strict);
+            var tmCollectionService = new Mock<ITrademarkCollectionService>(MockBehavior.Strict);
+            var tmWatchlistService = new Mock<ITrademarkWatchlistService>(MockBehavior.Strict); // if your ctor needs it
 
-            var controller = new TrademarksController(tmSearchService.Object, tmCollectionService.Object, tmWatchlistService.Object);
+            var controller = new TrademarksController(
+                tmSearchService.Object, tmCollectionService.Object, tmWatchlistService.Object);
 
             var filterViewModel = new TrademarkFilterViewModel
             {
                 SearchBy = TrademarkSearchBy.Wordmark,
-                SearchTerm = "   ",     
+                SearchTerm = "   ",
                 ExactMatch = false,
                 CurrentPage = 1,
                 ResultsPerPage = 10
             };
 
-            var indexResult = await controller.Index(filterViewModel, default);
+            IActionResult indexResult = await controller.Index(filterViewModel, cancellationToken: default);
 
-            var indexView = indexResult as ViewResult;
-            indexView.Should().NotBeNull();
+            var view = indexResult as ViewResult;
+            view.Should().NotBeNull();
+
+            view!.Model.Should().BeOfType<TrademarksIndexViewModel>();
 
             ((bool)controller.ViewBag.HasSearch).Should().BeFalse();
-            indexView!.Model.Should().BeOfType<TrademarksIndexViewModel>();
 
             tmSearchService.VerifyNoOtherCalls();
             tmCollectionService.VerifyNoOtherCalls();
+            tmWatchlistService.VerifyNoOtherCalls();
         }
 
         [Test]

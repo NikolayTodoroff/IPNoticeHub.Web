@@ -23,13 +23,17 @@
             }
         </div>
 
+        @* Back button: prefer returnUrl, else fallback *@
         @if (!string.IsNullOrWhiteSpace(returnUrl))
         {
-            <a class="btn btn-outline-secondary" href="@returnUrl">Back to Results</a>
+            <a class="btn btn-outline-secondary" href="@returnUrl">Back</a>
         }
         else
         {
-            <a class="btn btn-outline-secondary" asp-controller="TrademarkCollection" asp-action="Index">Back to Trademarks</a>
+            <a class="btn btn-outline-secondary"
+               asp-controller="TrademarkCollection" asp-action="Index">
+                Back to Trademarks
+            </a>
         }
     </div>
 
@@ -56,7 +60,6 @@
                     }
                     else
                     {
-
                         <span class="text-muted">—</span>
                     }
                 </dd>
@@ -78,7 +81,6 @@
                     }
                     else
                     {
-
                         <span class="text-muted">—</span>
                     }
                 </dd>
@@ -87,7 +89,9 @@
                 {
                     <dt class="col-sm-3">Official Record</dt>
                     <dd class="col-sm-9">
-                        <a href="@Model.MarkImageUrl" target="_blank" rel="noopener">Open in registry</a>
+                        <a href="@Model.MarkImageUrl" target="_blank" rel="noopener">
+                            Open in registry
+                        </a>
                     </dd>
                 }
             </dl>
@@ -95,24 +99,32 @@
     </div>
 
     <div class="mt-3 d-flex gap-2">
-        @* Show Save only if not in collection *@
+        @* Save to collection if not already in *@
         @if (!Model.IsInCollection)
         {
-            <form method="post" asp-controller="TrademarkCollection" asp-action="Add" class="d-inline">
+            <form method="post"
+                  asp-controller="TrademarkCollection"
+                  asp-action="Add"
+                  class="d-inline">
                 @Html.AntiForgeryToken()
                 <input type="hidden" name="trademarkId" value="@Model.Id" />
-                <input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" />
+                <input type="hidden" name="returnUrl"
+                       value="@returnUrl ?? (Context.Request.Path + Context.Request.QueryString)" />
                 <button type="submit" class="btn btn-outline-secondary">Save</button>
             </form>
         }
 
-        @* Show Watchlist Add only if not already in watchlist *@
+        @* Add to watchlist if not already in *@
         @if (!Model.IsInWatchlist)
         {
-            <form method="post" asp-controller="Watchlist" asp-action="Add" class="d-inline">
+            <form method="post"
+                  asp-controller="Watchlist"
+                  asp-action="Add"
+                  class="d-inline">
                 @Html.AntiForgeryToken()
                 <input type="hidden" name="trademarkId" value="@Model.Id" />
-                <input type="hidden" name="returnUrl" value="@(Context.Request.Path + Context.Request.QueryString)" />
+                <input type="hidden" name="returnUrl"
+                       value="@returnUrl ?? (Context.Request.Path + Context.Request.QueryString)" />
                 <button type="submit" class="btn btn-outline-secondary">Add To Watchlist</button>
             </form>
         }

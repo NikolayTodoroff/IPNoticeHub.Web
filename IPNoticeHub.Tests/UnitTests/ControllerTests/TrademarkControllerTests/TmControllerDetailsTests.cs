@@ -4,6 +4,7 @@ using IPNoticeHub.Services.Application.Abstractions;
 using IPNoticeHub.Services.Trademarks.Abstractions;
 using IPNoticeHub.Services.Trademarks.DTOs;
 using IPNoticeHub.Tests.UnitTests.TestUtilities;
+using IPNoticeHub.Tests.UnitTests.UnitTestUtilities;
 using IPNoticeHub.Web.Controllers;
 using IPNoticeHub.Web.ViewModels.Trademarks;
 using Microsoft.AspNetCore.Http;
@@ -118,26 +119,29 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
             };
 
             var tmSearchService = new Mock<ITrademarkSearchService>();
-            tmSearchService.Setup(s => s.GetDetailsAsync(entityId, It.IsAny<CancellationToken>()))
-                     .ReturnsAsync(detailsDTO);
+            tmSearchService
+                .Setup(s => s.GetDetailsAsync(entityId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(detailsDTO);
 
             var collectionService = new Mock<ITrademarkCollectionService>();
-
-            // Including UrlHelper via the factory overload with TempData/Url enabled
+            
             var controller = TestTrademarkControllerFactory.CreateTrademarksController(
-                collectionService.Object,
+                collectionService: collectionService.Object,
                 out _,
-                tmSearchService.Object,
-                userId: null
+                searchService: tmSearchService.Object,
+                watchlistService: null,
+                userId: "user-1"
             );
 
-            var actionResult = await controller.Details(entityId, safeReturnUrl, default);
+            controller.ConfigureUrlHelper(returnUrl: safeReturnUrl, isLocal: true);
+
+            var actionResult = await controller.Details(entityId, safeReturnUrl, CancellationToken.None);
 
             var view = actionResult as ViewResult;
             view.Should().NotBeNull();
             view!.Model.Should().BeOfType<TrademarkDetailsViewModel>();
 
-
+            view.ViewData["ReturnUrl"].Should().NotBeNull();
             view.ViewData["ReturnUrl"]!.ToString().Should().Be(safeReturnUrl);
 
             tmSearchService.Verify(s => s.GetDetailsAsync(entityId, It.IsAny<CancellationToken>()), Times.Once);
@@ -165,11 +169,14 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
             var collectionService = new Mock<ITrademarkCollectionService>();
 
             var controller = TestTrademarkControllerFactory.CreateTrademarksController(
-                collectionService.Object,
+                collectionService: collectionService.Object,
                 out _,
-                tmSearchService.Object,
-                userId: null
+                searchService: tmSearchService.Object,
+                watchlistService: null,
+                userId: "user-1"
             );
+
+            controller.ConfigureUrlHelper(returnUrl: externalUrl, isLocal: false);
 
             var actionResult = await controller.Details(entityId, externalUrl, default);
 

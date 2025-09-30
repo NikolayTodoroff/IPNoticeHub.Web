@@ -22,9 +22,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
         public async Task Add_WithUserAndLocalReturnUrl_CallsService_SetsTempData_RedirectsToReturnUrl()
         {
             var tmCollectionService = new Mock<ITrademarkCollectionService>();
-
-            tmCollectionService.Setup(s => s.AddAsync(
-                "u1", 42, It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+            tmCollectionService.Setup(s => s.AddAsync("u1", 42, It.IsAny<CancellationToken>()))
+                               .Returns(Task.CompletedTask);
 
             var controller = TestTrademarkControllerFactory.CreateTrademarksController(
                 tmCollectionService.Object, out var tempData, userId: "u1");
@@ -35,9 +34,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
 
             tempData["StatusMessage"].Should().Be(TrademarkAddedMessage);
 
-            var redirectResult = addActionResult as RedirectResult;
-            redirectResult.Should().NotBeNull();
-            redirectResult!.Url.Should().Be("/local");
+            var redirect = addActionResult.Should().BeOfType<LocalRedirectResult>().Subject;
+            redirect.Url.Should().Be("/local");
         }
 
         [Test]

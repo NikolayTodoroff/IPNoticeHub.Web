@@ -293,17 +293,18 @@ namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
 
             var addForm = new FormUrlEncodedContent(new[]
             {
-        new KeyValuePair<string, string>("trademarkId", trademarkId.ToString())
+        new KeyValuePair<string,string>("trademarkId", trademarkId.ToString())
     });
-            (await client.PostAsync("/Watchlist/Add", addForm)).StatusCode.Should().Be(HttpStatusCode.Redirect);
+            (await client.PostAsync("/Watchlist/Add", addForm))
+                .StatusCode.Should().Be(HttpStatusCode.Redirect);
 
             (await ReadLinkAsync()).Should().NotBeNull();
             (await ReadLinkAsync())!.NotificationsEnabled.Should().BeFalse();
 
             var onForm = new FormUrlEncodedContent(new[]
             {
-        new KeyValuePair<string, string>("trademarkId", trademarkId.ToString()),
-        new KeyValuePair<string, string>("notificationsEnabled", "true")
+        new KeyValuePair<string,string>("trademarkId", trademarkId.ToString()),
+        new KeyValuePair<string,string>("enabled", "true")
     });
             (await client.PostAsync("/Watchlist/ToggleNotifications", onForm))
                 .StatusCode.Should().Be(HttpStatusCode.Redirect);
@@ -311,8 +312,8 @@ namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
 
             var offForm = new FormUrlEncodedContent(new[]
             {
-        new KeyValuePair<string, string>("trademarkId", trademarkId.ToString()),
-        new KeyValuePair<string, string>("notificationsEnabled", "false")
+        new KeyValuePair<string,string>("trademarkId", trademarkId.ToString()),
+        new KeyValuePair<string,string>("enabled", "false")
     });
             (await client.PostAsync("/Watchlist/ToggleNotifications", offForm))
                 .StatusCode.Should().Be(HttpStatusCode.Redirect);
