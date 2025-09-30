@@ -50,7 +50,7 @@ namespace IPNoticeHub.Web.Controllers
 
             Guid publicId = await copyrightService.CreateAsync(userId, dto, cancellationToken);
 
-            TempData["StatusMessage"] = CopyrightAddedMessage;
+            TempData["Success"] = CopyrightAddedMessage;
 
             return RedirectToLocal(returnUrl) ?? RedirectToAction(nameof(Details), new { id = publicId });
         }
@@ -150,7 +150,7 @@ namespace IPNoticeHub.Web.Controllers
 
             await copyrightService.RemoveAsync(userId, id, cancellationToken);
 
-            TempData["StatusMessage"] = CopyrightRemovedMessage;
+            TempData["Success"] = CopyrightRemovedMessage;
             return RedirectToLocal(returnUrl)
                 ?? RedirectToAction(nameof(MyCollection));
         }

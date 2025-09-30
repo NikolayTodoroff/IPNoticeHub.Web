@@ -48,8 +48,12 @@
 
         public static class StatusMessages
         {
-            public const string TrademarkAddedMessage = "TrademarkAdded added to your collection.";
-            public const string TrademarkRemovedMessage = "TrademarkAdded removed from your collection.";
+            public const string TmAddedToCollectionMessage = "Trademark added to your collection.";
+            public const string TmRemovedFromCollectionMessage = "Trademark removed from your collection.";
+            public const string TmAddToCollectionErrorMessage = "Trademark removed from your collection.";
+
+            public const string TmAddedToWatchlistMessage = "TrademarkAdded added to your watchlist.";
+            public const string TmRemovedFromWatchlistMessage = "TrademarkAdded removed from your watchlist.";
 
             public const string CopyrightAddedMessage = "Copyright added to your collection.";
             public const string CopyrightRemovedMessage = "Copyright removed from your collection.";

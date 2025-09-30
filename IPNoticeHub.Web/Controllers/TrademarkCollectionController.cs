@@ -53,12 +53,12 @@ namespace IPNoticeHub.Web.Controllers
                 }
 
                 await tmCollectionService.AddAsync(userId, trademarkId, cancellationToken);
-                TempData["Success"] = "Saved to your collection.";
+                TempData["Success"] = TmAddedToCollectionMessage;
                 return this.RedirectToLocalOrAction(returnUrl, nameof(Index));
             }
             catch
             {
-                TempData["Error"] = "Could not add to collection.";
+                TempData["Error"] = TmAddToCollectionErrorMessage;
                 return this.RedirectToLocalOrAction(returnUrl, nameof(Index));
             }
         }
@@ -71,7 +71,7 @@ namespace IPNoticeHub.Web.Controllers
 
             await tmCollectionService.RemoveAsync(userId, trademarkId, cancellationToken);
 
-            TempData["_Alerts"] = TrademarkRemovedMessage;
+            TempData["Success"] = TmRemovedFromCollectionMessage;
             return this.RedirectToLocalOrAction(returnUrl, nameof(Index));
         }
     }

@@ -107,7 +107,7 @@ namespace IPNoticeHub.Web.Controllers
 
             await tmCollectionService.AddAsync(userId, trademarkId, cancellationToken);
 
-            TempData["StatusMessage"] = TrademarkAddedMessage;
+            TempData["Success"] = TmAddedToCollectionMessage;
             return this.RedirectToLocalOrAction(returnUrl, nameof(MyCollection));
         }
 
@@ -120,7 +120,7 @@ namespace IPNoticeHub.Web.Controllers
 
             await tmCollectionService.RemoveAsync(userId, trademarkId, cancellationToken);
 
-            TempData["StatusMessage"] = TrademarkRemovedMessage;
+            TempData["Success"] = TmRemovedFromCollectionMessage;
             return this.RedirectToLocalOrAction(returnUrl, nameof(MyCollection));
         }
 

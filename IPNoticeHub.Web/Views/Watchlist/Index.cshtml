@@ -3,7 +3,6 @@
 
 @{
     ViewData["Title"] = "Watchlist";
-    // Single source of truth for returning to this page
     var currentUrl = (Context?.Request?.Path + Context?.Request?.QueryString) ?? Url.Action("Index", "Watchlist");
 }
 
@@ -16,7 +15,9 @@
 
 @if (Model is null || !Model.Items.Any())
 {
-    <p class="text-muted">Your watchlist is empty.</p>
+    <div class="alert alert-info">
+        Your watchlist is empty. Visit the <a asp-controller="Home" asp-action="Index" class="link-primary">search page</a> to add trademarks to track.
+    </div>
 }
 else
 {
@@ -88,7 +89,10 @@ else
                                 @Html.AntiForgeryToken()
                                 <input type="hidden" name="trademarkId" value="@item.Id" />
                                 <input type="hidden" name="returnUrl" value="@currentUrl" />
-                                <button type="submit" class="btn btn-outline-danger btn-sm">Remove</button>
+                                <button type="submit" class="btn btn-outline-primary btn-sm"
+                                        onclick="return confirm('Remove this trademark from your watchlist?');">
+                                    Remove
+                                </button>
                             </form>
 
                         </td>
