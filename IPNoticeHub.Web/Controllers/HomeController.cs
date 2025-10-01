@@ -62,7 +62,8 @@ namespace IPNoticeHub.Web.Controllers
                     RegistrationNumber = s.RegistrationNumber,
                     Wordmark = s.Wordmark,
                     Owner = s.Owner,
-                    Status = s.Status
+                    Status = s.Status,
+                    RegistrationDate = s.RegistrationDate
                 }).ToList(),
                 Total = resultsCount
             };

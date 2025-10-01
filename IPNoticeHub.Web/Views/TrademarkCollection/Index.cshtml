@@ -36,11 +36,7 @@
                                    asp-route-returnUrl="@currentUrl"
                                    class="link-body-emphasis text-decoration-none">
                                     @tm.Wordmark
-                                </a>
-                                @if (!string.IsNullOrWhiteSpace(tm.Owner))
-                                {
-                                    <div class="text-muted small">Owner: @tm.Owner</div>
-                                }
+                                </a>                               
                             </td>
                             <td>
                                 <span class="badge text-bg-@(tm.Status == IPNoticeHub.Common.EnumConstants.TrademarkStatusCategory.Registered ? "success" : "secondary")">

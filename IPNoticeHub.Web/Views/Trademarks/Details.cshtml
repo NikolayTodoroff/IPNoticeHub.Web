@@ -1,4 +1,5 @@
 ﻿@using IPNoticeHub.Web.ViewModels.Trademarks
+@using System.Globalization
 @model TrademarkDetailsViewModel
 
 @{
@@ -67,10 +68,10 @@
                 </dd>
 
                 <dt class="col-sm-3">Filing Date</dt>
-                <dd class="col-sm-9">@((Model?.FilingDate)?.ToString("yyyy-MM-dd") ?? "—")</dd>
+                <dd class="col-sm-9">@((Model?.FilingDate)?.ToString("dd MMM yyyy", CultureInfo.InvariantCulture) ?? "—")</dd>
 
                 <dt class="col-sm-3">Registration Date</dt>
-                <dd class="col-sm-9">@((Model?.RegistrationDate)?.ToString("yyyy-MM-dd") ?? "—")</dd>
+                <dd class="col-sm-9">@((Model?.RegistrationDate)?.ToString("dd MMM yyyy", CultureInfo.InvariantCulture) ?? "—")</dd>
 
                 <dt class="col-sm-3">Source Office</dt>
                 <dd class="col-sm-9">@(!string.IsNullOrWhiteSpace(Model?.Provider.ToString()) ? Model.Provider : "—")</dd>

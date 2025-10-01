@@ -92,7 +92,8 @@ namespace IPNoticeHub.Services.Application.Implementations
                     RegistrationNumber = t.RegistrationNumber ?? string.Empty,
                     Wordmark = t.Wordmark,
                     Owner = t.Owner,
-                    Status = t.StatusCategory.ToString()
+                    Status = t.StatusCategory.ToString(),
+                    RegistrationDate = t.RegistrationDate
                 })
                 .ToListAsync(cancellationToken);
 
