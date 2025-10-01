@@ -72,10 +72,12 @@
                                         @Html.AntiForgeryToken()
                                         <input type="hidden" name="trademarkId" value="@tm.Id" />
                                         <input type="hidden" name="returnUrl" value="@currentUrl" />
-                                        <button type="submit" class="btn btn-outline-primary btn-sm"
+                                        <button type="submit" class="btn btn-outline-danger"
                                                 onclick="return confirm('Remove this trademark from your collection?');">
                                             Remove
                                         </button>
+
+
                                     </form>
 
                                 </div>
