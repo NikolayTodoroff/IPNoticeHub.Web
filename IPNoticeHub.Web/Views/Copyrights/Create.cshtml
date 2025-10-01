@@ -1,0 +1,80 @@
+﻿@using Microsoft.AspNetCore.Mvc.Rendering
+@using IPNoticeHub.Common.EnumConstants
+@using IPNoticeHub.Services.Copyrights.DTOs
+@model CopyrightCreateDTO
+
+@{
+    ViewData["Title"] = "Add Copyright";
+}
+
+<div class="container py-4">
+    <h2>Add Copyright</h2>
+    <hr />
+
+    <form asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label asp-for="RegistrationNumber" class="form-label">Registration Number / Date</label>
+                <input asp-for="RegistrationNumber" class="form-control" />
+                <span asp-validation-for="RegistrationNumber" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="WorkType" class="form-label">Type of Work</label>
+                <select asp-for="WorkType" class="form-select" asp-items="Html.GetEnumSelectList<CopyrightWorkType>()"></select>
+                <span class="form-text">Choose “Other” to specify a custom type.</span>
+                <span asp-validation-for="WorkType" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="OtherWorkType" class="form-label">Specify Type of Work</label>
+                <input asp-for="OtherWorkType" class="form-control" />
+                <span asp-validation-for="OtherWorkType" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="Title" class="form-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-4">
+                <label asp-for="YearOfCreation" class="form-label">Year of Creation</label>
+                <select asp-for="YearOfCreation"
+                        class="form-select"
+                        asp-items="ViewBag.YearOptions">
+                </select>
+                <span class="form-text">Scroll to pick a year.</span>
+                <span asp-validation-for="YearOfCreation" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-4">
+                <label asp-for="DateOfPublication" class="form-label">Date of Publication</label>
+                <input asp-for="DateOfPublication" class="form-control" type="date" />
+                <span asp-validation-for="DateOfPublication" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-4">
+                <label asp-for="Owner" class="form-label">Copyright Owner</label>
+                <input asp-for="Owner" class="form-control" />
+                <span asp-validation-for="Owner" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="NationOfFirstPublication" class="form-label">Nation of First Publication</label>
+                <input asp-for="NationOfFirstPublication" class="form-control" />
+                <span asp-validation-for="NationOfFirstPublication" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2 mt-4">
+            <button type="submit" class="btn btn-primary">Save</button>
+            <a asp-action="MyCollection" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

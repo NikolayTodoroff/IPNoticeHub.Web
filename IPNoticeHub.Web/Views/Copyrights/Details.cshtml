@@ -1,0 +1,63 @@
+﻿@using IPNoticeHub.Services.Copyrights.DTOs
+@model CopyrightDetailsDTO
+
+@{
+    ViewData["Title"] = "Copyright Details";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0">Copyright Details</h2>
+        <div class="d-flex gap-2">
+            <a class="btn btn-outline-primary" asp-action="Edit" asp-route-id="@Model.PublicId">Edit</a>
+            <form asp-action="Remove" asp-route-id="@Model.PublicId" method="post" class="d-inline">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="returnUrl" value="@Url.Action("MyCollection", "Copyrights")" />
+                <button type="submit" class="btn btn-outline-danger"
+                        onclick="return confirm('Remove this copyright from your collection?');">
+                    Remove
+                </button>
+            </form>
+        </div>
+    </div>
+
+    @if (TempData["StatusMessage"] is string msg)
+    {
+        <div class="alert alert-success" role="alert">@msg</div>
+    }
+
+    <div class="card">
+        <div class="card-body">
+            <dl class="row mb-0">
+                <dt class="col-sm-3">Reg. No.</dt>
+                <dd class="col-sm-9">@Model.RegistrationNumber</dd>
+
+                <dt class="col-sm-3">Type of Work</dt>
+                <dd class="col-sm-9">@Model.TypeOfWork</dd>
+
+                <dt class="col-sm-3">Title</dt>
+                <dd class="col-sm-9">@Model.Title</dd>
+
+                <dt class="col-sm-3">Year of Creation</dt>
+                <dd class="col-sm-9">@((Model.YearOfCreation?.ToString()) ?? "—")</dd>
+
+                <dt class="col-sm-3">Date of Publication</dt>
+                <dd class="col-sm-9">@Model.DateOfPublication?.ToString("yyyy-MM-dd")</dd>
+
+                <dt class="col-sm-3">Owner</dt>
+                <dd class="col-sm-9">@Model.Owner</dd>
+
+                <dt class="col-sm-3">Nation of First Publication</dt>
+                <dd class="col-sm-9">@Model.NationOfFirstPublication</dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="mt-4 d-flex gap-2">
+        <a class="btn btn-outline-secondary disabled" aria-disabled="true" title="Coming soon">
+            Generate Cease &amp; Desist
+        </a>
+        <a asp-action="MyCollection" class="btn btn-secondary">Back to List</a>
+    </div>
+</div>
+

@@ -153,7 +153,10 @@ namespace IPNoticeHub.Services.Copyrights.Implementations
                 {
                     PublicId = l.CopyrightRegistration.PublicId,
                     RegistrationNumber = l.CopyrightRegistration.RegistrationNumber,
+                    TypeOfWork = l.CopyrightRegistration.TypeOfWork,
                     Title = l.CopyrightRegistration.Title,
+                    YearOfCreation = l.CopyrightRegistration.YearOfCreation,
+                    DateOfPublication = l.CopyrightRegistration.DateOfPublication,
                     Owner = l.CopyrightRegistration.Owner,
                     DateAdded = l.DateAdded
                 }).

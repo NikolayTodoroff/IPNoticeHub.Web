@@ -37,18 +37,23 @@ namespace IPNoticeHub.Web.Controllers
         [HttpGet]
         public IActionResult Create()
         {
+            ViewBag.YearOptions = YearOptionsProvider.BuildYearOptions();
             return View(new CopyrightCreateDTO());
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CopyrightCreateDTO dto, string? returnUrl = null, CancellationToken cancellationToken = default)
-        {         
-            if (!ModelState.IsValid) return View(dto);
+        public async Task<IActionResult> Create(CopyrightCreateDTO createCopyrightDTO, string? returnUrl = null, CancellationToken cancellationToken = default)
+        {
+            if (!ModelState.IsValid)
+            {
+                ViewBag.YearOptions = YearOptionsProvider.BuildYearOptions();
+                return View(createCopyrightDTO);
+            }
 
             if (!User.TryGetUserId(out var userId)) return Forbid();
 
-            Guid publicId = await copyrightService.CreateAsync(userId, dto, cancellationToken);
+            Guid publicId = await copyrightService.CreateAsync(userId, createCopyrightDTO, cancellationToken);
 
             TempData["Success"] = CopyrightAddedMessage;
 
@@ -79,6 +84,7 @@ namespace IPNoticeHub.Web.Controllers
                 NationOfFirstPublication = copyrightDetailsDTO.NationOfFirstPublication
             };
 
+            ViewBag.YearOptions = YearOptionsProvider.BuildYearOptions();
             return View(editViewModel);
         }
 
@@ -87,7 +93,11 @@ namespace IPNoticeHub.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, CopyrightEditViewModel editViewModel, string? returnUrl = null, CancellationToken cancellationToken = default)
         {
-            if (!User.TryGetUserId(out var userId)) return Forbid();
+            if (!User.TryGetUserId(out var userId)) 
+            {
+                ViewBag.YearOptions = YearOptionsProvider.BuildYearOptions();
+                return View(editViewModel);
+            }
 
             // Conditional validation: OtherWorkType required when WorkType == Other
             if (editViewModel.WorkType == CopyrightWorkType.Other && string.IsNullOrWhiteSpace(editViewModel.OtherWorkType))
