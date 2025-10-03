@@ -1,4 +1,4 @@
-﻿@using System
+﻿@* @using System
 @using IPNoticeHub.Services.Common
 @using IPNoticeHub.Services.Copyrights.DTOs
 @model PagedResult<IPNoticeHub.Services.Copyrights.DTOs.CopyrightListItemDTO>
@@ -41,7 +41,7 @@
                         <th scope="col">Reg. No.</th>
                         <th scope="col">Type of Work</th>
                         <th scope="col">Title</th>
-                        <th scope="col">Year of Creation</th>
+                        <th scope="col">Date of Pu</th>
                         <th scope="col">Owner</th>
                         <th scope="col" class="text-end">Actions</th>
                     </tr>
@@ -83,7 +83,7 @@
         </div>
 
         @* --- Pager --- *@
-        @if (totalPages > 1)
+@*         @if (totalPages > 1)
         {
             <nav aria-label="Pagination">
                 <ul class="pagination justify-content-center">
@@ -122,4 +122,4 @@
     {
         <div class="alert alert-info">No copyrights yet. Add your first one!</div>
     }
-</div>
+</div> *@ 

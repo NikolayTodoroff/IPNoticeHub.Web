@@ -1,6 +1,7 @@
 ﻿@using System
 @using IPNoticeHub.Services.Common
 @using IPNoticeHub.Services.Copyrights.DTOs
+@using System.Globalization
 @model PagedResult<IPNoticeHub.Services.Copyrights.DTOs.CopyrightListItemDTO>
 
 @{
@@ -41,8 +42,7 @@
                         <th scope="col">Reg. No.</th>
                         <th scope="col">Type of Work</th>
                         <th scope="col">Title</th>
-                        <th scope="col">Year of Creation</th>
-                        <th scope="col">Owner</th>
+                        <th scope="col">Date of Publication</th>
                         <th scope="col" class="text-end">Actions</th>
                     </tr>
                 </thead>
@@ -57,8 +57,7 @@
                                 <td>
                                     <a asp-action="Details" asp-route-id="@item.PublicId">@item.Title</a>
                                 </td>
-                                <td>@(item.YearOfCreation?.ToString() ?? "—")</td>
-                                <td>@item.Owner</td>
+                                <td>@(item.DateOfPublication?.ToString("dd MMM yyyy", CultureInfo.InvariantCulture) ?? "—")</td>
                                 <td class="text-end">
                                     <div class="btn-group" role="group">
                                         <a class="btn btn-outline-secondary disabled" aria-disabled="true" title="Coming soon">
