@@ -19,6 +19,8 @@
 
     var prevClass = page <= 1 ? "disabled" : null;
     var nextClass = page >= totalPages ? "disabled" : null;
+
+    var currentUrl = Context.Request.Path + Context.Request.QueryString;
 }
 
 <div class="container py-4">
@@ -59,9 +61,17 @@
                                 </td>
                                 <td>@(item.DateOfPublication?.ToString("dd MMM yyyy", CultureInfo.InvariantCulture) ?? "—")</td>
                                 <td class="text-end">
-                                    <div class="btn-group" role="group">
+                                    <div class="d-flex justify-content-end align-items-stretch gap-2">
+
                                         <a class="btn btn-outline-secondary disabled" aria-disabled="true" title="Coming soon">
                                             Cease & Desist
+                                        </a>
+                                        <a class="btn btn-outline-primary btn-sm"
+                                           asp-controller="Copyrights"
+                                           asp-action="Details"
+                                           asp-route-id="@item.PublicId"
+                                           asp-route-returnUrl="@currentUrl">
+                                            Details
                                         </a>
                                         <a class="btn btn-outline-primary" asp-action="Edit" asp-route-id="@item.PublicId">Edit</a>
                                         <form asp-action="Remove" asp-route-id="@item.PublicId" method="post" class="d-inline">
