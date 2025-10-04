@@ -28,7 +28,6 @@ else
                 <tr>
                     <th scope="col">Reg. No.</th>
                     <th scope="col">Wordmark</th>
-                    <th scope="col">Owner</th>
                     <th scope="col">Added On</th>
                     <th scope="col">Initial Status</th>
                     <th scope="col">Current Status</th>
@@ -40,8 +39,17 @@ else
                 {
                     <tr>
                         <td>@(string.IsNullOrWhiteSpace(item.RegistrationNumber) ? "—" : item.RegistrationNumber)</td>
-                        <td>@(string.IsNullOrWhiteSpace(item.Wordmark) ? "—" : item.Wordmark)</td>
-                        <td>@(string.IsNullOrWhiteSpace(item.Owner) ? "—" : item.Owner)</td>
+
+                        <td>
+                            <a asp-controller="Trademarks"
+                               asp-action="Details"
+                               asp-route-id="@item.PublicId"
+                               asp-route-returnUrl="@currentUrl"
+                               class="link-body-emphasis text-decoration-none">
+                                @item.Wordmark
+                            </a>
+                        </td>
+
                         <td>@(item.AddedOnDate?.ToLocalTime().ToString("dd MMM yyyy", CultureInfo.InvariantCulture) ?? "—")</td>
                         <td>@(string.IsNullOrWhiteSpace(item.InitialStatus) ? "—" : item.InitialStatus)</td>
                         <td>
