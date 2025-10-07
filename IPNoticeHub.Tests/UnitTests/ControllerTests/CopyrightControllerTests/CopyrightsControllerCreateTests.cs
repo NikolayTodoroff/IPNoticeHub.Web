@@ -92,7 +92,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
 
             var redirectResult = createActionResult.Should().BeOfType<RedirectResult>().Subject;
             redirectResult.Url.Should().Be("/back");
-            controller.TempData["StatusMessage"].Should().Be(CopyrightAddedMessage);
+            controller.TempData["SuccessMessage"].Should().Be(CopyrightAddedMessage);
 
             copyrightService.Verify(s => s.CreateAsync("u1", It.IsAny<CopyrightCreateDTO>(), It.IsAny<CancellationToken>()), Times.Once);
         }
@@ -121,7 +121,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
             redirect.ActionName.Should().Be(nameof(CopyrightsController.Details));
 
             redirect.RouteValues!["id"].Should().Be(createdId);
-            controller.TempData["StatusMessage"].Should().Be(CopyrightAddedMessage);
+            controller.TempData["SuccessMessage"].Should().Be(CopyrightAddedMessage);
         }
     }
 }

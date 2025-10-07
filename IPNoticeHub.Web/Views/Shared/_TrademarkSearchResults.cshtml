@@ -1,6 +1,7 @@
 ﻿@using System.Globalization
 @using IPNoticeHub.Web.Models.Application
 @using IPNoticeHub.Web.Models.Trademarks
+@using static IPNoticeHub.Common.ValidationConstants.FormattingConstants;
 @model TrademarkSearchResultsViewModel
 
 @{
@@ -49,7 +50,7 @@
                                         <td>@result.Owner</td>
                                         <td>@result.Status</td>
                                         <td>@(result.RegistrationDate.HasValue ? 
-                                            result.RegistrationDate.Value.ToString("dd MMM yyyy", CultureInfo.InvariantCulture) : "")</td>
+                                            result.RegistrationDate.Value.ToString(DateTimeFormat, CultureInfo.InvariantCulture) : "")</td>
                                         <td class="text-end">
                                             <a class="btn btn-outline-primary btn-sm"
                                                asp-controller="Trademarks"

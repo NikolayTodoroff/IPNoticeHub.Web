@@ -152,7 +152,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
 
             var redirectResult = editActionResult.Should().BeOfType<RedirectResult>().Subject;
             redirectResult.Url.Should().Be("/back");
-            controller.TempData["StatusMessage"].Should().Be(CopyrightUpdatesMessage);
+            controller.TempData["SuccessMessage"].Should().Be(CopyrightUpdatesMessage);
         }
 
         [Test]

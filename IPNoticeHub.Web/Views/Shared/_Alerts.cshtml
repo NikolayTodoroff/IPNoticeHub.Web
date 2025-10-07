@@ -1,7 +1,7 @@
 ﻿@{
-    string? success = TempData["Success"] as string;
-    string? error = TempData["Error"] as string;
-    string? info = TempData["Info"] as string;
+    string? success = TempData["SuccessMessage"] as string;
+    string? error = TempData["ErrorMessage"] as string;
+    string? info = TempData["InfoMessage"] as string;
 }
 @if (!string.IsNullOrWhiteSpace(success))
 {

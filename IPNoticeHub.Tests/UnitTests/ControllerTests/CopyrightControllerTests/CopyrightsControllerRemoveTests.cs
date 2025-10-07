@@ -48,7 +48,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
             var redirectResult = removeActionResult.Should().BeOfType<RedirectResult>().Subject;
 
             redirectResult.Url.Should().Be("/back");
-            controller.TempData["StatusMessage"].Should().Be(CopyrightRemovedMessage);
+            controller.TempData["SuccessMessage"].Should().Be(CopyrightRemovedMessage);
 
             copyrightService.Verify(s => s.RemoveAsync("u1", It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Once);
         }
@@ -68,7 +68,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
             var redirectToActionResult = removeActionResult.Should().BeOfType<RedirectToActionResult>().Subject;
 
             redirectToActionResult.ActionName.Should().Be(nameof(CopyrightsController.MyCollection));
-            controller.TempData["StatusMessage"].Should().Be(CopyrightRemovedMessage);
+           controller.TempData["SuccessMessage"].Should().Be(CopyrightRemovedMessage);
 
             copyrightService.Verify(s => s.RemoveAsync("u1", It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Once);
         }

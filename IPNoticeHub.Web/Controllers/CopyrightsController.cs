@@ -45,17 +45,17 @@ namespace IPNoticeHub.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CopyrightCreateDTO createCopyrightDTO, string? returnUrl = null, CancellationToken cancellationToken = default)
         {
+            if (!User.TryGetUserId(out var userId)) return Forbid();
+
             if (!ModelState.IsValid)
             {
                 ViewBag.YearOptions = YearOptionsProvider.BuildYearOptions();
                 return View(createCopyrightDTO);
             }
-
-            if (!User.TryGetUserId(out var userId)) return Forbid();
-
+         
             Guid publicId = await copyrightService.CreateAsync(userId, createCopyrightDTO, cancellationToken);
 
-            TempData["Success"] = CopyrightAddedMessage;
+            TempData["SuccessMessage"] = CopyrightAddedMessage;
 
             return RedirectToLocal(returnUrl) ?? RedirectToAction(nameof(Details), new { id = publicId });
         }
@@ -93,10 +93,10 @@ namespace IPNoticeHub.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, CopyrightEditViewModel editViewModel, string? returnUrl = null, CancellationToken cancellationToken = default)
         {
-            if (!User.TryGetUserId(out var userId)) 
+            if (!User.TryGetUserId(out var userId))
             {
                 ViewBag.YearOptions = YearOptionsProvider.BuildYearOptions();
-                return View(editViewModel);
+                return Forbid();
             }
 
             // Conditional validation: OtherWorkType required when WorkType == Other
@@ -126,11 +126,11 @@ namespace IPNoticeHub.Web.Controllers
 
             if (!editedSuccessfully)
             {
-                ModelState.AddModelError(string.Empty, "Unable to save changes. Ensure you have this item in your collection and the registration number is unique.");
+                ModelState.AddModelError(string.Empty, CopyrightUpdatesErrorMessage);
                 return View(editViewModel);
             }
 
-            TempData["StatusMessage"] = "Copyright updated.";
+            TempData["SuccessMessage"] = CopyrightUpdatesMessage;
 
             if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
             {
@@ -160,7 +160,7 @@ namespace IPNoticeHub.Web.Controllers
 
             await copyrightService.RemoveAsync(userId, id, cancellationToken);
 
-            TempData["Success"] = CopyrightRemovedMessage;
+            TempData["SuccessMessage"] = CopyrightRemovedMessage;
             return RedirectToLocal(returnUrl)
                 ?? RedirectToAction(nameof(MyCollection));
         }

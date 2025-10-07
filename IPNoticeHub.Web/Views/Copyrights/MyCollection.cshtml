@@ -1,6 +1,7 @@
 ﻿@using System
 @using IPNoticeHub.Services.Common
 @using IPNoticeHub.Services.Copyrights.DTOs
+@using static IPNoticeHub.Common.ValidationConstants.FormattingConstants;
 @using System.Globalization
 @model PagedResult<IPNoticeHub.Services.Copyrights.DTOs.CopyrightListItemDTO>
 
@@ -30,7 +31,7 @@
         <a asp-action="Create" class="btn btn-primary">Add Copyright</a>
     </div>
 
-    @if (TempData["StatusMessage"] is string msg)
+    @if (TempData["SuccessMessage"] is string msg)
     {
         <div class="alert alert-success" role="alert">@msg</div>
     }
@@ -59,7 +60,7 @@
                                 <td>
                                     <a asp-action="Details" asp-route-id="@item.PublicId">@item.Title</a>
                                 </td>
-                                <td>@(item.DateOfPublication?.ToString("dd MMM yyyy", CultureInfo.InvariantCulture) ?? "—")</td>
+                                <td>@(item.DateOfPublication?.ToString(DateTimeFormat, CultureInfo.InvariantCulture) ?? "—")</td>
                                 <td class="text-end">
                                     <div class="d-flex justify-content-end align-items-stretch gap-2">
 

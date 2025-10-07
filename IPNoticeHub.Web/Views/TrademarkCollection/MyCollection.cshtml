@@ -1,0 +1,117 @@
+﻿@* @using IPNoticeHub.Web.Models.TrademarkCollection
+@model TrademarkCollectionIndexViewModel
+
+@{
+    ViewBag.Title = "My Trademark Collection";
+    // Canonical return target for this page (keeps pagination/query)
+    var currentUrl = (Context?.Request?.Path + Context?.Request?.QueryString) ?? Url.Action("Index", "TrademarkCollection");
+}
+
+<div class="container-fluid px-0">
+    <h2 class="mb-3">My Trademark Collection</h2>
+
+    @if (Model.Results?.Count > 0)
+    {
+        <div class="table-responsive shadow-sm rounded-3">
+            <table class="table align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col">Reg. No.</th>
+                        <th scope="col">Wordmark</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Classes</th>
+                        <th scope="col">Office</th>
+                        <th scope="col" class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var tm in Model.Results)
+                    {
+                        <tr>
+                            <td class="fw-semibold">@tm.SourceId</td>
+                            <td>
+                                <a asp-controller="Trademarks"
+                                   asp-action="Details"
+                                   asp-route-id="@tm.PublicId"
+                                   asp-route-returnUrl="@currentUrl"
+                                   class="link-body-emphasis text-decoration-none">
+                                    @tm.Wordmark
+                                </a>                               
+                            </td>
+                            <td>
+                                <span class="badge text-bg-@(tm.Status == IPNoticeHub.Common.EnumConstants.TrademarkStatusCategory.Registered ? "success" : "secondary")">
+                                    @tm.Status
+                                </span>
+                            </td>
+                            <td>
+                                @if (tm.Classes?.Length > 0)
+                                {
+                                    <div class="d-flex flex-wrap gap-1">
+                                        @foreach (var c in tm.Classes)
+                                        {
+                                            <span class="badge text-bg-light border">@c</span>
+                                        }
+                                    </div>
+                                }
+                            </td>
+                            <td><span class="badge text-bg-info">@tm.Provider</span></td>
+                            <td class="text-end">
+                                <div class="d-flex justify-content-end align-items-stretch gap-2">
+
+                                    <a class="btn btn-outline-primary btn-sm"
+                                       asp-controller="Trademarks"
+                                       asp-action="Details"
+                                       asp-route-id="@tm.PublicId"
+                                       asp-route-returnUrl="@currentUrl">
+                                        Details
+                                    </a>
+
+                                    <button type="button" class="btn btn-outline-primary btn-sm" disabled title="Coming soon">Generate DMCA</button>
+
+                                    <form asp-controller="TrademarkCollection" asp-action="Remove" method="post" class="m-0">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="trademarkId" value="@tm.Id" />
+                                        <input type="hidden" name="returnUrl" value="@currentUrl" />
+                                        <button type="submit" class="btn btn-outline-danger"
+                                                onclick="return confirm('Remove this trademark from your collection?');">
+                                            Remove
+                                        </button>
+                                    </form>
+
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mt-3">
+            <div class="text-muted small">
+                Page @Model.CurrentPage — showing @Model.Results.Count of @Model.ResultsCount results
+            </div>
+            <div class="btn-group">
+                @if (Model.CurrentPage > 1)
+                {
+                    <a class="btn btn-outline-secondary btn-sm"
+                       asp-controller="TrademarkCollection"
+                       asp-action="Index"
+                       asp-route-currentPage="@(Model.CurrentPage - 1)">‹ Prev</a>
+                }
+                @if (Model.Results.Count == Model.ResultsPerPage)
+                {
+                    <a class="btn btn-outline-secondary btn-sm"
+                       asp-controller="TrademarkCollection"
+                       asp-action="Index"
+                       asp-route-currentPage="@(Model.CurrentPage + 1)">Next ›</a>
+                }
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info">
+            Your collection is empty. Visit the <a asp-controller="Home" asp-action="Index" class="link-primary">search page</a> to find trademarks to add.
+        </div>
+    }
+</div> *@

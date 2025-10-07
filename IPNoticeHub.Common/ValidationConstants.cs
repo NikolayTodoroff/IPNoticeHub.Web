@@ -58,6 +58,12 @@
             public const string CopyrightAddedMessage = "Copyright added to your collection.";
             public const string CopyrightRemovedMessage = "Copyright removed from your collection.";
             public const string CopyrightUpdatesMessage = "Copyright updated.";
+            public const string CopyrightUpdatesErrorMessage = "Unable to save changes. Ensure you have this item in your collection and the registration number is unique.";
+        }
+
+        public static class FormattingConstants
+        {
+            public static string DateTimeFormat = "dd MMM yyyy";
         }
     }
 }

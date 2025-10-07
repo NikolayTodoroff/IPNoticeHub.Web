@@ -1,5 +1,6 @@
 ﻿@using IPNoticeHub.Services.Application.DTOs
 @using System.Globalization
+@using static IPNoticeHub.Common.ValidationConstants.FormattingConstants;
 @model WatchlistIndexViewModel
 
 @{
@@ -9,7 +10,7 @@
 
 <h2 class="mb-3">Watchlist</h2>
 
-@if (TempData["Error"] is string e && !string.IsNullOrWhiteSpace(e))
+@if (TempData["ErrorMessage"] is string e && !string.IsNullOrWhiteSpace(e))
 {
     <div class="alert alert-danger" role="alert">@e</div>
 }
@@ -50,7 +51,7 @@ else
                             </a>
                         </td>
 
-                        <td>@(item.AddedOnDate?.ToLocalTime().ToString("dd MMM yyyy", CultureInfo.InvariantCulture) ?? "—")</td>
+                        <td>@(item.AddedOnDate?.ToLocalTime().ToString(DateTimeFormat, CultureInfo.InvariantCulture) ?? "—")</td>
                         <td>@(string.IsNullOrWhiteSpace(item.InitialStatus) ? "—" : item.InitialStatus)</td>
                         <td>
                             @if (!string.IsNullOrWhiteSpace(item.CurrentStatus))

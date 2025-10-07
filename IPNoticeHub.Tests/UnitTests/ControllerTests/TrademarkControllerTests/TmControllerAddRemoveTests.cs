@@ -32,7 +32,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
 
             tmCollectionService.Verify(s => s.AddAsync("u1", 42, It.IsAny<CancellationToken>()), Times.Once);
 
-            tempData["StatusMessage"].Should().Be(TmAddedToCollectionMessage);
+            tempData["SuccessMessage"].Should().Be(TmAddedToCollectionMessage);
 
             var redirect = addActionResult.Should().BeOfType<LocalRedirectResult>().Subject;
             redirect.Url.Should().Be("/local");
@@ -54,7 +54,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
 
             tmCollectionService.Verify(s => s.RemoveAsync("u1", 42, It.IsAny<CancellationToken>()), Times.Once);
 
-            tempData["StatusMessage"].Should().Be(TmRemovedFromCollectionMessage);
+            tempData["SuccessMessage"].Should().Be(TmRemovedFromCollectionMessage);
 
             var redirect = removeActionResult as RedirectToActionResult;
             redirect.Should().NotBeNull();

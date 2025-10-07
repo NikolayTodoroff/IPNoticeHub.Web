@@ -13,7 +13,7 @@ namespace IPNoticeHub.Web.Controllers
 {
     [Authorize(Policy = "HasUserId")]
     [AutoValidateAntiforgeryToken]
-    [Route("Trademarks/Collection")]
+    [Route("Trademarks/MyCollection")]
     public class TrademarkCollectionController : Controller
     {
         private readonly ITrademarkCollectionService tmCollectionService;
@@ -48,17 +48,17 @@ namespace IPNoticeHub.Web.Controllers
             {
                 if (await tmCollectionService.IsInCollectionAsync(userId, trademarkId, false, cancellationToken))
                 {
-                    TempData["Info"] = "Trademark is already in your collection.";
+                    TempData["InfoMessage"] = "Trademark is already in your collection.";
                     return this.RedirectToLocalOrAction(returnUrl, nameof(Index));
                 }
 
                 await tmCollectionService.AddAsync(userId, trademarkId, cancellationToken);
-                TempData["Success"] = TmAddedToCollectionMessage;
+                TempData["SuccessMessage"] = TmAddedToCollectionMessage;
                 return this.RedirectToLocalOrAction(returnUrl, nameof(Index));
             }
             catch
             {
-                TempData["Error"] = TmAddToCollectionErrorMessage;
+                TempData["ErrorMessage"] = TmAddToCollectionErrorMessage;
                 return this.RedirectToLocalOrAction(returnUrl, nameof(Index));
             }
         }
@@ -71,7 +71,7 @@ namespace IPNoticeHub.Web.Controllers
 
             await tmCollectionService.RemoveAsync(userId, trademarkId, cancellationToken);
 
-            TempData["Success"] = TmRemovedFromCollectionMessage;
+            TempData["SuccessMessage"] = TmRemovedFromCollectionMessage;
             return this.RedirectToLocalOrAction(returnUrl, nameof(Index));
         }
     }
