@@ -35,7 +35,7 @@ namespace IPNoticeHub.Web.Controllers
             var indexViewModel = TrademarkCollectionDtoToVmMapper.Map(dtoPagedResult);
 
             ViewBag.SortBy = sortBy;
-            return View("Index", indexViewModel);
+            return View("MyCollection", indexViewModel);
         }
 
         [HttpPost("Add")]
