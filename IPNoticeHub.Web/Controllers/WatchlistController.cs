@@ -3,6 +3,7 @@ using IPNoticeHub.Services.Application.Abstractions;
 using IPNoticeHub.Web.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using static IPNoticeHub.Common.ValidationConstants.StatusMessages;
 
 namespace IPNoticeHub.Web.Controllers
 {
@@ -41,17 +42,17 @@ namespace IPNoticeHub.Web.Controllers
             {
                 if (await watchlistService.ExistsAsync(userId, trademarkId, cancellationToken))
                 {
-                    TempData["Info"] = "Trademark is already in your watchlist.";
+                    TempData["InfoMessage"] = TmAlreadyInWatchlistMessage;
                     return this.RedirectToLocalOrAction(returnUrl, nameof(Index));
                 }
 
                 await watchlistService.AddAsync(userId, trademarkId, cancellationToken);
-                TempData["Success"] = "Added to Watchlist.";
+                TempData["SuccessMessage"] = TmAddedToWatchlistMessage;
                 return this.RedirectToLocalOrAction(returnUrl, nameof(Index));
             }
             catch
             {
-                TempData["Error"] = "Could not add to Watchlist.";
+                TempData["ErrorMessage"] = TmAddToWatchlistErrorMessage;
                 return this.RedirectToLocalOrAction(returnUrl, nameof(Index));
             }
         }
@@ -63,7 +64,7 @@ namespace IPNoticeHub.Web.Controllers
             if (!User.TryGetUserId(out var userId)) return Unauthorized();
 
             await watchlistService.RemoveAsync(userId, trademarkId, cancellationToken);
-            TempData["Success"] = "Removed from watchlist.";
+            TempData["SuccessMessage"] = TmRemovedFromWatchlistMessage;
             return this.RedirectToLocalOrAction(returnUrl, nameof(Index));
         }
 
@@ -76,13 +77,13 @@ namespace IPNoticeHub.Web.Controllers
             try
             {
                 await watchlistService.ToggleNotificationsAsync(userId, trademarkId, enabled, cancellationToken);
-                TempData["Success"] = enabled
-                    ? "Email notifications enabled successfully."
-                    : "Email notifications disabled successfully.";
+                TempData["SuccessMessage"] = enabled
+                    ? EmailNotificationsEnabledMessage
+                    : EmailNotificationsDisabledMessage;
             }
             catch
             {
-                TempData["Error"] = "Failed to toggle email notifications.";
+                TempData["ErrorMessage"] = EmailNotificationsErrorMessage;
             }
 
             return this.RedirectToLocalOrAction(returnUrl, nameof(Index));
