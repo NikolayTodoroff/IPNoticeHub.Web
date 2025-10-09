@@ -31,11 +31,6 @@
         <a asp-action="Create" class="btn btn-primary">Add Copyright</a>
     </div>
 
-    @if (TempData["SuccessMessage"] is string msg)
-    {
-        <div class="alert alert-success" role="alert">@msg</div>
-    }
-
     @if (hasRows)
     {
         <div class="table-responsive">
