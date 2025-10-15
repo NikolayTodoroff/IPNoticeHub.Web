@@ -18,6 +18,7 @@ namespace IPNoticeHub.Web.ViewModels.Trademarks
         public DataProvider Provider { get; init; }
         public IReadOnlyList<int> Classes { get; init; } = Array.Empty<int>();
 
+        public bool IsAuthenticated { get; set; }
         public bool IsInCollection { get; init; }
         public bool IsInWatchlist { get; init; }
     }

@@ -49,6 +49,7 @@ namespace IPNoticeHub.Web.Controllers
         }
 
         [HttpGet("Trademarks/Details/{id:guid}")]
+        [AllowAnonymous]
         public async Task<IActionResult> Details(Guid id, string? returnUrl = null, CancellationToken cancellationToken = default)
         {
             TrademarkDetailsDTO? detailsDTO = await tmSearchService.GetDetailsAsync(id, cancellationToken);
