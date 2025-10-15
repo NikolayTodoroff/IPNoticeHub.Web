@@ -99,34 +99,37 @@
             </dl>
         </div>
     </div>
-
-    @* -------- Actions (post back to THIS page) -------- *@
+    
+    @* -------- Actions -------- *@
     <div class="mt-3 d-flex gap-2">
-        @if (Model?.IsInCollection != true)
-        {
-            <form method="post"
-                  asp-controller="TrademarkCollection"
-                  asp-action="Add"
-                  class="d-inline">
-                @Html.AntiForgeryToken()
-                <input type="hidden" name="trademarkId" value="@Model!.Id" />
-                <input type="hidden" name="returnUrl" value="@selfUrl" />
-                <button type="submit" class="btn btn-outline-secondary">Save</button>
-            </form>
-        }
 
-        @if (Model?.IsInWatchlist != true)
+        @if (Model?.IsAuthenticated == true)
         {
-            <form method="post"
-                  asp-controller="Watchlist"
-                  asp-action="Add"
-                  class="d-inline">
-                @Html.AntiForgeryToken()
-                <input type="hidden" name="trademarkId" value="@Model!.Id" />
-                <input type="hidden" name="returnUrl" value="@selfUrl" />
-                <button type="submit" class="btn btn-outline-secondary">Add To Watchlist</button>
-            </form>
-        }
+            @if (Model?.IsInCollection != true)
+            {
+                <form method="post"
+                      asp-controller="TrademarkCollection"
+                      asp-action="Add"
+                      class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="trademarkId" value="@Model!.Id" />
+                    <input type="hidden" name="returnUrl" value="@selfUrl" />
+                    <button type="submit" class="btn btn-outline-secondary">Save</button>
+                </form>
+            }
+
+            @if (Model?.IsInWatchlist != true)
+            {
+                <form method="post"
+                      asp-controller="Watchlist"
+                      asp-action="Add"
+                      class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="trademarkId" value="@Model!.Id" />
+                    <input type="hidden" name="returnUrl" value="@selfUrl" />
+                    <button type="submit" class="btn btn-outline-secondary">Add To Watchlist</button>
+                </form>
+            }
+        } 
     </div>
-
 </div>

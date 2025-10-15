@@ -55,7 +55,16 @@ namespace IPNoticeHub.Web.Controllers
             TrademarkDetailsDTO? detailsDTO = await tmSearchService.GetDetailsAsync(id, cancellationToken);
 
             if (detailsDTO is null) return NotFound();
-            if (!User.TryGetUserId(out var userId)) return Forbid();
+
+            bool isAuthenticated = User.Identity?.IsAuthenticated == true;
+            bool isInCollection = false;
+            bool isInWatchlist = false;
+
+            if (isAuthenticated && User.TryGetUserId(out var userId))
+            {
+                isInCollection = await tmCollectionService.IsInCollectionAsync(userId, detailsDTO.Id,false,cancellationToken);
+                isInWatchlist = await tmWatchlistService.ExistsAsync(userId, detailsDTO.Id, cancellationToken);
+            }
 
             var detailsViewModel = new TrademarkDetailsViewModel
             {
@@ -72,12 +81,10 @@ namespace IPNoticeHub.Web.Controllers
                 MarkImageUrl = detailsDTO.MarkImageUrl,
                 Provider = detailsDTO.Provider,
                 Classes = detailsDTO.Classes,
-                IsInCollection = await tmCollectionService.IsInCollectionAsync(userId, detailsDTO.Id, false, cancellationToken),
-                IsInWatchlist = await tmWatchlistService.ExistsAsync(userId, detailsDTO.Id, cancellationToken)
+                IsInCollection = isInCollection,
+                IsInWatchlist = isInWatchlist,
+                IsAuthenticated = isAuthenticated
             };
-
-            if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
-                ViewBag.ReturnUrl = returnUrl;
 
             if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
             {
