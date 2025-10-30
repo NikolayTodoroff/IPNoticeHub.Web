@@ -57,7 +57,61 @@ namespace IPNoticeHub.Services.Application.Implementations
 
         private static byte[] BuildLetter(string template,Dictionary<string, string> vars)
         {
+            // Replacing the {{Placeholders}} in the template
+            string resolved = ReplaceTemplate(template, vars);
 
+            // Building the letter layout (header → body → footer)
+            var bytes = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Margin(36);
+                    page.Size(PageSizes.A4);
+                    page.DefaultTextStyle(x => x.FontSize(11));
+
+                    page.Header().Column(col =>
+                    {
+                        col.Item().Text(vars.GetValueOrDefault("SenderName")).SemiBold();
+
+                        var address = vars.GetValueOrDefault("SenderAddress");
+
+                        if (!string.IsNullOrWhiteSpace(address))
+                        {
+                            col.Item().Text(address);
+                        }
+
+                        var date = vars.GetValueOrDefault("Date");
+
+                        if (!string.IsNullOrWhiteSpace(date))
+                        {
+                            col.Item().Text(date).FontSize(10).FontColor(Colors.Grey.Darken2);
+                        }
+                    });
+
+                    page.Content().Column(col =>
+                    {
+                        var recipientName = vars.GetValueOrDefault("RecipientName");
+                        var recipientAddress = vars.GetValueOrDefault("RecipientAddress");
+
+                        if (!string.IsNullOrWhiteSpace(recipientName) || !string.IsNullOrWhiteSpace(recipientAddress))
+                        {
+                            col.Item().PaddingBottom(8).Text($"{recipientName}\n{recipientAddress}".Trim());
+                        }
+
+                        foreach (var paragraph in SplitIntoParagraphs(resolved))
+                        {
+                            col.Item().PaddingBottom(6).Text(paragraph).AlignLeft();
+                        }
+                    });
+
+                    page.Footer().AlignRight().Text(txt =>
+                    {
+                        txt.Span("Generated with IPNoticeHub").FontSize(9).FontColor(Colors.Grey.Darken1);
+                    });
+                });
+            }).GeneratePdf();
+
+            return bytes;
         }
 
         private static IEnumerable<string> SplitIntoParagraphs(string text)
