@@ -58,15 +58,15 @@
                             <td class="text-end">
                                 <div class="d-flex justify-content-end align-items-stretch gap-2">
 
+                                    <button type="button" class="btn btn-outline-primary btn-sm" disabled>Cease & Desist</button>
+
                                     <a class="btn btn-outline-primary btn-sm"
                                        asp-controller="Trademarks"
                                        asp-action="Details"
                                        asp-route-id="@tm.PublicId"
                                        asp-route-returnUrl="@currentUrl">
                                         Details
-                                    </a>
-
-                                    <button type="button" class="btn btn-outline-primary btn-sm" disabled title="Coming soon">Generate DMCA</button>
+                                    </a>                                
 
                                     <form asp-controller="TrademarkCollection" asp-action="Remove" method="post" class="m-0">
                                         @Html.AntiForgeryToken()
