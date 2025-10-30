@@ -17,12 +17,12 @@ namespace IPNoticeHub.Services.Application.Implementations
 
         public Task<byte[]> GenerateCopyrightDMCAAsync(DMCAInput data, CancellationToken cancellation = default)
         {
-            Task.FromResult(BuildLetter(data.BodyTemplate, BuildDMCATemplateVars(data)));
+            return Task.FromResult(BuildLetter(data.BodyTemplate, BuildDMCATemplateVars(data)));
         }
 
         public Task<byte[]> GenerateTrademarkCeaseDesistAsync(CeaseDesistInput data, CancellationToken cancellation = default)
         {
-            Task.FromResult(BuildLetter(data.BodyTemplate, BuildCnDTemplateVars(data)));
+            return Task.FromResult(BuildLetter(data.BodyTemplate, BuildCnDTemplateVars(data)));
         }
 
         private static Dictionary<string, string> BuildCnDTemplateVars(CeaseDesistInput input) => new()
@@ -54,5 +54,45 @@ namespace IPNoticeHub.Services.Application.Implementations
             ["InfringingUrl"] = input.InfringingUrl,
             ["GoodFaithStatement"] = input.GoodFaithStatement
         };
+
+        private static byte[] BuildLetter(string template,Dictionary<string, string> vars)
+        {
+
+        }
+
+        private static IEnumerable<string> SplitIntoParagraphs(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return Enumerable.Empty<string>();
+            }       
+
+            // Split whenever there are two or more consecutive blank lines
+            var parts = Regex.Split(text.Trim(), @"(\r?\n){2,}");
+
+            // Return only non-empty paragraphs
+            return parts.Select(p => p.Trim()).Where(p => p.Length > 0);
+        }
+
+        private static string ReplaceTemplate(string template, Dictionary<string, string> vars)
+        {
+            if (string.IsNullOrEmpty(template))
+            {
+                return string.Empty;
+            }           
+
+            return Regex.Replace(template, @"{{\s*(\w+)\s*}}", match =>
+            {
+                string key = match.Groups[1].Value;
+
+                // If we have a value for this key, use it; otherwise leave the placeholder unchanged
+                if (vars.TryGetValue(key, out string? value))
+                {
+                    return value ?? string.Empty;
+                }             
+
+                return match.Value; // keeps {{UnknownKey}} visible
+            });
+        }
     }
 }
