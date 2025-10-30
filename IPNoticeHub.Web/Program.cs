@@ -13,6 +13,8 @@ using IPNoticeHub.Services.Copyrights.Abstractions;
 using IPNoticeHub.Services.Copyrights.Implementations;
 using IPNoticeHub.Services.Trademarks.Abstractions;
 using IPNoticeHub.Services.Trademarks.Implementations;
+using IPNoticeHub.Services.Application.Abstractions;
+using IPNoticeHub.Services.Application.Implementations;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -65,6 +67,7 @@ namespace IPNoticeHub.Web
             builder.Services.AddScoped<IUserTrademarkWatchlistRepository, UserTrademarkWatchlistRepository>();
             builder.Services.AddScoped<ITrademarkWatchlistService, TrademarkWatchlistService>();
             builder.Services.AddSingleton<IStatusLabelProvider, StatusLabelProvider>();
+            builder.Services.AddScoped<IPdfService, PdfService>();
 
             QuestPDF.Settings.License = LicenseType.Community;
 
