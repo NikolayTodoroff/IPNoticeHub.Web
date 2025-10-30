@@ -16,6 +16,8 @@ using IPNoticeHub.Services.Trademarks.Implementations;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using QuestPDF.Infrastructure;
+
 namespace IPNoticeHub.Web
 {
     public class Program
@@ -63,6 +65,8 @@ namespace IPNoticeHub.Web
             builder.Services.AddScoped<IUserTrademarkWatchlistRepository, UserTrademarkWatchlistRepository>();
             builder.Services.AddScoped<ITrademarkWatchlistService, TrademarkWatchlistService>();
             builder.Services.AddSingleton<IStatusLabelProvider, StatusLabelProvider>();
+
+            QuestPDF.Settings.License = LicenseType.Community;
 
             // Temporary no-op email sender while theming
             builder.Services.AddSingleton<IEmailSender, NoOpEmailSender>();
