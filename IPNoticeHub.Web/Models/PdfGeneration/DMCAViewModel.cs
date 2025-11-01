@@ -20,7 +20,7 @@ namespace IPNoticeHub.Web.Models.PdfGeneration
         public string? NationOfFirstPublication { get; init; }
 
 
-        // Sender/Recipient
+        // Sender and Recipient
 
         [Required]
         public string SenderName { get; set; } = string.Empty;
