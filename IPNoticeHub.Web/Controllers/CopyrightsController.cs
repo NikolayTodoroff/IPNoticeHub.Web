@@ -8,11 +8,8 @@ using IPNoticeHub.Web.Models.Copyrights;
 using IPNoticeHub.Web.Models.PdfGeneration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System.Threading;
 using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
 using static IPNoticeHub.Common.ValidationConstants.StatusMessages;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace IPNoticeHub.Web.Controllers
 {

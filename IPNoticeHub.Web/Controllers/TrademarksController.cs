@@ -1,5 +1,4 @@
-﻿using Humanizer;
-using IPNoticeHub.Common.EnumConstants;
+﻿using IPNoticeHub.Common.EnumConstants;
 using IPNoticeHub.Common.Infrastructure;
 using IPNoticeHub.Services.Application.Abstractions;
 using IPNoticeHub.Services.Common;
@@ -12,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
 using static IPNoticeHub.Common.ValidationConstants.StatusMessages;
 using IPNoticeHub.Web.Infrastructure;
+using IPNoticeHub.Web.Models.PdfGeneration;
 
 namespace IPNoticeHub.Web.Controllers
 {
@@ -20,12 +20,15 @@ namespace IPNoticeHub.Web.Controllers
         private readonly ITrademarkCollectionService tmCollectionService;
         private readonly ITrademarkSearchService tmSearchService;
         private readonly ITrademarkWatchlistService tmWatchlistService;
+        private readonly IPdfService pdfService;
 
-        public TrademarksController(ITrademarkSearchService searchService, ITrademarkCollectionService collectionService, ITrademarkWatchlistService tmWatchlistService)
+        public TrademarksController(ITrademarkSearchService searchService, ITrademarkCollectionService collectionService, 
+            ITrademarkWatchlistService tmWatchlistService, IPdfService pdfService)
         {
             this.tmSearchService = searchService;
             this.tmCollectionService = collectionService;
             this.tmWatchlistService = tmWatchlistService;
+            this.pdfService = pdfService;
         }
 
         [HttpGet]
@@ -131,6 +134,65 @@ namespace IPNoticeHub.Web.Controllers
             TempData["SuccessMessage"] = TmRemovedFromCollectionMessage;
             return this.RedirectToLocalOrAction(returnUrl, nameof(MyCollection));
         }
+
+        [HttpGet,Authorize(Policy = "HasUserId")]
+        public async Task<IActionResult> CeaseDesist(Guid publicId, CancellationToken cancellationToken = default)
+        {
+            if (!User.TryGetUserId(out var userId))
+            {
+                return Forbid();
+            }
+
+            var trademarkDetailsDTO = await tmSearchService.GetDetailsAsync(publicId, cancellationToken);
+
+            if (trademarkDetailsDTO == null)
+            {
+                return NotFound();
+            }
+
+            bool isInCollection = await tmCollectionService.IsInCollectionAsync(userId, trademarkDetailsDTO.Id, false, cancellationToken);
+
+            if (!isInCollection)
+            {
+                return NotFound();
+            }
+
+            string title = trademarkDetailsDTO.Wordmark ?? trademarkDetailsDTO.RegistrationNumber ?? "Trademark";
+
+            var viewModel = new CeaseDesistViewModel
+            {
+                PublicId = publicId,
+                WorkTitle = title,
+                RegistrationNumber = trademarkDetailsDTO.RegistrationNumber
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
+        public async Task<IActionResult> CeaseDesist(Guid publicId,CeaseDesistViewModel viewModel, CancellationToken cancellationToken = default)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(viewModel);
+            }
+
+            var input = new CeaseDesistInput(
+                SenderName: viewModel.SenderName,
+                SenderAddress: viewModel.SenderAddress,
+                RecipientName: viewModel.RecipientName,
+                RecipientAddress: viewModel.RecipientAddress,
+                Date: DateTime.UtcNow,
+                WorkTitle: viewModel.WorkTitle,
+                RegistrationNumber: viewModel.RegistrationNumber ?? string.Empty,
+                AdditionalFacts: viewModel.AdditionalFacts,
+                BodyTemplate: viewModel.BodyTemplate
+            );
+
+            var pdf = await pdfService.GenerateTrademarkCeaseDesistAsync(input, cancellationToken);
+            return File(pdf, "application/pdf", $"CeaseDesist-{viewModel.WorkTitle}-{DateTime.UtcNow:yyyyMMdd}.pdf");
+        }
+
 
         // Helper methods for internal use within the controller
         private IActionResult CreateEmptyViewModel(TrademarkFilterViewModel filter)
