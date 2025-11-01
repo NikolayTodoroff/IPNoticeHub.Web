@@ -1,12 +1,18 @@
-﻿using IPNoticeHub.Common.EnumConstants;
+﻿using Humanizer;
+using IPNoticeHub.Common.EnumConstants;
 using IPNoticeHub.Common.Infrastructure;
+using IPNoticeHub.Services.Application.Abstractions;
 using IPNoticeHub.Services.Copyrights.Abstractions;
 using IPNoticeHub.Services.Copyrights.DTOs;
 using IPNoticeHub.Web.Models.Copyrights;
+using IPNoticeHub.Web.Models.PdfGeneration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Threading;
 using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
 using static IPNoticeHub.Common.ValidationConstants.StatusMessages;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace IPNoticeHub.Web.Controllers
 {
@@ -14,10 +20,12 @@ namespace IPNoticeHub.Web.Controllers
     public sealed class CopyrightsController : Controller
     {
         private readonly ICopyrightService copyrightService;
+        private readonly IPdfService pdfService;
 
-        public CopyrightsController(ICopyrightService service)
+        public CopyrightsController(ICopyrightService service,IPdfService pdfService)
         {
             this.copyrightService = service;
+            this.pdfService = pdfService;
         }
 
         [HttpGet]
@@ -163,6 +171,115 @@ namespace IPNoticeHub.Web.Controllers
             TempData["SuccessMessage"] = CopyrightRemovedMessage;
             return RedirectToLocal(returnUrl)
                 ?? RedirectToAction(nameof(MyCollection));
+        }
+
+        [HttpGet, Authorize(Policy = "HasUserId")]
+        public async Task<IActionResult> Dmca(Guid publicId, CancellationToken cancellationToken = default)
+        {
+            if (!User.TryGetUserId(out var userId))
+            {
+                return Forbid();
+            }
+
+            var copyrightDetailsDTO = await copyrightService.GetDetailsAsync(userId, publicId, cancellationToken);
+
+            if (copyrightDetailsDTO is null)
+            {
+                return NotFound();
+            }
+
+            var viewModel = new DMCAViewModel
+            {
+                PublicId = publicId,
+                WorkTitle = copyrightDetailsDTO.Title,
+                RegistrationNumber = copyrightDetailsDTO.RegistrationNumber,
+                YearOfCreation = copyrightDetailsDTO.YearOfCreation,
+                DateOfPublication = copyrightDetailsDTO.DateOfPublication,
+                NationOfFirstPublication = copyrightDetailsDTO.NationOfFirstPublication
+
+                // Sender/Recipient left blank for user to fill; BodyTemplate has defaults
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
+        public async Task<IActionResult> Dmca(Guid publicId, DMCAViewModel viewModel, CancellationToken cancellationToken = default)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(viewModel);
+            }
+
+            var input = new DMCAInput(
+                SenderName: viewModel.SenderName,
+                SenderEmail: viewModel.SenderEmail,
+                SenderAddress: viewModel.SenderAddress,
+                RecipientName: viewModel.RecipientName,
+                RecipientEmail: viewModel.RecipientEmail ?? string.Empty,
+                RecipientAddress: viewModel.RecipientAddress ?? string.Empty,
+                Date: DateTime.UtcNow,
+                WorkTitle: viewModel.WorkTitle,
+                RegistrationNumber: viewModel.RegistrationNumber,
+                YearOfCreation: viewModel.YearOfCreation,
+                DateOfPublication: viewModel.DateOfPublication,
+                NationOfFirstPublication: viewModel.NationOfFirstPublication,
+                InfringingUrl: viewModel.InfringingUrl,
+                GoodFaithStatement: viewModel.GoodFaithStatement,
+                BodyTemplate: viewModel.BodyTemplate
+                );
+
+            var pdf = await pdfService.GenerateCopyrightDMCAAsync(input, cancellationToken);
+            return File(pdf, "application/pdf", $"DMCA-{viewModel.WorkTitle}-{DateTime.UtcNow:yyyyMMdd}.pdf");
+        }
+
+        [HttpGet, Authorize(Policy = "HasUserId")]
+        public async Task<IActionResult>CeaseDesist(Guid publicId, CancellationToken cancellationToken = default)
+        {
+            if (!User.TryGetUserId(out var userId))
+            {
+                return Forbid();
+            }
+
+            var copyrightDetailsDTO = await copyrightService.GetDetailsAsync(userId, publicId, cancellationToken);
+
+            if (copyrightDetailsDTO is null)
+            {
+                return NotFound();
+            }
+
+            var viewModel = new CeaseDesistViewModel
+            {
+                PublicId = publicId,
+                WorkTitle = copyrightDetailsDTO.Title,
+                RegistrationNumber = copyrightDetailsDTO.RegistrationNumber,
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
+        public async Task<IActionResult> CeaseDesist(Guid publicId, CeaseDesistViewModel viewModel, CancellationToken ct = default)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(viewModel);
+            }
+
+            var input = new CeaseDesistInput(
+              SenderName: viewModel.SenderName,
+              SenderAddress: viewModel.SenderAddress,
+              RecipientName: viewModel.RecipientName,
+              RecipientAddress: viewModel.RecipientAddress,
+              Date: DateTime.UtcNow,
+              WorkTitle: viewModel.WorkTitle,
+              RegistrationNumber: viewModel.RegistrationNumber ?? string.Empty,
+              AdditionalFacts: viewModel.AdditionalFacts,
+              BodyTemplate: viewModel.BodyTemplate
+            );
+
+            var pdf = await pdfService.GenerateCopyrightCeaseDesistAsync(input, ct);
+            return File(pdf, "application/pdf", $"CeaseDesist-{viewModel.WorkTitle}-{DateTime.UtcNow:yyyyMMdd}.pdf");
         }
 
         /// <summary>

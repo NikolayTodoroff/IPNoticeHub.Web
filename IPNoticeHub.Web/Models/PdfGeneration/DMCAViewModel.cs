@@ -17,6 +17,8 @@ namespace IPNoticeHub.Web.Models.PdfGeneration
 
         public int? YearOfCreation { get; init; }
 
+        public DateTime? DateOfPublication { get; init; }
+
         public string? NationOfFirstPublication { get; init; }
 
 
