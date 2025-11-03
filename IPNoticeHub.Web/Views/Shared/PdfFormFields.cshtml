@@ -1,0 +1,53 @@
+﻿@model IPNoticeHub.Web.Models.PdfGeneration.IPdfLetterViewModel
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <label class="form-label">Sender Name</label>
+        <input asp-for="SenderName" class="form-control" />
+        <span asp-validation-for="SenderName" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label class="form-label">Sender Address</label>
+        <input asp-for="SenderAddress" class="form-control" />
+    </div>
+    <div class="col-md-6">
+        <label class="form-label">Recipient Name</label>
+        <input asp-for="RecipientName" class="form-control" />
+        <span asp-validation-for="RecipientName" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label class="form-label">Recipient Address</label>
+        <input asp-for="RecipientAddress" class="form-control" />
+    </div>
+    <div class="col-md-6">
+        <label class="form-label">Work Title</label>
+        <input asp-for="WorkTitle" class="form-control" readonly />
+    </div>
+    <div class="col-md-6">
+        <label class="form-label">Registration Number</label>
+        <input asp-for="RegistrationNumber" class="form-control" readonly />
+    </div>
+
+    @* Optional for C&D *@
+    @if (ViewData["ShowAdditionalFacts"] as bool? == true)
+    {
+        <div class="col-12">
+            <label class="form-label">Additional Facts (optional)</label>
+            <textarea asp-for="AdditionalFacts" class="form-control" rows="4"></textarea>
+        </div>
+    }
+</div>
+
+<hr />
+
+<div class="mb-2">
+    <small class="text-muted">Use {{Placeholders}} in the template (e.g., {{RecipientName}}, {{WorkTitle}}, {{RegistrationNumber}} ...).</small>
+</div>
+<div class="mb-3">
+    <label class="form-label">Letter Template (editable)</label>
+    <textarea asp-for="BodyTemplate" class="form-control" rows="14"></textarea>
+    <span asp-validation-for="BodyTemplate" class="text-danger"></span>
+</div>
+
+<button type="submit" class="btn btn-primary">Generate PDF</button>
+<a asp-action="MyCollection" class="btn btn-secondary ms-2">Cancel</a>

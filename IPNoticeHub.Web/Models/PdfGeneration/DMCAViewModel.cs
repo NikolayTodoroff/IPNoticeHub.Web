@@ -2,7 +2,7 @@
 
 namespace IPNoticeHub.Web.Models.PdfGeneration
 {
-    public sealed class DMCAViewModel
+    public sealed class DMCAViewModel : IPdfLetterViewModel
     {
         // Record identity (Copyright Public Id)
         public Guid PublicId { get; init; }
@@ -10,10 +10,10 @@ namespace IPNoticeHub.Web.Models.PdfGeneration
 
         // Autopopulated fields
         [Required]
-        public string WorkTitle { get; init; } = string.Empty;
+        public string WorkTitle { get; set; } = string.Empty;
 
         [Required]
-        public string RegistrationNumber { get; init; } = string.Empty;
+        public string? RegistrationNumber { get; set; } = string.Empty;
 
         public int? YearOfCreation { get; init; }
 
@@ -23,7 +23,6 @@ namespace IPNoticeHub.Web.Models.PdfGeneration
 
 
         // Sender and Recipient
-
         [Required]
         public string SenderName { get; set; } = string.Empty;
 
@@ -40,6 +39,8 @@ namespace IPNoticeHub.Web.Models.PdfGeneration
 
         public string? RecipientAddress { get; set; }
 
+        // Optional narrative
+        public string? AdditionalFacts { get; set; }
 
         // Incident
         [Required, Url]

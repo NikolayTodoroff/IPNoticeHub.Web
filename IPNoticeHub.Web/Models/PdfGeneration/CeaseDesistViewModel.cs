@@ -1,9 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-
 namespace IPNoticeHub.Web.Models.PdfGeneration
 {
-    public sealed class CeaseDesistViewModel
+    public sealed class CeaseDesistViewModel : IPdfLetterViewModel
     {
         // Record identity (Trademark or Copyright Public Id)
         public Guid PublicId { get; init; }
@@ -11,13 +10,12 @@ namespace IPNoticeHub.Web.Models.PdfGeneration
 
         // Autopopulated fields
         [Required]
-        public string WorkTitle { get; init; } = string.Empty;
+        public string WorkTitle { get; set; } = string.Empty;
 
-        public string? RegistrationNumber { get; init; }
+        public string? RegistrationNumber { get; set; }
 
 
         // Sender and Recipient
-
         [Required]
         public string SenderName { get; set; } = string.Empty;
 
