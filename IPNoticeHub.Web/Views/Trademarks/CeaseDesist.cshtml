@@ -1,0 +1,14 @@
+﻿@model IPNoticeHub.Web.Models.PdfGeneration.CeaseDesistViewModel
+@{
+    ViewData["Title"] = "Generate Cease & Desist";
+    Layout = "_Layout";
+    ViewData["ShowAdditionalFacts"] = true;
+}
+<div class="container py-4">
+    <h2>Generate Cease &amp; Desist (Trademark)</h2>
+    <form asp-action="CeaseDesist" method="post">
+        <input type="hidden" asp-for="PublicId" />
+        <partial name="~/Views/Shared/_PdfFormFields.cshtml" model="Model" />
+    </form>
+</div>
+

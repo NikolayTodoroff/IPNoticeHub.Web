@@ -1,0 +1,35 @@
+﻿@model IPNoticeHub.Web.Models.PdfGeneration.DMCAViewModel
+@{
+    ViewData["Title"] = "Generate DMCA Notice";
+    Layout = "_Layout";
+}
+<div class="container py-4">
+    <h2>Generate DMCA Notice</h2>
+
+    <form asp-action="Dmca" method="post">
+        <input type="hidden" asp-for="PublicId" />
+
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">Sender Email</label>
+                <input asp-for="SenderEmail" class="form-control" />
+                <span asp-validation-for="SenderEmail" class="text-danger"></span>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Recipient Email (optional)</label>
+                <input asp-for="RecipientEmail" class="form-control" />
+            </div>
+            <div class="col-12">
+                <label class="form-label">Infringing URL</label>
+                <input asp-for="InfringingUrl" class="form-control" />
+                <span asp-validation-for="InfringingUrl" class="text-danger"></span>
+            </div>
+            <div class="col-12">
+                <label class="form-label">Good-Faith Statement</label>
+                <textarea asp-for="GoodFaithStatement" class="form-control" rows="3"></textarea>
+            </div>
+        </div>
+
+        <partial name="~/Views/Shared/_PdfFormFields.cshtml" model="Model" />
+    </form>
+</div>

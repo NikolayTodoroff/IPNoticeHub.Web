@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using System.ComponentModel.DataAnnotations;
 
 namespace IPNoticeHub.Web.Models.PdfGeneration
 {
@@ -10,9 +11,11 @@ namespace IPNoticeHub.Web.Models.PdfGeneration
 
         // Autopopulated fields
         [Required]
+        [BindNever]
         public string WorkTitle { get; set; } = string.Empty;
 
         [Required]
+        [BindNever]
         public string? RegistrationNumber { get; set; } = string.Empty;
 
         public int? YearOfCreation { get; init; }
