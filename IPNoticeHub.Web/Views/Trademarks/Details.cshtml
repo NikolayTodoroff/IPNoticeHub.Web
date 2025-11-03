@@ -118,7 +118,7 @@
                 </form>
             }
 
-            @if (Model.IsInCollection && Model.IsAuthenticated)
+            @if (Model?.IsInCollection == true && Model?.IsAuthenticated == true)
             {
                 <a asp-controller="Trademarks"
                    asp-action="CeaseDesist"
