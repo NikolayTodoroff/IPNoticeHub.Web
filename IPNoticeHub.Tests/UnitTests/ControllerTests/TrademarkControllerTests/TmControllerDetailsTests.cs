@@ -43,6 +43,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
             var tmSearchService = new Mock<ITrademarkSearchService>();
             var tmCollectionService = new Mock<ITrademarkCollectionService>();
             var tmWatchlistService = new Mock<ITrademarkWatchlistService>();
+            var pdfService = new Mock<IPdfService>();
 
             tmSearchService
                 .Setup(s => s.GetDetailsAsync(entityId, It.IsAny<CancellationToken>()))
@@ -53,7 +54,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
                 .ReturnsAsync(false);
 
             var controller = new TrademarksController(
-                tmSearchService.Object, tmCollectionService.Object, tmWatchlistService.Object);
+                tmSearchService.Object, tmCollectionService.Object, tmWatchlistService.Object, pdfService.Object);
 
             var user = new ClaimsPrincipal(new ClaimsIdentity(
                 new[] { new Claim(ClaimTypes.NameIdentifier, "user-123") }, "TestAuth"));
@@ -90,12 +91,14 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
             var tmSearchService = new Mock<ITrademarkSearchService>();
             var tmCollectionService = new Mock<ITrademarkCollectionService>();
             var tmWatchlistService = new Mock<ITrademarkWatchlistService>();
+            var pdfService = new Mock<IPdfService>();
 
             tmSearchService.Setup(s => s.GetDetailsAsync(entityId, It.IsAny<CancellationToken>())).
                 ReturnsAsync((TrademarkDetailsDTO?)null);
 
 
-            var controller = new TrademarksController(tmSearchService.Object, tmCollectionService.Object, tmWatchlistService.Object);
+            var controller = new TrademarksController
+                (tmSearchService.Object, tmCollectionService.Object, tmWatchlistService.Object, pdfService.Object);
 
             var detailsResult = await controller.Details(entityId, default);
 

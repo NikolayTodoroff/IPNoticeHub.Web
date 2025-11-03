@@ -1,4 +1,5 @@
-﻿using IPNoticeHub.Services.Copyrights.Abstractions;
+﻿using IPNoticeHub.Services.Application.Abstractions;
+using IPNoticeHub.Services.Copyrights.Abstractions;
 using IPNoticeHub.Web.Controllers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +10,7 @@ using System.Security.Claims;
 namespace IPNoticeHub.Tests.UnitTests.TestUtilities
 {
     public static class TestCopyrightControllerFactory
-    {        
+    {
         /// <summary>
         /// Creates a CopyrightsController with optional user, TempData, and UrlHelper.
         /// </summary>
@@ -20,11 +21,12 @@ namespace IPNoticeHub.Tests.UnitTests.TestUtilities
             bool includeUrlHelper = true)
         {
             var httpContext = new DefaultHttpContext();
+            var pdfService = new Mock<IPdfService>();
 
             if (!string.IsNullOrEmpty(userId))
                 httpContext.User = CreatePrincipal(userId);
 
-            var controller = new CopyrightsController(service ?? Mock.Of<ICopyrightService>())
+            var controller = new CopyrightsController(service ?? Mock.Of<ICopyrightService>(), pdfService.Object)
             {
                 ControllerContext = new ControllerContext { HttpContext = httpContext }
             };

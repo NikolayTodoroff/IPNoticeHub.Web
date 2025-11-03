@@ -118,9 +118,15 @@
                 </form>
             }
 
-            <a class="btn btn-outline-secondary disabled" aria-disabled="true">
-                Cease & Desist
-            </a>
+            @if (Model.IsInCollection && Model.IsAuthenticated)
+            {
+                <a asp-controller="Trademarks"
+                   asp-action="CeaseDesist"
+                   asp-route-publicId="@Model.PublicId"
+                   class="btn btn-outline-primary">
+                    Cease &amp; Desist
+                </a>
+            }
 
             @if (Model?.IsInWatchlist != true)
             {

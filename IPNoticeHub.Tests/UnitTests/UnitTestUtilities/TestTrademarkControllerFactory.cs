@@ -1,11 +1,12 @@
-﻿using System.Security.Claims;
-using IPNoticeHub.Services.Application.Abstractions;
+﻿using IPNoticeHub.Services.Application.Abstractions;
+using IPNoticeHub.Services.Application.Implementations;
 using IPNoticeHub.Services.Trademarks.Abstractions;
 using IPNoticeHub.Web.Controllers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Moq;
+using System.Security.Claims;
 
 namespace IPNoticeHub.Tests.UnitTests.TestUtilities
 {
@@ -71,6 +72,7 @@ namespace IPNoticeHub.Tests.UnitTests.TestUtilities
             bool includeUrlHelper)
         {
             var httpContext = new DefaultHttpContext();
+            var pdfService = new Mock<IPdfService>();
 
             // Simulate an authenticated user if a user ID is provided.
             if (!string.IsNullOrEmpty(userId))
@@ -82,7 +84,7 @@ namespace IPNoticeHub.Tests.UnitTests.TestUtilities
             var controller = new TrademarksController(
                 searchService ?? Mock.Of<ITrademarkSearchService>(),
                 collectionService,
-                watchlistService ?? Mock.Of<ITrademarkWatchlistService>())
+                watchlistService ?? Mock.Of<ITrademarkWatchlistService>(), pdfService.Object)
             {
                 ControllerContext = new ControllerContext { HttpContext = httpContext }
             };
