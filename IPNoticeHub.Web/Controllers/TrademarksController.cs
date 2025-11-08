@@ -12,6 +12,7 @@ using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
 using static IPNoticeHub.Common.ValidationConstants.StatusMessages;
 using IPNoticeHub.Web.Infrastructure;
 using IPNoticeHub.Web.Models.PdfGeneration;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace IPNoticeHub.Web.Controllers
 {
@@ -160,13 +161,23 @@ namespace IPNoticeHub.Web.Controllers
             }
 
             string title = trademarkDetailsDTO.Wordmark ?? trademarkDetailsDTO.RegistrationNumber ?? "Trademark";
+            var presets = letterTemplateProvider.GetLetterTemplatePresets(LetterTemplateType.CeaseDesist);
 
             var viewModel = new CeaseDesistViewModel
             {
                 PublicId = publicId,
                 WorkTitle = title,
-                RegistrationNumber = trademarkDetailsDTO.RegistrationNumber
+                RegistrationNumber = trademarkDetailsDTO.RegistrationNumber,
             };
+
+            viewModel.TemplateOptions = presets.Select(p => new SelectListItem
+            {
+                Value = p.Key,
+                Text = p.DisplayName
+            }).ToList();
+
+            viewModel.TemplateKey = viewModel.TemplateKey ?? "CND-General";
+            viewModel.BodyTemplate = letterTemplateProvider.GetTemplateByKey(viewModel.TemplateKey)!.BodyTemplate;
 
             return View(viewModel);
         }
