@@ -187,6 +187,8 @@ namespace IPNoticeHub.Web.Controllers
                 return NotFound();
             }
 
+            var presets = letterTemplateProvider.GetLetterTemplatePresets(LetterTemplateType.Dmca);
+
             var viewModel = new DMCAViewModel
             {
                 PublicId = publicId,
@@ -198,6 +200,15 @@ namespace IPNoticeHub.Web.Controllers
 
                 // Sender/Recipient left blank for user to fill; BodyTemplate has defaults
             };
+
+            viewModel.TemplateOptions = presets.Select(p => new SelectListItem
+            {
+                Value = p.Key,
+                Text = p.DisplayName
+            }).ToList();
+
+            viewModel.TemplateKey = viewModel.TemplateKey ?? "DMCA-General";
+            viewModel.BodyTemplate = letterTemplateProvider.GetTemplateByKey(viewModel.TemplateKey)!.BodyTemplate;
 
             return View(viewModel);
         }
