@@ -173,7 +173,7 @@ namespace IPNoticeHub.Web.Controllers
         }
 
         [HttpGet, Authorize(Policy = "HasUserId")]
-        public async Task<IActionResult> Dmca(Guid publicId, string? templateKey, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> Dmca(Guid publicId, CancellationToken cancellationToken = default)
         {
             if (!User.TryGetUserId(out var userId))
             {
@@ -201,8 +201,6 @@ namespace IPNoticeHub.Web.Controllers
 
             var template = letterTemplateProvider.GetTemplateByKey("DMCA-General");
 
-            viewModel.TemplateKey = "DMCA-General";         // harmless to keep around for now
-
             viewModel.BodyTemplate = template?.BodyTemplate ?? string.Empty;
 
             return View(viewModel);
@@ -213,13 +211,6 @@ namespace IPNoticeHub.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                var presets = letterTemplateProvider.GetLetterTemplatePresets(LetterTemplateType.Dmca);
-                viewModel.TemplateOptions = presets.Select(p => new SelectListItem
-                {
-                    Value = p.Key,
-                    Text = p.DisplayName
-                }).ToList();
-
                 return View(viewModel);
             }
 
@@ -246,7 +237,7 @@ namespace IPNoticeHub.Web.Controllers
         }
 
         [HttpGet, Authorize(Policy = "HasUserId")]
-        public async Task<IActionResult>CeaseDesist(Guid publicId, string? templateKey, CancellationToken cancellationToken = default)
+        public async Task<IActionResult>CeaseDesist(Guid publicId, CancellationToken cancellationToken = default)
         {
             if (!User.TryGetUserId(out var userId))
             {
@@ -271,7 +262,6 @@ namespace IPNoticeHub.Web.Controllers
             var presets = letterTemplateProvider.GetLetterTemplatePresets(LetterTemplateType.CeaseDesist);
 
             var template = letterTemplateProvider.GetTemplateByKey("CND-Copyright")!;
-            viewModel.TemplateKey = "CND-Copyright";          // harmless to keep for now
             viewModel.BodyTemplate = template.BodyTemplate;
 
             return View(viewModel);
@@ -282,13 +272,6 @@ namespace IPNoticeHub.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                var presets = letterTemplateProvider.GetLetterTemplatePresets(LetterTemplateType.CeaseDesist);
-                viewModel.TemplateOptions = presets.Select(p => new SelectListItem
-                {
-                    Value = p.Key,
-                    Text = p.DisplayName
-                }).ToList();
-
                 return View(viewModel);
             }
 

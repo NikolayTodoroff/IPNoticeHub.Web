@@ -9,10 +9,6 @@ namespace IPNoticeHub.Web.Models.PdfGeneration
         // Record identity (Copyright Public Id)
         public Guid PublicId { get; init; }
 
-        // Selected preset key
-        public string? TemplateKey { get; set; }
-        public List<SelectListItem> TemplateOptions { get; set; } = new();
-
         // Autopopulated fields
         [Required]
         [BindNever]

@@ -139,7 +139,7 @@ namespace IPNoticeHub.Web.Controllers
         }
 
         [HttpGet,Authorize(Policy = "HasUserId")]
-        public async Task<IActionResult> CeaseDesist(Guid publicId, string? templateKey, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> CeaseDesist(Guid publicId, CancellationToken cancellationToken = default)
         {
             if (!User.TryGetUserId(out var userId))
             {
@@ -170,7 +170,6 @@ namespace IPNoticeHub.Web.Controllers
             };
 
             var template = letterTemplateProvider.GetTemplateByKey("CND-Trademark")!;
-            viewModel.TemplateKey = "CND-Trademark";
             viewModel.BodyTemplate = template.BodyTemplate;
 
             return View(viewModel);
@@ -181,13 +180,6 @@ namespace IPNoticeHub.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                var presets = letterTemplateProvider.GetLetterTemplatePresets(LetterTemplateType.CeaseDesist);
-                viewModel.TemplateOptions = presets.Select(p => new SelectListItem
-                {
-                    Value = p.Key,
-                    Text = p.DisplayName
-                }).ToList();
-
                 return View(viewModel);
             }
 
