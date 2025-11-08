@@ -21,14 +21,16 @@ namespace IPNoticeHub.Web.Controllers
         private readonly ITrademarkSearchService tmSearchService;
         private readonly ITrademarkWatchlistService tmWatchlistService;
         private readonly IPdfService pdfService;
+        private readonly ILetterTemplateProvider letterTemplateProvider;
 
         public TrademarksController(ITrademarkSearchService searchService, ITrademarkCollectionService collectionService, 
-            ITrademarkWatchlistService tmWatchlistService, IPdfService pdfService)
+            ITrademarkWatchlistService tmWatchlistService, IPdfService pdfService, ILetterTemplateProvider letterTemplateProvider)
         {
             this.tmSearchService = searchService;
             this.tmCollectionService = collectionService;
             this.tmWatchlistService = tmWatchlistService;
             this.pdfService = pdfService;
+            this.letterTemplateProvider = letterTemplateProvider;
         }
 
         [HttpGet]

@@ -18,11 +18,12 @@ namespace IPNoticeHub.Web.Controllers
     {
         private readonly ICopyrightService copyrightService;
         private readonly IPdfService pdfService;
-
-        public CopyrightsController(ICopyrightService service,IPdfService pdfService)
+        private readonly ILetterTemplateProvider letterTemplateProvider;
+        public CopyrightsController(ICopyrightService service,IPdfService pdfService,ILetterTemplateProvider letterTemplateProvider)
         {
             this.copyrightService = service;
             this.pdfService = pdfService;
+            this.letterTemplateProvider = letterTemplateProvider;
         }
 
         [HttpGet]
