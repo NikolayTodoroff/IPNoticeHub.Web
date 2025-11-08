@@ -1,4 +1,5 @@
 ﻿using IPNoticeHub.Services.Application.Abstractions;
+using IPNoticeHub.Common.EnumConstants;
 
 namespace IPNoticeHub.Services.Application.Implementations
 {
@@ -111,7 +112,7 @@ namespace IPNoticeHub.Services.Application.Implementations
                 Sincerely,
 
                 {{SenderName}}
-                {{SenderAddress}}")    
+                {{SenderAddress}}")
         };
 
         public IReadOnlyList<LetterTemplatePreset> GetLetterTemplatePresets(LetterTemplateType type)
