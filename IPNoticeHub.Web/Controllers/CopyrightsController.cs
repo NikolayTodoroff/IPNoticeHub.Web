@@ -8,6 +8,7 @@ using IPNoticeHub.Web.Models.Copyrights;
 using IPNoticeHub.Web.Models.PdfGeneration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
 using static IPNoticeHub.Common.ValidationConstants.StatusMessages;
 
@@ -246,12 +247,21 @@ namespace IPNoticeHub.Web.Controllers
                 return NotFound();
             }
 
+            var presets = letterTemplateProvider.GetLetterTemplatePresets(LetterTemplateType.CeaseDesist);
+
             var viewModel = new CeaseDesistViewModel
             {
                 PublicId = publicId,
                 WorkTitle = copyrightDetailsDTO.Title,
                 RegistrationNumber = copyrightDetailsDTO.RegistrationNumber,
             };
+
+            viewModel.TemplateOptions = presets.
+                Select(p => new SelectListItem { Value = p.Key, Text = p.DisplayName }).
+                ToList();
+
+            viewModel.TemplateKey = viewModel.TemplateKey ?? "CND-Universal";
+            viewModel.BodyTemplate = letterTemplateProvider.GetTemplateByKey(viewModel.TemplateKey)!.BodyTemplate;
 
             return View(viewModel);
         }
