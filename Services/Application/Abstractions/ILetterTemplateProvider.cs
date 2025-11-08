@@ -10,7 +10,7 @@ namespace IPNoticeHub.Services.Application.Abstractions
  
     public sealed record LetterTemplatePreset(
         LetterTemplateType Type,
-        string Key,               // e.g. "CND-Universal", "CND-Copyright", "CND-Trademark", "DMCA-General"
+        string Key,               // e.g. "CND-General", "CND-Copyright", "CND-Trademark", "DMCA-General"
         string DisplayName,       // e.g. "Cease & Desist (Universal)"
         string BodyTemplate       // the template text with {{placeholders}}
     );

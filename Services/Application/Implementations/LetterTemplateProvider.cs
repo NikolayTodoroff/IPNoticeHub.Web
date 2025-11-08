@@ -9,7 +9,7 @@ namespace IPNoticeHub.Services.Application.Implementations
         {
             // --- Cease & Desist (Universal) ---
 
-            new LetterTemplatePreset(LetterTemplateType.CeaseDesist,"CND-Universal", "Cease & Desist (Universal)",
+            new LetterTemplatePreset(LetterTemplateType.CeaseDesist,"CND-General", "Cease & Desist (Universal)",
                 BodyTemplate: @"{{Date}}
 
                 {{RecipientName}}
