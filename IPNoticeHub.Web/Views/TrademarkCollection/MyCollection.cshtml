@@ -58,7 +58,13 @@
                             <td class="text-end">
                                 <div class="d-flex justify-content-end align-items-stretch gap-2">
 
-                                    <button type="button" class="btn btn-outline-primary btn-sm" disabled>Cease & Desist</button>
+                                    <a asp-controller="Trademarks"
+                                       asp-action="CeaseDesist"
+                                       asp-route-publicId="@tm.PublicId"
+                                       class="btn btn-outline-secondary">
+                                        Cease &amp; Desist
+                                    </a>
+
 
                                     <a class="btn btn-outline-primary btn-sm"
                                        asp-controller="Trademarks"

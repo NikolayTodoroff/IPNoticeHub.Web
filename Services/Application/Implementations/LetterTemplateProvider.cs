@@ -88,32 +88,46 @@ namespace IPNoticeHub.Services.Application.Implementations
                 {{SenderName}}
                 {{SenderAddress}}"),
             
-            // --- Cease & Desist (Trademark) ---
-            new LetterTemplatePreset (LetterTemplateType.CeaseDesist, "CND-Trademark", "Cease & Desist (Trademark)",
-            BodyTemplate: @"{{Date}}
+            // --- DMCA (General) ---
+
+            new(LetterTemplateType.Dmca, "DMCA-General", "DMCA Takedown (General)",
+                BodyTemplate: @"{{Date}}
 
                 {{RecipientName}}
                 {{RecipientAddress}}
 
-                Subject: Cease and Desist – Unauthorized Use of Mark Related to “{{WorkTitle}}” ({{RegistrationNumber}})
+                Subject: DMCA Takedown Notice – “{{WorkTitle}}” ({{RegistrationNumber}})
 
-                Dear {{RecipientName}},
+                To the Designated DMCA Agent,
 
-                It has come to our attention that you are using a mark, logo, name, or other source identifier confusingly similar to our protected mark associated with “{{WorkTitle}}” (registration: {{RegistrationNumber}}). Your use is likely to cause consumer confusion, mistake, or deception as to source, sponsorship, or affiliation, in violation of the Lanham Act (15 U.S.C. §§ 1114, 1125) and applicable law.
+                I am the rights holder (or authorized agent) for the copyrighted work titled “{{WorkTitle}}” (registration: {{RegistrationNumber}}). I request removal or disabling of access to material that infringes my rights, identified at the following URL or location under your control: {{InfringingUrl}}.
 
-                The unauthorized use has been observed in your listings, product packaging, advertising, or related materials. {{AdditionalFacts}}
+                Work information:
+                • Title: {{WorkTitle}}
+                • Registration Number: {{RegistrationNumber}}
+                • Year of Creation: {{YearOfCreation}}
+                • Date of Publication: {{DateOfPublication}}
+                • Nation of First Publication: {{NationOfFirstPublication}}
 
-                You are required to immediately: (1) remove the infringing branding from all products, listings, and advertisements; (2) cease any further use of the mark or confusingly similar variations; and (3) provide written confirmation within seven (7) days of compliance and your agreement to avoid future misuse.
+                Contact information for this notice:
+                • Name: {{SenderName}}
+                • Email: {{SenderEmail}}
+                • Address: {{SenderAddress}}
+                • Additional recipient email (if applicable): {{RecipientEmail}}
 
-                Failure to comply may result in legal action seeking injunctive relief, damages, disgorgement of profits, and other remedies.
+                Good-faith statement:
+                {{GoodFaithStatement}}
 
-                All rights are reserved.
+                I state under penalty of perjury that I am the copyright owner or authorized to act on the owner’s behalf, and that the information in this notice is accurate.
+
+                Please notify me when the material has been removed or disabled. Thank you for your prompt attention.
 
                 Sincerely,
 
                 {{SenderName}}
-                {{SenderAddress}}")
-        };
+                {{SenderAddress}}
+                {{SenderEmail}}")
+                        };
 
         public IReadOnlyList<LetterTemplatePreset> GetLetterTemplatePresets(LetterTemplateType type)
     {

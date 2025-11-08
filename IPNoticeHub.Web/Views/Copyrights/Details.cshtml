@@ -51,10 +51,15 @@
     </div>
 
     <div class="mt-4 d-flex gap-2">
-        <a class="btn btn-outline-secondary disabled" aria-disabled="true">
-            Cease & Desist
+        <a asp-action="CeaseDesist"
+           asp-route-publicId="@Model.PublicId"
+           class="btn btn-outline-secondary">
+            Cease &amp; Desist
         </a>
-        <a class="btn btn-outline-secondary disabled" aria-disabled="true">
+
+        <a asp-action="Dmca"
+           asp-route-publicId="@Model.PublicId"
+           class="btn btn-outline-secondary">
             DMCA Notice
         </a>
         <a asp-action="MyCollection" class="btn btn-secondary">Back to List</a>
