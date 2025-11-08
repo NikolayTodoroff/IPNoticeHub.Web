@@ -194,6 +194,13 @@ namespace IPNoticeHub.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
+                var presets = letterTemplateProvider.GetLetterTemplatePresets(LetterTemplateType.CeaseDesist);
+                viewModel.TemplateOptions = presets.Select(p => new SelectListItem
+                {
+                    Value = p.Key,
+                    Text = p.DisplayName
+                }).ToList();
+
                 return View(viewModel);
             }
 
