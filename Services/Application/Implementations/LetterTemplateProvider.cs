@@ -7,9 +7,9 @@ namespace IPNoticeHub.Services.Application.Implementations
     {
         private static readonly List<LetterTemplatePreset> Presets = new List<LetterTemplatePreset>()
         {
-            // --- Cease & Desist (Universal) ---
+            // --- Cease & Desist (General) ---
 
-            new LetterTemplatePreset(LetterTemplateType.CeaseDesist,"CND-General", "Cease & Desist (Universal)",
+            new LetterTemplatePreset(LetterTemplateType.CeaseDesist,"CND-General", "Cease & Desist (General)",
                 BodyTemplate: @"{{Date}}
 
                 {{RecipientName}}
