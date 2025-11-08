@@ -73,6 +73,7 @@ namespace IPNoticeHub.Tests.UnitTests.TestUtilities
         {
             var httpContext = new DefaultHttpContext();
             var pdfService = new Mock<IPdfService>();
+            var letterTemplate = new Mock<ILetterTemplateProvider>();
 
             // Simulate an authenticated user if a user ID is provided.
             if (!string.IsNullOrEmpty(userId))
@@ -84,7 +85,9 @@ namespace IPNoticeHub.Tests.UnitTests.TestUtilities
             var controller = new TrademarksController(
                 searchService ?? Mock.Of<ITrademarkSearchService>(),
                 collectionService,
-                watchlistService ?? Mock.Of<ITrademarkWatchlistService>(), pdfService.Object)
+                watchlistService ?? Mock.Of<ITrademarkWatchlistService>(),
+                pdfService.Object,
+                letterTemplate.Object)
             {
                 ControllerContext = new ControllerContext { HttpContext = httpContext }
             };

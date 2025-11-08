@@ -22,11 +22,12 @@ namespace IPNoticeHub.Tests.UnitTests.TestUtilities
         {
             var httpContext = new DefaultHttpContext();
             var pdfService = new Mock<IPdfService>();
+            var letterTemplate = new Mock<ILetterTemplateProvider>();
 
             if (!string.IsNullOrEmpty(userId))
                 httpContext.User = CreatePrincipal(userId);
 
-            var controller = new CopyrightsController(service ?? Mock.Of<ICopyrightService>(), pdfService.Object)
+            var controller = new CopyrightsController(service ?? Mock.Of<ICopyrightService>(), pdfService.Object,letterTemplate.Object)
             {
                 ControllerContext = new ControllerContext { HttpContext = httpContext }
             };
