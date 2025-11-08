@@ -173,7 +173,7 @@ namespace IPNoticeHub.Web.Controllers
         }
 
         [HttpGet, Authorize(Policy = "HasUserId")]
-        public async Task<IActionResult> Dmca(Guid publicId, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> Dmca(Guid publicId, string? templateKey, CancellationToken cancellationToken = default)
         {
             if (!User.TryGetUserId(out var userId))
             {
@@ -187,8 +187,6 @@ namespace IPNoticeHub.Web.Controllers
                 return NotFound();
             }
 
-            var presets = letterTemplateProvider.GetLetterTemplatePresets(LetterTemplateType.Dmca);
-
             var viewModel = new DMCAViewModel
             {
                 PublicId = publicId,
@@ -201,14 +199,22 @@ namespace IPNoticeHub.Web.Controllers
                 // Sender/Recipient left blank for user to fill; BodyTemplate has defaults
             };
 
+            var presets = letterTemplateProvider.GetLetterTemplatePresets(LetterTemplateType.Dmca);
+
             viewModel.TemplateOptions = presets.Select(p => new SelectListItem
             {
                 Value = p.Key,
                 Text = p.DisplayName
             }).ToList();
 
-            viewModel.TemplateKey = viewModel.TemplateKey ?? "DMCA-General";
-            viewModel.BodyTemplate = letterTemplateProvider.GetTemplateByKey(viewModel.TemplateKey)!.BodyTemplate;
+            viewModel.TemplateKey = !string.IsNullOrWhiteSpace(templateKey)
+                    ? templateKey
+                    : (viewModel.TemplateKey ?? "DMCA-General");
+
+            var dmcaTemplate = letterTemplateProvider.GetTemplateByKey(viewModel.TemplateKey!)
+               ?? letterTemplateProvider.GetTemplateByKey("DMCA-General")!;
+
+            viewModel.BodyTemplate = dmcaTemplate.BodyTemplate;
 
             return View(viewModel);
         }
@@ -244,7 +250,7 @@ namespace IPNoticeHub.Web.Controllers
         }
 
         [HttpGet, Authorize(Policy = "HasUserId")]
-        public async Task<IActionResult>CeaseDesist(Guid publicId, CancellationToken cancellationToken = default)
+        public async Task<IActionResult>CeaseDesist(Guid publicId, string? templateKey, CancellationToken cancellationToken = default)
         {
             if (!User.TryGetUserId(out var userId))
             {
@@ -258,8 +264,6 @@ namespace IPNoticeHub.Web.Controllers
                 return NotFound();
             }
 
-            var presets = letterTemplateProvider.GetLetterTemplatePresets(LetterTemplateType.CeaseDesist);
-
             var viewModel = new CeaseDesistViewModel
             {
                 PublicId = publicId,
@@ -267,12 +271,20 @@ namespace IPNoticeHub.Web.Controllers
                 RegistrationNumber = copyrightDetailsDTO.RegistrationNumber,
             };
 
+            var presets = letterTemplateProvider.GetLetterTemplatePresets(LetterTemplateType.CeaseDesist);
+
             viewModel.TemplateOptions = presets.
                 Select(p => new SelectListItem { Value = p.Key, Text = p.DisplayName }).
                 ToList();
 
-            viewModel.TemplateKey = viewModel.TemplateKey ?? "CND-Universal";
-            viewModel.BodyTemplate = letterTemplateProvider.GetTemplateByKey(viewModel.TemplateKey)!.BodyTemplate;
+            viewModel.TemplateKey = !string.IsNullOrWhiteSpace(templateKey)
+                    ? templateKey
+                    : (viewModel.TemplateKey ?? "CND-General");
+
+            var ceaseDesistTemplate = letterTemplateProvider.GetTemplateByKey(viewModel.TemplateKey!)
+              ?? letterTemplateProvider.GetTemplateByKey("CND-General")!;
+
+            viewModel.BodyTemplate = ceaseDesistTemplate.BodyTemplate;
 
             return View(viewModel);
         }

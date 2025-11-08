@@ -139,7 +139,7 @@ namespace IPNoticeHub.Web.Controllers
         }
 
         [HttpGet,Authorize(Policy = "HasUserId")]
-        public async Task<IActionResult> CeaseDesist(Guid publicId, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> CeaseDesist(Guid publicId, string? templateKey, CancellationToken cancellationToken = default)
         {
             if (!User.TryGetUserId(out var userId))
             {
@@ -161,7 +161,6 @@ namespace IPNoticeHub.Web.Controllers
             }
 
             string title = trademarkDetailsDTO.Wordmark ?? trademarkDetailsDTO.RegistrationNumber ?? "Trademark";
-            var presets = letterTemplateProvider.GetLetterTemplatePresets(LetterTemplateType.CeaseDesist);
 
             var viewModel = new CeaseDesistViewModel
             {
@@ -170,14 +169,22 @@ namespace IPNoticeHub.Web.Controllers
                 RegistrationNumber = trademarkDetailsDTO.RegistrationNumber,
             };
 
+            var presets = letterTemplateProvider.GetLetterTemplatePresets(LetterTemplateType.CeaseDesist);
+
             viewModel.TemplateOptions = presets.Select(p => new SelectListItem
             {
                 Value = p.Key,
                 Text = p.DisplayName
             }).ToList();
 
-            viewModel.TemplateKey = viewModel.TemplateKey ?? "CND-General";
-            viewModel.BodyTemplate = letterTemplateProvider.GetTemplateByKey(viewModel.TemplateKey)!.BodyTemplate;
+            viewModel.TemplateKey = !string.IsNullOrWhiteSpace(templateKey)
+                    ? templateKey
+                    : (viewModel.TemplateKey ?? "CND-General");
+
+            var ceaseDesistTemplate = letterTemplateProvider.GetTemplateByKey(viewModel.TemplateKey!)
+              ?? letterTemplateProvider.GetTemplateByKey("CND-General")!;
+
+            viewModel.BodyTemplate = ceaseDesistTemplate.BodyTemplate;
 
             return View(viewModel);
         }
