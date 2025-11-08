@@ -3,33 +3,29 @@
     ViewData["Title"] = "Generate DMCA Notice";
     Layout = "_Layout";
 }
+
 <div class="container py-4">
     <h2>Generate DMCA Notice</h2>
 
-    <form asp-action="Dmca" method="post">
+    <!-- GET form: loads selected template -->
+    <form asp-action="Dmca" method="get" class="mb-3">
         <input type="hidden" asp-for="PublicId" />
-
-        <div class="row g-3">
+        <div class="row g-2 align-items-end">
             <div class="col-md-6">
-                <label class="form-label">Sender Email</label>
-                <input asp-for="SenderEmail" class="form-control" />
-                <span asp-validation-for="SenderEmail" class="text-danger"></span>
+                <label class="form-label">Template</label>
+                <select asp-for="TemplateKey"
+                        asp-items="Model.TemplateOptions"
+                        class="form-select"></select>
             </div>
-            <div class="col-md-6">
-                <label class="form-label">Recipient Email (optional)</label>
-                <input asp-for="RecipientEmail" class="form-control" />
-            </div>
-            <div class="col-12">
-                <label class="form-label">Infringing URL</label>
-                <input asp-for="InfringingUrl" class="form-control" />
-                <span asp-validation-for="InfringingUrl" class="text-danger"></span>
-            </div>
-            <div class="col-12">
-                <label class="form-label">Good-Faith Statement</label>
-                <textarea asp-for="GoodFaithStatement" class="form-control" rows="3"></textarea>
+            <div class="col-auto">
+                <button class="btn btn-outline-secondary">Load Template</button>
             </div>
         </div>
+    </form>
 
+    <!-- POST form: generates the PDF -->
+    <form asp-action="Dmca" method="post">
+        <input type="hidden" asp-for="PublicId" />
         <partial name="~/Views/Shared/_PdfFormFields.cshtml" model="Model" />
     </form>
 </div>

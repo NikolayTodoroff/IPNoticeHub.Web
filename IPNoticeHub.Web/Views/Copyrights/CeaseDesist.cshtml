@@ -4,8 +4,27 @@
     Layout = "_Layout";
     ViewData["ShowAdditionalFacts"] = true;
 }
+
 <div class="container py-4">
-    <h2>Generate Cease &amp; Desist (Copyright)</h2>
+    <h2>Generate Cease & Desist</h2>
+
+    <!-- GET form: load preset -->
+    <form asp-action="CeaseDesist" method="get" class="mb-3">
+        <input type="hidden" asp-for="PublicId" />
+        <div class="row g-2 align-items-end">
+            <div class="col-md-6">
+                <label class="form-label">Template</label>
+                <select asp-for="TemplateKey"
+                        asp-items="Model.TemplateOptions"
+                        class="form-select"></select>
+            </div>
+            <div class="col-auto">
+                <button class="btn btn-outline-secondary">Load Template</button>
+            </div>
+        </div>
+    </form>
+
+    <!-- POST form: generate the letter -->
     <form asp-action="CeaseDesist" method="post">
         <input type="hidden" asp-for="PublicId" />
         <partial name="~/Views/Shared/_PdfFormFields.cshtml" model="Model" />
