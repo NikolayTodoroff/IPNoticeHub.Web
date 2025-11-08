@@ -199,22 +199,11 @@ namespace IPNoticeHub.Web.Controllers
                 // Sender/Recipient left blank for user to fill; BodyTemplate has defaults
             };
 
-            var presets = letterTemplateProvider.GetLetterTemplatePresets(LetterTemplateType.Dmca);
+            var template = letterTemplateProvider.GetTemplateByKey("DMCA-General");
 
-            viewModel.TemplateOptions = presets.Select(p => new SelectListItem
-            {
-                Value = p.Key,
-                Text = p.DisplayName
-            }).ToList();
+            viewModel.TemplateKey = "DMCA-General";         // harmless to keep around for now
 
-            viewModel.TemplateKey = !string.IsNullOrWhiteSpace(templateKey)
-                    ? templateKey
-                    : (viewModel.TemplateKey ?? "DMCA-General");
-
-            var dmcaTemplate = letterTemplateProvider.GetTemplateByKey(viewModel.TemplateKey!)
-               ?? letterTemplateProvider.GetTemplateByKey("DMCA-General")!;
-
-            viewModel.BodyTemplate = dmcaTemplate.BodyTemplate;
+            viewModel.BodyTemplate = template?.BodyTemplate ?? string.Empty;
 
             return View(viewModel);
         }
@@ -275,23 +264,15 @@ namespace IPNoticeHub.Web.Controllers
             {
                 PublicId = publicId,
                 WorkTitle = copyrightDetailsDTO.Title,
-                RegistrationNumber = copyrightDetailsDTO.RegistrationNumber,
+                RegistrationNumber = copyrightDetailsDTO.RegistrationNumber
+                // Sender/Recipient left blank for user to fill
             };
 
             var presets = letterTemplateProvider.GetLetterTemplatePresets(LetterTemplateType.CeaseDesist);
 
-            viewModel.TemplateOptions = presets.
-                Select(p => new SelectListItem { Value = p.Key, Text = p.DisplayName }).
-                ToList();
-
-            viewModel.TemplateKey = !string.IsNullOrWhiteSpace(templateKey)
-                    ? templateKey
-                    : (viewModel.TemplateKey ?? "CND-General");
-
-            var ceaseDesistTemplate = letterTemplateProvider.GetTemplateByKey(viewModel.TemplateKey!)
-              ?? letterTemplateProvider.GetTemplateByKey("CND-General")!;
-
-            viewModel.BodyTemplate = ceaseDesistTemplate.BodyTemplate;
+            var template = letterTemplateProvider.GetTemplateByKey("CND-Copyright")!;
+            viewModel.TemplateKey = "CND-Copyright";          // harmless to keep for now
+            viewModel.BodyTemplate = template.BodyTemplate;
 
             return View(viewModel);
         }

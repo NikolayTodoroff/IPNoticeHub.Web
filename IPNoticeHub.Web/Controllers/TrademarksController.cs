@@ -169,22 +169,9 @@ namespace IPNoticeHub.Web.Controllers
                 RegistrationNumber = trademarkDetailsDTO.RegistrationNumber,
             };
 
-            var presets = letterTemplateProvider.GetLetterTemplatePresets(LetterTemplateType.CeaseDesist);
-
-            viewModel.TemplateOptions = presets.Select(p => new SelectListItem
-            {
-                Value = p.Key,
-                Text = p.DisplayName
-            }).ToList();
-
-            viewModel.TemplateKey = !string.IsNullOrWhiteSpace(templateKey)
-                    ? templateKey
-                    : (viewModel.TemplateKey ?? "CND-General");
-
-            var ceaseDesistTemplate = letterTemplateProvider.GetTemplateByKey(viewModel.TemplateKey!)
-              ?? letterTemplateProvider.GetTemplateByKey("CND-General")!;
-
-            viewModel.BodyTemplate = ceaseDesistTemplate.BodyTemplate;
+            var template = letterTemplateProvider.GetTemplateByKey("CND-Trademark")!;
+            viewModel.TemplateKey = "CND-Trademark";
+            viewModel.BodyTemplate = template.BodyTemplate;
 
             return View(viewModel);
         }

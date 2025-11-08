@@ -4,8 +4,10 @@
     Layout = "_Layout";
     ViewData["ShowAdditionalFacts"] = true;
 }
+
 <div class="container py-4">
-    <h2>Generate Cease &amp; Desist</h2>
+    <h2>Generate Cease &amp; Desist (Trademark)</h2>
+
     <form asp-action="CeaseDesist" method="post">
         <input type="hidden" asp-for="PublicId" />
         <partial name="~/Views/Shared/PdfFormFields.cshtml" model="Model" />
