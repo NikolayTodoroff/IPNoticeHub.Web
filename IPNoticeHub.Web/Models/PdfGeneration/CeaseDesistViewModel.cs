@@ -25,7 +25,9 @@ namespace IPNoticeHub.Web.Models.PdfGeneration
 
         public string SenderAddress { get; set; } = string.Empty;
 
-        [Required] 
+        public string SenderEmail { get; set; } = string.Empty;
+
+        [Required]
         public string RecipientName { get; set; } = string.Empty;
 
         public string RecipientAddress { get; set; } = string.Empty;

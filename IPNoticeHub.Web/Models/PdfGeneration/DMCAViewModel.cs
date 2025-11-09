@@ -18,11 +18,11 @@ namespace IPNoticeHub.Web.Models.PdfGeneration
         [BindNever]
         public string? RegistrationNumber { get; set; } = string.Empty;
 
-        public int? YearOfCreation { get; init; }
+        public int? YearOfCreation { get; set; }
 
-        public DateTime? DateOfPublication { get; init; }
+        public DateTime? DateOfPublication { get; set; }
 
-        public string? NationOfFirstPublication { get; init; }
+        public string? NationOfFirstPublication { get; set; }
 
 
         // Sender and Recipient

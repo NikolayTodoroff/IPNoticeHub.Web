@@ -8,6 +8,7 @@ using IPNoticeHub.Web.Models.Copyrights;
 using IPNoticeHub.Web.Models.PdfGeneration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Globalization;
 using static IPNoticeHub.Common.ValidationConstants.FormattingConstants;
 using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
 using static IPNoticeHub.Common.ValidationConstants.StatusMessages;
@@ -216,12 +217,14 @@ namespace IPNoticeHub.Web.Controllers
                 return Forbid();
             }
 
-            var details = await copyrightService.GetDetailsAsync(userId, publicId, cancellationToken);
+            var dto = await copyrightService.GetDetailsAsync(userId, publicId, cancellationToken);
 
-            if (details is null)
+            if (dto is null)
             {
                 return NotFound();
             }
+
+            ApplyCopyrightsDetails(viewModel, dto);
 
             var input = new DMCAInput(
                 SenderName: viewModel.SenderName,
@@ -231,8 +234,8 @@ namespace IPNoticeHub.Web.Controllers
                 RecipientEmail: viewModel.RecipientEmail ?? string.Empty,
                 RecipientAddress: viewModel.RecipientAddress ?? string.Empty,
                 Date: DateTime.UtcNow,
-                WorkTitle: details.Title,
-                RegistrationNumber: details.RegistrationNumber,
+                WorkTitle: viewModel.WorkTitle,
+                RegistrationNumber: viewModel.RegistrationNumber ?? string.Empty,
                 YearOfCreation: viewModel.YearOfCreation,
                 DateOfPublication: viewModel.DateOfPublication,
                 NationOfFirstPublication: viewModel.NationOfFirstPublication,
@@ -242,21 +245,32 @@ namespace IPNoticeHub.Web.Controllers
             );
 
             var pdf = await pdfService.GenerateCopyrightDMCAAsync(input, cancellationToken);
+
             return File(pdf, "application/pdf",
-                $"DMCA-{details.Title}-{DateTime.UtcNow:DateTimeFormat}.pdf");
+                $"DMCA-{dto.Title}-{DateTime.UtcNow:DateTimeFormat}.pdf");
         }
 
         [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
         public async Task<IActionResult> DmcaPreview(DMCAViewModel viewModel, CancellationToken ct = default)
         {
-            if (!User.TryGetUserId(out var _)) return Forbid();
+            if (!User.TryGetUserId(out var userId))
+            {
+                return Forbid();
+            }
 
-            // Load default template
+            var dto = await copyrightService.GetDetailsAsync(userId, viewModel.PublicId, ct);
+            if (dto is null)
+            {
+                return NotFound();
+            }
+
+            ApplyCopyrightsDetails(viewModel, dto);
+
             var template = letterTemplateProvider.GetTemplateByKey("DMCA-General")?.BodyTemplate ?? viewModel.BodyTemplate;
 
             var placeholders = new Dictionary<string, string>
             {
-                ["Date"] = DateTime.UtcNow.ToString(DateTimeFormat),
+                ["Date"] = DateTime.UtcNow.ToString(DateTimeFormat, CultureInfo.InvariantCulture),
                 ["RecipientName"] = viewModel.RecipientName ?? "",
                 ["RecipientAddress"] = viewModel.RecipientAddress ?? "",
                 ["RecipientEmail"] = viewModel.RecipientEmail ?? "",
@@ -380,6 +394,15 @@ namespace IPNoticeHub.Web.Controllers
                 var key = m.Groups[1].Value;
                 return vars.TryGetValue(key, out var val) ? (val ?? string.Empty) : m.Value;
             });
+        }
+
+        private static void ApplyCopyrightsDetails(DMCAViewModel viewModel,CopyrightDetailsDTO dto)
+        {
+            viewModel.WorkTitle = dto.Title ?? string.Empty;
+            viewModel.RegistrationNumber = dto.RegistrationNumber ?? string.Empty;
+            viewModel.YearOfCreation = dto.YearOfCreation;
+            viewModel.DateOfPublication = dto.DateOfPublication;
+            viewModel.NationOfFirstPublication = dto.NationOfFirstPublication;
         }
     }
 }

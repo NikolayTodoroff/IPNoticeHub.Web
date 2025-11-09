@@ -96,38 +96,40 @@ namespace IPNoticeHub.Services.Application.Implementations
                 {{RecipientName}}
                 {{RecipientAddress}}
 
-                Subject: DMCA Takedown Notice – “{{WorkTitle}}” ({{RegistrationNumber}})
+                **Subject:** DMCA Takedown Notice – “{{WorkTitle}}” ({{RegistrationNumber}})
 
                 To the Designated DMCA Agent,
 
-                I am the rights holder (or authorized agent) for the copyrighted work titled “{{WorkTitle}}” (registration: {{RegistrationNumber}}). I request removal or disabling of access to material that infringes my rights, identified at the following URL or location under your control: {{InfringingUrl}}.
+                I am the rights holder (or authorized agent) for the copyrighted work titled “{{WorkTitle}}” (registration: {{RegistrationNumber}}).  
+                I request **immediate removal or disabling of access** to material that infringes my rights, identified at the following URL or location under your control:  
+                {{InfringingUrl}}
 
-                Work information:
-                • Title: {{WorkTitle}}
-                • Registration Number: {{RegistrationNumber}}
-                • Year of Creation: {{YearOfCreation}}
-                • Date of Publication: {{DateOfPublication}}
+                **Work information:**
+                • Title: {{WorkTitle}}  
+                • Registration Number: {{RegistrationNumber}}  
+                • Year of Creation: {{YearOfCreation}}  
+                • Date of Publication: {{DateOfPublication}}  
                 • Nation of First Publication: {{NationOfFirstPublication}}
 
-                Contact information for this notice:
-                • Name: {{SenderName}}
-                • Email: {{SenderEmail}}
-                • Address: {{SenderAddress}}
+                **Contact information for this notice:**
+                • Name: {{SenderName}}  
+                • Email: {{SenderEmail}}  
+                • Address: {{SenderAddress}}  
                 • Additional recipient email (if applicable): {{RecipientEmail}}
 
-                Good-faith statement:
+                **Good-faith statement:**  
                 {{GoodFaithStatement}}
 
-                I state under penalty of perjury that I am the copyright owner or authorized to act on the owner’s behalf, and that the information in this notice is accurate.
+                I state under **penalty of perjury** that I am the copyright owner or authorized to act on the owner’s behalf, and that the information in this notice is accurate.
 
-                Please notify me when the material has been removed or disabled. Thank you for your prompt attention.
+                Please notify me when the material has been removed or disabled.  
+                Thank you for your prompt attention.
 
-                Sincerely,
-
-                {{SenderName}}
+                **Sincerely,**  
+                {{SenderName}}  
                 {{SenderAddress}}
-                {{SenderEmail}}")
-                        };
+                ")
+        };
 
         public IReadOnlyList<LetterTemplatePreset> GetLetterTemplatePresets(LetterTemplateType type)
     {
