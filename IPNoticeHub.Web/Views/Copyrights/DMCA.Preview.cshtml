@@ -5,40 +5,51 @@
 }
 
 <div class="container py-4">
-  <h2>Preview DMCA Notice</h2>
+    <h2>Preview DMCA Notice</h2>
 
-  <div class="mb-3 p-3 border rounded bg-light">
-    <pre class="mb-0" style="white-space: pre-wrap;">@Model.BodyTemplate</pre>
-  </div>
+    <div class="mb-3 p-3 border rounded bg-light">
+        <pre class="mb-0" style="white-space: pre-wrap;">@Model.BodyTemplate</pre>
+    </div>
 
-  <form asp-action="Dmca" method="post" class="d-inline">
-    @* keep all data through hidden fields *@
-    <input type="hidden" asp-for="PublicId" />
-    <input type="hidden" asp-for="SenderName" />
-    <input type="hidden" asp-for="SenderAddress" />
-    <input type="hidden" asp-for="SenderEmail" />
-    <input type="hidden" asp-for="RecipientName" />
-    <input type="hidden" asp-for="RecipientAddress" />
-    <input type="hidden" asp-for="RecipientEmail" />
-    <input type="hidden" asp-for="WorkTitle" />
-    <input type="hidden" asp-for="RegistrationNumber" />
-    <input type="hidden" asp-for="InfringingUrl" />
-    <input type="hidden" asp-for="YearOfCreation" />
-    <input type="hidden" asp-for="DateOfPublication" />
-    <input type="hidden" asp-for="NationOfFirstPublication" />
-    <input type="hidden" asp-for="GoodFaithStatement" />
-    <input type="hidden" asp-for="BodyTemplate" />
+    <!-- Generate PDF -->
+    <form asp-action="Dmca" method="post" class="d-inline">
+        <input type="hidden" asp-for="PublicId" />
+        <input type="hidden" asp-for="SenderName" />
+        <input type="hidden" asp-for="SenderAddress" />
+        <input type="hidden" asp-for="SenderEmail" />
+        <input type="hidden" asp-for="RecipientName" />
+        <input type="hidden" asp-for="RecipientAddress" />
+        <input type="hidden" asp-for="RecipientEmail" />
+        <input type="hidden" asp-for="WorkTitle" />
+        <input type="hidden" asp-for="RegistrationNumber" />
+        <input type="hidden" asp-for="InfringingUrl" />
+        <input type="hidden" asp-for="YearOfCreation" />
+        <input type="hidden" asp-for="DateOfPublication" />
+        <input type="hidden" asp-for="NationOfFirstPublication" />
+        <input type="hidden" asp-for="GoodFaithStatement" />
+        <input type="hidden" asp-for="BodyTemplate" />
+        <button class="btn btn-primary">Generate PDF</button>
+    </form>
 
-    <button class="btn btn-primary">Generate PDF</button>
-  </form>
+    <!-- Jump to full-text editor -->
+    <form asp-action="DmcaEdit" method="post" class="d-inline">
+        <input type="hidden" asp-for="PublicId" />
+        <input type="hidden" asp-for="SenderName" />
+        <input type="hidden" asp-for="SenderAddress" />
+        <input type="hidden" asp-for="SenderEmail" />
+        <input type="hidden" asp-for="RecipientName" />
+        <input type="hidden" asp-for="RecipientAddress" />
+        <input type="hidden" asp-for="RecipientEmail" />
+        <input type="hidden" asp-for="WorkTitle" />
+        <input type="hidden" asp-for="RegistrationNumber" />
+        <input type="hidden" asp-for="InfringingUrl" />
+        <input type="hidden" asp-for="YearOfCreation" />
+        <input type="hidden" asp-for="DateOfPublication" />
+        <input type="hidden" asp-for="NationOfFirstPublication" />
+        <input type="hidden" asp-for="GoodFaithStatement" />
+        <input type="hidden" asp-for="BodyTemplate" />
+        <button class="btn btn-outline-secondary ms-2">Edit Text</button>
+    </form>
 
-  <form asp-action="DmcaEdit" method="post" class="d-inline">
-    @* same hidden fields, so the editor can start with this body *@
-    <input type="hidden" asp-for="PublicId" />
-    <!-- repeat the hidden inputs as above ... -->
-    <input type="hidden" asp-for="BodyTemplate" />
-    <button class="btn btn-outline-secondary ms-2">Edit Text</button>
-  </form>
-
-  <a asp-action="Dmca" asp-route-publicId="@Model.PublicId" class="btn btn-link ms-2">Back</a>
+    <a asp-action="Dmca" asp-route-publicId="@Model.PublicId" class="btn btn-link ms-2">Back</a>
 </div>
