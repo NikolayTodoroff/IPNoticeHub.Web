@@ -1,0 +1,38 @@
+﻿@model IPNoticeHub.Web.Models.PdfGeneration.IPdfLetterViewModel
+<div class="row g-3">
+    <div class="col-md-6">
+        <label class="form-label">Sender Name</label>
+        <input asp-for="SenderName" class="form-control" />
+    </div>
+    <div class="col-md-6">
+        <label class="form-label">Sender Address</label>
+        <input asp-for="SenderAddress" class="form-control" />
+    </div>
+
+    <div class="col-md-6">
+        <label class="form-label">Recipient Name</label>
+        <input asp-for="RecipientName" class="form-control" />
+    </div>
+    <div class="col-md-6">
+        <label class="form-label">Recipient Address</label>
+        <input asp-for="RecipientAddress" class="form-control" />
+    </div>
+
+    <div class="col-md-6">
+        <label class="form-label">Work Title</label>
+        <input asp-for="WorkTitle" class="form-control" readonly />
+    </div>
+    <div class="col-md-6">
+        <label class="form-label">Registration Number</label>
+        <input asp-for="RegistrationNumber" class="form-control" readonly />
+    </div>
+
+    @* Optional C&D-only field; harmless if model doesn’t have it *@
+    @if (ViewData["ShowAdditionalFacts"] as bool? == true)
+    {
+        <div class="col-12">
+            <label class="form-label">Additional Facts (optional)</label>
+            <textarea asp-for="AdditionalFacts" class="form-control" rows="3"></textarea>
+        </div>
+    }
+</div>

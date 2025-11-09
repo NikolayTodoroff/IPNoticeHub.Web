@@ -7,9 +7,14 @@
 <div class="container py-4">
     <h2>Generate DMCA Notice</h2>
 
-    <form asp-action="Dmca" method="post">
+    <form asp-action="DmcaPreview" method="post">
         <input type="hidden" asp-for="PublicId" />
-        <partial name="~/Views/Shared/PdfFormFields.cshtml" model="Model" />
+        <partial name="~/Views/Shared/_PdfFormFields.Basic.cshtml" model="Model" />
+
+        <div class="mt-3 d-flex gap-2">
+            <button class="btn btn-primary">Next</button>
+            <a asp-action="Details" asp-controller="Copyrights" asp-route-id="@Model.PublicId"
+               class="btn btn-secondary">Cancel</a>
+        </div>
     </form>
 </div>
-
