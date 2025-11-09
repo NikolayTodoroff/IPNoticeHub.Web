@@ -246,6 +246,41 @@ namespace IPNoticeHub.Web.Controllers
                 $"DMCA-{details.Title}-{DateTime.UtcNow:DateTimeFormat}.pdf");
         }
 
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
+        public async Task<IActionResult> DmcaPreview(DMCAViewModel viewModel, CancellationToken ct = default)
+        {
+            if (!User.TryGetUserId(out var _)) return Forbid();
+
+            // Load default template
+            var template = letterTemplateProvider.GetTemplateByKey("DMCA-General")?.BodyTemplate ?? viewModel.BodyTemplate;
+
+            var placeholders = new Dictionary<string, string>
+            {
+                ["Date"] = DateTime.UtcNow.ToString(DateTimeFormat),
+                ["RecipientName"] = viewModel.RecipientName ?? "",
+                ["RecipientAddress"] = viewModel.RecipientAddress ?? "",
+                ["RecipientEmail"] = viewModel.RecipientEmail ?? "",
+                ["SenderName"] = viewModel.SenderName ?? "",
+                ["SenderAddress"] = viewModel.SenderAddress ?? "",
+                ["SenderEmail"] = viewModel.SenderEmail ?? "",
+                ["WorkTitle"] = viewModel.WorkTitle ?? "",
+                ["RegistrationNumber"] = viewModel.RegistrationNumber ?? "",
+                ["InfringingUrl"] = viewModel.InfringingUrl ?? "",
+                ["YearOfCreation"] = viewModel.YearOfCreation?.ToString() ?? "",
+                ["DateOfPublication"] = viewModel.DateOfPublication?.ToString(DateTimeFormat) ?? "",
+                ["NationOfFirstPublication"] = viewModel.NationOfFirstPublication ?? "",
+                ["GoodFaithStatement"] = viewModel.GoodFaithStatement ?? ""
+            };
+
+            viewModel.BodyTemplate = ReplaceTemplate(template, placeholders);
+            return View("DMCA.Preview", viewModel);
+        }
+
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
+        public IActionResult DmcaEdit(DMCAViewModel model)
+        {
+            return View("DMCA.Edit", model);
+        }
 
         [HttpGet, Authorize(Policy = "HasUserId")]
         public async Task<IActionResult>CeaseDesist(Guid publicId, CancellationToken cancellationToken = default)
@@ -300,36 +335,6 @@ namespace IPNoticeHub.Web.Controllers
 
             var pdf = await pdfService.GenerateCopyrightCeaseDesistAsync(input, ct);
             return File(pdf, "application/pdf", $"CeaseDesist-{viewModel.WorkTitle}-{DateTime.UtcNow:yyyyMMdd}.pdf");
-        }
-
-        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
-        public async Task<IActionResult> DmcaPreview(DMCAViewModel viewModel, CancellationToken ct = default)
-        {
-            if (!User.TryGetUserId(out var _)) return Forbid();
-
-            // Load default template
-            var template = letterTemplateProvider.GetTemplateByKey("DMCA-General")?.BodyTemplate ?? viewModel.BodyTemplate;
-
-            var placeholders = new Dictionary<string, string>
-            {
-                ["Date"] = DateTime.UtcNow.ToString(DateTimeFormat),
-                ["RecipientName"] = viewModel.RecipientName ?? "",
-                ["RecipientAddress"] = viewModel.RecipientAddress ?? "",
-                ["RecipientEmail"] = viewModel.RecipientEmail ?? "",
-                ["SenderName"] = viewModel.SenderName ?? "",
-                ["SenderAddress"] = viewModel.SenderAddress ?? "",
-                ["SenderEmail"] = viewModel.SenderEmail ?? "",
-                ["WorkTitle"] = viewModel.WorkTitle ?? "",
-                ["RegistrationNumber"] = viewModel.RegistrationNumber ?? "",
-                ["InfringingUrl"] = viewModel.InfringingUrl ?? "",
-                ["YearOfCreation"] = viewModel.YearOfCreation?.ToString() ?? "",
-                ["DateOfPublication"] = viewModel.DateOfPublication?.ToString(DateTimeFormat) ?? "",
-                ["NationOfFirstPublication"] = viewModel.NationOfFirstPublication ?? "",
-                ["GoodFaithStatement"] = viewModel.GoodFaithStatement ?? ""
-            };
-
-            viewModel.BodyTemplate = ReplaceTemplate(template, placeholders);
-            return View("DMCA.Preview", viewModel);
         }
 
         /// <summary>
