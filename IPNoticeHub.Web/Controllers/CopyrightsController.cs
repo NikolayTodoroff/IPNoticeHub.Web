@@ -1,4 +1,4 @@
-﻿using Humanizer;
+﻿using IPNoticeHub.Common;
 using IPNoticeHub.Common.EnumConstants;
 using IPNoticeHub.Common.Infrastructure;
 using IPNoticeHub.Services.Application.Abstractions;
@@ -8,7 +8,7 @@ using IPNoticeHub.Web.Models.Copyrights;
 using IPNoticeHub.Web.Models.PdfGeneration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+using static IPNoticeHub.Common.ValidationConstants.FormattingConstants;
 using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
 using static IPNoticeHub.Common.ValidationConstants.StatusMessages;
 
@@ -195,13 +195,10 @@ namespace IPNoticeHub.Web.Controllers
                 YearOfCreation = copyrightDetailsDTO.YearOfCreation,
                 DateOfPublication = copyrightDetailsDTO.DateOfPublication,
                 NationOfFirstPublication = copyrightDetailsDTO.NationOfFirstPublication
-
-                // Sender/Recipient left blank for user to fill; BodyTemplate has defaults
             };
 
-            var template = letterTemplateProvider.GetTemplateByKey("DMCA-General");
-
-            viewModel.BodyTemplate = template?.BodyTemplate ?? string.Empty;
+           viewModel.BodyTemplate = letterTemplateProvider.GetTemplateByKey("DMCA-General")?.BodyTemplate 
+                ?? viewModel.BodyTemplate;
 
             return View(viewModel);
         }
@@ -214,6 +211,18 @@ namespace IPNoticeHub.Web.Controllers
                 return View(viewModel);
             }
 
+            if (!User.TryGetUserId(out var userId))
+            {
+                return Forbid();
+            }
+
+            var details = await copyrightService.GetDetailsAsync(userId, publicId, cancellationToken);
+
+            if (details is null)
+            {
+                return NotFound();
+            }
+
             var input = new DMCAInput(
                 SenderName: viewModel.SenderName,
                 SenderEmail: viewModel.SenderEmail,
@@ -222,19 +231,21 @@ namespace IPNoticeHub.Web.Controllers
                 RecipientEmail: viewModel.RecipientEmail ?? string.Empty,
                 RecipientAddress: viewModel.RecipientAddress ?? string.Empty,
                 Date: DateTime.UtcNow,
-                WorkTitle: viewModel.WorkTitle,
-                RegistrationNumber: viewModel.RegistrationNumber,
+                WorkTitle: details.Title,
+                RegistrationNumber: details.RegistrationNumber,
                 YearOfCreation: viewModel.YearOfCreation,
                 DateOfPublication: viewModel.DateOfPublication,
                 NationOfFirstPublication: viewModel.NationOfFirstPublication,
                 InfringingUrl: viewModel.InfringingUrl,
                 GoodFaithStatement: viewModel.GoodFaithStatement,
                 BodyTemplate: viewModel.BodyTemplate
-                );
+            );
 
             var pdf = await pdfService.GenerateCopyrightDMCAAsync(input, cancellationToken);
-            return File(pdf, "application/pdf", $"DMCA-{viewModel.WorkTitle}-{DateTime.UtcNow:yyyyMMdd}.pdf");
+            return File(pdf, "application/pdf",
+                $"DMCA-{details.Title}-{DateTime.UtcNow:DateTimeFormat}.pdf");
         }
+
 
         [HttpGet, Authorize(Policy = "HasUserId")]
         public async Task<IActionResult>CeaseDesist(Guid publicId, CancellationToken cancellationToken = default)
@@ -291,6 +302,36 @@ namespace IPNoticeHub.Web.Controllers
             return File(pdf, "application/pdf", $"CeaseDesist-{viewModel.WorkTitle}-{DateTime.UtcNow:yyyyMMdd}.pdf");
         }
 
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
+        public async Task<IActionResult> DmcaPreview(DMCAViewModel viewModel, CancellationToken ct = default)
+        {
+            if (!User.TryGetUserId(out var _)) return Forbid();
+
+            // Load default template
+            var template = letterTemplateProvider.GetTemplateByKey("DMCA-General")?.BodyTemplate ?? viewModel.BodyTemplate;
+
+            var placeholders = new Dictionary<string, string>
+            {
+                ["Date"] = DateTime.UtcNow.ToString(DateTimeFormat),
+                ["RecipientName"] = viewModel.RecipientName ?? "",
+                ["RecipientAddress"] = viewModel.RecipientAddress ?? "",
+                ["RecipientEmail"] = viewModel.RecipientEmail ?? "",
+                ["SenderName"] = viewModel.SenderName ?? "",
+                ["SenderAddress"] = viewModel.SenderAddress ?? "",
+                ["SenderEmail"] = viewModel.SenderEmail ?? "",
+                ["WorkTitle"] = viewModel.WorkTitle ?? "",
+                ["RegistrationNumber"] = viewModel.RegistrationNumber ?? "",
+                ["InfringingUrl"] = viewModel.InfringingUrl ?? "",
+                ["YearOfCreation"] = viewModel.YearOfCreation?.ToString() ?? "",
+                ["DateOfPublication"] = viewModel.DateOfPublication?.ToString(DateTimeFormat) ?? "",
+                ["NationOfFirstPublication"] = viewModel.NationOfFirstPublication ?? "",
+                ["GoodFaithStatement"] = viewModel.GoodFaithStatement ?? ""
+            };
+
+            viewModel.BodyTemplate = ReplaceTemplate(template, placeholders);
+            return View("DMCA.Preview", viewModel);
+        }
+
         /// <summary>
         /// Redirects to a local URL if the provided returnUrl is valid and local.
         /// Returns null if the returnUrl is null, empty, or not a local URL.
@@ -321,6 +362,19 @@ namespace IPNoticeHub.Web.Controllers
 
             var other = string.IsNullOrWhiteSpace(stored) ? null : stored;
             return (CopyrightWorkType.Other, other);
+        }
+
+        /// <summary>
+        /// Replaces placeholders in the given template string with corresponding values from the provided dictionary.
+        /// If a key is not found in the dictionary, the placeholder remains unchanged.
+        /// </summary>
+        private static string ReplaceTemplate(string template, IDictionary<string, string> vars)
+        {
+            return System.Text.RegularExpressions.Regex.Replace(template ?? string.Empty, "{{\\s*(\\w+)\\s*}}", m =>
+            {
+                var key = m.Groups[1].Value;
+                return vars.TryGetValue(key, out var val) ? (val ?? string.Empty) : m.Value;
+            });
         }
     }
 }
