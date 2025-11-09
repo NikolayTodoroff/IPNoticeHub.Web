@@ -8,10 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Remove="Views\Copyrights\DMCAPreview.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.19" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.19" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.19" />
@@ -29,10 +25,6 @@
   <ItemGroup>
     <Folder Include="Data\" />
     <Folder Include="wwwroot\assets\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Views\Copyrights\DMCAPreview.cshtml" />
   </ItemGroup>
 
 </Project>
