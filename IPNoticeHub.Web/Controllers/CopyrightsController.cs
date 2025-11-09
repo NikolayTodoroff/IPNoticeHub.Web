@@ -273,13 +273,13 @@ namespace IPNoticeHub.Web.Controllers
             };
 
             viewModel.BodyTemplate = ReplaceTemplate(template, placeholders);
-            return View("DMCA.Preview", viewModel);
+            return View("DMCAPreview", viewModel);
         }
 
         [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
         public IActionResult DmcaEdit(DMCAViewModel model)
         {
-            return View("DMCA.Edit", model);
+            return View("DMCAEdit", model);
         }
 
         [HttpGet, Authorize(Policy = "HasUserId")]
