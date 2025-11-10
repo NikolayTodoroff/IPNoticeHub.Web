@@ -372,7 +372,7 @@ namespace IPNoticeHub.Web.Controllers
             };
 
             viewModel.BodyTemplate = ReplaceTemplate(template, placeholders);
-            return View("CND.Preview", viewModel);
+            return View("CeaseDesistPreview", viewModel);
         }
 
         [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]

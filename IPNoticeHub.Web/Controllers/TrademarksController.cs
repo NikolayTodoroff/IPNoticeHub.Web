@@ -201,7 +201,7 @@ namespace IPNoticeHub.Web.Controllers
         }
 
         [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
-        public IActionResult CeaseDesistPreview(CeaseDesistViewModel viewModel, CancellationToken ct = default)
+        public IActionResult CeaseDesistPreview(CeaseDesistViewModel viewModel, CancellationToken cancellationToken = default)
         {
             if (!User.TryGetUserId(out var userId))
             {

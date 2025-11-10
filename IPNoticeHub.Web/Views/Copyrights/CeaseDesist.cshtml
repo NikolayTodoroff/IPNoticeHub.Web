@@ -4,12 +4,14 @@
     Layout = "_Layout";
     ViewData["ShowAdditionalFacts"] = true;
 }
-
 <div class="container py-4">
-    <h2>Generate Cease &amp; Desist (Copyright)</h2>
-
-    <form asp-action="CeaseDesist" method="post">
+    <h2>Generate Cease &amp; Desist</h2>
+    <form asp-action="CeaseDesistPreview" method="post">
         <input type="hidden" asp-for="PublicId" />
-        <partial name="~/Views/Shared/PdfFormFields.cshtml" model="Model" />
+        <partial name="~/Views/Shared/_PdfFormFields.Basic.cshtml" model="Model" />
+        <div class="mt-3 d-flex gap-2">
+            <button class="btn btn-primary">Preview</button>
+            <a asp-action="Details" asp-route-publicId="@Model.PublicId" class="btn btn-outline-secondary">Cancel</a>
+        </div>
     </form>
 </div>

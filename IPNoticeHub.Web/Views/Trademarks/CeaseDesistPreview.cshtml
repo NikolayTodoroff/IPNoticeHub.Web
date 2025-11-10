@@ -1,0 +1,42 @@
+﻿@model IPNoticeHub.Web.Models.PdfGeneration.CeaseDesistViewModel
+@{
+    ViewData["Title"] = "Preview Cease & Desist";
+    Layout = "_Layout";
+}
+<div class="container py-4">
+    <h2>Preview Cease &amp; Desist</h2>
+
+    <div class="mb-3 p-3 border rounded bg-light">
+        <pre class="mb-0" style="white-space: pre-wrap;">@Model.BodyTemplate</pre>
+    </div>
+
+    <!-- Generate -->
+    <form asp-action="CeaseDesist" method="post" class="d-inline">
+        <input type="hidden" asp-for="PublicId" />
+        <input type="hidden" asp-for="SenderName" />
+        <input type="hidden" asp-for="SenderAddress" />
+        <input type="hidden" asp-for="RecipientName" />
+        <input type="hidden" asp-for="RecipientAddress" />
+        <input type="hidden" asp-for="WorkTitle" />
+        <input type="hidden" asp-for="RegistrationNumber" />
+        <input type="hidden" asp-for="AdditionalFacts" />
+        <input type="hidden" asp-for="BodyTemplate" />
+        <button class="btn btn-primary">Generate PDF</button>
+    </form>
+
+    <!-- Edit full text -->
+    <form asp-action="CeaseDesistEdit" method="post" class="d-inline ms-2">
+        <input type="hidden" asp-for="PublicId" />
+        <input type="hidden" asp-for="SenderName" />
+        <input type="hidden" asp-for="SenderAddress" />
+        <input type="hidden" asp-for="RecipientName" />
+        <input type="hidden" asp-for="RecipientAddress" />
+        <input type="hidden" asp-for="WorkTitle" />
+        <input type="hidden" asp-for="RegistrationNumber" />
+        <input type="hidden" asp-for="AdditionalFacts" />
+        <input type="hidden" asp-for="BodyTemplate" />
+        <button class="btn btn-outline-secondary">Edit</button>
+    </form>
+
+    <a asp-action="CeaseDesist" asp-route-publicId="@Model.PublicId" class="btn btn-link ms-2">Back</a>
+</div>
