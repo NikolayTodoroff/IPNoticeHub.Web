@@ -1,4 +1,4 @@
-﻿using IPNoticeHub.Common;
+﻿using static IPNoticeHub.Web.Infrastructure.TemplateReplacer;
 using IPNoticeHub.Common.EnumConstants;
 using IPNoticeHub.Common.Infrastructure;
 using IPNoticeHub.Services.Application.Abstractions;
@@ -411,19 +411,6 @@ namespace IPNoticeHub.Web.Controllers
 
             var other = string.IsNullOrWhiteSpace(stored) ? null : stored;
             return (CopyrightWorkType.Other, other);
-        }
-
-        /// <summary>
-        /// Replaces placeholders in the given template string with corresponding values from the provided dictionary.
-        /// If a key is not found in the dictionary, the placeholder remains unchanged.
-        /// </summary>
-        private static string ReplaceTemplate(string template, IDictionary<string, string> vars)
-        {
-            return System.Text.RegularExpressions.Regex.Replace(template ?? string.Empty, "{{\\s*(\\w+)\\s*}}", m =>
-            {
-                var key = m.Groups[1].Value;
-                return vars.TryGetValue(key, out var val) ? (val ?? string.Empty) : m.Value;
-            });
         }
 
         private static void ApplyCopyrightsDetails(DMCAViewModel viewModel,CopyrightDetailsDTO dto)

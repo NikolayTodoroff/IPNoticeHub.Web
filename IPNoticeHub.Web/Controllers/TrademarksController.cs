@@ -4,15 +4,18 @@ using IPNoticeHub.Services.Application.Abstractions;
 using IPNoticeHub.Services.Common;
 using IPNoticeHub.Services.Trademarks.Abstractions;
 using IPNoticeHub.Services.Trademarks.DTOs;
+using IPNoticeHub.Web.Infrastructure;
+using IPNoticeHub.Web.Models.PdfGeneration;
 using IPNoticeHub.Web.Models.Trademarks;
 using IPNoticeHub.Web.ViewModels.Trademarks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Globalization;
+using static IPNoticeHub.Common.ValidationConstants.FormattingConstants;
 using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
 using static IPNoticeHub.Common.ValidationConstants.StatusMessages;
-using IPNoticeHub.Web.Infrastructure;
-using IPNoticeHub.Web.Models.PdfGeneration;
-using Microsoft.AspNetCore.Mvc.Rendering;
+using static IPNoticeHub.Web.Infrastructure.TemplateReplacer;
 
 namespace IPNoticeHub.Web.Controllers
 {
@@ -160,17 +163,15 @@ namespace IPNoticeHub.Web.Controllers
                 return NotFound();
             }
 
-            string title = trademarkDetailsDTO.Wordmark ?? trademarkDetailsDTO.RegistrationNumber ?? "Trademark";
-
             var viewModel = new CeaseDesistViewModel
             {
                 PublicId = publicId,
-                WorkTitle = title,
+                WorkTitle = trademarkDetailsDTO.Wordmark ?? trademarkDetailsDTO.RegistrationNumber ?? "Trademark",
                 RegistrationNumber = trademarkDetailsDTO.RegistrationNumber,
             };
 
-            var template = letterTemplateProvider.GetTemplateByKey("CND-Trademark")!;
-            viewModel.BodyTemplate = template.BodyTemplate;
+            viewModel.BodyTemplate = letterTemplateProvider.GetTemplateByKey("CND-Trademark")?.BodyTemplate ?? string.Empty;
+            ViewData["ShowAdditionalFacts"] = true;
 
             return View(viewModel);
         }
@@ -196,9 +197,40 @@ namespace IPNoticeHub.Web.Controllers
             );
 
             var pdf = await pdfService.GenerateTrademarkCeaseDesistAsync(input, cancellationToken);
-            return File(pdf, "application/pdf", $"CeaseDesist-{viewModel.WorkTitle}-{DateTime.UtcNow:yyyyMMdd}.pdf");
+            return File(pdf, "application/pdf", $"CeaseDesist-{viewModel.WorkTitle}-{DateTime.UtcNow:DateTimeFormat}.pdf");
         }
 
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
+        public IActionResult CeaseDesistPreview(CeaseDesistViewModel viewModel, CancellationToken ct = default)
+        {
+            if (!User.TryGetUserId(out var userId))
+            {
+                return Forbid();
+            }
+
+            var template = letterTemplateProvider.GetTemplateByKey("CND-Trademark")?.BodyTemplate ?? string.Empty;
+
+            var placeholders = new Dictionary<string, string>
+            {
+                ["Date"] = DateTime.UtcNow.ToString(DateTimeFormat, CultureInfo.InvariantCulture),
+                ["RecipientName"] = viewModel.RecipientName ?? "",
+                ["RecipientAddress"] = viewModel.RecipientAddress ?? "",
+                ["SenderName"] = viewModel.SenderName ?? "",
+                ["SenderAddress"] = viewModel.SenderAddress ?? "",
+                ["WorkTitle"] = viewModel.WorkTitle ?? "",
+                ["RegistrationNumber"] = viewModel.RegistrationNumber ?? "",
+                ["AdditionalFacts"] = viewModel.AdditionalFacts ?? ""
+            };
+
+            viewModel.BodyTemplate = ReplaceTemplate(template, placeholders);
+            return View("CeaseDesistPreview", viewModel);
+        }
+
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
+        public IActionResult CeaseDesistEdit(CeaseDesistViewModel model)
+        {
+            return View("CeaseDesistEdit", model);
+        }
 
         // Helper methods for internal use within the controller
         private IActionResult CreateEmptyViewModel(TrademarkFilterViewModel filter)
