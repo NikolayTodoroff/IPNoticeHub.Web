@@ -217,14 +217,14 @@ namespace IPNoticeHub.Web.Controllers
                 return Forbid();
             }
 
-            var dto = await copyrightService.GetDetailsAsync(userId, publicId, cancellationToken);
+            var copyrightDetailsDTO = await copyrightService.GetDetailsAsync(userId, publicId, cancellationToken);
 
-            if (dto is null)
+            if (copyrightDetailsDTO is null)
             {
                 return NotFound();
             }
 
-            ApplyCopyrightsDetails(viewModel, dto);
+            ApplyCopyrightsDetails(viewModel, copyrightDetailsDTO);
 
             var input = new DMCAInput(
                 SenderName: viewModel.SenderName,
@@ -247,7 +247,7 @@ namespace IPNoticeHub.Web.Controllers
             var pdf = await pdfService.GenerateCopyrightDMCAAsync(input, cancellationToken);
 
             return File(pdf, "application/pdf",
-                $"DMCA-{dto.Title}-{DateTime.UtcNow:DateTimeFormat}.pdf");
+                $"DMCA-{copyrightDetailsDTO.Title}-{DateTime.UtcNow:DateTimeFormat}.pdf");
         }
 
         [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
@@ -258,13 +258,13 @@ namespace IPNoticeHub.Web.Controllers
                 return Forbid();
             }
 
-            var dto = await copyrightService.GetDetailsAsync(userId, viewModel.PublicId, ct);
-            if (dto is null)
+            var copyrightDetailsDTO = await copyrightService.GetDetailsAsync(userId, viewModel.PublicId, ct);
+            if (copyrightDetailsDTO is null)
             {
                 return NotFound();
             }
 
-            ApplyCopyrightsDetails(viewModel, dto);
+            ApplyCopyrightsDetails(viewModel, copyrightDetailsDTO);
 
             var template = letterTemplateProvider.GetTemplateByKey("DMCA-General")?.BodyTemplate ?? viewModel.BodyTemplate;
 
@@ -319,16 +319,14 @@ namespace IPNoticeHub.Web.Controllers
                 // Sender/Recipient left blank for user to fill
             };
 
-            var presets = letterTemplateProvider.GetLetterTemplatePresets(LetterTemplateType.CeaseDesist);
-
-            var template = letterTemplateProvider.GetTemplateByKey("CND-Copyright")!;
-            viewModel.BodyTemplate = template.BodyTemplate;
+            viewModel.BodyTemplate = letterTemplateProvider.GetTemplateByKey("CND-Copyright")!.BodyTemplate ?? string.Empty;
+            ViewData["ShowAdditionalFacts"] = true;
 
             return View(viewModel);
         }
 
         [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
-        public async Task<IActionResult> CeaseDesist(Guid publicId, CeaseDesistViewModel viewModel, CancellationToken ct = default)
+        public async Task<IActionResult> CeaseDesist(Guid publicId, CeaseDesistViewModel viewModel, CancellationToken cancellationToken = default)
         {
             if (!ModelState.IsValid)
             {
@@ -347,8 +345,40 @@ namespace IPNoticeHub.Web.Controllers
               BodyTemplate: viewModel.BodyTemplate
             );
 
-            var pdf = await pdfService.GenerateCopyrightCeaseDesistAsync(input, ct);
-            return File(pdf, "application/pdf", $"CeaseDesist-{viewModel.WorkTitle}-{DateTime.UtcNow:yyyyMMdd}.pdf");
+            var pdf = await pdfService.GenerateCopyrightCeaseDesistAsync(input, cancellationToken);
+            return File(pdf, "application/pdf", $"CeaseDesist-{viewModel.WorkTitle}-{DateTime.UtcNow:DateTimeFormat}.pdf");
+        }
+
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
+        public async Task<IActionResult> CeaseDesistPreview(CeaseDesistViewModel viewModel, CancellationToken cancellationToken = default)
+        {
+            if (!User.TryGetUserId(out var userId))
+            {
+                return Forbid();
+            }
+
+            var template = letterTemplateProvider.GetTemplateByKey("CND-Copyright")?.BodyTemplate ?? string.Empty;
+
+            var placeholders = new Dictionary<string, string>
+            {
+                ["Date"] = DateTime.UtcNow.ToString(DateTimeFormat, CultureInfo.InvariantCulture),
+                ["RecipientName"] = viewModel.RecipientName ?? "",
+                ["RecipientAddress"] = viewModel.RecipientAddress ?? "",
+                ["SenderName"] = viewModel.SenderName ?? "",
+                ["SenderAddress"] = viewModel.SenderAddress ?? "",
+                ["WorkTitle"] = viewModel.WorkTitle ?? "",
+                ["RegistrationNumber"] = viewModel.RegistrationNumber ?? "",
+                ["AdditionalFacts"] = viewModel.AdditionalFacts ?? ""
+            };
+
+            viewModel.BodyTemplate = ReplaceTemplate(template, placeholders);
+            return View("CND.Preview", viewModel);
+        }
+
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
+        public IActionResult CeaseDesistEdit(CeaseDesistViewModel model)
+        {
+            return View("CeaseDesistEdit", model);
         }
 
         /// <summary>

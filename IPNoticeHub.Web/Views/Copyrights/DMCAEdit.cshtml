@@ -5,7 +5,6 @@
 }
 
 <style>
-/* -------- A4 editor styles (scoped to this view) -------- */
 
 /* Frame that centers the paper on the page */
 .a4-frame {
@@ -14,7 +13,7 @@
   padding: 24px;
 }
 
-/* The “paper” – strictly A4, with internal scroll once full */
+/* The document – strictly A4, with internal scroll once full */
 .a4-paper {
   width: 210mm;
   height: 297mm;
@@ -22,12 +21,12 @@
   color: #222;
   box-shadow: 0 12px 32px rgba(16,24,40,.12);
   border-radius: 4px;
-  padding: 20mm;                 /* generous margins on the sheet */
-  overflow: auto;                /* internal scroll when content exceeds one page */
+  padding: 20mm;                 
+  overflow: auto;                
   line-height: 1.6;
   font-family: "Times New Roman", Times, serif;
   font-size: 12pt;
-  white-space: pre-wrap;         /* preserve line breaks from the template text */
+  white-space: pre-wrap;
 }
 
 /* Emphasis inside the document */
