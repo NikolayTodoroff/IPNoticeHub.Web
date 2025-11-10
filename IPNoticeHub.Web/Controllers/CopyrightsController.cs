@@ -1,9 +1,9 @@
-﻿using static IPNoticeHub.Web.Infrastructure.TemplateReplacer;
-using IPNoticeHub.Common.EnumConstants;
+﻿using IPNoticeHub.Common.EnumConstants;
 using IPNoticeHub.Common.Infrastructure;
 using IPNoticeHub.Services.Application.Abstractions;
 using IPNoticeHub.Services.Copyrights.Abstractions;
 using IPNoticeHub.Services.Copyrights.DTOs;
+using IPNoticeHub.Web.Infrastructure;
 using IPNoticeHub.Web.Models.Copyrights;
 using IPNoticeHub.Web.Models.PdfGeneration;
 using Microsoft.AspNetCore.Authorization;
@@ -12,6 +12,7 @@ using System.Globalization;
 using static IPNoticeHub.Common.ValidationConstants.FormattingConstants;
 using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
 using static IPNoticeHub.Common.ValidationConstants.StatusMessages;
+using static IPNoticeHub.Web.Infrastructure.TemplateReplacer;
 
 namespace IPNoticeHub.Web.Controllers
 {
@@ -248,6 +249,38 @@ namespace IPNoticeHub.Web.Controllers
 
             return File(pdf, "application/pdf",
                 $"DMCA-{copyrightDetailsDTO.Title}-{DateTime.UtcNow:DateTimeFormat}.pdf");
+        }
+
+        [HttpGet, Authorize(Policy = "HasUserId")]
+        public IActionResult DmcaPreview(DMCAViewModel viewModel)
+        {
+            if (!User.TryGetUserId(out var userId))
+            {
+                return Forbid();
+            }
+
+            var template = letterTemplateProvider.GetTemplateByKey("DMCA-General")?.BodyTemplate ?? "";
+
+            var placeholders = new Dictionary<string, string?>
+            {
+                ["Date"] = DateTime.UtcNow.ToString(DateTimeFormat),
+                ["RecipientName"] = viewModel.RecipientName,
+                ["RecipientAddress"] = viewModel.RecipientAddress,
+                ["RecipientEmail"] = viewModel.RecipientEmail,
+                ["SenderName"] = viewModel.SenderName,
+                ["SenderAddress"] = viewModel.SenderAddress,
+                ["SenderEmail"] = viewModel.SenderEmail,
+                ["WorkTitle"] = viewModel.WorkTitle,
+                ["RegistrationNumber"] = viewModel.RegistrationNumber,
+                ["InfringingUrl"] = viewModel.InfringingUrl,
+                ["YearOfCreation"] = viewModel.YearOfCreation?.ToString(),
+                ["DateOfPublication"] = viewModel.DateOfPublication?.ToString(DateTimeFormat),
+                ["NationOfFirstPublication"] = viewModel.NationOfFirstPublication,
+                ["GoodFaithStatement"] = viewModel.GoodFaithStatement
+            };
+
+            viewModel.BodyTemplate = ReplaceTemplate(template, placeholders!);
+            return View("DMCAPreview", viewModel);
         }
 
         [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
