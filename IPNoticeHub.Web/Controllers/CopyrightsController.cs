@@ -323,6 +323,15 @@ namespace IPNoticeHub.Web.Controllers
             return View("DMCAPreview", viewModel);
         }
 
+        [HttpGet, Authorize(Policy = "HasUserId")]
+        public IActionResult DmcaEdit(string? returnUrl = null)
+        {
+            ViewBag.ReturnUrl = !string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl)
+                ? returnUrl : Url.Action(nameof(DmcaPreview))!;
+
+            return View(viewName: "DMCAEdit", model: new DMCAViewModel());
+        }
+
         [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
         public IActionResult DmcaEdit(DMCAViewModel model)
         {
@@ -406,6 +415,15 @@ namespace IPNoticeHub.Web.Controllers
 
             viewModel.BodyTemplate = ReplaceTemplate(template, placeholders);
             return View("CeaseDesistPreview", viewModel);
+        }
+
+        [HttpGet, Authorize(Policy = "HasUserId")]
+        public IActionResult CeaseDesistEdit(string? returnUrl = null)
+        {
+            ViewBag.ReturnUrl = !string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl)
+                ? returnUrl : Url.Action(nameof(CeaseDesistPreview))!;
+
+            return View(viewName: "CeaseDesistEdit", model: new CeaseDesistViewModel());
         }
 
         [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]

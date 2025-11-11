@@ -226,6 +226,15 @@ namespace IPNoticeHub.Web.Controllers
             return View("CeaseDesistPreview", viewModel);
         }
 
+        [HttpGet, Authorize(Policy = "HasUserId")]
+        public IActionResult CeaseDesistEdit(string? returnUrl = null)
+        {
+            ViewBag.ReturnUrl = !string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl)
+                ? returnUrl : Url.Action(nameof(CeaseDesistPreview))!;
+
+            return View(viewName: "CeaseDesistEdit", model: new CeaseDesistViewModel());
+        }
+
         [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
         public IActionResult CeaseDesistEdit(CeaseDesistViewModel model)
         {
