@@ -409,7 +409,7 @@ namespace IPNoticeHub.Web.Controllers
         }
 
         [HttpGet, Authorize(Policy = "HasUserId")]
-        public async Task<IActionResult> CeaseDesistPreview(Guid publicId, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> CeaseDesistPreview(Guid publicId, bool reset = false, CancellationToken cancellationToken = default)
         {
             if (!User.TryGetUserId(out var userId))
             {
