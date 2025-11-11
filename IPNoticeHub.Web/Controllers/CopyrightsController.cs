@@ -225,7 +225,7 @@ namespace IPNoticeHub.Web.Controllers
                 return NotFound();
             }
 
-            ApplyCopyrightsDetails(viewModel, copyrightDetailsDTO);
+            ApplyCopyrightsDetails(viewModel, copyrightDetailsDTO, MergeStrategy.OverwriteAll);
 
             var input = new DMCAInput(
                 SenderName: viewModel.SenderName,
@@ -252,14 +252,25 @@ namespace IPNoticeHub.Web.Controllers
         }
 
         [HttpGet, Authorize(Policy = "HasUserId")]
-        public IActionResult DmcaPreview(DMCAViewModel viewModel)
+        public async Task<IActionResult> DmcaPreview(Guid publicId, CancellationToken cancellationToken = default)
         {
             if (!User.TryGetUserId(out var userId))
             {
                 return Forbid();
             }
 
-            var template = letterTemplateProvider.GetTemplateByKey("DMCA-General")?.BodyTemplate ?? "";
+            var copyrightDetailsDTO = await copyrightService.GetDetailsAsync(userId, publicId, cancellationToken);
+
+            if (copyrightDetailsDTO is null)
+            {
+                return NotFound();
+            }
+
+            var viewModel = new DMCAViewModel { PublicId = publicId };
+
+            ApplyCopyrightsDetails(viewModel, copyrightDetailsDTO, MergeStrategy.FillBlanks);
+
+            var template = letterTemplateProvider.GetTemplateByKey("DMCA-General")?.BodyTemplate ?? string.Empty;
 
             var placeholders = new Dictionary<string, string?>
             {
@@ -284,52 +295,57 @@ namespace IPNoticeHub.Web.Controllers
         }
 
         [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
-        public async Task<IActionResult> DmcaPreview(DMCAViewModel viewModel, CancellationToken ct = default)
+        public async Task<IActionResult> DmcaPreview(DMCAViewModel viewModel, CancellationToken cancellationToken = default)
         {
             if (!User.TryGetUserId(out var userId))
             {
                 return Forbid();
             }
 
-            var copyrightDetailsDTO = await copyrightService.GetDetailsAsync(userId, viewModel.PublicId, ct);
+            var copyrightDetailsDTO = await copyrightService.GetDetailsAsync(userId, viewModel.PublicId, cancellationToken);
+
             if (copyrightDetailsDTO is null)
             {
                 return NotFound();
             }
 
-            ApplyCopyrightsDetails(viewModel, copyrightDetailsDTO);
+            ApplyCopyrightsDetails(viewModel, copyrightDetailsDTO, MergeStrategy.FillBlanks);
 
-            var template = letterTemplateProvider.GetTemplateByKey("DMCA-General")?.BodyTemplate ?? viewModel.BodyTemplate;
-
-            var placeholders = new Dictionary<string, string>
+            if (string.IsNullOrWhiteSpace(viewModel.BodyTemplate) || viewModel.BodyTemplate.Contains("{{"))
             {
-                ["Date"] = DateTime.UtcNow.ToString(DateTimeFormat, CultureInfo.InvariantCulture),
-                ["RecipientName"] = viewModel.RecipientName ?? "",
-                ["RecipientAddress"] = viewModel.RecipientAddress ?? "",
-                ["RecipientEmail"] = viewModel.RecipientEmail ?? "",
-                ["SenderName"] = viewModel.SenderName ?? "",
-                ["SenderAddress"] = viewModel.SenderAddress ?? "",
-                ["SenderEmail"] = viewModel.SenderEmail ?? "",
-                ["WorkTitle"] = viewModel.WorkTitle ?? "",
-                ["RegistrationNumber"] = viewModel.RegistrationNumber ?? "",
-                ["InfringingUrl"] = viewModel.InfringingUrl ?? "",
-                ["YearOfCreation"] = viewModel.YearOfCreation?.ToString() ?? "",
-                ["DateOfPublication"] = viewModel.DateOfPublication?.ToString(DateTimeFormat) ?? "",
-                ["NationOfFirstPublication"] = viewModel.NationOfFirstPublication ?? "",
-                ["GoodFaithStatement"] = viewModel.GoodFaithStatement ?? ""
-            };
+                var template = letterTemplateProvider.GetTemplateByKey("DMCA-General")?.BodyTemplate ?? viewModel.BodyTemplate;
 
-            viewModel.BodyTemplate = ReplaceTemplate(template, placeholders);
+                var placeholders = new Dictionary<string, string>
+                {
+                    ["Date"] = DateTime.UtcNow.ToString(DateTimeFormat, CultureInfo.InvariantCulture),
+                    ["RecipientName"] = viewModel.RecipientName ?? "",
+                    ["RecipientAddress"] = viewModel.RecipientAddress ?? "",
+                    ["RecipientEmail"] = viewModel.RecipientEmail ?? "",
+                    ["SenderName"] = viewModel.SenderName ?? "",
+                    ["SenderAddress"] = viewModel.SenderAddress ?? "",
+                    ["SenderEmail"] = viewModel.SenderEmail ?? "",
+                    ["WorkTitle"] = viewModel.WorkTitle ?? "",
+                    ["RegistrationNumber"] = viewModel.RegistrationNumber ?? "",
+                    ["InfringingUrl"] = viewModel.InfringingUrl ?? "",
+                    ["YearOfCreation"] = viewModel.YearOfCreation?.ToString() ?? "",
+                    ["DateOfPublication"] = viewModel.DateOfPublication?.ToString(DateTimeFormat) ?? "",
+                    ["NationOfFirstPublication"] = viewModel.NationOfFirstPublication ?? "",
+                    ["GoodFaithStatement"] = viewModel.GoodFaithStatement ?? ""
+                };
+
+                viewModel.BodyTemplate = ReplaceTemplate(template, placeholders);
+            }
+
             return View("DMCAPreview", viewModel);
         }
 
         [HttpGet, Authorize(Policy = "HasUserId")]
-        public IActionResult DmcaEdit(string? returnUrl = null)
+        public IActionResult DmcaEdit(Guid publicId, string? returnUrl = null)
         {
-            ViewBag.ReturnUrl = !string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl)
-                ? returnUrl : Url.Action(nameof(DmcaPreview))!;
+            ViewBag.ReturnUrl = !string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl) ? 
+                returnUrl : Url.Action(nameof(DmcaPreview), new { publicId })!;
 
-            return View(viewName: "DMCAEdit", model: new DMCAViewModel());
+            return View("DMCAEdit", new DMCAViewModel { PublicId = publicId });
         }
 
         [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
@@ -392,13 +408,21 @@ namespace IPNoticeHub.Web.Controllers
         }
 
         [HttpGet, Authorize(Policy = "HasUserId")]
-        public IActionResult CeaseDesistPreview(CeaseDesistViewModel viewModel)
+        public async Task<IActionResult> CeaseDesistPreview(Guid publicId, CancellationToken cancellationToken = default)
         {
             if (!User.TryGetUserId(out var userId))
             {
                 return Forbid();
             }
 
+            var copyrightDetailsDTO = await copyrightService.GetDetailsAsync(userId, publicId, cancellationToken);
+
+            if (copyrightDetailsDTO is null)
+            {
+                return NotFound();
+            }
+
+            var viewModel = new CeaseDesistViewModel { PublicId = publicId };
             var template = letterTemplateProvider.GetTemplateByKey(key: "CND-Copyright")?.BodyTemplate ?? string.Empty;
 
             var placeholders = new Dictionary<string, string?>
@@ -444,12 +468,12 @@ namespace IPNoticeHub.Web.Controllers
         }
 
         [HttpGet, Authorize(Policy = "HasUserId")]
-        public IActionResult CeaseDesistEdit(string? returnUrl = null)
+        public IActionResult CeaseDesistEdit(Guid publicId, string? returnUrl = null)
         {
-            ViewBag.ReturnUrl = !string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl)
-                ? returnUrl : Url.Action(nameof(CeaseDesistPreview))!;
+            ViewBag.ReturnUrl = !string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl) ? 
+                returnUrl : Url.Action(nameof(CeaseDesistPreview), new { publicId })!;
 
-            return View(viewName: "CeaseDesistEdit", model: new CeaseDesistViewModel());
+            return View("CeaseDesistEdit", new CeaseDesistViewModel { PublicId = publicId });
         }
 
         [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
@@ -490,13 +514,30 @@ namespace IPNoticeHub.Web.Controllers
             return (CopyrightWorkType.Other, other);
         }
 
-        private static void ApplyCopyrightsDetails(DMCAViewModel viewModel,CopyrightDetailsDTO dto)
+        private static void ApplyCopyrightsDetails(DMCAViewModel vm, CopyrightDetailsDTO dto,
+            MergeStrategy strategy = MergeStrategy.FillBlanks)
         {
-            viewModel.WorkTitle = dto.Title ?? string.Empty;
-            viewModel.RegistrationNumber = dto.RegistrationNumber ?? string.Empty;
-            viewModel.YearOfCreation = dto.YearOfCreation;
-            viewModel.DateOfPublication = dto.DateOfPublication;
-            viewModel.NationOfFirstPublication = dto.NationOfFirstPublication;
+            static string? FillOnly(string? user, string? fromDb)
+            {
+                return string.IsNullOrWhiteSpace(user) ? fromDb ?? string.Empty : user;
+            }
+
+            if (strategy == MergeStrategy.OverwriteAll)
+            {
+                vm.WorkTitle = dto.Title ?? string.Empty;
+                vm.RegistrationNumber = dto.RegistrationNumber ?? string.Empty;
+                vm.YearOfCreation = dto.YearOfCreation;
+                vm.DateOfPublication = dto.DateOfPublication;
+                vm.NationOfFirstPublication = dto.NationOfFirstPublication;
+                return;
+            }
+
+            vm.WorkTitle = FillOnly(vm.WorkTitle, dto.Title) ?? string.Empty;
+            vm.RegistrationNumber = FillOnly(vm.RegistrationNumber, dto.RegistrationNumber);
+            vm.NationOfFirstPublication = FillOnly(vm.NationOfFirstPublication, dto.NationOfFirstPublication);
+            vm.YearOfCreation ??= dto.YearOfCreation;
+            vm.DateOfPublication ??= dto.DateOfPublication;
         }
+
     }
 }
