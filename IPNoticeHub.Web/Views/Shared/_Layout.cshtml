@@ -52,5 +52,19 @@
 
     <!-- JavaScript specific to the application -->
     @RenderSection("Scripts", required: false)
+
+    <!-- Universal Back button -->
+    <script>
+        document.addEventListener('click', function (e) {
+          const btn = e.target.closest('#btnBack');
+          if (!btn) return;
+
+          if (document.referrer) {
+            window.history.back();
+          } else {
+            window.location.href = '@Url.Action("Index", "Home")';
+          }
+        });
+    </script>
 </body>
 </html>
