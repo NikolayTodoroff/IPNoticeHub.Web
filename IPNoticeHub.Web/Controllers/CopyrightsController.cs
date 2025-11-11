@@ -391,6 +391,32 @@ namespace IPNoticeHub.Web.Controllers
             return File(pdf, "application/pdf", $"CeaseDesist-{viewModel.WorkTitle}-{DateTime.UtcNow:DateTimeFormat}.pdf");
         }
 
+        [HttpGet, Authorize(Policy = "HasUserId")]
+        public IActionResult CeaseDesistPreview(CeaseDesistViewModel viewModel)
+        {
+            if (!User.TryGetUserId(out var userId))
+            {
+                return Forbid();
+            }
+
+            var template = letterTemplateProvider.GetTemplateByKey(key: "CND-Copyright")?.BodyTemplate ?? string.Empty;
+
+            var placeholders = new Dictionary<string, string?>
+            {
+                ["Date"] = DateTime.UtcNow.ToString(DateTimeFormat, CultureInfo.InvariantCulture),
+                ["RecipientName"] = viewModel.RecipientName,
+                ["RecipientAddress"] = viewModel.RecipientAddress,
+                ["SenderName"] = viewModel.SenderName,
+                ["SenderAddress"] = viewModel.SenderAddress,
+                ["WorkTitle"] = viewModel.WorkTitle,
+                ["RegistrationNumber"] = viewModel.RegistrationNumber,
+                ["AdditionalFacts"] = viewModel.AdditionalFacts
+            };
+
+            viewModel.BodyTemplate = ReplaceTemplate(template, placeholders!);
+            return View(viewName: "CeaseDesistPreview", viewModel);
+        }
+
         [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
         public async Task<IActionResult> CeaseDesistPreview(CeaseDesistViewModel viewModel, CancellationToken cancellationToken = default)
         {

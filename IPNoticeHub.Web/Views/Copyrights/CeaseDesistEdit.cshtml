@@ -2,7 +2,6 @@
 @{
     ViewData["Title"] = "Edit Cease & Desist";
     Layout = "_Layout";
-
     var cancelUrl = ViewBag.ReturnUrl as string ?? Url.Action("CeaseDesistPreview", new { publicId = Model.PublicId });
 }
 <style>
