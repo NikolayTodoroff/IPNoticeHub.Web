@@ -2,9 +2,10 @@
 @{
     ViewData["Title"] = "Edit Cease & Desist";
     Layout = "_Layout";
+
+    var cancelUrl = ViewBag.ReturnUrl as string ?? Url.Action("CeaseDesistPreview", new { publicId = Model.PublicId });
 }
 <style>
-    /* A4 frame + sheet */
     .a4-frame {
         display: flex;
         justify-content: center;
@@ -23,8 +24,9 @@
         line-height: 1.6;
         font-family: "Times New Roman", Times, serif;
         font-size: 12pt;
+        white-space: pre-wrap; /* preserve newlines in textarea */
     }
-        /* make headings/links slightly bolder */
+
         .a4-paper b, .a4-paper strong {
             font-weight: 700;
         }
@@ -33,7 +35,9 @@
 <div class="container py-4">
     <h2>Edit Cease &amp; Desist</h2>
 
-    <form asp-action="CeaseDesist" method="post">
+    <form asp-action="CeaseDesistEdit" method="post">
+        @Html.AntiForgeryToken()
+
         <input type="hidden" asp-for="PublicId" />
         <input type="hidden" asp-for="SenderName" />
         <input type="hidden" asp-for="SenderAddress" />
@@ -48,9 +52,8 @@
         </div>
 
         <div class="mt-3 d-flex gap-2 justify-content-center">
-            <button class="btn btn-primary">Generate PDF</button>
-            <a asp-action="CeaseDesistPreview" class="btn btn-outline-secondary"
-               onclick="history.back(); return false;">Cancel</a>
+            <button type="submit" class="btn btn-primary">Generate PDF</button>
+            <a class="btn btn-outline-secondary" href="@cancelUrl">Cancel</a>
         </div>
     </form>
 </div>
