@@ -225,7 +225,7 @@ namespace IPNoticeHub.Web.Controllers
                 return NotFound();
             }
 
-            ApplyCopyrightsDetails(viewModel, copyrightDetailsDTO, MergeStrategy.OverwriteAll);
+            ApplyDMCADetails(viewModel, copyrightDetailsDTO, MergeStrategy.OverwriteAll);
 
             var input = new DMCAInput(
                 SenderName: viewModel.SenderName,
@@ -268,7 +268,7 @@ namespace IPNoticeHub.Web.Controllers
 
             var viewModel = new DMCAViewModel { PublicId = publicId };
 
-            ApplyCopyrightsDetails(viewModel, copyrightDetailsDTO, MergeStrategy.FillBlanks);
+            ApplyDMCADetails(viewModel, copyrightDetailsDTO, MergeStrategy.FillBlanks);
 
             var template = letterTemplateProvider.GetTemplateByKey("DMCA-General")?.BodyTemplate ?? string.Empty;
 
@@ -309,7 +309,7 @@ namespace IPNoticeHub.Web.Controllers
                 return NotFound();
             }
 
-            ApplyCopyrightsDetails(viewModel, copyrightDetailsDTO, MergeStrategy.FillBlanks);
+            ApplyDMCADetails(viewModel, copyrightDetailsDTO, MergeStrategy.FillBlanks);
 
             if (string.IsNullOrWhiteSpace(viewModel.BodyTemplate) || viewModel.BodyTemplate.Contains("{{"))
             {
@@ -449,21 +449,34 @@ namespace IPNoticeHub.Web.Controllers
                 return Forbid();
             }
 
-            var template = letterTemplateProvider.GetTemplateByKey("CND-Copyright")?.BodyTemplate ?? string.Empty;
+            var copyrightDetailsDTO = await copyrightService.GetDetailsAsync(userId, viewModel.PublicId, cancellationToken);
 
-            var placeholders = new Dictionary<string, string>
+            if (copyrightDetailsDTO is null)
             {
-                ["Date"] = DateTime.UtcNow.ToString(DateTimeFormat, CultureInfo.InvariantCulture),
-                ["RecipientName"] = viewModel.RecipientName ?? "",
-                ["RecipientAddress"] = viewModel.RecipientAddress ?? "",
-                ["SenderName"] = viewModel.SenderName ?? "",
-                ["SenderAddress"] = viewModel.SenderAddress ?? "",
-                ["WorkTitle"] = viewModel.WorkTitle ?? "",
-                ["RegistrationNumber"] = viewModel.RegistrationNumber ?? "",
-                ["AdditionalFacts"] = viewModel.AdditionalFacts ?? ""
-            };
+                return NotFound();
+            }
 
-            viewModel.BodyTemplate = ReplaceTemplate(template, placeholders);
+            ApplyCeaseDesistDetails(viewModel, copyrightDetailsDTO, MergeStrategy.FillBlanks);
+
+            if (string.IsNullOrWhiteSpace(viewModel.BodyTemplate) || viewModel.BodyTemplate.Contains("{{"))
+            {
+                var template = letterTemplateProvider.GetTemplateByKey("CND-Copyright")?.BodyTemplate ?? string.Empty;
+
+                var placeholders = new Dictionary<string, string>
+                {
+                    ["Date"] = DateTime.UtcNow.ToString(DateTimeFormat, CultureInfo.InvariantCulture),
+                    ["RecipientName"] = viewModel.RecipientName ?? "",
+                    ["RecipientAddress"] = viewModel.RecipientAddress ?? "",
+                    ["SenderName"] = viewModel.SenderName ?? "",
+                    ["SenderAddress"] = viewModel.SenderAddress ?? "",
+                    ["WorkTitle"] = viewModel.WorkTitle ?? "",
+                    ["RegistrationNumber"] = viewModel.RegistrationNumber ?? "",
+                    ["AdditionalFacts"] = viewModel.AdditionalFacts ?? ""
+                };
+
+                viewModel.BodyTemplate = ReplaceTemplate(template, placeholders);
+            }
+
             return View("CeaseDesistPreview", viewModel);
         }
 
@@ -514,7 +527,7 @@ namespace IPNoticeHub.Web.Controllers
             return (CopyrightWorkType.Other, other);
         }
 
-        private static void ApplyCopyrightsDetails(DMCAViewModel vm, CopyrightDetailsDTO dto,
+        private static void ApplyDMCADetails(DMCAViewModel viewModel, CopyrightDetailsDTO dto,
             MergeStrategy strategy = MergeStrategy.FillBlanks)
         {
             static string? FillOnly(string? user, string? fromDb)
@@ -524,20 +537,38 @@ namespace IPNoticeHub.Web.Controllers
 
             if (strategy == MergeStrategy.OverwriteAll)
             {
-                vm.WorkTitle = dto.Title ?? string.Empty;
-                vm.RegistrationNumber = dto.RegistrationNumber ?? string.Empty;
-                vm.YearOfCreation = dto.YearOfCreation;
-                vm.DateOfPublication = dto.DateOfPublication;
-                vm.NationOfFirstPublication = dto.NationOfFirstPublication;
+                viewModel.WorkTitle = dto.Title ?? string.Empty;
+                viewModel.RegistrationNumber = dto.RegistrationNumber ?? string.Empty;
+                viewModel.YearOfCreation = dto.YearOfCreation;
+                viewModel.DateOfPublication = dto.DateOfPublication;
+                viewModel.NationOfFirstPublication = dto.NationOfFirstPublication;
                 return;
             }
 
-            vm.WorkTitle = FillOnly(vm.WorkTitle, dto.Title) ?? string.Empty;
-            vm.RegistrationNumber = FillOnly(vm.RegistrationNumber, dto.RegistrationNumber);
-            vm.NationOfFirstPublication = FillOnly(vm.NationOfFirstPublication, dto.NationOfFirstPublication);
-            vm.YearOfCreation ??= dto.YearOfCreation;
-            vm.DateOfPublication ??= dto.DateOfPublication;
+            viewModel.WorkTitle = FillOnly(viewModel.WorkTitle, dto.Title) ?? string.Empty;
+            viewModel.RegistrationNumber = FillOnly(viewModel.RegistrationNumber, dto.RegistrationNumber);
+            viewModel.NationOfFirstPublication = FillOnly(viewModel.NationOfFirstPublication, dto.NationOfFirstPublication);
+            viewModel.YearOfCreation ??= dto.YearOfCreation;
+            viewModel.DateOfPublication ??= dto.DateOfPublication;
         }
 
+        private static void ApplyCeaseDesistDetails(CeaseDesistViewModel viewModel, CopyrightDetailsDTO dto, 
+            MergeStrategy strategy = MergeStrategy.FillBlanks)
+        {
+            static string? FillOnly(string? user, string? fromDb)
+            {
+                return string.IsNullOrWhiteSpace(user) ? fromDb : user;
+            }
+
+            if (strategy == MergeStrategy.OverwriteAll)
+            {
+                viewModel.WorkTitle = dto.Title ?? string.Empty;
+                viewModel.RegistrationNumber = dto.RegistrationNumber ?? string.Empty;
+                return;
+            }
+
+            viewModel.WorkTitle = FillOnly(viewModel.WorkTitle, dto.Title) ?? string.Empty;
+            viewModel.RegistrationNumber = FillOnly(viewModel.RegistrationNumber, dto.RegistrationNumber) ?? string.Empty;
+        }
     }
 }
