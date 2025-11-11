@@ -11,7 +11,11 @@
     </div>
 
     <!-- Generate -->
-    <form asp-action="CeaseDesist" method="post" class="d-inline">
+    <form asp-action="CeaseDesist"
+          asp-route-publicId="@Model.PublicId"
+          method="post"
+          class="d-inline">
+        @Html.AntiForgeryToken()
         <input type="hidden" asp-for="PublicId" />
         <input type="hidden" asp-for="SenderName" />
         <input type="hidden" asp-for="SenderAddress" />
@@ -21,11 +25,12 @@
         <input type="hidden" asp-for="RegistrationNumber" />
         <input type="hidden" asp-for="AdditionalFacts" />
         <input type="hidden" asp-for="BodyTemplate" />
-        <button class="btn btn-primary">Generate PDF</button>
+        <button type="submit" class="btn btn-primary">Generate PDF</button>
     </form>
 
-    <!-- Edit full text -->
+    <!-- Edit -->
     <form asp-action="CeaseDesistEdit" method="post" class="d-inline ms-2">
+        @Html.AntiForgeryToken()
         <input type="hidden" asp-for="PublicId" />
         <input type="hidden" asp-for="SenderName" />
         <input type="hidden" asp-for="SenderAddress" />
@@ -35,7 +40,7 @@
         <input type="hidden" asp-for="RegistrationNumber" />
         <input type="hidden" asp-for="AdditionalFacts" />
         <input type="hidden" asp-for="BodyTemplate" />
-        <button class="btn btn-outline-secondary">Edit</button>
+        <button type="submit" class="btn btn-outline-secondary">Edit</button>
     </form>
 
     <partial name="_BackButton" />
