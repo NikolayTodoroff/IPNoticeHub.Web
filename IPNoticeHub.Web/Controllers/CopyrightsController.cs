@@ -13,6 +13,7 @@ using static IPNoticeHub.Common.ValidationConstants.FormattingConstants;
 using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
 using static IPNoticeHub.Common.ValidationConstants.StatusMessages;
 using static IPNoticeHub.Web.Infrastructure.TemplateReplacer;
+using static IPNoticeHub.Web.Infrastructure.ApplyEntityDetails;
 
 namespace IPNoticeHub.Web.Controllers
 {
@@ -225,7 +226,7 @@ namespace IPNoticeHub.Web.Controllers
                 return NotFound();
             }
 
-            ApplyDMCADetails(viewModel, copyrightDetailsDTO, MergeStrategy.OverwriteAll);
+            ApplyCopyrightDMCADetails(viewModel, copyrightDetailsDTO, MergeStrategy.OverwriteAll);
 
             var input = new DMCAInput(
                 SenderName: viewModel.SenderName,
@@ -268,7 +269,7 @@ namespace IPNoticeHub.Web.Controllers
 
             var viewModel = new DMCAViewModel { PublicId = publicId };
 
-            ApplyDMCADetails(viewModel, copyrightDetailsDTO, MergeStrategy.FillBlanks);
+            ApplyCopyrightDMCADetails(viewModel, copyrightDetailsDTO, MergeStrategy.FillBlanks);
 
             var template = letterTemplateProvider.GetTemplateByKey("DMCA-General")?.BodyTemplate ?? string.Empty;
 
@@ -309,7 +310,7 @@ namespace IPNoticeHub.Web.Controllers
                 return NotFound();
             }
 
-            ApplyDMCADetails(viewModel, copyrightDetailsDTO, MergeStrategy.FillBlanks);
+            ApplyCopyrightDMCADetails(viewModel, copyrightDetailsDTO, MergeStrategy.FillBlanks);
 
             if (string.IsNullOrWhiteSpace(viewModel.BodyTemplate) || viewModel.BodyTemplate.Contains("{{"))
             {
@@ -456,7 +457,7 @@ namespace IPNoticeHub.Web.Controllers
                 return NotFound();
             }
 
-            ApplyCeaseDesistDetails(viewModel, copyrightDetailsDTO, MergeStrategy.FillBlanks);
+            ApplyCopyrightCeaseDesistDetails(viewModel, copyrightDetailsDTO, MergeStrategy.FillBlanks);
 
             if (string.IsNullOrWhiteSpace(viewModel.BodyTemplate) || viewModel.BodyTemplate.Contains("{{"))
             {
@@ -525,50 +526,6 @@ namespace IPNoticeHub.Web.Controllers
 
             var other = string.IsNullOrWhiteSpace(stored) ? null : stored;
             return (CopyrightWorkType.Other, other);
-        }
-
-        private static void ApplyDMCADetails(DMCAViewModel viewModel, CopyrightDetailsDTO dto,
-            MergeStrategy strategy = MergeStrategy.FillBlanks)
-        {
-            static string? FillOnly(string? user, string? fromDb)
-            {
-                return string.IsNullOrWhiteSpace(user) ? fromDb ?? string.Empty : user;
-            }
-
-            if (strategy == MergeStrategy.OverwriteAll)
-            {
-                viewModel.WorkTitle = dto.Title ?? string.Empty;
-                viewModel.RegistrationNumber = dto.RegistrationNumber ?? string.Empty;
-                viewModel.YearOfCreation = dto.YearOfCreation;
-                viewModel.DateOfPublication = dto.DateOfPublication;
-                viewModel.NationOfFirstPublication = dto.NationOfFirstPublication;
-                return;
-            }
-
-            viewModel.WorkTitle = FillOnly(viewModel.WorkTitle, dto.Title) ?? string.Empty;
-            viewModel.RegistrationNumber = FillOnly(viewModel.RegistrationNumber, dto.RegistrationNumber);
-            viewModel.NationOfFirstPublication = FillOnly(viewModel.NationOfFirstPublication, dto.NationOfFirstPublication);
-            viewModel.YearOfCreation ??= dto.YearOfCreation;
-            viewModel.DateOfPublication ??= dto.DateOfPublication;
-        }
-
-        private static void ApplyCeaseDesistDetails(CeaseDesistViewModel viewModel, CopyrightDetailsDTO dto, 
-            MergeStrategy strategy = MergeStrategy.FillBlanks)
-        {
-            static string? FillOnly(string? user, string? fromDb)
-            {
-                return string.IsNullOrWhiteSpace(user) ? fromDb : user;
-            }
-
-            if (strategy == MergeStrategy.OverwriteAll)
-            {
-                viewModel.WorkTitle = dto.Title ?? string.Empty;
-                viewModel.RegistrationNumber = dto.RegistrationNumber ?? string.Empty;
-                return;
-            }
-
-            viewModel.WorkTitle = FillOnly(viewModel.WorkTitle, dto.Title) ?? string.Empty;
-            viewModel.RegistrationNumber = FillOnly(viewModel.RegistrationNumber, dto.RegistrationNumber) ?? string.Empty;
-        }
+        } 
     }
 }

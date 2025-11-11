@@ -16,6 +16,7 @@ using static IPNoticeHub.Common.ValidationConstants.FormattingConstants;
 using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
 using static IPNoticeHub.Common.ValidationConstants.StatusMessages;
 using static IPNoticeHub.Web.Infrastructure.TemplateReplacer;
+using static IPNoticeHub.Web.Infrastructure.ApplyEntityDetails;
 
 namespace IPNoticeHub.Web.Controllers
 {
@@ -227,28 +228,39 @@ namespace IPNoticeHub.Web.Controllers
         }
 
         [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
-        public IActionResult CeaseDesistPreview(CeaseDesistViewModel viewModel, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> CeaseDesistPreview(CeaseDesistViewModel viewModel, CancellationToken cancellationToken = default)
         {
             if (!User.TryGetUserId(out var userId))
             {
                 return Forbid();
             }
 
-            var template = letterTemplateProvider.GetTemplateByKey("CND-Trademark")?.BodyTemplate ?? string.Empty;
+            var trademarkDetailsDTO = await tmSearchService.GetDetailsAsync(viewModel.PublicId, cancellationToken);
 
-            var placeholders = new Dictionary<string, string>
+            if (trademarkDetailsDTO != null)
             {
-                ["Date"] = DateTime.UtcNow.ToString(DateTimeFormat, CultureInfo.InvariantCulture),
-                ["RecipientName"] = viewModel.RecipientName ?? "",
-                ["RecipientAddress"] = viewModel.RecipientAddress ?? "",
-                ["SenderName"] = viewModel.SenderName ?? "",
-                ["SenderAddress"] = viewModel.SenderAddress ?? "",
-                ["WorkTitle"] = viewModel.WorkTitle ?? "",
-                ["RegistrationNumber"] = viewModel.RegistrationNumber ?? "",
-                ["AdditionalFacts"] = viewModel.AdditionalFacts ?? ""
-            };
+                ApplyTrademarkCeaseDesistDetails(viewModel, trademarkDetailsDTO, MergeStrategy.FillBlanks);
+            }
+                
+            if (string.IsNullOrWhiteSpace(viewModel.BodyTemplate) || viewModel.BodyTemplate.Contains("{{"))
+            {
+                var template = letterTemplateProvider.GetTemplateByKey("CND-Trademark")?.BodyTemplate ?? string.Empty;
 
-            viewModel.BodyTemplate = ReplaceTemplate(template, placeholders);
+                var placeholders = new Dictionary<string, string>
+                {
+                    ["Date"] = DateTime.UtcNow.ToString(DateTimeFormat, CultureInfo.InvariantCulture),
+                    ["RecipientName"] = viewModel.RecipientName ?? "",
+                    ["RecipientAddress"] = viewModel.RecipientAddress ?? "",
+                    ["SenderName"] = viewModel.SenderName ?? "",
+                    ["SenderAddress"] = viewModel.SenderAddress ?? "",
+                    ["WorkTitle"] = viewModel.WorkTitle ?? "",
+                    ["RegistrationNumber"] = viewModel.RegistrationNumber ?? "",
+                    ["AdditionalFacts"] = viewModel.AdditionalFacts ?? ""
+                };
+
+                viewModel.BodyTemplate = ReplaceTemplate(template, placeholders);
+            }
+
             return View("CeaseDesistPreview", viewModel);
         }
 

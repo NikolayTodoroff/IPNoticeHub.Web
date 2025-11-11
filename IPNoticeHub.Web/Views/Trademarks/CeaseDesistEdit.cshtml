@@ -49,8 +49,14 @@
 
         <div class="mt-3 d-flex gap-2 justify-content-center">
             <button class="btn btn-primary">Generate PDF</button>
-            <a asp-action="CeaseDesistPreview" class="btn btn-outline-secondary"
-               onclick="history.back(); return false;">Cancel</a>
+
+            <button type="submit"
+                    class="btn btn-outline-secondary"
+                    formnovalidate
+                    formmethod="post"
+                    formaction="@Url.Action("CeaseDesistPreview")">
+                Cancel
+            </button>
         </div>
     </form>
 </div>
