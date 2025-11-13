@@ -32,6 +32,10 @@ namespace IPNoticeHub.Web.Models.PdfGeneration
 
         public string RecipientAddress { get; set; } = string.Empty;
 
+        public string RecipientEmail { get; set; } = string.Empty;
+
+        [Required, Url]
+        public string InfringingUrl { get; set; } = string.Empty;
 
         // Optional narrative
         public string? AdditionalFacts { get; set; }

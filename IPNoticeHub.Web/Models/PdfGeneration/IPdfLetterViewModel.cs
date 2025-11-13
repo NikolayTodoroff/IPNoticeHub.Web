@@ -12,6 +12,8 @@
         string SenderEmail { get; set; }
         string RecipientName { get; set; }
         string RecipientAddress { get; set; }
+        string RecipientEmail { get; set; }
+        string InfringingUrl { get; set; }
 
         string BodyTemplate { get; set; }
 

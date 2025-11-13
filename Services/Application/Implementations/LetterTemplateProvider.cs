@@ -21,7 +21,7 @@ namespace IPNoticeHub.Services.Application.Implementations
 
                 I am writing to notify you that your activities involving “{{WorkTitle}}” (registration: {{RegistrationNumber}}) are unauthorized and infringe upon rights I control. This notice demands that you cease and desist from any further use, display, distribution, advertising, or sale related to the Work.
 
-                We identified the unauthorized use at the location(s) under your control. {{AdditionalFacts}}
+                We identified the unauthorized use at the location(s) under your control: {{InfringingUrl}}. {{AdditionalFacts}}
 
                 You are required to immediately remove the infringing material, disable any listings or advertisements, and refrain from re-posting or otherwise using the Work without written permission.
 
@@ -48,7 +48,7 @@ namespace IPNoticeHub.Services.Application.Implementations
 
                 This letter concerns your unauthorized use, reproduction, distribution, and/or public display of the copyrighted work titled “{{WorkTitle}}” (registration: {{RegistrationNumber}}). Such conduct infringes my exclusive rights under Title 17 of the United States Code.
 
-                We have identified infringing material under your control. {{AdditionalFacts}}
+                We have identified infringing material under your control at the following location: {{InfringingUrl}}. {{AdditionalFacts}}
 
                 Demand is hereby made that you immediately: (1) remove all infringing copies and listings; (2) cease any further reproduction, distribution, public display, or derivative uses; and (3) confirm in writing within seven (7) days that you have complied and will refrain from future infringement.
 
@@ -75,7 +75,7 @@ namespace IPNoticeHub.Services.Application.Implementations
 
                 It has come to our attention that you are using a mark, logo, name, or other source identifier confusingly similar to our protected mark associated with “{{WorkTitle}}” (registration: {{RegistrationNumber}}). Your use is likely to cause consumer confusion, mistake, or deception as to source, sponsorship, or affiliation, in violation of the Lanham Act (15 U.S.C. §§ 1114, 1125) and applicable law.
 
-                The unauthorized use has been observed in your listings, product packaging, advertising, or related materials. {{AdditionalFacts}}
+                The unauthorized use has been observed in your listings, product packaging, advertising, or related materials at the following location: {{InfringingUrl}}. {{AdditionalFacts}}
 
                 You are required to immediately: (1) remove the infringing branding from all products, listings, and advertisements; (2) cease any further use of the mark or confusingly similar variations; and (3) provide written confirmation within seven (7) days of compliance and your agreement to avoid future misuse.
 
@@ -102,7 +102,7 @@ namespace IPNoticeHub.Services.Application.Implementations
 
                 I am the rights holder (or authorized agent) for the copyrighted work titled “{{WorkTitle}}” (registration: {{RegistrationNumber}}).  
                 I request **immediate removal or disabling of access** to material that infringes my rights, identified at the following URL or location under your control:  
-                {{InfringingUrl}}
+                {{InfringingUrl}} 
 
                 **Work information:**
                 • Title: {{WorkTitle}}  
@@ -127,8 +127,7 @@ namespace IPNoticeHub.Services.Application.Implementations
 
                 **Sincerely,**  
                 {{SenderName}}  
-                {{SenderAddress}}
-                ")
+                {{SenderAddress}}")
         };
 
         public IReadOnlyList<LetterTemplatePreset> GetLetterTemplatePresets(LetterTemplateType type)

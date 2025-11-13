@@ -63,6 +63,19 @@
         @Html.AntiForgeryToken()
 
         <input type="hidden" asp-for="PublicId" />
+        <input type="hidden" asp-for="SenderName" />
+        <input type="hidden" asp-for="SenderEmail" />
+        <input type="hidden" asp-for="SenderAddress" />
+        <input type="hidden" asp-for="RecipientName" />
+        <input type="hidden" asp-for="RecipientEmail" />
+        <input type="hidden" asp-for="RecipientAddress" />
+        <input type="hidden" asp-for="WorkTitle" />
+        <input type="hidden" asp-for="RegistrationNumber" />
+        <input type="hidden" asp-for="InfringingUrl" />
+        <input type="hidden" asp-for="YearOfCreation" />
+        <input type="hidden" asp-for="DateOfPublication" />
+        <input type="hidden" asp-for="NationOfFirstPublication" />
+        <input type="hidden" asp-for="GoodFaithStatement" />
 
         <!-- MVC binds from this hidden field -->
         <textarea asp-for="BodyTemplate" id="BodyTemplateHidden" class="d-none"></textarea>
@@ -76,8 +89,13 @@
         </div>
 
         <div class="mt-3 d-flex flex-wrap gap-2">
-            <!-- Generate PDF (default action) -->
-            <button type="submit" class="btn btn-primary" id="btnGenerate">Generate PDF</button>
+            <button type="submit"
+                    class="btn btn-primary"
+                    formmethod="post"
+                    formaction="@Url.Action("Dmca", new { publicId = Model.PublicId })"
+                    id="btnGenerate">
+                Generate PDF
+            </button>
 
             <!-- Save → Preview with current edits -->
             <button type="submit"

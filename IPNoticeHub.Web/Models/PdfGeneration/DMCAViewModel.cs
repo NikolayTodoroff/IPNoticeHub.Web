@@ -40,14 +40,13 @@ namespace IPNoticeHub.Web.Models.PdfGeneration
         [EmailAddress]
         public string? RecipientEmail { get; set; }
 
-        public string? RecipientAddress { get; set; }
+        public string RecipientAddress { get; set; } = string.Empty;
+
+        [Required, Url]
+        public string InfringingUrl { get; set; } = string.Empty;
 
         // Optional narrative
         public string? AdditionalFacts { get; set; }
-
-        // Incident
-        [Required, Url]
-        public string InfringingUrl { get; set; } = string.Empty;
 
         // Statements
         [Required]

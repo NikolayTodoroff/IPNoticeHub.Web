@@ -119,7 +119,7 @@ namespace IPNoticeHub.Services.Application.Implementations
             if (string.IsNullOrWhiteSpace(text))
             {
                 return Enumerable.Empty<string>();
-            }       
+            }
 
             // Split whenever there are two or more consecutive blank lines
             var parts = Regex.Split(text.Trim(), @"(\r?\n){2,}");
