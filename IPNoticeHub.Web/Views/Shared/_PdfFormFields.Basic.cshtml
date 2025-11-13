@@ -9,9 +9,10 @@
         <input asp-for="SenderAddress" class="form-control" />
     </div>
 
-    <div class="col-md-6">
-        <label class="form-label">Sender Email</label>
+    <div class="col-md-6 mb-3">
+        <label asp-for="SenderEmail" class="form-label">Sender Email</label>
         <input asp-for="SenderEmail" class="form-control" />
+        <span asp-validation-for="SenderEmail" class="text-danger"></span>
     </div>
 
     <div class="col-md-6">
@@ -24,9 +25,10 @@
         <input asp-for="RecipientAddress" class="form-control" />
     </div>
 
-    <div class="col-md-6">
-        <label class="form-label">Recipient Email</label>
+    <div class="col-md-6 mb-3">
+        <label asp-for="RecipientEmail" class="form-label">Recipient Email</label>
         <input asp-for="RecipientEmail" class="form-control" />
+        <span asp-validation-for="RecipientEmail" class="text-danger"></span>
     </div>
 
     <div class="col-md-6">

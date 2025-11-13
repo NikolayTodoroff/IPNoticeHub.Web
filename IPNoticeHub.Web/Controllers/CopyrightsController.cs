@@ -298,6 +298,11 @@ namespace IPNoticeHub.Web.Controllers
         [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
         public async Task<IActionResult> DmcaPreview(DMCAViewModel viewModel, CancellationToken cancellationToken = default)
         {
+            if (!ModelState.IsValid)
+            {
+                return View("DMCA", viewModel);
+            }
+
             if (!User.TryGetUserId(out var userId))
             {
                 return Forbid();
@@ -325,9 +330,9 @@ namespace IPNoticeHub.Web.Controllers
                     ["SenderName"] = viewModel.SenderName ?? "",
                     ["SenderAddress"] = viewModel.SenderAddress ?? "",
                     ["SenderEmail"] = viewModel.SenderEmail ?? "",
-                    ["WorkTitle"] = viewModel.WorkTitle ?? "",
-                    ["RegistrationNumber"] = viewModel.RegistrationNumber ?? "",
                     ["InfringingUrl"] = viewModel.InfringingUrl ?? "",
+                    ["WorkTitle"] = viewModel.WorkTitle ?? "",
+                    ["RegistrationNumber"] = viewModel.RegistrationNumber ?? "",                  
                     ["YearOfCreation"] = viewModel.YearOfCreation?.ToString() ?? "",
                     ["DateOfPublication"] = viewModel.DateOfPublication?.ToString(DateTimeFormat) ?? "",
                     ["NationOfFirstPublication"] = viewModel.NationOfFirstPublication ?? "",
@@ -375,7 +380,6 @@ namespace IPNoticeHub.Web.Controllers
                 PublicId = publicId,
                 WorkTitle = copyrightDetailsDTO.Title,
                 RegistrationNumber = copyrightDetailsDTO.RegistrationNumber
-                // Sender/Recipient left blank for user to fill
             };
 
             viewModel.BodyTemplate = letterTemplateProvider.GetTemplateByKey("CND-Copyright")!.BodyTemplate ?? string.Empty;
@@ -429,10 +433,13 @@ namespace IPNoticeHub.Web.Controllers
             var placeholders = new Dictionary<string, string?>
             {
                 ["Date"] = DateTime.UtcNow.ToString(DateTimeFormat, CultureInfo.InvariantCulture),
-                ["RecipientName"] = viewModel.RecipientName,
-                ["RecipientAddress"] = viewModel.RecipientAddress,
-                ["SenderName"] = viewModel.SenderName,
-                ["SenderAddress"] = viewModel.SenderAddress,
+                ["RecipientName"] = viewModel.RecipientName ?? "",
+                ["RecipientAddress"] = viewModel.RecipientAddress ?? "",
+                ["RecipientEmail"] = viewModel.RecipientEmail ?? "",
+                ["SenderName"] = viewModel.SenderName ?? "",
+                ["SenderAddress"] = viewModel.SenderAddress ?? "",
+                ["SenderEmail"] = viewModel.SenderEmail ?? "",
+                ["InfringingUrl"] = viewModel.InfringingUrl ?? "",
                 ["WorkTitle"] = viewModel.WorkTitle,
                 ["RegistrationNumber"] = viewModel.RegistrationNumber,
                 ["AdditionalFacts"] = viewModel.AdditionalFacts
@@ -445,6 +452,11 @@ namespace IPNoticeHub.Web.Controllers
         [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
         public async Task<IActionResult> CeaseDesistPreview(CeaseDesistViewModel viewModel, CancellationToken cancellationToken = default)
         {
+            if (!ModelState.IsValid)
+            {
+                return View("CeaseDesist", viewModel);
+            }
+
             if (!User.TryGetUserId(out var userId))
             {
                 return Forbid();
@@ -468,8 +480,11 @@ namespace IPNoticeHub.Web.Controllers
                     ["Date"] = DateTime.UtcNow.ToString(DateTimeFormat, CultureInfo.InvariantCulture),
                     ["RecipientName"] = viewModel.RecipientName ?? "",
                     ["RecipientAddress"] = viewModel.RecipientAddress ?? "",
+                    ["RecipientEmail"] = viewModel.RecipientEmail ?? "",
                     ["SenderName"] = viewModel.SenderName ?? "",
                     ["SenderAddress"] = viewModel.SenderAddress ?? "",
+                    ["SenderEmail"] = viewModel.SenderEmail ?? "",
+                    ["InfringingUrl"] = viewModel.InfringingUrl ?? "",
                     ["WorkTitle"] = viewModel.WorkTitle ?? "",
                     ["RegistrationNumber"] = viewModel.RegistrationNumber ?? "",
                     ["AdditionalFacts"] = viewModel.AdditionalFacts ?? ""
