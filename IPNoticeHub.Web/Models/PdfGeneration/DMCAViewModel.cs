@@ -11,11 +11,9 @@ namespace IPNoticeHub.Web.Models.PdfGeneration
 
         // Autopopulated fields
         [Required]
-        [BindNever]
         public string WorkTitle { get; set; } = string.Empty;
 
         [Required]
-        [BindNever]
         public string? RegistrationNumber { get; set; } = string.Empty;
 
         public int? YearOfCreation { get; set; }
@@ -42,7 +40,7 @@ namespace IPNoticeHub.Web.Models.PdfGeneration
 
         public string RecipientAddress { get; set; } = string.Empty;
 
-        [Required, Url]
+        [Required]
         public string InfringingUrl { get; set; } = string.Empty;
 
         // Optional narrative
