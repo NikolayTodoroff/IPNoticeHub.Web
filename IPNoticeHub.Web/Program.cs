@@ -19,6 +19,7 @@ using System.Security.Claims;
 using QuestPDF.Infrastructure;
 using IPNoticeHub.Data.Seed;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 
 namespace IPNoticeHub.Web
 {
@@ -36,7 +37,8 @@ namespace IPNoticeHub.Web
 
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-            builder.Services.AddDefaultIdentity<ApplicationUser>(options => {
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+            {
                 options.SignIn.RequireConfirmedAccount = false;
                 options.Password.RequireDigit = false;
                 options.Password.RequireLowercase = false;
@@ -44,7 +46,15 @@ namespace IPNoticeHub.Web
                 options.Password.RequireUppercase = false;
                 options.Password.RequiredLength = 6;
             })
-                .AddEntityFrameworkStores<IPNoticeHubDbContext>();
+            .AddEntityFrameworkStores<IPNoticeHubDbContext>()
+            .AddDefaultTokenProviders()
+            .AddDefaultUI();
+
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Identity/Account/Login";
+                options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+            });
 
             builder.Services.AddAuthorization(options =>
             {
@@ -53,7 +63,6 @@ namespace IPNoticeHub.Web
 
             builder.Services.AddControllersWithViews();
             builder.Services.AddSwaggerGen();
-
             builder.Services.AddScoped<ITrademarkRepository, TrademarkRepository>();
             builder.Services.AddScoped<IUserTrademarkRepository, UserTrademarkRepository>();
             builder.Services.AddScoped<ITrademarkSearchService, TrademarkSearchService>();
@@ -69,6 +78,7 @@ namespace IPNoticeHub.Web
             builder.Services.AddSingleton<IStatusLabelProvider, StatusLabelProvider>();
             builder.Services.AddScoped<IPdfService, PdfService>();
             builder.Services.AddSingleton<ILetterTemplateProvider, LetterTemplateProvider>();
+            builder.Services.AddRazorPages();
 
             QuestPDF.Settings.License = LicenseType.Community;
 
