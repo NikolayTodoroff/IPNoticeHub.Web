@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using static IPNoticeHub.Common.ValidationConstants.AdminAccountCredentials;
 using static IPNoticeHub.Common.Infrastructure.RoleNames;
-using IPNoticeHub.Common.Infrastructure;
 using IPNoticeHub.Data.Entities.ApplicationUser;
 
 namespace IPNoticeHub.Data.Seed
@@ -19,6 +18,7 @@ namespace IPNoticeHub.Data.Seed
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             var logger = scope.ServiceProvider.GetRequiredService<ILogger<IdentitySeeder>>();
 
+            // Ensure required identity roles exist in the application; create any that are missing.
             var roleNames = new[]
             {
                 Admin,
@@ -33,6 +33,8 @@ namespace IPNoticeHub.Data.Seed
                 }
             }
 
+            // Ensure the administrator account exists for the configured email; create it if missing.
+            // Verify and normalize email/password state: confirm the email and add a password if one is not set.
             var adminEmail = AdminEmailAddress;
             var adminPassword = AdminEmailPassword;
 
@@ -75,6 +77,8 @@ namespace IPNoticeHub.Data.Seed
                 }
             }
 
+            // Assign both Admin and User roles to the configured administrator if they are not already present.
+            // This ensures the administrator has both elevated (Admin) and standard (User) privileges.
             if (!await userManager.IsInRoleAsync(adminUser, Admin))
             {
                 await userManager.AddToRoleAsync(adminUser, Admin);
@@ -85,9 +89,10 @@ namespace IPNoticeHub.Data.Seed
                 await userManager.AddToRoleAsync(adminUser, User);
             }
 
+            // Ensure every non-admin account has the User role to maintain consistent baseline permissions.
             var allUsers = await userManager.Users.ToListAsync();
-            
-            foreach(var user in allUsers)
+
+            foreach (var user in allUsers)
             {
                 if (await userManager.IsInRoleAsync(user, Admin))
                 {
