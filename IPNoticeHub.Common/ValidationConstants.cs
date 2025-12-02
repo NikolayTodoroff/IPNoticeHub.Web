@@ -72,5 +72,11 @@
         {
             public static string DateTimeFormat = "dd MMM yyyy";
         }
+
+        public static class AdminAccountCredentials
+        {
+            public const string AdminEmailAddress = "admin@ipnoticehub.com";
+            public const string AdminEmailPassword = "Admin!234";
+        }
     }
 }
