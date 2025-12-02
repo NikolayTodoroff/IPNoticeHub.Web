@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using static IPNoticeHub.Common.ValidationConstants.AdminAccountCredentials;
@@ -82,6 +83,21 @@ namespace IPNoticeHub.Data.Seed
             if (!await userManager.IsInRoleAsync(adminUser, User))
             {
                 await userManager.AddToRoleAsync(adminUser, User);
+            }
+
+            var allUsers = await userManager.Users.ToListAsync();
+            
+            foreach(var user in allUsers)
+            {
+                if (await userManager.IsInRoleAsync(user, Admin))
+                {
+                    continue;
+                }
+
+                if (!await userManager.IsInRoleAsync(user, User))
+                {
+                    await userManager.AddToRoleAsync(user, User);
+                }
             }
         }
     }
