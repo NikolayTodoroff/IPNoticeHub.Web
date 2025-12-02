@@ -18,7 +18,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using QuestPDF.Infrastructure;
 using IPNoticeHub.Data.Seed;
-using System.Threading.Tasks;
+using static IPNoticeHub.Common.ValidationConstants.AuthRedirectPaths;
 using Microsoft.AspNetCore.Identity;
 
 namespace IPNoticeHub.Web
@@ -52,8 +52,8 @@ namespace IPNoticeHub.Web
 
             builder.Services.ConfigureApplicationCookie(options =>
             {
-                options.LoginPath = "/Identity/Account/Login";
-                options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+                options.LoginPath = LoginPath;
+                options.AccessDeniedPath = AccessDeniedPath;
             });
 
             builder.Services.AddAuthorization(options =>
