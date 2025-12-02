@@ -17,12 +17,14 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using QuestPDF.Infrastructure;
+using IPNoticeHub.Data.Seed;
+using System.Threading.Tasks;
 
 namespace IPNoticeHub.Web
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -73,8 +75,9 @@ namespace IPNoticeHub.Web
             // Temporary no-op email sender while theming
             builder.Services.AddSingleton<IEmailSender, NoOpEmailSender>();
 
-
             var app = builder.Build();
+
+            await IdentitySeeder.SeedIdentitiesAsync(app.Services);
 
             if (app.Environment.IsDevelopment())
             {
