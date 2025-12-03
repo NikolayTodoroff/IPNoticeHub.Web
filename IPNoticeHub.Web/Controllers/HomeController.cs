@@ -71,6 +71,19 @@ namespace IPNoticeHub.Web.Controllers
             return View(searchResultsViewModel);
         }
 
+        [HttpGet]
+        public IActionResult StatusCode(int code)
+        {
+            if (code == 404) return View("Not Found");
+
+            var model = new ErrorViewModel
+            {
+                RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+            };
+
+            return View("Error", model);
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
