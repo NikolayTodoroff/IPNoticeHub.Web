@@ -11,12 +11,23 @@
 
         <div class="collapse navbar-collapse" id="mainNav">
             <ul class="navbar-nav me-auto">
-                <!-- Trademark Search -> homepage -->
+
+                <!-- Admin Dashboard -->
+                @if (User.IsInRole("Admin"))
+                {
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold text-danger" asp-area="Admin" asp-controller="Admin" asp-action="Index">
+                            Admin Dashboard
+                        </a>
+                    </li>
+                }
+
+                <!-- Trademark Search (Homepage) -->
                 <li class="nav-item">
                     <a class="nav-link" asp-controller="Home" asp-action="Index">Trademark Search</a>
                 </li>
 
-                <!-- Collections -->
+                <!-- Trademark/Copyright Collections -->
                 <li class="nav-item">
                     <a class="nav-link" asp-controller="TrademarkCollection" asp-action="Index">My Trademarks</a>
                 </li>
@@ -24,7 +35,7 @@
                     <a class="nav-link" asp-controller="Copyrights" asp-action="MyCollection">My Copyrights</a>
                 </li>
 
-                <!-- Stubs for now (create controllers/views later) -->
+                <!-- Watchlist/Documents -->
                 <li class="nav-item">
                     <a class="nav-link" asp-controller="Watchlist" asp-action="Index">Watchlist</a>
                 </li>
