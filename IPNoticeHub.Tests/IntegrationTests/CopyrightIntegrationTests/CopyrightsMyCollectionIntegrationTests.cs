@@ -73,8 +73,12 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
             {
                 builder.ConfigureTestServices(services =>
                 {
-                    services.AddAuthentication("NoId")
-                            .AddScheme<AuthenticationSchemeOptions, NoIdAuthHandler>("NoId", _ => { });
+                    services.AddAuthentication(options =>
+                    {
+                        options.DefaultAuthenticateScheme = "NoId";
+                        options.DefaultChallengeScheme = "NoId";
+                    })
+                    .AddScheme<AuthenticationSchemeOptions, NoIdAuthHandler>("NoId", _ => { });
                 });
 
                 builder.UseSetting("Authentication:DefaultScheme", "NoId");

@@ -69,12 +69,18 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
             // This setup is layered on top of the existing TestWebAppFactory to override the default authentication behavior.
             // The custom scheme is used to test scenarios where the application requires a unique identifier for the user,
             // but the authenticated user lacks this claim, resulting in a 403 Forbidden response.
-            var layeredAppFactory = appFactory.WithWebHostBuilder(builder =>
+                var layeredAppFactory = appFactory.WithWebHostBuilder(builder =>
             {
                 builder.ConfigureTestServices(services =>
                 {
-                    services.AddAuthentication("NoId")
-                            .AddScheme<AuthenticationSchemeOptions, NoIdAuthHandler>("NoId", _ => { });
+                    // Mirror the pattern used in the Trademark tests: explicitly set the default authenticate
+                    // and challenge schemes so the NoId handler is used instead of the TestAuth handler.
+                    services.AddAuthentication(options =>
+                    {
+                        options.DefaultAuthenticateScheme = "NoId";
+                        options.DefaultChallengeScheme = "NoId";
+                    })
+                    .AddScheme<AuthenticationSchemeOptions, NoIdAuthHandler>("NoId", _ => { });
                 });
 
                 builder.UseSetting("Authentication:DefaultScheme", "NoId");
