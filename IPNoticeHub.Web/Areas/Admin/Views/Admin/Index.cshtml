@@ -1,6 +1,42 @@
-﻿@{
+﻿@model IPNoticeHub.Web.Models.AdminDashboard.AdminDashboardViewModel
+@{
     ViewData["Title"] = "Admin Dashboard";
 }
 
 <h1>Admin Dashboard</h1>
 <p>Welcome, Admin. More features coming...</p>
+
+<h2>System Stats</h2>
+<ul>
+    <li>Total users: @Model.TotalUsers</li>
+    <li>Total trademarks: @Model.TrademarksAdded</li>
+    <li>Total copyrights: @Model.CopyrightsAdded</li>
+    <li>Watchlist items: @Model.WatchlistedItems</li>
+</ul>
+
+<h2>Recent Registrations</h2>
+
+@if (Model.RecentRegistrations.Any())
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>User Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model.RecentRegistrations)
+            {
+                <tr>
+                    <td>@user.Email</td>
+                    <td>@user.UserName</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No recent users found.</p>
+}
