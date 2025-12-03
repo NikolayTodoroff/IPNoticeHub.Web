@@ -9,6 +9,5 @@
         public string Owner { get; init; } = string.Empty;
         public string Status { get; init; } = string.Empty;
         public DateTime? RegistrationDate { get; init; }
-        
     }
 }
