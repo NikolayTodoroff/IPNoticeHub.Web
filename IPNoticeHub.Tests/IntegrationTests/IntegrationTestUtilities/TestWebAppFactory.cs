@@ -68,8 +68,13 @@ namespace IPNoticeHub.Tests.IntegrationTests.TestUtilities
                 services.AddSingleton(new TestWebAppFactoryAccessor { Factory = this });
 
                 // ---- Fake authentication ----
-                services.AddAuthentication("TestAuth")
-                        .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("TestAuth", _ => { });
+                // Explicitly set the default authenticate and challenge schemes so Authorize() uses TestAuth
+                services.AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = "TestAuth";
+                    options.DefaultChallengeScheme = "TestAuth";
+                })
+                .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("TestAuth", _ => { });
 
                 // ---- Test-only antiforgery (skip real token validation) ----
                 services.AddSingleton<IAntiforgery, NoOpAntiforgery>();
