@@ -65,7 +65,9 @@ namespace IPNoticeHub.Web.Controllers
                     Status = s.Status,
                     RegistrationDate = s.RegistrationDate
                 }).ToList(),
-                Total = resultsCount
+                Total = resultsCount,
+                CurrentPage = currentPage,
+                PageSize = pageSize
             };
 
             return View(searchResultsViewModel);
