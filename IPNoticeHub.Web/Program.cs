@@ -100,6 +100,8 @@ namespace IPNoticeHub.Web
                 app.UseHsts();
             }
 
+            app.UseStatusCodePagesWithReExecute("/Home/StatusCode", "?code={0}");
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
