@@ -40,3 +40,16 @@ else
 {
     <p>No recent users found.</p>
 }
+
+<h2>Database Sync</h2>
+
+<form asp-area="Admin" asp-controller="Admin" asp-action="Sync" method="post">
+    @Html.AntiForgeryToken()
+    <button type="submit" class="btn btn-primary">
+        Start Manual Sync
+    </button>
+</form>
+
+<p class="text-muted mt-2">
+    *Manual sync will trigger USPTO/EUIPO/WIPO updates and watchlist checks once implemented.
+</p>

@@ -66,6 +66,9 @@
             public const string EmailNotificationsEnabledMessage = "Email notifications enabled successfully.";
             public const string EmailNotificationsDisabledMessage = "Email notifications disabled successfully.";
             public const string EmailNotificationsErrorMessage = "Failed to toggle email notifications.";
+
+            public const string ManualSyncTriggeredMessage = "Manual sync triggered. " +
+                "Registry updates and watchlist checks will run shortly.";
         }
 
         public static class FormattingConstants

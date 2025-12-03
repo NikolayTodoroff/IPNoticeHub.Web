@@ -2,6 +2,7 @@
 using IPNoticeHub.Web.Models.AdminDashboard;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using static IPNoticeHub.Common.ValidationConstants.StatusMessages;
 
 namespace IPNoticeHub.Web.Controllers
 {
@@ -24,11 +25,21 @@ namespace IPNoticeHub.Web.Controllers
                 TrademarksAdded = dbContext.TrademarkRegistrations.Count(),
                 CopyrightsAdded = dbContext.CopyrightRegistrations.Count(),
                 WatchlistedItems = dbContext.UserTrademarkWatchlists.Count(),
-                RecentRegistrations = dbContext.Users.OrderByDescending(u=>u.Id).
-                Take(5).ToList()
+
+                RecentRegistrations = dbContext.Users.
+                OrderByDescending(u=>u.Id).
+                Take(5).
+                ToList()
             };
 
             return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult Sync()
+        {
+            TempData["SuccessMessage"] = ManualSyncTriggeredMessage;
+            return RedirectToAction("Index");
         }
     }
 }
