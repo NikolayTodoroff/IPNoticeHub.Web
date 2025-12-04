@@ -9,9 +9,9 @@ namespace IPNoticeHub.Web.Models.TrademarkCollection
         {
             return new()
             {
+                Total = dtoPage.ResultsCount,
                 CurrentPage = dtoPage.CurrentPage,
-                ResultsPerPage = dtoPage.ResultsCountPerPage,
-                ResultsCount = dtoPage.ResultsCount,
+                PageSize = dtoPage.ResultsCountPerPage,
                 Results = dtoPage.Results.Select(s => new TrademarkCollectionItemViewModel
                 {
                     Id = s.Id,
