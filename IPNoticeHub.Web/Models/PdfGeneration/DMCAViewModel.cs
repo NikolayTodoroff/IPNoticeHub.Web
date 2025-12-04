@@ -6,17 +6,22 @@ namespace IPNoticeHub.Web.Models.PdfGeneration
 {
     public sealed class DMCAViewModel : IPdfLetterViewModel
     {
-        // Record identity (Copyright Public Id)
+        // Record Identity (Copyright Public Id)
         public Guid PublicId { get; init; }
+
 
         // Autopopulated fields
         public string WorkTitle { get; set; } = string.Empty;
 
+
         public string? RegistrationNumber { get; set; } = string.Empty;
+
 
         public int? YearOfCreation { get; set; }
 
+
         public DateTime? DateOfPublication { get; set; }
+
 
         public string? NationOfFirstPublication { get; set; }
 
@@ -24,22 +29,30 @@ namespace IPNoticeHub.Web.Models.PdfGeneration
         // Sender and Recipient
         public string SenderName { get; set; } = string.Empty;
 
+
         public string SenderAddress { get; set; } = string.Empty;
+
 
         [EmailAddress]
         public string SenderEmail { get; set; } = string.Empty;
 
+
         public string RecipientName { get; set; } = string.Empty;
 
+
         public string RecipientAddress { get; set; } = string.Empty;
+
 
         [EmailAddress]
         public string RecipientEmail { get; set; } = string.Empty;
 
+
         public string InfringingUrl { get; set; } = string.Empty;
+
 
         // Optional narrative
         public string? AdditionalFacts { get; set; }
+
 
         // Statements
         public string GoodFaithStatement { get; set; } = "I have a good faith belief that the " +

@@ -12,18 +12,25 @@ namespace IPNoticeHub.Web.Models.Trademarks
         [MaxLength(TrademarkSearchTermMaxLength, ErrorMessage = "Search term cannot exceed {0} characters in length.")]
         public string? SearchTerm { get; init; }
 
+
         public TrademarkSearchBy SearchBy { get; init; } = TrademarkSearchBy.Wordmark;
+
 
         public DataProvider? Provider { get; set; }
 
+
         public TrademarkStatusCategory? Status { get; set; }
+
 
         public int[] ClassNumbers { get; set; } = Array.Empty<int>();
 
+
         public bool ExactMatch { get; set; }
+
 
         [Range(TrademarkCurrentPageMinValue, int.MaxValue, ErrorMessage = "Current page number must be {0} or greater.")]
         public int CurrentPage { get; init; } = TrademarkCurrentPageMinValue;
+
 
         [Range(TrademarkResultsPerPageMinValue, TrademarkResultsPerPageMaxValue, ErrorMessage = "Results per page must be between {0} and {1}.")]
         public int ResultsPerPage { get; init; } = TrademarkResultsPerPageMinValue;

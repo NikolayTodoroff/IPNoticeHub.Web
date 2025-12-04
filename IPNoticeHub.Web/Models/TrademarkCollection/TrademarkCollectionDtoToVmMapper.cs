@@ -22,7 +22,8 @@ namespace IPNoticeHub.Web.Models.TrademarkCollection
                     Status = s.Status,
                     Classes = s.Classes ?? Array.Empty<int>(),
                     Provider = s.Provider
-                }).ToList()
+                }).
+                ToList()
             };
         }
     }

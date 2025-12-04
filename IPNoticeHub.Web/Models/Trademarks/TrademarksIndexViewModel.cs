@@ -9,15 +9,29 @@ namespace IPNoticeHub.Web.Models.Trademarks
     public sealed class TrademarksIndexViewModel
     {
         public string? SearchTerm { get; init; }
+
+
         public TrademarkSearchBy SearchBy { get; init; } = TrademarkSearchBy.Wordmark;
+
+
         public DataProvider? Provider { get; init; }
+
+
         public TrademarkStatusCategory? Status { get; init; }
+
+
         public IReadOnlyList<int> ClassNumbers { get; init; } = Array.Empty<int>();
+
+
         public bool ExactMatch { get; init; }
 
 
         public int CurrentPage { get; init; }
+
+
         public int ResultsPerPage { get; init; }
+
+
         public int ResultsCount { get; init; }
 
 

@@ -8,10 +8,13 @@ namespace IPNoticeHub.Web.Models.Copyrights
     {
         public Guid PublicId { get; set; }
 
+
         [MaxLength(RegistrationNumberMaxLength)]
         public string RegistrationNumber { get; init; } = string.Empty;
 
+
         public CopyrightWorkType WorkType { get; set; }
+
 
         [MaxLength(WorkTypeMaxLength)]
         public string? OtherWorkType { get; set; }
