@@ -327,7 +327,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
             var uriLocation = response.Headers.Location!;
             var resolvedUri = uriLocation.IsAbsoluteUri ? uriLocation : new Uri(client.BaseAddress!, uriLocation);
 
-            resolvedUri.AbsolutePath.Should().Be("/Trademarks/MyCollection");
+           resolvedUri.AbsolutePath.Should().Be("/Trademarks/MyCollection");
 
             using (var serviceScope = appFactory.Services.CreateScope())
             {
