@@ -171,8 +171,7 @@ namespace IPNoticeHub.Web.Controllers
             await copyrightService.RemoveAsync(userId, id, cancellationToken);
 
             TempData["SuccessMessage"] = CopyrightRemovedMessage;
-            return RedirectToLocal(returnUrl)
-                ?? RedirectToAction(nameof(MyCollection));
+            return RedirectToLocal(returnUrl) ?? RedirectToAction(nameof(MyCollection));
         }
 
         [HttpGet, Authorize(Policy = "HasUserId")]

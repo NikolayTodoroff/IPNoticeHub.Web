@@ -25,12 +25,12 @@ namespace IPNoticeHub.Data.Entities.TrademarkRegistration
 
         [Required, MaxLength(WordmarkMaxLength)]
         [Comment("The wordmark or name of the trademark)")]
-        public string Wordmark { get; set; } = string.Empty;
+        public string Wordmark { get; set; } = null!;
 
 
         [Required,MaxLength(SourceIdMaxLength)]
         [Comment("Original identifier from the source system (USPTO Serial, EUIPO Application, WIPO IRN)")]
-        public string SourceId { get; set; } = string.Empty;
+        public string SourceId { get; set; } = null!;
 
 
         [MaxLength(RegistrationNumberMaxLength)]
@@ -40,12 +40,12 @@ namespace IPNoticeHub.Data.Entities.TrademarkRegistration
 
         [Required, MaxLength(GoodsAndServicesMaxLength)]
         [Comment("Description of goods and services associated with the trademark")]
-        public string GoodsAndServices { get; set; } = string.Empty;
+        public string GoodsAndServices { get; set; } = null!;
 
 
         [Required, MaxLength(OwnerNameMaxLength)]
         [Comment("Name of the current owner/s of the trademark")]
-        public string Owner { get; set; } = string.Empty;
+        public string Owner { get; set; } = null!;
 
 
         [Required, Comment("Current status of the trademark (default is Pending)")]
@@ -53,7 +53,7 @@ namespace IPNoticeHub.Data.Entities.TrademarkRegistration
 
 
         [Required, MaxLength(TrademarkStatusDetailsMaxLength)]
-        public string StatusDetail { get; set; } = string.Empty;
+        public string StatusDetail { get; set; } = null!;
 
 
         [Comment("Raw status code from source header (e.g., USPTO <status-code>)")]
