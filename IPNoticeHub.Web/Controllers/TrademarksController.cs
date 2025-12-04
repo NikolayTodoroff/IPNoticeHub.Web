@@ -151,7 +151,6 @@ namespace IPNoticeHub.Web.Controllers
         [Authorize(Policy = "HasUserId")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-
         public async Task<IActionResult> Remove(int trademarkId, string? returnUrl = null, CancellationToken cancellationToken = default)
         {
             if (!User.TryGetUserId(out var userId)) return Forbid();
