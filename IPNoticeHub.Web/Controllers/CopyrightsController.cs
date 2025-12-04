@@ -76,32 +76,32 @@ namespace IPNoticeHub.Web.Controllers
         {
             if (!User.TryGetUserId(out var userId)) return Forbid();
 
-            var copyrightDetailsDTO = await copyrightService.GetDetailsAsync(userId, id, cancellationToken);
-            if (copyrightDetailsDTO is null) return NotFound();
+            var dto = await copyrightService.GetDetailsAsync(userId, id, cancellationToken);
+            if (dto is null) return NotFound();
 
-            var (workType, otherText) = TypeOfWorkMapper(copyrightDetailsDTO.TypeOfWork);
+            var (workType, otherText) = TypeOfWorkMapper(dto.TypeOfWork);
 
-            var editViewModel = new CopyrightEditViewModel
+            var viewModel = new CopyrightEditViewModel
             {
-                PublicId = copyrightDetailsDTO.PublicId,
-                RegistrationNumber = copyrightDetailsDTO.RegistrationNumber,
+                PublicId = dto.PublicId,
+                RegistrationNumber = dto.RegistrationNumber,
                 WorkType = workType,
                 OtherWorkType = otherText,
-                Title = copyrightDetailsDTO.Title,
-                YearOfCreation = copyrightDetailsDTO.YearOfCreation,
-                DateOfPublication = copyrightDetailsDTO.DateOfPublication,
-                Owner = copyrightDetailsDTO.Owner,
-                NationOfFirstPublication = copyrightDetailsDTO.NationOfFirstPublication
+                Title = dto.Title,
+                YearOfCreation = dto.YearOfCreation,
+                DateOfPublication = dto.DateOfPublication,
+                Owner = dto.Owner,
+                NationOfFirstPublication = dto.NationOfFirstPublication
             };
 
             ViewBag.YearOptions = YearOptionsProvider.BuildYearOptions();
-            return View(editViewModel);
+            return View(viewModel);
         }
 
         [Authorize(Policy = "HasUserId")]
         [HttpPost("Copyrights/Edit/{id:guid}")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, CopyrightEditViewModel editViewModel, string? returnUrl = null, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> Edit(Guid id, CopyrightEditViewModel viewModel, string? returnUrl = null, CancellationToken cancellationToken = default)
         {
             if (!User.TryGetUserId(out var userId))
             {
@@ -110,26 +110,26 @@ namespace IPNoticeHub.Web.Controllers
             }
 
             // Conditional validation: OtherWorkType required when WorkType == Other
-            if (editViewModel.WorkType == CopyrightWorkType.Other && string.IsNullOrWhiteSpace(editViewModel.OtherWorkType))
+            if (viewModel.WorkType == CopyrightWorkType.Other && string.IsNullOrWhiteSpace(viewModel.OtherWorkType))
             {
                 ModelState.AddModelError(nameof(CopyrightEditViewModel.OtherWorkType), "Please specify the work type.");
             }
 
             if (!ModelState.IsValid)
             {
-                return View(editViewModel);
+                return View(viewModel);
             }
 
             var copyrightEditDTO = new CopyrightEditDTO
             {
-                RegistrationNumber = editViewModel.RegistrationNumber,
-                WorkType = editViewModel.WorkType,
-                OtherWorkType = editViewModel.OtherWorkType,
-                Title = editViewModel.Title,
-                YearOfCreation = editViewModel.YearOfCreation,
-                DateOfPublication = editViewModel.DateOfPublication,
-                Owner = editViewModel.Owner,
-                NationOfFirstPublication = editViewModel.NationOfFirstPublication
+                RegistrationNumber = viewModel.RegistrationNumber,
+                WorkType = viewModel.WorkType,
+                OtherWorkType = viewModel.OtherWorkType,
+                Title = viewModel.Title,
+                YearOfCreation = viewModel.YearOfCreation,
+                DateOfPublication = viewModel.DateOfPublication,
+                Owner = viewModel.Owner,
+                NationOfFirstPublication = viewModel.NationOfFirstPublication
             };
 
             var editedSuccessfully = await copyrightService.EditAsync(userId, id, copyrightEditDTO, cancellationToken);
@@ -137,7 +137,7 @@ namespace IPNoticeHub.Web.Controllers
             if (!editedSuccessfully)
             {
                 ModelState.AddModelError(string.Empty, CopyrightUpdatesErrorMessage);
-                return View(editViewModel);
+                return View(viewModel);
             }
 
             TempData["SuccessMessage"] = CopyrightUpdatesMessage;
@@ -155,11 +155,22 @@ namespace IPNoticeHub.Web.Controllers
         {
             if (!User.TryGetUserId(out var userId)) return Forbid();
 
-            CopyrightDetailsDTO? model = await copyrightService.GetDetailsAsync(userId, id, cancellationToken);
+            var dto = await copyrightService.GetDetailsAsync(userId, id, cancellationToken);
 
-            if (model is null) return NotFound();
+            if (dto is null) return NotFound();
 
-            return View(model);
+            var viewModel = new CopyrightDetailsViewModel
+            {
+                RegistrationNumber = dto.RegistrationNumber,
+                TypeOfWork = dto.TypeOfWork,
+                Title = dto.Title,
+                YearOfCreation = dto.YearOfCreation,
+                DateOfPublication = dto.DateOfPublication,
+                Owner = dto.Owner,
+                NationOfFirstPublication = dto.NationOfFirstPublication
+            };
+
+            return View(viewModel);
         }
 
         [HttpPost]
