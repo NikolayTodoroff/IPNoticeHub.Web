@@ -10,7 +10,6 @@ using IPNoticeHub.Web.Models.Trademarks;
 using IPNoticeHub.Web.ViewModels.Trademarks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Globalization;
 using static IPNoticeHub.Common.ValidationConstants.FormattingConstants;
 using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
@@ -21,8 +20,6 @@ using IPNoticeHub.Web.Models.TrademarkCollection;
 
 namespace IPNoticeHub.Web.Controllers
 {
-    [Authorize(Policy = "HasUserId")]
-    [AutoValidateAntiforgeryToken]
     public sealed class TrademarksController : Controller
     {
         private readonly ITrademarkCollectionService tmCollectionService;
@@ -114,8 +111,8 @@ namespace IPNoticeHub.Web.Controllers
         {
             if (!User.TryGetUserId(out var userId)) return Forbid();
 
-            var pagedResult =
-                await tmCollectionService.GetUserCollectionAsync(userId, currentPage, resultsPerPage, cancellationToken);
+            var pagedResult = await tmCollectionService.
+                GetUserCollectionAsync(userId, currentPage, resultsPerPage, cancellationToken);
 
             var viewModel = TrademarkCollectionDtoToVmMapper.Map(pagedResult);
 
