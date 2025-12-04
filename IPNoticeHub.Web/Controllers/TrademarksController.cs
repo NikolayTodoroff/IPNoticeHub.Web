@@ -17,9 +17,12 @@ using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
 using static IPNoticeHub.Common.ValidationConstants.StatusMessages;
 using static IPNoticeHub.Web.Infrastructure.TemplateReplacer;
 using static IPNoticeHub.Web.Infrastructure.ApplyEntityDetails;
+using IPNoticeHub.Web.Models.TrademarkCollection;
 
 namespace IPNoticeHub.Web.Controllers
 {
+    [Authorize(Policy = "HasUserId")]
+    [AutoValidateAntiforgeryToken]
     public sealed class TrademarksController : Controller
     {
         private readonly ITrademarkCollectionService tmCollectionService;
@@ -48,14 +51,14 @@ namespace IPNoticeHub.Web.Controllers
                 return CreateEmptyViewModel(filter);
             }
 
-            TrademarkFilterDTO? filterDTO = CreateNormalizedFilterDTO(filter, searchTerm);
+            var filterDTO = CreateNormalizedFilterDTO(filter, searchTerm);
 
-            PagedResult<TrademarkSummaryDTO> dtoPagedResult = await tmSearchService.SearchAsync(filterDTO, filter.CurrentPage, filter.ResultsPerPage, cancellationToken);
+            var pagedResult = await tmSearchService.SearchAsync(filterDTO, filter.CurrentPage, filter.ResultsPerPage, cancellationToken);
 
             ViewBag.HasSearch = true;
 
-            TrademarksIndexViewModel indexViewModel = TrademarksIndexDtoToVmMapper.MapToIndexViewModel(filter, dtoPagedResult);
-            return View(indexViewModel);
+            var viewModel = TrademarksIndexDtoToVmMapper.MapToIndexViewModel(filter, pagedResult);
+            return View(viewModel);
         }
 
         [HttpGet("Trademarks/Details/{id:guid}")]
@@ -111,26 +114,41 @@ namespace IPNoticeHub.Web.Controllers
         {
             if (!User.TryGetUserId(out var userId)) return Forbid();
 
-            var page = await tmCollectionService.GetUserCollectionAsync(userId, sortBy, currentPage, resultsPerPage, cancellationToken);
+            PagedResult<Services.Trademarks.DTOs.TrademarkSummaryDTO> dtoPagedResult =
+                await tmCollectionService.GetUserCollectionAsync(userId, currentPage, resultsPerPage, cancellationToken);
+
+            var indexViewModel = TrademarkCollectionDtoToVmMapper.Map(dtoPagedResult);
+
             ViewBag.SortBy = sortBy;
-            return View(page);
+            return View("MyCollection", indexViewModel);
         }
 
-        [Authorize(Policy = "HasUserId")]
-        [HttpPost]
+        [HttpPost("Add")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Add(int trademarkId, string? returnUrl = null, CancellationToken cancellationToken = default)
         {
             if (!User.TryGetUserId(out var userId)) return Forbid();
 
-            await tmCollectionService.AddAsync(userId, trademarkId, cancellationToken);
+            try
+            {
+                if (await tmCollectionService.IsInCollectionAsync(userId, trademarkId, false, cancellationToken))
+                {
+                    TempData["InfoMessage"] = "Trademark is already in your collection.";
+                    return this.RedirectToLocalOrAction(returnUrl, nameof(Index));
+                }
 
-            TempData["SuccessMessage"] = TmAddedToCollectionMessage;
-            return this.RedirectToLocalOrAction(returnUrl, nameof(MyCollection));
+                await tmCollectionService.AddAsync(userId, trademarkId, cancellationToken);
+                TempData["SuccessMessage"] = TmAddedToCollectionMessage;
+                return this.RedirectToLocalOrAction(returnUrl, nameof(Index));
+            }
+            catch
+            {
+                TempData["ErrorMessage"] = TmAddToCollectionErrorMessage;
+                return this.RedirectToLocalOrAction(returnUrl, nameof(Index));
+            }
         }
 
-        [Authorize(Policy = "HasUserId")]
-        [HttpPost]
+        [HttpPost("Remove")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Remove(int trademarkId, string? returnUrl = null, CancellationToken cancellationToken = default)
         {
@@ -139,7 +157,7 @@ namespace IPNoticeHub.Web.Controllers
             await tmCollectionService.RemoveAsync(userId, trademarkId, cancellationToken);
 
             TempData["SuccessMessage"] = TmRemovedFromCollectionMessage;
-            return this.RedirectToLocalOrAction(returnUrl, nameof(MyCollection));
+            return this.RedirectToLocalOrAction(returnUrl, nameof(Index));
         }
 
         [HttpGet,Authorize(Policy = "HasUserId")]

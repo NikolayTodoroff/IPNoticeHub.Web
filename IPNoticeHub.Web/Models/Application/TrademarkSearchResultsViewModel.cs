@@ -20,10 +20,10 @@ namespace IPNoticeHub.Web.Models.Application
 
         public IEnumerable<TmSearchResultSingleItemViewModel> Results { get; set; } = Enumerable.Empty<TmSearchResultSingleItemViewModel>();
 
-        public int Total { get; set; }
-
 
         // CurrentPage, PageSize and computed TotalPages/HasPreviousPage/HasNextPage providing paging information.
+
+        public int Total { get; set; }
 
         public int CurrentPage { get; set; }
 

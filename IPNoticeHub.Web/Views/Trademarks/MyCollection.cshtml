@@ -4,7 +4,7 @@
 @{
     ViewBag.Title = "My Trademark Collection";
     // Canonical return target for this page (keeps pagination/query)
-    var currentUrl = (Context?.Request?.Path + Context?.Request?.QueryString) ?? Url.Action("Index", "TrademarkCollection");
+    var currentUrl = (Context?.Request?.Path + Context?.Request?.QueryString) ?? Url.Action("MyCollection", "Trademarks");
 }
 
 <div class="container-fluid px-0">
@@ -74,7 +74,7 @@
                                         Details
                                     </a>                                
 
-                                    <form asp-controller="TrademarkCollection" asp-action="Remove" method="post" class="m-0">
+                                    <form asp-controller="Trademarks" asp-action="Remove" method="post" class="m-0">
                                         @Html.AntiForgeryToken()
                                         <input type="hidden" name="trademarkId" value="@tm.Id" />
                                         <input type="hidden" name="returnUrl" value="@currentUrl" />
@@ -100,14 +100,14 @@
                 @if (Model.CurrentPage > 1)
                 {
                     <a class="btn btn-outline-secondary btn-sm"
-                       asp-controller="TrademarkCollection"
+                       asp-controller="Trademarks"
                        asp-action="Index"
                        asp-route-currentPage="@(Model.CurrentPage - 1)">‹ Prev</a>
                 }
                 @if (Model.Results.Count == Model.ResultsPerPage)
                 {
                     <a class="btn btn-outline-secondary btn-sm"
-                       asp-controller="TrademarkCollection"
+                       asp-controller="Trademarks"
                        asp-action="Index"
                        asp-route-currentPage="@(Model.CurrentPage + 1)">Next ›</a>
                 }

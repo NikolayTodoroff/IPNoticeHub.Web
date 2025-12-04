@@ -39,7 +39,7 @@
         }
         else
         {
-            <a class="btn btn-outline-secondary" asp-controller="TrademarkCollection" asp-action="Index">
+            <a class="btn btn-outline-secondary" asp-controller="Trademarks" asp-action="MyCollection">
                 Back to Trademarks
             </a>
         }
@@ -108,7 +108,7 @@
             @if (Model?.IsInCollection != true)
             {
                 <form method="post"
-                      asp-controller="TrademarkCollection"
+                      asp-controller="Trademarks"
                       asp-action="Add"
                       class="d-inline">
                     @Html.AntiForgeryToken()

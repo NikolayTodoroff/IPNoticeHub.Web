@@ -64,7 +64,8 @@ namespace IPNoticeHub.Web.Controllers
                     Owner = s.Owner,
                     Status = s.Status,
                     RegistrationDate = s.RegistrationDate
-                }).ToList(),
+                }).
+                ToList(),
                 Total = resultsCount,
                 CurrentPage = currentPage,
                 PageSize = pageSize
