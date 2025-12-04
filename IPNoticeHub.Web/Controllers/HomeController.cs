@@ -3,6 +3,7 @@ using IPNoticeHub.Services.Application.Abstractions;
 using IPNoticeHub.Services.Application.DTOs;
 using IPNoticeHub.Web.Models;
 using IPNoticeHub.Web.Models.Application;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
@@ -74,7 +75,7 @@ namespace IPNoticeHub.Web.Controllers
             return View(searchResultsViewModel);
         }
 
-        [HttpGet]
+        [AllowAnonymous]
         public IActionResult StatusCode(int code)
         {
             if (code == 404) return View("NotFound");
