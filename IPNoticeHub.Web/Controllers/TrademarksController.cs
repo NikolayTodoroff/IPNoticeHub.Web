@@ -117,11 +117,14 @@ namespace IPNoticeHub.Web.Controllers
             var viewModel = TrademarkCollectionDtoToVmMapper.Map(pagedResult);
 
             ViewBag.SortBy = sortBy;
+
             return View(viewModel);
         }
 
+        [Authorize(Policy = "HasUserId")]
         [HttpPost]
         [ValidateAntiForgeryToken]
+
         public async Task<IActionResult> Add(int trademarkId, string? returnUrl = null, CancellationToken cancellationToken = default)
         {
             if (!User.TryGetUserId(out var userId)) return Forbid();
@@ -145,8 +148,10 @@ namespace IPNoticeHub.Web.Controllers
             }
         }
 
+        [Authorize(Policy = "HasUserId")]
         [HttpPost]
         [ValidateAntiForgeryToken]
+
         public async Task<IActionResult> Remove(int trademarkId, string? returnUrl = null, CancellationToken cancellationToken = default)
         {
             if (!User.TryGetUserId(out var userId)) return Forbid();
