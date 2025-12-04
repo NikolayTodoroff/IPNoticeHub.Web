@@ -7,7 +7,6 @@ using IPNoticeHub.Services.Trademarks.DTOs;
 using IPNoticeHub.Web.Infrastructure;
 using IPNoticeHub.Web.Models.PdfGeneration;
 using IPNoticeHub.Web.Models.Trademarks;
-using IPNoticeHub.Web.ViewModels.Trademarks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
@@ -16,7 +15,6 @@ using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
 using static IPNoticeHub.Common.ValidationConstants.StatusMessages;
 using static IPNoticeHub.Web.Infrastructure.TemplateReplacer;
 using static IPNoticeHub.Web.Infrastructure.ApplyEntityDetails;
-using IPNoticeHub.Web.Models.TrademarkCollection;
 using IPNoticeHub.Web.Infrastructure.Mapping;
 
 namespace IPNoticeHub.Web.Controllers
@@ -63,9 +61,9 @@ namespace IPNoticeHub.Web.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Details(Guid id, string? returnUrl = null, CancellationToken cancellationToken = default)
         {
-            TrademarkDetailsDTO? detailsDTO = await tmSearchService.GetDetailsAsync(id, cancellationToken);
+            TrademarkDetailsDTO? dto = await tmSearchService.GetDetailsAsync(id, cancellationToken);
 
-            if (detailsDTO is null) return NotFound();
+            if (dto is null) return NotFound();
 
             bool isAuthenticated = User.Identity?.IsAuthenticated == true;
             bool isInCollection = false;
@@ -73,36 +71,18 @@ namespace IPNoticeHub.Web.Controllers
 
             if (isAuthenticated && User.TryGetUserId(out var userId))
             {
-                isInCollection = await tmCollectionService.IsInCollectionAsync(userId, detailsDTO.Id,false,cancellationToken);
-                isInWatchlist = await tmWatchlistService.ExistsAsync(userId, detailsDTO.Id, cancellationToken);
+                isInCollection = await tmCollectionService.IsInCollectionAsync(userId, dto.Id,false,cancellationToken);
+                isInWatchlist = await tmWatchlistService.ExistsAsync(userId, dto.Id, cancellationToken);
             }
 
-            var detailsViewModel = new TrademarkDetailsViewModel
-            {
-                Id = detailsDTO.Id,
-                PublicId = detailsDTO.PublicId,
-                Wordmark = detailsDTO.Wordmark,
-                Owner = detailsDTO.Owner,
-                SourceId = detailsDTO.SourceId,
-                RegistrationNumber = detailsDTO.RegistrationNumber,
-                Status = detailsDTO.Status,
-                GoodsAndServices = detailsDTO.GoodsAndServices,
-                FilingDate = detailsDTO.FilingDate,
-                RegistrationDate = detailsDTO.RegistrationDate,
-                MarkImageUrl = detailsDTO.MarkImageUrl,
-                Provider = detailsDTO.Provider,
-                Classes = detailsDTO.Classes,
-                IsInCollection = isInCollection,
-                IsInWatchlist = isInWatchlist,
-                IsAuthenticated = isAuthenticated
-            };
+            var viewModel = TrademarksMapping.TrademarksDetailsViewModelMapping(dto,isInCollection,isInWatchlist,isAuthenticated);
 
             if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
             {
                 ViewBag.ReturnUrl = returnUrl;
             }
 
-            return View(detailsViewModel);
+            return View(viewModel);
         }
 
         [Authorize(Policy = "HasUserId")]

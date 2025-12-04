@@ -2,6 +2,7 @@
 using IPNoticeHub.Services.Trademarks.DTOs;
 using IPNoticeHub.Web.Models.TrademarkCollection;
 using IPNoticeHub.Web.Models.Trademarks;
+using IPNoticeHub.Web.ViewModels.Trademarks;
 
 namespace IPNoticeHub.Web.Infrastructure.Mapping
 {
@@ -60,6 +61,30 @@ namespace IPNoticeHub.Web.Infrastructure.Mapping
                 Status = summaryDTO.Status,
                 Classes = summaryDTO.Classes ?? Array.Empty<int>(),
                 Provider = summaryDTO.Provider
+            };
+        }
+
+        public static TrademarkDetailsViewModel TrademarksDetailsViewModelMapping(TrademarkDetailsDTO dto,
+            bool isInCollection, bool isInWatchlist, bool isAuthenticated)
+        {
+            return new TrademarkDetailsViewModel
+            {
+                Id = dto.Id,
+                PublicId = dto.PublicId,
+                Wordmark = dto.Wordmark,
+                Owner = dto.Owner,
+                SourceId = dto.SourceId,
+                RegistrationNumber = dto.RegistrationNumber,
+                Status = dto.Status,
+                GoodsAndServices = dto.GoodsAndServices,
+                FilingDate = dto.FilingDate,
+                RegistrationDate = dto.RegistrationDate,
+                MarkImageUrl = dto.MarkImageUrl,
+                Provider = dto.Provider,
+                Classes = dto.Classes,
+                IsInCollection = isInCollection,
+                IsInWatchlist = isInWatchlist,
+                IsAuthenticated = isAuthenticated
             };
         }
     }
