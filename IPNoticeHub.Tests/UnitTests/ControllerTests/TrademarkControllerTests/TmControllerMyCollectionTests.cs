@@ -4,6 +4,7 @@ using IPNoticeHub.Services.Common;
 using IPNoticeHub.Services.Trademarks.Abstractions;
 using IPNoticeHub.Services.Trademarks.DTOs;
 using IPNoticeHub.Tests.UnitTests.TestUtilities;
+using IPNoticeHub.Web.Models.TrademarkCollection;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
@@ -47,8 +48,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
             const CollectionSortBy sortBy = CollectionSortBy.DateAddedDesc;
 
             var tmCollectionService = new Mock<ITrademarkCollectionService>();
-            tmCollectionService
-                .Setup(s => s.GetUserCollectionAsync(userId, sortBy, currentPage, resultsPerPage, It.IsAny<CancellationToken>()))
+            tmCollectionService.Setup(s => 
+                 s.GetUserCollectionAsync(userId, sortBy, currentPage, resultsPerPage, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(pagedResult);
 
             var controller = TestTrademarkControllerFactory.CreateTrademarksController(tmCollectionService.Object, userId: "u1");
@@ -56,7 +57,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
             var result = await controller.MyCollection(sortBy, currentPage, resultsPerPage);
 
             var myCollectionView = result.Should().BeOfType<ViewResult>().Subject;
-            myCollectionView.Model.Should().Be(pagedResult);
+            myCollectionView.Model.Should().BeOfType<TrademarkCollectionIndexViewModel>();
+
 
             var sortInBag = (CollectionSortBy)controller.ViewBag.SortBy;
             sortInBag.Should().Be(sortBy);
@@ -91,7 +93,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
             var myCollectionView = myCollectionActionResult as ViewResult;
 
             myCollectionView.Should().NotBeNull();
-            myCollectionView!.Model.Should().Be(pagedResult);
+
+            myCollectionView.Model.Should().BeOfType<TrademarkCollectionIndexViewModel>();
 
             var sortInBag = (CollectionSortBy)controller.ViewBag.SortBy;
             sortInBag.Should().Be(sortBy);

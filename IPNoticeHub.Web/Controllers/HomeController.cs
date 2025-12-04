@@ -77,7 +77,7 @@ namespace IPNoticeHub.Web.Controllers
         [HttpGet]
         public IActionResult StatusCode(int code)
         {
-            if (code == 404) return View("Not Found");
+            if (code == 404) return View("NotFound");
 
             var model = new ErrorViewModel
             {

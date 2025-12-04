@@ -112,7 +112,7 @@ namespace IPNoticeHub.Web.Controllers
             if (!User.TryGetUserId(out var userId)) return Forbid();
 
             var pagedResult = await tmCollectionService.
-                GetUserCollectionAsync(userId, currentPage, resultsPerPage, cancellationToken);
+                GetUserCollectionAsync(userId, sortBy, currentPage, resultsPerPage, cancellationToken);
 
             var viewModel = TrademarkCollectionDtoToVmMapper.Map(pagedResult);
 
@@ -120,7 +120,7 @@ namespace IPNoticeHub.Web.Controllers
             return View(viewModel);
         }
 
-        [HttpPost("Add")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Add(int trademarkId, string? returnUrl = null, CancellationToken cancellationToken = default)
         {
@@ -145,7 +145,7 @@ namespace IPNoticeHub.Web.Controllers
             }
         }
 
-        [HttpPost("Remove")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Remove(int trademarkId, string? returnUrl = null, CancellationToken cancellationToken = default)
         {
