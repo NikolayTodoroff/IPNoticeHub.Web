@@ -1,4 +1,7 @@
-﻿namespace IPNoticeHub.Services.Application.DTOs
+﻿using System.ComponentModel.DataAnnotations;
+using static IPNoticeHub.Common.ValidationConstants.TrademarkRegistrationConstants;
+
+namespace IPNoticeHub.Services.Application.DTOs
 {
     public sealed class TrademarkSearchResultDTO
     {
@@ -8,15 +11,19 @@
         public Guid PublicId { get; init; }
 
 
+        [MaxLength(RegistrationNumberMaxLength)]
         public string RegistrationNumber { get; init; } = string.Empty;
 
 
+        [Required, MaxLength(WordmarkMaxLength)]
         public string Wordmark { get; init; } = string.Empty;
 
 
+        [Required, MaxLength(OwnerNameMaxLength)]
         public string Owner { get; init; } = string.Empty;
 
 
+        [Required, MaxLength(TrademarkStatusDetailsMaxLength)]
         public string Status { get; init; } = string.Empty;
 
 
