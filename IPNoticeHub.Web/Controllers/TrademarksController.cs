@@ -150,26 +150,23 @@ namespace IPNoticeHub.Web.Controllers
                 return Forbid();
             }
 
-            var trademarkDetailsDTO = await tmSearchService.GetDetailsAsync(publicId, cancellationToken);
+            var dto = await tmSearchService.GetDetailsAsync(publicId, cancellationToken);
 
-            if (trademarkDetailsDTO == null)
+            if (dto == null)
             {
                 return NotFound();
             }
 
-            bool isInCollection = await tmCollectionService.IsInCollectionAsync(userId, trademarkDetailsDTO.Id, false, cancellationToken);
+            bool isInCollection = await tmCollectionService.
+                IsInCollectionAsync(userId, dto.Id, false, cancellationToken);
 
             if (!isInCollection)
             {
                 return NotFound();
             }
 
-            var viewModel = new CeaseDesistViewModel
-            {
-                PublicId = publicId,
-                WorkTitle = trademarkDetailsDTO.Wordmark ?? trademarkDetailsDTO.RegistrationNumber ?? "Trademark",
-                RegistrationNumber = trademarkDetailsDTO.RegistrationNumber,
-            };
+            var viewModel = TrademarksMapping.
+                CeaseDesistViewModelMapping(publicId,dto.Wordmark, dto.RegistrationNumber!);
 
             viewModel.BodyTemplate = letterTemplateProvider.GetTemplateByKey("CND-Trademark")?.BodyTemplate ?? string.Empty;
             ViewData["ShowAdditionalFacts"] = true;

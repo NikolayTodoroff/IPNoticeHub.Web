@@ -1,5 +1,7 @@
-﻿using IPNoticeHub.Services.Common;
+﻿using Humanizer;
+using IPNoticeHub.Services.Common;
 using IPNoticeHub.Services.Trademarks.DTOs;
+using IPNoticeHub.Web.Models.PdfGeneration;
 using IPNoticeHub.Web.Models.TrademarkCollection;
 using IPNoticeHub.Web.Models.Trademarks;
 using IPNoticeHub.Web.ViewModels.Trademarks;
@@ -85,6 +87,16 @@ namespace IPNoticeHub.Web.Infrastructure.Mapping
                 IsInCollection = isInCollection,
                 IsInWatchlist = isInWatchlist,
                 IsAuthenticated = isAuthenticated
+            };
+        }
+
+        public static CeaseDesistViewModel CeaseDesistViewModelMapping(Guid publicId,string wordMark,string registrationNumber)
+        {
+            return new CeaseDesistViewModel
+            {
+                PublicId = publicId,
+                WorkTitle = wordMark ?? registrationNumber ?? "Trademark",
+                RegistrationNumber = registrationNumber
             };
         }
     }
