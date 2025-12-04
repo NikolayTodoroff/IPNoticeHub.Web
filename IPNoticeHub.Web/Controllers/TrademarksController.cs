@@ -114,13 +114,13 @@ namespace IPNoticeHub.Web.Controllers
         {
             if (!User.TryGetUserId(out var userId)) return Forbid();
 
-            PagedResult<Services.Trademarks.DTOs.TrademarkSummaryDTO> dtoPagedResult =
+            var pagedResult =
                 await tmCollectionService.GetUserCollectionAsync(userId, currentPage, resultsPerPage, cancellationToken);
 
-            var indexViewModel = TrademarkCollectionDtoToVmMapper.Map(dtoPagedResult);
+            var viewModel = TrademarkCollectionDtoToVmMapper.Map(pagedResult);
 
             ViewBag.SortBy = sortBy;
-            return View("MyCollection", indexViewModel);
+            return View(viewModel);
         }
 
         [HttpPost("Add")]
@@ -134,17 +134,17 @@ namespace IPNoticeHub.Web.Controllers
                 if (await tmCollectionService.IsInCollectionAsync(userId, trademarkId, false, cancellationToken))
                 {
                     TempData["InfoMessage"] = "Trademark is already in your collection.";
-                    return this.RedirectToLocalOrAction(returnUrl, nameof(Index));
+                    return this.RedirectToLocalOrAction(returnUrl, nameof(MyCollection));
                 }
 
                 await tmCollectionService.AddAsync(userId, trademarkId, cancellationToken);
                 TempData["SuccessMessage"] = TmAddedToCollectionMessage;
-                return this.RedirectToLocalOrAction(returnUrl, nameof(Index));
+                return this.RedirectToLocalOrAction(returnUrl, nameof(MyCollection));
             }
             catch
             {
                 TempData["ErrorMessage"] = TmAddToCollectionErrorMessage;
-                return this.RedirectToLocalOrAction(returnUrl, nameof(Index));
+                return this.RedirectToLocalOrAction(returnUrl, nameof(MyCollection));
             }
         }
 
@@ -157,7 +157,7 @@ namespace IPNoticeHub.Web.Controllers
             await tmCollectionService.RemoveAsync(userId, trademarkId, cancellationToken);
 
             TempData["SuccessMessage"] = TmRemovedFromCollectionMessage;
-            return this.RedirectToLocalOrAction(returnUrl, nameof(Index));
+            return this.RedirectToLocalOrAction(returnUrl, nameof(MyCollection));
         }
 
         [HttpGet,Authorize(Policy = "HasUserId")]
