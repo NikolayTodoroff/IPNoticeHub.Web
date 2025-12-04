@@ -42,7 +42,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Copyrights
             IUserCopyrightRepository userCopyrightRepo = new UserCopyrightRepository(testDbContext);
             ICopyrightService service = new CopyrightService(copyrightRepo, userCopyrightRepo);
 
-            var createCopyrightDTO = new CopyrightCreateDTO
+            var createCopyrightDTO = new CopyrightCreateViewModel
             {
                 RegistrationNumber = "TX-111111",
                 WorkType = CopyrightWorkType.Literary,
@@ -77,7 +77,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Copyrights
             var userCopyrightRepo = new UserCopyrightRepository(testDbContext);
             ICopyrightService service = new CopyrightService(copyrightRepo, userCopyrightRepo);
 
-            var createCopyrightDTO = new CopyrightCreateDTO
+            var createCopyrightDTO = new CopyrightCreateViewModel
             {
                 RegistrationNumber = "TX-222222",
                 WorkType = CopyrightWorkType.Other,
@@ -116,7 +116,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Copyrights
             var userCopyrightRepo = new UserCopyrightRepository(testDbContext);
             ICopyrightService service = new CopyrightService(copyrightRepo, userCopyrightRepo);
 
-            var createCopyrightDTO = new CopyrightCreateDTO
+            var createCopyrightDTO = new CopyrightCreateViewModel
             {
                 RegistrationNumber = "TX-333333",
                 WorkType = CopyrightWorkType.Audiovisual,

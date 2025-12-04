@@ -6,7 +6,7 @@ namespace IPNoticeHub.Services.Copyrights.Abstractions
 {
     public interface ICopyrightService
     {
-        Task<Guid> CreateAsync(string userId, CopyrightCreateDTO dto, CancellationToken cancellationToken = default);
+        Task<Guid> CreateAsync(string userId, CopyrightCreateDto dto, CancellationToken cancellationToken = default);
 
         Task<bool> EditAsync(string userId, Guid publicId, CopyrightEditDTO dto, CancellationToken cancellationToken = default);
 

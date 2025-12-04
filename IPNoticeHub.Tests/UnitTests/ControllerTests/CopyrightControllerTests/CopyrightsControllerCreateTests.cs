@@ -30,7 +30,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
             var createActionResult = controller.Create();
 
             var createView = createActionResult.Should().BeOfType<ViewResult>().Subject;
-            createView.Model.Should().BeOfType<CopyrightCreateDTO>();
+            createView.Model.Should().BeOfType<CopyrightCreateViewModel>();
         }
 
         [Test]
@@ -39,7 +39,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
             var copyrightService = new Mock<ICopyrightService>(MockBehavior.Strict);
             var controller = TestCopyrightControllerFactory.CreateController(copyrightService.Object);
 
-            var createCopyrightDTO = new CopyrightCreateDTO
+            var createCopyrightDTO = new CopyrightCreateViewModel
             {
                 // leaving the required fields empty should trigger model error
             };
@@ -59,7 +59,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
             var copyrightService = new Mock<ICopyrightService>(MockBehavior.Strict);
             var controller = TestCopyrightControllerFactory.CreateController(copyrightService.Object, userId: null);
 
-            var createCopyrightDTO = new CopyrightCreateDTO { 
+            var createCopyrightDTO = new CopyrightCreateViewModel { 
                 RegistrationNumber = "TX-1",
                 WorkType = CopyrightWorkType.Literary,
                 Title = "Title", 
@@ -76,12 +76,12 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
         {
             var copyrightService = new Mock<ICopyrightService>();
 
-            copyrightService.Setup(s => s.CreateAsync("u1", It.IsAny<CopyrightCreateDTO>(), It.IsAny<CancellationToken>())).
+            copyrightService.Setup(s => s.CreateAsync("u1", It.IsAny<CopyrightCreateViewModel>(), It.IsAny<CancellationToken>())).
                ReturnsAsync(Guid.NewGuid());
 
             var controller = TestCopyrightControllerFactory.CreateController(copyrightService.Object, userId: "u1");
 
-            var createCopyrightDTO = new CopyrightCreateDTO { 
+            var createCopyrightDTO = new CopyrightCreateViewModel { 
                 RegistrationNumber = "TX-2123456", 
                 WorkType = CopyrightWorkType.VisualArts,
                 Title = "New Image",
@@ -94,7 +94,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
             redirectResult.Url.Should().Be("/back");
             controller.TempData["SuccessMessage"].Should().Be(CopyrightAddedMessage);
 
-            copyrightService.Verify(s => s.CreateAsync("u1", It.IsAny<CopyrightCreateDTO>(), It.IsAny<CancellationToken>()), Times.Once);
+            copyrightService.Verify(s => s.CreateAsync("u1", It.IsAny<CopyrightCreateViewModel>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Test]
@@ -104,12 +104,12 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
 
             var copyrightService = new Mock<ICopyrightService>();
 
-            copyrightService.Setup(s => s.CreateAsync("u1", It.IsAny<CopyrightCreateDTO>(), It.IsAny<CancellationToken>()))
+            copyrightService.Setup(s => s.CreateAsync("u1", It.IsAny<CopyrightCreateViewModel>(), It.IsAny<CancellationToken>()))
                .ReturnsAsync(createdId);
 
             var controller = TestCopyrightControllerFactory.CreateController(copyrightService.Object, userId: "u1");
 
-            var createCopyrightDTO = new CopyrightCreateDTO { 
+            var createCopyrightDTO = new CopyrightCreateViewModel { 
                 RegistrationNumber = "TX-3",
                 WorkType = CopyrightWorkType.Literary,
                 Title = "New Title",

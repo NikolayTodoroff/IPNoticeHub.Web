@@ -21,7 +21,7 @@ namespace IPNoticeHub.Services.Copyrights.Implementations
             this.userCopyrightRepository = userCopyrights;
         } 
 
-        public async Task<Guid> CreateAsync(string userId, CopyrightCreateDTO dto, CancellationToken cancellationToken = default)
+        public async Task<Guid> CreateAsync(string userId, CopyrightCreateDto dto, CancellationToken cancellationToken = default)
         {
             var existingEntity = await copyrightRepository.
                 GetByRegNumberAsync(dto.RegistrationNumber, asNoTracking: false, cancellationToken: cancellationToken);

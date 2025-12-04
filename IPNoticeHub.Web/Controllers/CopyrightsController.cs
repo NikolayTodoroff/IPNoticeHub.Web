@@ -48,22 +48,34 @@ namespace IPNoticeHub.Web.Controllers
         public IActionResult Create()
         {
             ViewBag.YearOptions = YearOptionsProvider.BuildYearOptions();
-            return View(new CopyrightCreateDTO());
+            return View(new CopyrightCreateViewModel());
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CopyrightCreateDTO createCopyrightDTO, string? returnUrl = null, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> Create(CopyrightCreateViewModel viewModel, string? returnUrl = null, CancellationToken cancellationToken = default)
         {
             if (!User.TryGetUserId(out var userId)) return Forbid();
 
             if (!ModelState.IsValid)
             {
                 ViewBag.YearOptions = YearOptionsProvider.BuildYearOptions();
-                return View(createCopyrightDTO);
+                return View(viewModel);
             }
-         
-            Guid publicId = await copyrightService.CreateAsync(userId, createCopyrightDTO, cancellationToken);
+
+            var dto = new CopyrightCreateDto
+            {
+                RegistrationNumber = viewModel.RegistrationNumber,
+                WorkType = viewModel.WorkType,
+                OtherWorkType = viewModel.OtherWorkType,
+                Title = viewModel.Title,
+                YearOfCreation = viewModel.YearOfCreation,
+                DateOfPublication = viewModel.DateOfPublication,
+                Owner = viewModel.Owner,
+                NationOfFirstPublication = viewModel.NationOfFirstPublication
+            };
+
+            Guid publicId = await copyrightService.CreateAsync(userId, dto, cancellationToken);
 
             TempData["SuccessMessage"] = CopyrightAddedMessage;
 
