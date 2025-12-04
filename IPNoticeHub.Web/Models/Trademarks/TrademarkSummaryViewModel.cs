@@ -9,8 +9,8 @@ namespace IPNoticeHub.Web.Models.Trademarks
     {
         public int Id { get; init; }                
         public Guid PublicId { get; init; }         
-        public string Wordmark { get; init; } = null!;
-        public string SourceId { get; init; } = null!;
+        public string Wordmark { get; init; } = string.Empty;
+        public string SourceId { get; init; } = string.Empty;
         public string? Owner { get; init; }
         public TrademarkStatusCategory Status { get; init; }
         public int[] Classes { get; init; } = Array.Empty<int>();

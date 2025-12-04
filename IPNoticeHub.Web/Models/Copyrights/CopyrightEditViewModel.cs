@@ -8,23 +8,22 @@ namespace IPNoticeHub.Web.Models.Copyrights
     {
         public Guid PublicId { get; set; }
 
-        [Required, MaxLength(RegistrationNumberMaxLength)]
+        [MaxLength(RegistrationNumberMaxLength)]
         public string RegistrationNumber { get; init; } = string.Empty;
 
-        [Required]
         public CopyrightWorkType WorkType { get; set; }
 
         [MaxLength(WorkTypeMaxLength)]
         public string? OtherWorkType { get; set; }
 
-        [Required, MaxLength(TitleMaxLength)]
+        [MaxLength(TitleMaxLength)]
         public string Title { get; init; } = string.Empty;
 
         public int? YearOfCreation { get; init; }
 
         public DateTime? DateOfPublication { get; init; }
 
-        [Required, MaxLength(OwnerNameMaxLength)]
+        [MaxLength(OwnerNameMaxLength)]
         public string Owner { get; init; } = string.Empty;
 
         [MaxLength(NationOfFirstPublicationMaxLength)]

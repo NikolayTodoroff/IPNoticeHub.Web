@@ -10,10 +10,8 @@ namespace IPNoticeHub.Web.Models.PdfGeneration
         public Guid PublicId { get; init; }
 
         // Autopopulated fields
-        [Required]
         public string WorkTitle { get; set; } = string.Empty;
 
-        [Required]
         public string? RegistrationNumber { get; set; } = string.Empty;
 
         public int? YearOfCreation { get; set; }
@@ -24,32 +22,26 @@ namespace IPNoticeHub.Web.Models.PdfGeneration
 
 
         // Sender and Recipient
-        [Required]
         public string SenderName { get; set; } = string.Empty;
 
-        [Required]
         public string SenderAddress { get; set; } = string.Empty;
 
-        [Required, EmailAddress]
+        [EmailAddress]
         public string SenderEmail { get; set; } = string.Empty;
 
-        [Required]
         public string RecipientName { get; set; } = string.Empty;
 
-        [Required]
         public string RecipientAddress { get; set; } = string.Empty;
 
-        [Required, EmailAddress]
+        [EmailAddress]
         public string RecipientEmail { get; set; } = string.Empty;
 
-        [Required]
         public string InfringingUrl { get; set; } = string.Empty;
 
         // Optional narrative
         public string? AdditionalFacts { get; set; }
 
         // Statements
-        [Required]
         public string GoodFaithStatement { get; set; } = "I have a good faith belief that the " +
             "disputed use of the copyrighted material is not authorized by the copyright owner, " +
             "its agent, or the law.";

@@ -36,7 +36,7 @@ namespace IPNoticeHub.Data.Entities.TrademarkRegistration
 
         [MaxLength(TrademarkEventDescriptionMaxLength)]
         [Comment("Detailed description of the event")]
-        public string Description { get; set; } = string.Empty;
+        public string Description { get; set; } = null!;
 
 
         [MaxLength(TrademarkEventTypeRawMaxLength)]
