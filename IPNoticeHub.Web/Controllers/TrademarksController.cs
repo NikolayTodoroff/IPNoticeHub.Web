@@ -17,6 +17,7 @@ using static IPNoticeHub.Common.ValidationConstants.StatusMessages;
 using static IPNoticeHub.Web.Infrastructure.TemplateReplacer;
 using static IPNoticeHub.Web.Infrastructure.ApplyEntityDetails;
 using IPNoticeHub.Web.Models.TrademarkCollection;
+using IPNoticeHub.Web.Infrastructure.Mapping;
 
 namespace IPNoticeHub.Web.Controllers
 {
@@ -54,7 +55,7 @@ namespace IPNoticeHub.Web.Controllers
 
             ViewBag.HasSearch = true;
 
-            var viewModel = TrademarksIndexDtoToVmMapper.MapToIndexViewModel(filter, pagedResult);
+            var viewModel = TrademarksMapping.TrademarkIndexViewModelMapping(filter, pagedResult);
             return View(viewModel);
         }
 
@@ -114,7 +115,7 @@ namespace IPNoticeHub.Web.Controllers
             var pagedResult = await tmCollectionService.
                 GetUserCollectionAsync(userId, sortBy, currentPage, resultsPerPage, cancellationToken);
 
-            var viewModel = TrademarkCollectionDtoToVmMapper.Map(pagedResult);
+            var viewModel = TrademarksMapping.TrademarkDtoToViewModelMapping(pagedResult);
 
             ViewBag.SortBy = sortBy;
 
@@ -321,7 +322,7 @@ namespace IPNoticeHub.Web.Controllers
                 ResultsCountPerPage = filter.ResultsPerPage
             };
 
-            TrademarksIndexViewModel? viewModel = TrademarksIndexDtoToVmMapper.MapToIndexViewModel(filter, emptyDTOPagedResult);
+            var viewModel = TrademarksMapping.TrademarkIndexViewModelMapping(filter, emptyDTOPagedResult);
             return View(viewModel);
         }
         private static TrademarkFilterDTO CreateNormalizedFilterDTO(TrademarkFilterViewModel filter, string searchTerm)
