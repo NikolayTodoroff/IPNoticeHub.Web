@@ -8,6 +8,7 @@ using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
+using IPNoticeHub.Web.Models.Copyrights;
 
 namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
 {
@@ -25,7 +26,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
             const string userId = "u1";
             const CollectionSortBy sortBy = CollectionSortBy.TitleAsc;
 
-            var pagedResult = new PagedResult<CopyrightSingleItemDto>
+            var dto = new PagedResult<CopyrightSingleItemDto>
             {
                 ResultsCount = 0,
                 CurrentPage = 1,
@@ -36,7 +37,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
             var copyrightService = new Mock<ICopyrightService>();
 
             copyrightService.Setup(s => s.GetUserCollectionAsync(userId, sortBy, 1, 10, It.IsAny<CancellationToken>()))
-               .ReturnsAsync(pagedResult);
+               .ReturnsAsync(dto);
 
             var controller = TestCopyrightControllerFactory.CreateController(copyrightService.Object, userId);
 
@@ -44,7 +45,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
 
             var viewResult = indexActionResult.Should().BeOfType<ViewResult>().Subject;
 
-            viewResult.Model.Should().Be(pagedResult);
+            viewResult.Model.Should().BeOfType<CopyrightCollectionViewModel>();
             ((CollectionSortBy)controller.ViewBag.SortBy).Should().Be(sortBy);
 
             copyrightService.Verify(s => s.GetUserCollectionAsync(userId, sortBy, 1, 10, It.IsAny<CancellationToken>()), Times.Once);
@@ -75,7 +76,11 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
 
             var copyrightService = new Mock<ICopyrightService>();
             copyrightService.Setup(s => s.GetUserCollectionAsync(
-                "u1",CollectionSortBy.DateAddedDesc,1,10,It.IsAny<CancellationToken>())).
+                "u1",
+                CollectionSortBy.DateAddedDesc,
+                DefaultPage,
+                DefaultPageSize,
+                It.IsAny<CancellationToken>())).
                 ReturnsAsync(pagedResult);
 
             var controller = TestCopyrightControllerFactory.CreateController(copyrightService.Object, userId: "u1");

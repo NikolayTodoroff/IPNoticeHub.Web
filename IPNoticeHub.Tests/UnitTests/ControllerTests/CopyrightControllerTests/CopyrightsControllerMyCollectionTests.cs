@@ -8,6 +8,7 @@ using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
+using IPNoticeHub.Web.Models.Copyrights;
 
 namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
 {
@@ -44,7 +45,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
 
             var viewResult = myCollectionActionResult.Should().BeOfType<ViewResult>().Subject;
 
-            viewResult.Model.Should().Be(pagedResult);
+            viewResult.Model.Should().BeOfType<CopyrightCollectionViewModel>();
             ((CollectionSortBy)controller.ViewBag.SortBy).Should().Be(sortBy);
 
             copyrightService.Verify(s => s.GetUserCollectionAsync(userId, sortBy, 1, 10, It.IsAny<CancellationToken>()), Times.Once);
@@ -65,7 +66,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
         [Test]
         public async Task MyCollection_UsesDefaultPaging_WhenNoArgumentsProvided()
         {
-            var pagedResult = new PagedResult<CopyrightSingleItemDto>
+            var dto = new PagedResult<CopyrightSingleItemDto>
             {
                 ResultsCount = 0,
                 CurrentPage = 1,
@@ -74,9 +75,15 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
             };
 
             var copyrightService = new Mock<ICopyrightService>();
+
+            // Use the same constants as used in Verify / controller defaults to avoid mismatch.
             copyrightService.Setup(s => s.GetUserCollectionAsync(
-                "u1",CollectionSortBy.DateAddedDesc,1,10,It.IsAny<CancellationToken>())).
-                ReturnsAsync(pagedResult);
+                "u1",
+                CollectionSortBy.DateAddedDesc,
+                DefaultPage,
+                DefaultPageSize,
+                It.IsAny<CancellationToken>()))
+                .ReturnsAsync(dto);
 
             var controller = TestCopyrightControllerFactory.CreateController(copyrightService.Object, userId: "u1");
 

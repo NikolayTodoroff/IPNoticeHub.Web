@@ -23,7 +23,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
         public async Task Details_Success_ReturnsViewWithModel()
         {
             var id = Guid.NewGuid();
-            var dto = new CopyrightDetailsDTO
+            var dto = new CopyrightDetailsDto
             {
                 PublicId = id,
                 RegistrationNumber = "TX-9",
@@ -70,7 +70,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
         {
             var copyrightService = new Mock<ICopyrightService>();
             copyrightService.Setup(s => s.GetDetailsAsync("u1", It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
-               .ReturnsAsync((CopyrightDetailsDTO?)null);
+               .ReturnsAsync((CopyrightDetailsDto?)null);
 
             var controller = TestCopyrightControllerFactory.CreateController(copyrightService.Object, userId: "u1");
 
