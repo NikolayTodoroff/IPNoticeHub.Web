@@ -118,7 +118,7 @@ namespace IPNoticeHub.Services.Copyrights.Implementations
             };
         }
 
-        public async Task<PagedResult<CopyrightListItemDTO>> GetUserCollectionAsync(string userId, CollectionSortBy sortBy, int page, int resultsPerPage, CancellationToken cancellationToken = default)
+        public async Task<PagedResult<CopyrightSingleItemDto>> GetUserCollectionAsync(string userId, CollectionSortBy sortBy, int page, int resultsPerPage, CancellationToken cancellationToken = default)
         {
             var (normalizedPage, normalizedPageSize) = PagingConfiguration.NormalizePaging(page, resultsPerPage);
 
@@ -146,23 +146,24 @@ namespace IPNoticeHub.Services.Copyrights.Implementations
 
             int resultsCount = await links.AsNoTracking().CountAsync(cancellationToken);
 
-            List<CopyrightListItemDTO>? results = await links.
+            List<CopyrightSingleItemDto>? results = await links.
                 Skip((normalizedPage - 1) * normalizedPageSize).
                 Take(normalizedPageSize).
-                Select(l=> new CopyrightListItemDTO()
+                Select(uc=> new CopyrightSingleItemDto()
                 {
-                    PublicId = l.CopyrightRegistration.PublicId,
-                    RegistrationNumber = l.CopyrightRegistration.RegistrationNumber,
-                    TypeOfWork = l.CopyrightRegistration.TypeOfWork,
-                    Title = l.CopyrightRegistration.Title,
-                    YearOfCreation = l.CopyrightRegistration.YearOfCreation,
-                    DateOfPublication = l.CopyrightRegistration.DateOfPublication,
-                    Owner = l.CopyrightRegistration.Owner,
-                    DateAdded = l.DateAdded
+                    Id = uc.CopyrightRegistrationId,
+                    PublicId = uc.CopyrightRegistration.PublicId,
+                    RegistrationNumber = uc.CopyrightRegistration.RegistrationNumber,
+                    TypeOfWork = uc.CopyrightRegistration.TypeOfWork,
+                    Title = uc.CopyrightRegistration.Title,
+                    YearOfCreation = uc.CopyrightRegistration.YearOfCreation,
+                    DateOfPublication = uc.CopyrightRegistration.DateOfPublication,
+                    Owner = uc.CopyrightRegistration.Owner,
+                    DateAdded = uc.DateAdded
                 }).
                 ToListAsync(cancellationToken);
 
-            return new PagedResult<CopyrightListItemDTO>()
+            return new PagedResult<CopyrightSingleItemDto>()
             {
                 Results = results,
                 ResultsCount = resultsCount,

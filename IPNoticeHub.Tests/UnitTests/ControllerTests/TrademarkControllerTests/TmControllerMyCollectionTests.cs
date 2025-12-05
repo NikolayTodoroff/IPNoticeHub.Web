@@ -34,12 +34,12 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
         [Test]
         public async Task MyCollection_WhenUserPresent_ReturnsViewWithPage_AndSetsSortBag()
         {
-            var pagedResult = new PagedResult<TrademarkSummaryDTO>
+            var pagedResult = new PagedResult<TrademarkSingleItemDto>
             {
                 ResultsCount = 0,
                 CurrentPage = 1,
                 ResultsCountPerPage = 10,
-                Results = new List<TrademarkSummaryDTO>()
+                Results = new List<TrademarkSingleItemDto>()
             };       
 
             const string userId = "u1";
@@ -70,12 +70,12 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
         [Test]
         public async Task MyCollection_WithNonDefaultSort_SetsThatSortInViewBag()
         {
-            var pagedResult = new PagedResult<TrademarkSummaryDTO>
+            var pagedResult = new PagedResult<TrademarkSingleItemDto>
             {
                 ResultsCount = 0,
                 CurrentPage = 1,
                 ResultsCountPerPage = 10,
-                Results = new List<TrademarkSummaryDTO>()
+                Results = new List<TrademarkSingleItemDto>()
             };
 
             const string userId = "u1";

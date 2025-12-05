@@ -3,7 +3,7 @@
 @using IPNoticeHub.Services.Copyrights.DTOs
 @using static IPNoticeHub.Common.ValidationConstants.FormattingConstants;
 @using System.Globalization
-@model PagedResult<IPNoticeHub.Services.Copyrights.DTOs.CopyrightListItemDTO>
+@model IPNoticeHub.Web.Models.Copyrights.CopyrightCollectionViewModel;
 
 @{
     ViewData["Title"] = "My Copyrights";
@@ -12,9 +12,9 @@
     var hasRows = Model != null && Model.Results != null && Model.Results.Count > 0;
 
     var page = Model?.CurrentPage ?? 1;
-    var pageSize = Math.Max(Model?.ResultsCountPerPage ?? 10, 1);
-    var total = Model?.ResultsCount ?? 0;
-    var totalPages = Math.Max((int)Math.Ceiling(total / (double)pageSize), 1);
+    var pageSize = Math.Max(Model?.PageSize ?? 10, 1);
+    var total = Model?.Total ?? 0;
+    var totalPages = Math.Max(Model?.TotalPages ?? 1, 1);
 
     var sort = ViewBag.SortBy as string ?? string.Empty;
 
@@ -97,7 +97,7 @@
         </div>
 
         @* --- Pager --- *@
-        @if (totalPages > 1)
+        @if (totalPages >= 1)
         {
             <nav aria-label="Pagination">
                 <ul class="pagination justify-content-center">

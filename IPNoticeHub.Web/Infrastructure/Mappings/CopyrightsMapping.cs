@@ -1,8 +1,11 @@
 ﻿using IPNoticeHub.Common.EnumConstants;
 using IPNoticeHub.Services.Application.Abstractions;
+using IPNoticeHub.Services.Common;
 using IPNoticeHub.Services.Copyrights.DTOs;
+using IPNoticeHub.Services.Trademarks.DTOs;
 using IPNoticeHub.Web.Models.Copyrights;
 using IPNoticeHub.Web.Models.PdfGeneration;
+using IPNoticeHub.Web.Models.TrademarkCollection;
 using System.Globalization;
 using static IPNoticeHub.Common.ValidationConstants;
 
@@ -10,6 +13,30 @@ namespace IPNoticeHub.Web.Infrastructure.Mappings
 {
     public class CopyrightsMapping
     {
+        public static CopyrightCollectionViewModel MapCollectionDtoToViewModel(PagedResult<CopyrightSingleItemDto> dto)
+        {
+            return new CopyrightCollectionViewModel()
+            {
+                Total = dto.ResultsCount,
+                CurrentPage = dto.CurrentPage,
+                PageSize = dto.ResultsCountPerPage,
+                Results = dto.Results.
+                Select(csi => new CopyrightSingleItemViewModel
+                {
+                    Id = csi.Id,
+                    PublicId = csi.PublicId,
+                    Owner = csi.Owner,
+                    RegistrationNumber = csi.RegistrationNumber,
+                    TypeOfWork = csi.TypeOfWork,
+                    Title = csi.Title,
+                    YearOfCreation = csi.YearOfCreation,
+                    DateOfPublication = csi.DateOfPublication,
+                    DateAdded = csi.DateAdded
+                }).
+                ToList()
+            };
+        }
+
         public static CopyrightCreateDto MapNewCopyrightViewModelToDto(CopyrightCreateViewModel viewModel)
         {
             return new CopyrightCreateDto()

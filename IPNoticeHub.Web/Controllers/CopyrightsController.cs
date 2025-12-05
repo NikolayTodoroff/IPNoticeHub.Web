@@ -36,12 +36,14 @@ namespace IPNoticeHub.Web.Controllers
         {
             if (!User.TryGetUserId(out var userId)) return Forbid();
 
-            var model = await copyrightService.GetUserCollectionAsync(
+            var dto = await copyrightService.GetUserCollectionAsync(
                 userId, sortBy, currentPage, resultsPerPage, cancellationToken);
+
+            var viewmodel = CopyrightsMapping.MapCollectionDtoToViewModel(dto);
 
             ViewBag.SortBy = sortBy;
 
-            return View(model);
+            return View(viewmodel);
         }
 
 

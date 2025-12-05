@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using IPNoticeHub.Common.EnumConstants;
+﻿using IPNoticeHub.Common.EnumConstants;
 using IPNoticeHub.Common.Infrastructure;
 using IPNoticeHub.Services.Application.Abstractions;
 using IPNoticeHub.Services.Trademarks.Abstractions;
@@ -65,10 +64,10 @@ namespace IPNoticeHub.Web.Controllers
         {
             if (!User.TryGetUserId(out var userId)) return Forbid();
 
-            var pagedResult = await tmCollectionService.
+            var dto = await tmCollectionService.
                 GetUserCollectionAsync(userId, sortBy, currentPage, resultsPerPage, cancellationToken);
 
-            var viewModel = TrademarksMapping.MapCollectionDtoToViewModel(pagedResult);
+            var viewModel = TrademarksMapping.MapCollectionDtoToViewModel(dto);
 
             ViewBag.SortBy = sortBy;
 
@@ -266,9 +265,9 @@ namespace IPNoticeHub.Web.Controllers
         {
             ViewBag.HasSearch = false;
 
-            var emptyDTOPagedResult = new PagedResult<TrademarkSummaryDTO>
+            var emptyDTOPagedResult = new PagedResult<TrademarkSingleItemDto>
             {
-                Results = Array.Empty<TrademarkSummaryDTO>(),
+                Results = Array.Empty<TrademarkSingleItemDto>(),
                 ResultsCount = 0,
                 CurrentPage = filter.CurrentPage,
                 ResultsCountPerPage = filter.ResultsPerPage

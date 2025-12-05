@@ -1,5 +1,4 @@
-﻿@using IPNoticeHub.Web.Models.TrademarkCollection
-@model TrademarkCollectionViewModel
+﻿@model IPNoticeHub.Web.Models.TrademarkCollection.TrademarkCollectionViewModel
 
 @{
     ViewBag.Title = "My Trademark Collection";
@@ -123,7 +122,7 @@
 </div>
 
 @* --- Pager --- *@
-@if (Model.TotalPages > 1)
+@if (Model.TotalPages >= 1)
 {
     <nav aria-label="Trademark collection pages" class="mt-3">
         <ul class="pagination justify-content-center">

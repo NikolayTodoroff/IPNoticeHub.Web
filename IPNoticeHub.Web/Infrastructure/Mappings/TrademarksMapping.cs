@@ -13,29 +13,30 @@ namespace IPNoticeHub.Web.Infrastructure.Mappings
 {
     public class TrademarksMapping
     {
-        public static TrademarkCollectionViewModel MapCollectionDtoToViewModel(PagedResult<TrademarkSummaryDTO> dtoPage)
+        public static TrademarkCollectionViewModel MapCollectionDtoToViewModel(PagedResult<TrademarkSingleItemDto> dto)
         {
             return new()
             {
-                Total = dtoPage.ResultsCount,
-                CurrentPage = dtoPage.CurrentPage,
-                PageSize = dtoPage.ResultsCountPerPage,
-                Results = dtoPage.Results.Select(s => new TrademarkCollectionSingleItemViewModel
+                Total = dto.ResultsCount,
+                CurrentPage = dto.CurrentPage,
+                PageSize = dto.ResultsCountPerPage,
+                Results = dto.Results.
+                Select(tsi => new TrademarkSingleItemViewModel
                 {
-                    Id = s.Id,
-                    PublicId = s.PublicId,
-                    Wordmark = s.Wordmark,
-                    SourceId = s.SourceId,
-                    Owner = s.Owner,
-                    Status = s.Status,
-                    Classes = s.Classes ?? Array.Empty<int>(),
-                    Provider = s.Provider
+                    Id = tsi.Id,
+                    PublicId = tsi.PublicId,
+                    Wordmark = tsi.Wordmark,
+                    SourceId = tsi.SourceId,
+                    Owner = tsi.Owner,
+                    Status = tsi.Status,
+                    Classes = tsi.Classes ?? Array.Empty<int>(),
+                    Provider = tsi.Provider
                 }).
                 ToList()
             };
         }
 
-        public static TrademarkCollectionIndexViewModel MapCollectionIndexDtoToViewModel(TrademarkFilterViewModel filter, PagedResult<TrademarkSummaryDTO> resultsPageDTO)
+        public static TrademarkCollectionIndexViewModel MapCollectionIndexDtoToViewModel(TrademarkFilterViewModel filter, PagedResult<TrademarkSingleItemDto> resultsPageDTO)
         {
             return new TrademarkCollectionIndexViewModel
             {
@@ -54,7 +55,7 @@ namespace IPNoticeHub.Web.Infrastructure.Mappings
             };
         }
 
-        private static TrademarkSummaryViewModel MapTrademarkSummaryViewModel(TrademarkSummaryDTO summaryDTO)
+        private static TrademarkSummaryViewModel MapTrademarkSummaryViewModel(TrademarkSingleItemDto summaryDTO)
         {
             return new TrademarkSummaryViewModel()
             {

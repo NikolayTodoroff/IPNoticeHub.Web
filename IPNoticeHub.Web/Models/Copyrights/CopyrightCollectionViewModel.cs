@@ -1,10 +1,12 @@
-﻿namespace IPNoticeHub.Web.Models.TrademarkCollection
+﻿using IPNoticeHub.Web.Models.TrademarkCollection;
+
+namespace IPNoticeHub.Web.Models.Copyrights
 {
-    public sealed class TrademarkCollectionViewModel
+    public class CopyrightCollectionViewModel
     {
-        // Trademark registration that has been added to the user's collection.
-        public IReadOnlyList<TrademarkSingleItemViewModel> Results { get; init; }
-            = Array.Empty<TrademarkSingleItemViewModel>();
+        // Copyright registrations that has been added to the user's collection.
+        public IReadOnlyList<CopyrightSingleItemViewModel> Results { get; init; }
+            = Array.Empty<CopyrightSingleItemViewModel>();
 
 
         // CurrentPage, PageSize and computed TotalPages/HasPreviousPage/HasNextPage providing paging information.

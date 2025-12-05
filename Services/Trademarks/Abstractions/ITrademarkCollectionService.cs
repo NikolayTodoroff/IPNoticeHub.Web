@@ -12,10 +12,10 @@ namespace IPNoticeHub.Services.Trademarks.Abstractions
 
         Task<bool> IsInCollectionAsync(string userId, int trademarkId, bool includeSoftDeleted = false, CancellationToken cancellationToken=default);
       
-        Task<PagedResult<TrademarkSummaryDTO>> GetUserCollectionAsync(string userId,int currentPage,int resultsPerPage,
+        Task<PagedResult<TrademarkSingleItemDto>> GetUserCollectionAsync(string userId,int currentPage,int resultsPerPage,
             CancellationToken cancellationToken = default);
 
-        Task<PagedResult<TrademarkSummaryDTO>> GetUserCollectionAsync(string userId, CollectionSortBy sortBy,
+        Task<PagedResult<TrademarkSingleItemDto>> GetUserCollectionAsync(string userId, CollectionSortBy sortBy,
            int page, int resultsPerPage, CancellationToken ct = default);
     }
 }

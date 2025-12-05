@@ -43,7 +43,7 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
             };
         }
 
-        public async Task<PagedResult<TrademarkSummaryDTO>> SearchAsync(TrademarkFilterDTO filter, int currentPage, int resultsPerPage, CancellationToken cancellationToken = default)
+        public async Task<PagedResult<TrademarkSingleItemDto>> SearchAsync(TrademarkFilterDTO filter, int currentPage, int resultsPerPage, CancellationToken cancellationToken = default)
         {
             var (normalizedPage, normalizedPageSize) = PagingConfiguration.NormalizePaging(currentPage, resultsPerPage);
 
@@ -64,10 +64,10 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
 
             int resultsCount = await query.CountAsync(cancellationToken);
 
-            List<TrademarkSummaryDTO>? searchResults = await query.
+            List<TrademarkSingleItemDto>? searchResults = await query.
                 Skip((normalizedPage - 1) * normalizedPageSize).
                 Take(normalizedPageSize).
-                Select(t => new TrademarkSummaryDTO
+                Select(t => new TrademarkSingleItemDto
                 {
                     Id = t.Id,
                     PublicId = t.PublicId,
@@ -80,7 +80,7 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
                 })
                 .ToListAsync(cancellationToken);
 
-            return new PagedResult<TrademarkSummaryDTO>
+            return new PagedResult<TrademarkSingleItemDto>
             {
                 Results = searchResults,
                 ResultsCount = resultsCount,

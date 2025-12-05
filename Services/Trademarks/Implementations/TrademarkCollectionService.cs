@@ -30,7 +30,7 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
             await userTrademarkRepository.AddOrUndeleteAsync(userId, trademarkId, cancellationToken);
         }
 
-        public async Task<PagedResult<TrademarkSummaryDTO>> GetUserCollectionAsync(string userId, int currentPage, int resultsPerPage, CancellationToken cancellationToken = default)
+        public async Task<PagedResult<TrademarkSingleItemDto>> GetUserCollectionAsync(string userId, int currentPage, int resultsPerPage, CancellationToken cancellationToken = default)
         {
             var (normalizedPage, normalizedPageSize) = PagingConfiguration.NormalizePaging(currentPage, resultsPerPage);
 
@@ -42,10 +42,10 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
 
             int resultsCount = await userTrademarksQuery.CountAsync(cancellationToken);
 
-            List<TrademarkSummaryDTO>? userTrademarksList = await userTrademarksQuery
+            List<TrademarkSingleItemDto>? userTrademarksList = await userTrademarksQuery
                 .Skip((normalizedPage - 1) * normalizedPageSize)
                 .Take(normalizedPageSize)
-                .Select(t => new TrademarkSummaryDTO
+                .Select(t => new TrademarkSingleItemDto
                 {
                     Id = t.Id,
                     PublicId = t.PublicId,
@@ -58,7 +58,7 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
                 })
                 .ToListAsync(cancellationToken);
 
-            return new PagedResult<TrademarkSummaryDTO>
+            return new PagedResult<TrademarkSingleItemDto>
             {
                 Results = userTrademarksList,
                 ResultsCount = resultsCount,
@@ -67,7 +67,7 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
             };
         }
 
-        public async Task<PagedResult<TrademarkSummaryDTO>> GetUserCollectionAsync(string userId, CollectionSortBy sortBy, int currentPage, int resultsPerPage, CancellationToken cancellationToken = default)
+        public async Task<PagedResult<TrademarkSingleItemDto>> GetUserCollectionAsync(string userId, CollectionSortBy sortBy, int currentPage, int resultsPerPage, CancellationToken cancellationToken = default)
         {
             var (normalizedPage, normalizedPageSize) = PagingConfiguration.NormalizePaging(currentPage, resultsPerPage);
 
@@ -95,11 +95,11 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
 
             int resultsCount = await collectionLinks.AsNoTracking().CountAsync(cancellationToken);
 
-            List<TrademarkSummaryDTO>? results = await collectionLinks.
+            List<TrademarkSingleItemDto>? results = await collectionLinks.
                 AsNoTracking().
                 Skip((normalizedPage - 1) * normalizedPageSize).
                 Take(normalizedPageSize).
-                Select(l => new TrademarkSummaryDTO
+                Select(l => new TrademarkSingleItemDto
                 {
                    Id = l.TrademarkId,
                    PublicId = l.Trademark.PublicId,
@@ -112,7 +112,7 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
                 }).
                    ToListAsync(cancellationToken);
 
-            return new PagedResult<TrademarkSummaryDTO>
+            return new PagedResult<TrademarkSingleItemDto>
             {
                 Results = results,
                 ResultsCount = resultsCount,

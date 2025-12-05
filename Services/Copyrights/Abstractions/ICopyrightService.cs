@@ -14,7 +14,7 @@ namespace IPNoticeHub.Services.Copyrights.Abstractions
 
         Task<CopyrightDetailsDTO?> GetDetailsAsync(string userId, Guid publicId, CancellationToken cancellationToken = default);
 
-        Task<PagedResult<CopyrightListItemDTO>> GetUserCollectionAsync(string userId,CollectionSortBy sortBy,
+        Task<PagedResult<CopyrightSingleItemDto>> GetUserCollectionAsync(string userId,CollectionSortBy sortBy,
             int page, int resultsPerPage, CancellationToken cancellationToken = default);
     }
 }

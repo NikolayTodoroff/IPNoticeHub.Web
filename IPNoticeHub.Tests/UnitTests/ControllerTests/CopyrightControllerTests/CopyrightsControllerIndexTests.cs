@@ -25,12 +25,12 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
             const string userId = "u1";
             const CollectionSortBy sortBy = CollectionSortBy.TitleAsc;
 
-            var pagedResult = new PagedResult<CopyrightListItemDTO>
+            var pagedResult = new PagedResult<CopyrightSingleItemDto>
             {
                 ResultsCount = 0,
                 CurrentPage = 1,
                 ResultsCountPerPage = 10,
-                Results = new List<CopyrightListItemDTO>()
+                Results = new List<CopyrightSingleItemDto>()
             };
 
             var copyrightService = new Mock<ICopyrightService>();
@@ -65,12 +65,12 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
         [Test]
         public async Task Index_UsesDefaultPaging_WhenNoArgumentsProvided()
         {
-            var pagedResult = new PagedResult<CopyrightListItemDTO>
+            var pagedResult = new PagedResult<CopyrightSingleItemDto>
             {
                 ResultsCount = 0,
                 CurrentPage = 1,
                 ResultsCountPerPage = 10,
-                Results = new List<CopyrightListItemDTO>()
+                Results = new List<CopyrightSingleItemDto>()
             };
 
             var copyrightService = new Mock<ICopyrightService>();
