@@ -28,6 +28,9 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
             var (tmEntityA1, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "Day & Night",
                 owner: "Owner A",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "2222222",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO,
@@ -36,6 +39,9 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
             var (tmEntityA2, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "Day & Night",
                 owner: "Owner A2",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "3333333",
                 status: TrademarkStatusCategory.Pending,
                 source: DataProvider.EUIPO,
@@ -44,6 +50,9 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
             var (tmEntityB, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "The Lost One",
                 owner: "Owner B",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "1111111",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO,
@@ -81,6 +90,9 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
             var (tmEntityA1, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "Day & Night",
                 owner: "Owner A",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "2222222",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO,
@@ -89,6 +101,9 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
             var (tmEntityA2, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "Day & Night",
                 owner: "Owner A2",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "3333333",
                 status: TrademarkStatusCategory.Pending,
                 source: DataProvider.EUIPO,
@@ -97,6 +112,9 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
             var (tmEntityB, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "The Lost One",
                 owner: "Owner B",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "1111111",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO,

@@ -29,6 +29,9 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServi
             var (tmEntity, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "AAA",
                 owner: "Owner A",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "1234567",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO,
@@ -94,6 +97,9 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServi
             var (tmEntity1, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "AAA",
                 owner: "Owner A",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "1234567",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO,
@@ -102,6 +108,9 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServi
             var (tmEntity2, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "ZZZ",
                 owner: "Owner B",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "7654321",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO,

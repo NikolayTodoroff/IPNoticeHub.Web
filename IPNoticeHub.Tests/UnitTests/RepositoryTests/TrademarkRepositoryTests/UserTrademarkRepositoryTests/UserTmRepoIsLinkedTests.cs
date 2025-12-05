@@ -27,6 +27,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.UserTrademarkRe
             var (trademarkEntity, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "ZEN",
                 owner: "Owner",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "123",
                 TrademarkStatusCategory.Registered,
                 DataProvider.USPTO);
@@ -52,6 +55,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.UserTrademarkRe
             var (trademarkEntity, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "ZEN",
                 owner: "Owner",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "123",
                 TrademarkStatusCategory.Registered,
                 DataProvider.USPTO);
@@ -79,6 +85,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.UserTrademarkRe
             var (trademarkEntity, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "ZEN",
                 owner: "Owner",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "123",
                 TrademarkStatusCategory.Registered,
                 DataProvider.USPTO);

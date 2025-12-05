@@ -25,6 +25,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             var (emptyEntity, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: string.Empty,
                 owner: "Alladin T",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "1234567",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO);
@@ -32,6 +35,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             var (validEntity, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "Target",
                 owner: "Manson D",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "7654321",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO);
@@ -59,6 +65,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             var (emptyEntity, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: string.Empty,
                 owner: "Alladin T",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "1234567",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO);
@@ -66,6 +75,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             var (validEntity, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "Target",
                 owner: "Manson D",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "7654321",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO);
@@ -93,6 +105,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             var (emptyOwnerEntity, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "Neverending Ending",
                 owner: string.Empty,
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "1234567",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO);
@@ -100,6 +115,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             var (validEntity, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "Target",
                 owner: "Marlon Brando",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "7654321",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO);
@@ -127,6 +145,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             var (emptyOwnerEntity, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "Neverending Ending",
                 owner: string.Empty,
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "1234567",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO);
@@ -134,6 +155,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             var (validEntity, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "Target",
                 owner: "Marlon Brando",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "7654321",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO);
@@ -160,7 +184,10 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
 
             var (trademarkEntity, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "ALPHA", 
-                owner: "Owner", 
+                owner: "Owner",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "123",
                 status: TrademarkStatusCategory.Registered, 
                 source: DataProvider.USPTO);

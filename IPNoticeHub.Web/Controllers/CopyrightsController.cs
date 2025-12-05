@@ -173,6 +173,7 @@ namespace IPNoticeHub.Web.Controllers
 
             var viewModel = new CopyrightDetailsViewModel
             {
+                PublicId = dto.PublicId,
                 RegistrationNumber = dto.RegistrationNumber,
                 TypeOfWork = dto.TypeOfWork,
                 Title = dto.Title,

@@ -76,6 +76,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
                 {
                     Wordmark = "ALPHA",
                     Owner = "Owner A",
+                    SourceId = "TestSourceId",
                     RegistrationNumber = "11111",
                     GoodsAndServices = "Goods",
                     StatusCategory = TrademarkStatusCategory.Registered,
@@ -136,10 +137,11 @@ namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
                 {
                     Wordmark = "BETA",
                     Owner = "Owner B",
-                    RegistrationNumber = "22222",
-                    GoodsAndServices = "Stuff",
-                    StatusCategory = TrademarkStatusCategory.Registered,
+                    GoodsAndServices = "testGoodsAndSerices",
+                    SourceId = "testSourceId",
                     StatusDetail = "Live/Registered",
+                    RegistrationNumber = "22222",
+                    StatusCategory = TrademarkStatusCategory.Registered,
                     Source = DataProvider.USPTO
                 };
 
@@ -207,6 +209,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
                 {
                     Wordmark = "GAMMA",
                     Owner = "Owner C",
+                    SourceId = "TestSourceId",
                     RegistrationNumber = "33333",
                     GoodsAndServices = "Things",
                     StatusCategory = TrademarkStatusCategory.Registered,

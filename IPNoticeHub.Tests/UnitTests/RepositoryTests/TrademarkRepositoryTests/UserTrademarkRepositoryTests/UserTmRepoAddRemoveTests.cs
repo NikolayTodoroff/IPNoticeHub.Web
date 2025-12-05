@@ -38,6 +38,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.UserTrademarkRe
             var (trademarkEntity, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "Spiritfarer",
                 owner: "Obama B.L.",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "123",
                 TrademarkStatusCategory.Registered,
                 DataProvider.USPTO,
@@ -69,6 +72,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.UserTrademarkRe
             var (trademarkEntity, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "ZEN",
                 owner: "Ruud G.",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "123",
                 TrademarkStatusCategory.Registered,
                 DataProvider.USPTO,
@@ -102,6 +108,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.UserTrademarkRe
             var (trademarkEntity, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "Seven Days Later",
                 owner: "Michael Owen",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "1234567",
                 TrademarkStatusCategory.Registered,
                 DataProvider.USPTO);
@@ -134,6 +143,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.UserTrademarkRe
             var (trademarkEntity, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "Swinging Back",
                 owner: "The Chosen One",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "1234567",
                 TrademarkStatusCategory.Registered, 
                 DataProvider.USPTO,
@@ -179,6 +191,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.UserTrademarkRe
             var (trademarkEntity, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "Chimaira",
                 owner: "Default User",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "1234567",
                 TrademarkStatusCategory.Registered,
                 DataProvider.USPTO,

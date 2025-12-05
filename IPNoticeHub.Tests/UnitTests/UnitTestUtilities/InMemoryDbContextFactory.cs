@@ -32,7 +32,8 @@ namespace IPNoticeHub.Tests.TestUtilities
         /// Creates a TrademarkEntity and its associated classes for testing purposes.
         /// </summary>
         public static (TrademarkEntity trademarkEntity, List<TrademarkClassAssignment> trademarkClasses) CreateTrademark(
-            string wordmark, string owner, string? regNumber, TrademarkStatusCategory status = TrademarkStatusCategory.Pending,
+            string wordmark, string owner, string goodsAndServices,string sourceId, string statusDetail, 
+            string? regNumber,TrademarkStatusCategory status = TrademarkStatusCategory.Pending,
             DataProvider source = DataProvider.USPTO, DateTime? filingDate = null, params int[] classNumbers)
         {
             TrademarkEntity? trademarkEntity = new TrademarkEntity
@@ -40,8 +41,10 @@ namespace IPNoticeHub.Tests.TestUtilities
                 PublicId = Guid.NewGuid(),
                 Wordmark = wordmark,
                 Owner = owner,
+                GoodsAndServices = goodsAndServices,
+                SourceId = sourceId,
+                StatusDetail = statusDetail,
                 RegistrationNumber = regNumber,
-                GoodsAndServices = "Sample Goods and Services",
                 StatusCategory = status,
                 Source = source,
                 FilingDate = filingDate ?? DateTime.UtcNow.Date

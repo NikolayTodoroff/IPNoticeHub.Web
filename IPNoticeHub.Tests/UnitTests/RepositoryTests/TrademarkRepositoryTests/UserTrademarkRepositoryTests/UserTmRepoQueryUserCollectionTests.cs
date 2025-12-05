@@ -33,6 +33,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.UserTrademarkRe
             var (user1TmEntity1, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "The Existing One",
                 owner: "Owner1",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "1234567",
                 TrademarkStatusCategory.Registered,
                 DataProvider.USPTO, 
@@ -41,6 +44,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.UserTrademarkRe
             var (user1TmEntity2, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "The Removed One",
                 owner: "Owner1",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "2143657",
                 TrademarkStatusCategory.Registered,
                 DataProvider.USPTO, 
@@ -49,6 +55,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.UserTrademarkRe
             var (user2TmEntity, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "From Another User",
                 owner: "Owner2",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "7654321",
                 TrademarkStatusCategory.Registered,
                 DataProvider.USPTO, 
@@ -90,6 +99,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.UserTrademarkRe
             var (user1TmEntity1, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "The Existing One",
                 owner: "Owner1",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "1234567",
                 TrademarkStatusCategory.Registered,
                 DataProvider.USPTO,
@@ -98,6 +110,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.UserTrademarkRe
             var (user1TmEntity2, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "The Removed One",
                 owner: "Owner1",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "2143657",
                 TrademarkStatusCategory.Registered,
                 DataProvider.USPTO,
@@ -106,6 +121,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.UserTrademarkRe
             var (user2TmEntity, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "From Another User",
                 owner: "Owner2",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "7654321",
                 TrademarkStatusCategory.Registered, 
                 DataProvider.USPTO, 

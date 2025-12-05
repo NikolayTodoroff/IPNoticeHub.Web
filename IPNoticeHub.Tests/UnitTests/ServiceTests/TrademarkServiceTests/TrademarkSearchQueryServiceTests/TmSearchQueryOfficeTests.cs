@@ -25,6 +25,9 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
             var (anubisTm, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "Anubis",
                 owner: "Underworld Inc.",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "1234567",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO,
@@ -33,6 +36,9 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
             var (horusTm, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "Horus",
                 owner: "Falcon LLC",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "1122334",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.WIPO,
@@ -41,6 +47,9 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
             var (osirisTm, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "Osiris",
                 owner: "Afterlife Inc.",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "3355442",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.EUIPO,

@@ -28,6 +28,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             var (firstTestTrademark, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "ALPHA1",
                 owner: "OwnerA",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "1234567",
                 TrademarkStatusCategory.Registered,
                 DataProvider.USPTO,
@@ -36,6 +39,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             var (secondTestTrademark, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "BETA2",
                 owner: "OwnerB",
+                goodsAndServices: "testGoodsAndSerices0",
+                sourceId: "testSourceId0",
+                statusDetail: "testStatusDetail0",
                 regNumber: "7654321",
                 TrademarkStatusCategory.Pending,
                 DataProvider.EUIPO,
@@ -59,6 +65,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             var (firstTestTrademark, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "ALPHA",
                 owner: "OwnerA",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "1234567",
                 TrademarkStatusCategory.Registered,
                 DataProvider.USPTO);
@@ -66,6 +75,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             var (secondTestTrademark, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "BETA",
                 owner: "OwnerB",
+                goodsAndServices: "testGoodsAndSerices0",
+                sourceId: "testSourceId0",
+                statusDetail: "testStatusDetail0",
                 regNumber: "7654321",
                 TrademarkStatusCategory.Registered,
                 DataProvider.USPTO);
@@ -93,6 +105,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             var (firstTestTrademark, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "ALPHA",
                 owner: "OwnerA",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "1234567",
                 TrademarkStatusCategory.Registered,
                 DataProvider.USPTO,
@@ -101,6 +116,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             var (secondTestTrademark, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "BETA",
                 owner: "OwnerB",
+                goodsAndServices: "testGoodsAndSerices0",
+                sourceId: "testSourceId0",
+                statusDetail: "testStatusDetail0",
                 regNumber: "7654321",
                 TrademarkStatusCategory.Registered,
                 DataProvider.USPTO,

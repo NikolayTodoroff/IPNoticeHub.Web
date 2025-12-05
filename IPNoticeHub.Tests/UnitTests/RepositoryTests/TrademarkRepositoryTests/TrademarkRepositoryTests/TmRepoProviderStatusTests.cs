@@ -25,6 +25,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             var (A1, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "ALPHA",
                 owner: "user1",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "1111111",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO);
@@ -32,13 +35,19 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             var (B2, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "BETA",
                 owner: "user2",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "2222222",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.EUIPO);
 
             var (C3, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "GAMMA", 
-                owner: "user3", 
+                owner: "user3",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "3333333",
                 status: TrademarkStatusCategory.Pending, 
                 source: DataProvider.WIPO);
@@ -64,6 +73,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             var (A1, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "ALPHA",
                 owner: "user1",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "1111111",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO);
@@ -71,6 +83,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             var (B2, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "BETA",
                 owner: "user2",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "2222222",
                 status: TrademarkStatusCategory.Pending,
                 source: DataProvider.EUIPO);
@@ -78,6 +93,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             var (C3, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "GAMMA",
                 owner: "user3",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "3333333",
                 status: TrademarkStatusCategory.Abandoned,
                 source: DataProvider.WIPO);
@@ -103,7 +121,10 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             // Matches ALL filters: Provider=USPTO, Status=Registered, Class=25
             var (matchingEntity, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "ALPHA", 
-                owner: "user1", 
+                owner: "user1",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "1111111",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO,
@@ -112,7 +133,10 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             // Distractor 1: wrong provider (EUIPO)
             var (wrongProviderEntity, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "BETA", 
-                owner: "user2", 
+                owner: "user2",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "2222222",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.EUIPO,
@@ -121,7 +145,10 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             // Distractor 2: wrong status (Pending)
             var (wrongStatusEntity, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "GAMMA", 
-                owner: "user3", 
+                owner: "user3",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "3333333",
                 status: TrademarkStatusCategory.Pending,
                 source: DataProvider.USPTO,
@@ -131,6 +158,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             var (wrongClassEntity, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "DELTA",
                 owner: "user4",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "4444444",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO,

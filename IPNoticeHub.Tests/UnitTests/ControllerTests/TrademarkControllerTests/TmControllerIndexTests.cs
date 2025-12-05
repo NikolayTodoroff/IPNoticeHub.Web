@@ -50,7 +50,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
             var view = indexResult as ViewResult;
             view.Should().NotBeNull();
 
-            view!.Model.Should().BeOfType<TrademarkCollectionViewModel>();
+            view!.Model.Should().BeOfType<TrademarkCollectionIndexViewModel>();
 
             ((bool)controller.ViewBag.HasSearch).Should().BeFalse();
 
@@ -125,7 +125,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
 
             indexView.Should().NotBeNull();
             ((bool)controller.ViewBag.HasSearch).Should().BeTrue();
-            indexView.Model.Should().BeOfType<TrademarkCollectionViewModel>();
+            indexView.Model.Should().BeOfType<TrademarkCollectionIndexViewModel>();
 
             tmSearchService.Verify(s => s.SearchAsync(
                 It.IsAny<TrademarkFilterDTO>(), 1, 10, It.IsAny<CancellationToken>()), Times.Once);
@@ -160,7 +160,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
 
             indexView.Should().NotBeNull();
             ((bool)controller.ViewBag.HasSearch).Should().BeFalse();
-            indexView!.Model.Should().BeOfType<TrademarkCollectionViewModel>();
+            indexView!.Model.Should().BeOfType<TrademarkCollectionIndexViewModel>();
 
             tmSearchService.VerifyNoOtherCalls();
             tmCollectionService.VerifyNoOtherCalls();

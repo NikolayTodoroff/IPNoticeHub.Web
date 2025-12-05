@@ -26,6 +26,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             var (firstTestTrademark, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "AZ1",
                 owner: "Barry Douglas",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "1234567",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO,
@@ -34,6 +37,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             var (secondTestTrademark, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "XY2",
                 owner: "Leonard Cohen",
+                goodsAndServices: "testGoodsAndSerices02",
+                sourceId: "testSourceId02",
+                statusDetail: "testStatusDetail02",
                 regNumber: "7654321",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO,
@@ -42,6 +48,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             var (thirdTestTrademark, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "NM3",
                 owner: "Denis Rodman",
+                goodsAndServices: "testGoodsAndSerices03",
+                sourceId: "testSourceId03",
+                statusDetail: "testStatusDetail03",
                 regNumber: "7162365",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO,
@@ -68,6 +77,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             var (firstTestTrademark, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "A1",
                 owner: "user1",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "1234567",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO,
@@ -76,6 +88,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             var (secondTestTrademark, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "B2",
                 owner: "user2",
+                goodsAndServices: "testGoodsAndSerices02",
+                sourceId: "testSourceId02",
+                statusDetail: "testStatusDetail02",
                 regNumber: "7654321",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO,
@@ -84,6 +99,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             var (thirdTestTrademark, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "C3",
                 owner: "user3",
+                goodsAndServices: "testGoodsAndSerices03",
+                sourceId: "testSourceId03",
+                statusDetail: "testStatusDetail03",
                 regNumber: "1177224",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO,
@@ -92,6 +110,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             var (fourthTestTrademark, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "D4",
                 owner: "user4",
+                goodsAndServices: "testGoodsAndSerices04",
+                sourceId: "testSourceId04",
+                statusDetail: "testStatusDetail04",
                 regNumber: "7766552",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO,
@@ -120,6 +141,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             var (firstTestTrademark, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "A1",
                 owner: "user1",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "1234567",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO,
@@ -128,6 +152,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             var (secondTestTrademark, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "B2",
                 owner: "user2",
+                goodsAndServices: "testGoodsAndSerices02",
+                sourceId: "testSourceId02",
+                statusDetail: "testStatusDetail02",
                 regNumber: "7654321",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO,
@@ -136,6 +163,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             var (thirdTestTrademark, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "C3",
                 owner: "user3",
+                goodsAndServices: "testGoodsAndSerices03",
+                sourceId: "testSourceId03",
+                statusDetail: "testStatusDetail03",
                 regNumber: "1177224",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO,

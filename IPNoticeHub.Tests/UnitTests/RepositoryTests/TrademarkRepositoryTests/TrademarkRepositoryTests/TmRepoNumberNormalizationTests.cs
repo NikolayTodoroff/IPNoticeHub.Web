@@ -27,6 +27,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             var (trademarkEntity, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "Alpha & Omega",
                 owner: "John Spencer",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "Us-111.ABc",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO);
@@ -54,6 +57,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             var (trademarkEntity, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "Alpha & Omega",
                 owner: "John Spencer",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "Us-111.ABc",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO);
@@ -81,6 +87,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             var (trademarkEntity, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "Alpha & Omega",
                 owner: "John Spencer",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: null,
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO);
@@ -110,6 +119,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             var (trademarkEntity, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "Bingo10",
                 owner: "Michael Crafter",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: null,
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO);
@@ -139,6 +151,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             var (regNumberEntity, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "Dead and Divine",
                 owner: "P Lower",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "US-999-XYZ",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO);
@@ -146,6 +161,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             var (missingNumberEntity, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "XYZ 100",
                 owner: "Frank Steward",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: null,
                 status: TrademarkStatusCategory.Pending,
                 source: DataProvider.USPTO);
@@ -175,6 +193,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             var (regNumberEntity, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "AMZ",
                 owner: "Liam Cooper",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "US-111-ABC",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO);
@@ -202,6 +223,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             var (regNumberEntity, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "AMZ",
                 owner: "Liam Cooper",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "US-111-ABC",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO);

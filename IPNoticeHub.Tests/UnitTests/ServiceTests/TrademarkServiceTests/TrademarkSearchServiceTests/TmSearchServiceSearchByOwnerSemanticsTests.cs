@@ -25,6 +25,9 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
             var (tmEntity1, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "First WM",
                 owner: "Owner A",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "1234567",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO,
@@ -33,6 +36,9 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
             var (tmEntity2, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "Second WM",
                 owner: "Owner B",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "7654321",
                 status: TrademarkStatusCategory.Pending,
                 source: DataProvider.EUIPO,
@@ -71,6 +77,9 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
             var (tmEntity1, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "First WM",
                 owner: "Owner A",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "1234567",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO,
@@ -79,6 +88,9 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
             var (tmEntity2, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "Second WM",
                 owner: "Owner B",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "7654321",
                 status: TrademarkStatusCategory.Pending,
                 source: DataProvider.EUIPO,

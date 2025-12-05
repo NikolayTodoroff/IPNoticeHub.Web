@@ -28,6 +28,9 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
             var (tmEntity1, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "Here & Now",
                 owner: "Owner A",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "1234567",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO,
@@ -36,6 +39,9 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
             var (tmEntity2, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "Gone With The Wind",
                 owner: "Owner B",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "7654321",
                 status: TrademarkStatusCategory.Pending,
                 source: DataProvider.EUIPO,
@@ -74,6 +80,9 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
             var (tmEntity1, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "Gone Forever",
                 owner: "Owner A",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "1234567",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO,
@@ -82,6 +91,9 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
             var (tmEntity2, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "Gone With The Wind",
                 owner: "Owner B",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "7654321",
                 status: TrademarkStatusCategory.Pending,
                 source: DataProvider.EUIPO,

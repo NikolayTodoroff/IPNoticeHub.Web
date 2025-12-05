@@ -26,6 +26,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             var (matchingTrademark, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "ALPHA",
                 owner: "OwnerA",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "1111111",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO,
@@ -34,6 +37,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             var (wrongProviderTrademark, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "BETA",
                 owner: "OwnerB",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "2222222",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.EUIPO,
@@ -42,6 +48,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             var (wrongStatusTrademark, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "GAMMA",
                 owner: "OwnerC",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "3333333",
                 status: TrademarkStatusCategory.Pending,
                 source: DataProvider.USPTO,
@@ -50,6 +59,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             var (wrongClassTrademark, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "DELTA",
                 owner: "OwnerD",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "4444444",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO,

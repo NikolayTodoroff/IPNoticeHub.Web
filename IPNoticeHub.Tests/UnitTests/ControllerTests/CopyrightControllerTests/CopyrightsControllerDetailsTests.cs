@@ -2,6 +2,7 @@
 using IPNoticeHub.Services.Copyrights.Abstractions;
 using IPNoticeHub.Services.Copyrights.DTOs;
 using IPNoticeHub.Tests.UnitTests.TestUtilities;
+using IPNoticeHub.Web.Models.Copyrights;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
@@ -22,19 +23,34 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
         public async Task Details_Success_ReturnsViewWithModel()
         {
             var id = Guid.NewGuid();
-            var copyrightDetailsDTO = new CopyrightDetailsDTO { PublicId = id, RegistrationNumber = "TX-9", TypeOfWork = "Literary", Title = "T", Owner = "O" };
+            var dto = new CopyrightDetailsDTO
+            {
+                PublicId = id,
+                RegistrationNumber = "TX-9",
+                TypeOfWork = "Literary",
+                Title = "testTitle",
+                Owner = "testOwner"
+            };
 
-            var copyrightService = new Mock<ICopyrightService>();
+            var service = new Mock<ICopyrightService>();
 
-            copyrightService.Setup(s => s.GetDetailsAsync("u1", id, It.IsAny<CancellationToken>()))
-               .ReturnsAsync(copyrightDetailsDTO);
+            service.Setup(s => s.GetDetailsAsync("u1", id, It.IsAny<CancellationToken>()))
+               .ReturnsAsync(dto);
 
-            var controller = TestCopyrightControllerFactory.CreateController(copyrightService.Object, userId: "u1");
+            var controller = TestCopyrightControllerFactory.CreateController(service.Object, userId: "u1");
 
             var detailsActionResult = await controller.Details(id);
 
-            var detailsView = detailsActionResult.Should().BeOfType<ViewResult>().Subject;
-            detailsView.Model.Should().Be(copyrightDetailsDTO);
+            var viewModel = detailsActionResult.Should().BeOfType<ViewResult>().Subject;
+
+            viewModel.Model.Should().BeEquivalentTo(new CopyrightDetailsViewModel
+            {
+                PublicId = dto.PublicId,
+                RegistrationNumber = dto.RegistrationNumber,
+                TypeOfWork = dto.TypeOfWork,
+                Title = dto.Title,
+                Owner = dto.Owner
+            });
         }
 
         [Test]

@@ -20,7 +20,10 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
 
             var (trademarkEntity, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "ALPHA", 
-                owner: "Owner", 
+                owner: "Owner",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "1234567",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO);
@@ -57,6 +60,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             var (regNumberEntity, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "ALPHA",
                 owner: "Owner",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "US111ABC",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO);
@@ -64,6 +70,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             var (serialNumberEntity, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "BETA",
                 owner: "Owner",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: null,
                 status: TrademarkStatusCategory.Pending,
                 source: DataProvider.USPTO);
@@ -102,6 +111,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             var (unicodeCharsEntity, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "Café Zén",
                 owner: "Niño Brands",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "1001",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO);
@@ -109,6 +121,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             var (standardCharsEntity, _) = InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "Plain Coffee",
                 owner: "Other Co",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
                 regNumber: "1002",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO);
