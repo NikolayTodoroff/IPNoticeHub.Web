@@ -1,21 +1,21 @@
-﻿using IPNoticeHub.Common.EnumConstants;
+﻿using System.Globalization;
+using IPNoticeHub.Common.EnumConstants;
 using IPNoticeHub.Common.Infrastructure;
 using IPNoticeHub.Services.Application.Abstractions;
-using IPNoticeHub.Services.Common;
 using IPNoticeHub.Services.Trademarks.Abstractions;
 using IPNoticeHub.Services.Trademarks.DTOs;
 using IPNoticeHub.Web.Infrastructure;
 using IPNoticeHub.Web.Models.PdfGeneration;
-using IPNoticeHub.Web.Models.Trademarks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Globalization;
 using static IPNoticeHub.Common.ValidationConstants.FormattingConstants;
 using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
 using static IPNoticeHub.Common.ValidationConstants.StatusMessages;
 using static IPNoticeHub.Web.Infrastructure.TemplateReplacer;
 using static IPNoticeHub.Web.Infrastructure.ApplyEntityDetails;
-using IPNoticeHub.Web.Infrastructure.Mapping;
+using IPNoticeHub.Web.Infrastructure.Mappings;
+using IPNoticeHub.Web.Models.Trademarks;
+using IPNoticeHub.Services.Common;
 
 namespace IPNoticeHub.Web.Controllers
 {
@@ -57,6 +57,23 @@ namespace IPNoticeHub.Web.Controllers
             return View(viewModel);
         }
 
+        [Authorize(Policy = "HasUserId")]
+        [HttpGet]
+        public async Task<IActionResult> MyCollection(CollectionSortBy sortBy = CollectionSortBy.DateAddedDesc,
+        int currentPage = DefaultPage, int resultsPerPage = DefaultPageSize, CancellationToken cancellationToken = default)
+        {
+            if (!User.TryGetUserId(out var userId)) return Forbid();
+
+            var pagedResult = await tmCollectionService.
+                GetUserCollectionAsync(userId, sortBy, currentPage, resultsPerPage, cancellationToken);
+
+            var viewModel = TrademarksMapping.MapCollectionDtoToViewModel(pagedResult);
+
+            ViewBag.SortBy = sortBy;
+
+            return View(viewModel);
+        }
+
         [HttpGet("Trademarks/Details/{id:guid}")]
         [AllowAnonymous]
         public async Task<IActionResult> Details(Guid id, string? returnUrl = null, CancellationToken cancellationToken = default)
@@ -81,23 +98,6 @@ namespace IPNoticeHub.Web.Controllers
             {
                 ViewBag.ReturnUrl = returnUrl;
             }
-
-            return View(viewModel);
-        }
-
-        [Authorize(Policy = "HasUserId")]
-        [HttpGet]
-        public async Task<IActionResult> MyCollection(CollectionSortBy sortBy = CollectionSortBy.DateAddedDesc,
-        int currentPage = DefaultPage,int resultsPerPage = DefaultPageSize,CancellationToken cancellationToken = default)
-        {
-            if (!User.TryGetUserId(out var userId)) return Forbid();
-
-            var pagedResult = await tmCollectionService.
-                GetUserCollectionAsync(userId, sortBy, currentPage, resultsPerPage, cancellationToken);
-
-            var viewModel = TrademarksMapping.MapCollectionDtoToViewModel(pagedResult);
-
-            ViewBag.SortBy = sortBy;
 
             return View(viewModel);
         }
@@ -287,11 +287,12 @@ namespace IPNoticeHub.Web.Controllers
             return View("CeaseDesistEdit", model);
         }
 
-        // Helper methods for internal use within the controller
+        //Helper methods for internal use within the controller
         private IActionResult CreateEmptyViewModel(TrademarkFilterViewModel filter)
         {
             ViewBag.HasSearch = false;
-            PagedResult<TrademarkSummaryDTO>? emptyDTOPagedResult = new PagedResult<TrademarkSummaryDTO>
+
+            var emptyDTOPagedResult = new PagedResult<TrademarkSummaryDTO>
             {
                 Results = Array.Empty<TrademarkSummaryDTO>(),
                 ResultsCount = 0,

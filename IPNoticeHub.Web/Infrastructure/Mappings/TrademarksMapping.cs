@@ -1,4 +1,5 @@
 ﻿using Humanizer;
+using IPNoticeHub.Services.Application.Abstractions;
 using IPNoticeHub.Services.Common;
 using IPNoticeHub.Services.Trademarks.DTOs;
 using IPNoticeHub.Web.Models.PdfGeneration;
@@ -6,7 +7,7 @@ using IPNoticeHub.Web.Models.TrademarkCollection;
 using IPNoticeHub.Web.Models.Trademarks;
 using IPNoticeHub.Web.ViewModels.Trademarks;
 
-namespace IPNoticeHub.Web.Infrastructure.Mapping
+namespace IPNoticeHub.Web.Infrastructure.Mappings
 {
     public class TrademarksMapping
     {
