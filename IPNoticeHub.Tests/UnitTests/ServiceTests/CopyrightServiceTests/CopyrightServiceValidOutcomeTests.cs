@@ -42,7 +42,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Copyrights
             IUserCopyrightRepository userCopyrightRepo = new UserCopyrightRepository(testDbContext);
             ICopyrightService service = new CopyrightService(copyrightRepo, userCopyrightRepo);
 
-            var createCopyrightDTO = new CopyrightCreateViewModel
+            var dto = new CopyrightCreateDto
             {
                 RegistrationNumber = "TX-111111",
                 WorkType = CopyrightWorkType.Literary,
@@ -53,7 +53,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Copyrights
                 NationOfFirstPublication = "US"
             };
 
-            Guid publicId = await service.CreateAsync(user.Id, createCopyrightDTO, CancellationToken.None);
+            Guid publicId = await service.CreateAsync(user.Id, dto, CancellationToken.None);
 
             var entity = await testDbContext.CopyrightRegistrations.SingleAsync(c => c.RegistrationNumber == "TX-111111");
 
@@ -77,7 +77,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Copyrights
             var userCopyrightRepo = new UserCopyrightRepository(testDbContext);
             ICopyrightService service = new CopyrightService(copyrightRepo, userCopyrightRepo);
 
-            var createCopyrightDTO = new CopyrightCreateViewModel
+            var dto = new CopyrightCreateDto
             {
                 RegistrationNumber = "TX-222222",
                 WorkType = CopyrightWorkType.Other,
@@ -86,7 +86,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Copyrights
                 Owner = "New Owner"
             };
 
-            Guid publicId = await service.CreateAsync(user.Id, createCopyrightDTO, CancellationToken.None);
+            Guid publicId = await service.CreateAsync(user.Id, dto, CancellationToken.None);
 
             var entity = await testDbContext.CopyrightRegistrations.SingleAsync(c => c.RegistrationNumber == "TX-222222");
 
@@ -116,7 +116,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Copyrights
             var userCopyrightRepo = new UserCopyrightRepository(testDbContext);
             ICopyrightService service = new CopyrightService(copyrightRepo, userCopyrightRepo);
 
-            var createCopyrightDTO = new CopyrightCreateViewModel
+            var dto = new CopyrightCreateDto
             {
                 RegistrationNumber = "TX-333333",
                 WorkType = CopyrightWorkType.Audiovisual,
@@ -124,7 +124,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Copyrights
                 Owner = "The Butcher"
             };
 
-            var returnedEntityPublicId = await service.CreateAsync(user.Id, createCopyrightDTO, CancellationToken.None);
+            var returnedEntityPublicId = await service.CreateAsync(user.Id, dto, CancellationToken.None);
 
             (await testDbContext.CopyrightRegistrations.CountAsync(c => c.RegistrationNumber == "TX-333333"))
                 .Should().Be(1);

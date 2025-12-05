@@ -4,6 +4,7 @@ using IPNoticeHub.Services.Copyrights.Abstractions;
 using IPNoticeHub.Services.Copyrights.DTOs;
 using IPNoticeHub.Tests.UnitTests.TestUtilities;
 using IPNoticeHub.Web.Controllers;
+using IPNoticeHub.Web.Models.Copyrights;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
@@ -76,7 +77,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
         {
             var copyrightService = new Mock<ICopyrightService>();
 
-            copyrightService.Setup(s => s.CreateAsync("u1", It.IsAny<CopyrightCreateViewModel>(), It.IsAny<CancellationToken>())).
+            copyrightService.Setup(s => s.CreateAsync("u1", It.IsAny<CopyrightCreateDto>(), It.IsAny<CancellationToken>())).
                ReturnsAsync(Guid.NewGuid());
 
             var controller = TestCopyrightControllerFactory.CreateController(copyrightService.Object, userId: "u1");
@@ -94,7 +95,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
             redirectResult.Url.Should().Be("/back");
             controller.TempData["SuccessMessage"].Should().Be(CopyrightAddedMessage);
 
-            copyrightService.Verify(s => s.CreateAsync("u1", It.IsAny<CopyrightCreateViewModel>(), It.IsAny<CancellationToken>()), Times.Once);
+            copyrightService.Verify(s => s.CreateAsync("u1", It.IsAny<CopyrightCreateDto>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Test]
@@ -104,7 +105,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
 
             var copyrightService = new Mock<ICopyrightService>();
 
-            copyrightService.Setup(s => s.CreateAsync("u1", It.IsAny<CopyrightCreateViewModel>(), It.IsAny<CancellationToken>()))
+            copyrightService.Setup(s => s.CreateAsync("u1", It.IsAny<CopyrightCreateDto>(), It.IsAny<CancellationToken>()))
                .ReturnsAsync(createdId);
 
             var controller = TestCopyrightControllerFactory.CreateController(copyrightService.Object, userId: "u1");
