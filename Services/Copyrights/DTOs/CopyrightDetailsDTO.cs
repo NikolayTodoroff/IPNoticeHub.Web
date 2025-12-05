@@ -3,7 +3,7 @@ using static IPNoticeHub.Common.ValidationConstants.CopyrightRegistrationConstan
 
 namespace IPNoticeHub.Services.Copyrights.DTOs
 {
-    public sealed class CopyrightDetailsDTO
+    public sealed class CopyrightDetailsDto
     {
         public Guid PublicId { get; init; }
 

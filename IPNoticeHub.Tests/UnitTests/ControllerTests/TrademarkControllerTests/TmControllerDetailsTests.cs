@@ -30,7 +30,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
         {
             var entityId = Guid.NewGuid();
 
-            var detailsDTO = new TrademarkDetailsDTO
+            var detailsDTO = new TrademarkDetailsDto
             {
                 Id = 42,
                 PublicId = entityId,
@@ -96,7 +96,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
             var letterTemplate = new Mock<ILetterTemplateProvider>();
 
             tmSearchService.Setup(s => s.GetDetailsAsync(entityId, It.IsAny<CancellationToken>())).
-                ReturnsAsync((TrademarkDetailsDTO?)null);
+                ReturnsAsync((TrademarkDetailsDto?)null);
 
 
             var controller = new TrademarksController
@@ -114,7 +114,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
             var entityId = Guid.NewGuid();
             var safeReturnUrl = "/Home/Results?trademark=chimaira";
 
-            var detailsDTO = new TrademarkDetailsDTO
+            var detailsDTO = new TrademarkDetailsDto
             {
                 PublicId = entityId,
                 Wordmark = "Chimaira",
@@ -158,7 +158,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
             var entityId = Guid.NewGuid();
             var externalUrl = "https://custom.example/demo";
 
-            var detailsDTO = new TrademarkDetailsDTO
+            var detailsDTO = new TrademarkDetailsDto
             {
                 PublicId = entityId,
                 Wordmark = "Chimaira",

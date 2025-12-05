@@ -7,7 +7,7 @@ namespace IPNoticeHub.Web.Infrastructure
 {
     public static class ApplyEntityDetails
     {
-        public static void ApplyCopyrightDMCADetails(DMCAViewModel viewModel, CopyrightDetailsDTO dto,
+        public static void ApplyCopyrightDMCADetails(DMCAViewModel viewModel, CopyrightDetailsDto dto,
             MergeStrategy strategy = MergeStrategy.FillBlanks)
         {
             static string? FillOnly(string? user, string? fromDb)
@@ -32,7 +32,7 @@ namespace IPNoticeHub.Web.Infrastructure
             viewModel.DateOfPublication ??= dto.DateOfPublication;
         }
 
-        public static void ApplyCopyrightCeaseDesistDetails(CeaseDesistViewModel viewModel, CopyrightDetailsDTO dto,
+        public static void ApplyCopyrightCeaseDesistDetails(CeaseDesistViewModel viewModel, CopyrightDetailsDto dto,
             MergeStrategy strategy = MergeStrategy.FillBlanks)
         {
             static string? FillOnly(string? user, string? fromDb)
@@ -51,7 +51,7 @@ namespace IPNoticeHub.Web.Infrastructure
             viewModel.RegistrationNumber = FillOnly(viewModel.RegistrationNumber, dto.RegistrationNumber) ?? string.Empty;
         }
 
-        public static void ApplyTrademarkCeaseDesistDetails(CeaseDesistViewModel viewModel, TrademarkDetailsDTO dto, 
+        public static void ApplyTrademarkCeaseDesistDetails(CeaseDesistViewModel viewModel, TrademarkDetailsDto dto, 
             MergeStrategy strategy = MergeStrategy.FillBlanks)
         {
             static string? FillOnly(string? user, string? fromDb)

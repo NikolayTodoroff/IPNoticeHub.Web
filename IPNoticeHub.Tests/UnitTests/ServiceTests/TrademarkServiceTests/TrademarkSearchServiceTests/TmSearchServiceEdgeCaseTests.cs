@@ -52,7 +52,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
             ITrademarkRepository trademarkRepository = new TrademarkRepository(testDbContext);
             var service = new TrademarkSearchService(trademarkRepository);
 
-            var filterDTO = new TrademarkFilterDTO
+            var filterDTO = new TrademarkFilterDto
             {
                 SearchBy = TrademarkSearchBy.Wordmark,
                 SearchTerm = null,
@@ -67,7 +67,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
 
             pagedResultDTO.ResultsCount.Should().Be(2);
 
-            var emptySearchTermFilterDTO = new TrademarkFilterDTO
+            var emptySearchTermFilterDTO = new TrademarkFilterDto
             {
                 SearchBy = TrademarkSearchBy.Wordmark,
                 SearchTerm = "",
@@ -125,7 +125,8 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
             ITrademarkRepository trademarkRepository = new TrademarkRepository(testDbContext);
             var service = new TrademarkSearchService(trademarkRepository);
 
-            var filterDTO = new TrademarkFilterDTO { 
+            var filterDTO = new TrademarkFilterDto
+            { 
                 SearchBy = TrademarkSearchBy.Wordmark, 
                 SearchTerm = null, 
                 ExactMatch = false };
@@ -164,7 +165,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
             ITrademarkRepository trademarkRepository = new TrademarkRepository(testDbContext);
             var service = new TrademarkSearchService(trademarkRepository);
 
-            var filterDTO = new TrademarkFilterDTO
+            var filterDTO = new TrademarkFilterDto
             {
                 SearchBy = TrademarkSearchBy.Wordmark,
                 SearchTerm = "randomText",

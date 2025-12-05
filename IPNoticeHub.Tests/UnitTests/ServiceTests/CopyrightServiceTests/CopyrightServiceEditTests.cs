@@ -48,7 +48,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.CopyrightServiceTests
             var copyrightRepo = new CopyrightRepository(testDbContext);
             var service = new CopyrightService(copyrightRepo, userCopyrightRepo);
 
-            var editedEntity = new CopyrightEditDTO
+            var editedEntity = new CopyrightEditDto
             {
                 RegistrationNumber = "TX-ED1-UPDATED",
                 WorkType = CopyrightWorkType.Other,
@@ -83,7 +83,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.CopyrightServiceTests
 
             await testDbContext.SaveChangesAsync();
 
-            var copyrightEditDTO = new CopyrightEditDTO
+            var copyrightEditDTO = new CopyrightEditDto
             {
                 RegistrationNumber = "X",
                 WorkType = CopyrightWorkType.Literary,
@@ -123,7 +123,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.CopyrightServiceTests
             var copyrightRepo = new CopyrightRepository(testDbContext);
             var service = new CopyrightService(copyrightRepo, userCopyrightRepo);
 
-            var copyrightEditDTO = new CopyrightEditDTO
+            var copyrightEditDTO = new CopyrightEditDto
             {
                 RegistrationNumber = "TX-ED3",
                 WorkType = CopyrightWorkType.VisualArts,
@@ -171,7 +171,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.CopyrightServiceTests
             var service = new CopyrightService(copyrightRepo, userCopyrightRepo);
 
 
-            var entityUpdatedSuccessfully = await service.EditAsync(user.Id, targetEntity.PublicId, new CopyrightEditDTO
+            var entityUpdatedSuccessfully = await service.EditAsync(user.Id, targetEntity.PublicId, new CopyrightEditDto
             {
                 RegistrationNumber = "TX-ED2", // collission with "Random Entity"
                 WorkType = CopyrightWorkType.Literary,
@@ -212,7 +212,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.CopyrightServiceTests
             var copyrightRepo = new CopyrightRepository(testDbContext);
             var service = new CopyrightService(copyrightRepo, userCopyrightRepo);
 
-            var copyrightEditDTO = new CopyrightEditDTO
+            var copyrightEditDTO = new CopyrightEditDto
             {
                 RegistrationNumber = "TX-ED1",
                 WorkType = CopyrightWorkType.PerformingArts,

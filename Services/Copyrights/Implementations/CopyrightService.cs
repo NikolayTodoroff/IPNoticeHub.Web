@@ -54,7 +54,7 @@ namespace IPNoticeHub.Services.Copyrights.Implementations
             return newEntity.PublicId;
         }
 
-        public async Task<bool> EditAsync(string userId, Guid publicId, CopyrightEditDTO dto, CancellationToken cancellationToken = default)
+        public async Task<bool> EditAsync(string userId, Guid publicId, CopyrightEditDto dto, CancellationToken cancellationToken = default)
         {
             var copyrightEntity = await copyrightRepository.
                 GetByPublicIdAsync(publicId, asNoTracking: false, cancellationToken: cancellationToken);
@@ -96,7 +96,7 @@ namespace IPNoticeHub.Services.Copyrights.Implementations
             return true;
         }
 
-        public async Task<CopyrightDetailsDTO?> GetDetailsAsync(string userId, Guid publicId, CancellationToken cancellationToken = default)
+        public async Task<CopyrightDetailsDto?> GetDetailsAsync(string userId, Guid publicId, CancellationToken cancellationToken = default)
         {
             CopyrightEntity? entity = await copyrightRepository.GetByPublicIdAsync(publicId, asNoTracking: true,cancellationToken: cancellationToken);
 
@@ -105,7 +105,7 @@ namespace IPNoticeHub.Services.Copyrights.Implementations
             bool linked = await userCopyrightRepository.IsLinkedAsync(userId, entity.Id, includeSoftDeleted: false,cancellationToken: cancellationToken);
             if (!linked) return null;
 
-            return new CopyrightDetailsDTO()
+            return new CopyrightDetailsDto()
             {
                 PublicId = entity.PublicId,
                 RegistrationNumber = entity.RegistrationNumber,

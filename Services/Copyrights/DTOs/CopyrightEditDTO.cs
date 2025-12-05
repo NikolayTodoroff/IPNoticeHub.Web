@@ -4,7 +4,7 @@ using static IPNoticeHub.Common.ValidationConstants.CopyrightRegistrationConstan
 
 namespace IPNoticeHub.Services.Copyrights.DTOs
 {
-    public class CopyrightEditDTO
+    public class CopyrightEditDto
     {
         [Required, MaxLength(RegistrationNumberMaxLength)]
         public string RegistrationNumber { get; init; } = string.Empty;

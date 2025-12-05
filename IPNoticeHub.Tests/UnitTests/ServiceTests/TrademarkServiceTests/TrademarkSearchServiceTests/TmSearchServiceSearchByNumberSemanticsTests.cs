@@ -51,7 +51,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
             ITrademarkRepository trademarkRepository = new TrademarkRepository(testDbContext);
             var service = new TrademarkSearchService(trademarkRepository);
 
-            var filterDTO = new TrademarkFilterDTO
+            var filterDTO = new TrademarkFilterDto
             {
                 SearchBy = TrademarkSearchBy.Number,
                 SearchTerm = "1234567",
@@ -107,7 +107,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
             ITrademarkRepository trademarkRepository = new TrademarkRepository(testDbContext);
             var service = new TrademarkSearchService(trademarkRepository);
 
-            var filterDTO = new TrademarkFilterDTO
+            var filterDTO = new TrademarkFilterDto
             {
                 SearchBy = TrademarkSearchBy.Number,
                 SearchTerm = "EU4546576454333",
@@ -162,7 +162,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
             ITrademarkRepository trademarkRepository = new TrademarkRepository(testDbContext);
             var service = new TrademarkSearchService(trademarkRepository);
 
-            var filterDTO = new TrademarkFilterDTO
+            var filterDTO = new TrademarkFilterDto
             {
                 SearchBy = TrademarkSearchBy.Number,
                 SearchTerm = "123",

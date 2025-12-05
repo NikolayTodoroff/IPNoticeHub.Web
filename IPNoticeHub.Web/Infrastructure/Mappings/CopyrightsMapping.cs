@@ -52,7 +52,7 @@ namespace IPNoticeHub.Web.Infrastructure.Mappings
             };
         }
 
-        public static CopyrightEditViewModel MapDetailsDtoToEditViewModel(CopyrightDetailsDTO dto,
+        public static CopyrightEditViewModel MapDetailsDtoToEditViewModel(CopyrightDetailsDto dto,
             CopyrightWorkType workType, string? otherText)
         {
             return new CopyrightEditViewModel()
@@ -69,9 +69,9 @@ namespace IPNoticeHub.Web.Infrastructure.Mappings
             };
         }
 
-        public static CopyrightEditDTO MapEditViewModelToDto(CopyrightEditViewModel viewModel)
+        public static CopyrightEditDto MapEditViewModelToDto(CopyrightEditViewModel viewModel)
         {
-            return new CopyrightEditDTO()
+            return new CopyrightEditDto()
             {
                 RegistrationNumber = viewModel.RegistrationNumber,
                 WorkType = viewModel.WorkType,
@@ -84,7 +84,7 @@ namespace IPNoticeHub.Web.Infrastructure.Mappings
             };
         }
 
-        public static CopyrightDetailsViewModel MapDetailsDtoToViewModel(CopyrightDetailsDTO dto)
+        public static CopyrightDetailsViewModel MapDetailsDtoToViewModel(CopyrightDetailsDto dto)
         {
             return new CopyrightDetailsViewModel()
             {
@@ -99,7 +99,7 @@ namespace IPNoticeHub.Web.Infrastructure.Mappings
             };
         }
 
-        public static DMCAViewModel MapDetailsDtoToDmcaViewModel(CopyrightDetailsDTO dto, Guid publicId)
+        public static DMCAViewModel MapDetailsDtoToDmcaViewModel(CopyrightDetailsDto dto, Guid publicId)
         {
             return new DMCAViewModel()
             {
@@ -186,7 +186,7 @@ namespace IPNoticeHub.Web.Infrastructure.Mappings
             };
         }
 
-        public static CeaseDesistViewModel MapDetailsDtoToCeaseDesistViewModel(CopyrightDetailsDTO dto,Guid publicId)
+        public static CeaseDesistViewModel MapDetailsDtoToCeaseDesistViewModel(CopyrightDetailsDto dto,Guid publicId)
         {
             return new CeaseDesistViewModel()
             {

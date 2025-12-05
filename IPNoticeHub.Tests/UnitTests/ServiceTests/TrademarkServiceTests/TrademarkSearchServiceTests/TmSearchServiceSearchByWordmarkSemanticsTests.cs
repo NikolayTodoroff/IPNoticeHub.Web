@@ -54,7 +54,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
             ITrademarkRepository trademarkRepository = new TrademarkRepository(testDbContext);
             var service = new TrademarkSearchService(trademarkRepository);
 
-            var filterDTO = new TrademarkFilterDTO
+            var filterDTO = new TrademarkFilterDto
             {
                 SearchBy = TrademarkSearchBy.Wordmark,
                 SearchTerm = "here & now",
@@ -106,7 +106,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
             ITrademarkRepository trademarkRepository = new TrademarkRepository(testDbContext);
             var service = new TrademarkSearchService(trademarkRepository);
 
-            var filterDTO = new TrademarkFilterDTO
+            var filterDTO = new TrademarkFilterDto
             {
                 SearchBy = TrademarkSearchBy.Wordmark,
                 SearchTerm = "gone",

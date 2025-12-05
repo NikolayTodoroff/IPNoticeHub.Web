@@ -70,7 +70,7 @@ namespace IPNoticeHub.Web.Infrastructure.Mappings
             };
         }
 
-        public static TrademarkDetailsViewModel MapDetailsDtoToViewModel(TrademarkDetailsDTO dto,
+        public static TrademarkDetailsViewModel MapDetailsDtoToViewModel(TrademarkDetailsDto dto,
             bool isInCollection, bool isInWatchlist, bool isAuthenticated)
         {
             return new TrademarkDetailsViewModel

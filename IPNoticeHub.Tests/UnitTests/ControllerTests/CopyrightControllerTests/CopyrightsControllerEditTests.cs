@@ -31,7 +31,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
             var copyrightService = new Mock<ICopyrightService>();
 
             copyrightService.Setup(s => s.GetDetailsAsync("u1", It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
-                   .ReturnsAsync((CopyrightDetailsDTO?) null);
+                   .ReturnsAsync((CopyrightDetailsDto?) null);
 
             var controller = TestCopyrightControllerFactory.CreateController(copyrightService.Object, userId: "u1");
 
@@ -48,7 +48,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
             var copyrightService = new Mock<ICopyrightService>();
 
             copyrightService.Setup(s => s.GetDetailsAsync("u1", id, It.IsAny<CancellationToken>()))
-                   .ReturnsAsync(new CopyrightDetailsDTO
+                   .ReturnsAsync(new CopyrightDetailsDto
                    {
                        PublicId = id,
                        RegistrationNumber = "TX-1",
@@ -95,7 +95,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
             controller.ModelState.ContainsKey(nameof(CopyrightEditViewModel.OtherWorkType)).Should().BeTrue();
             editView.Model.Should().Be(editViewModel);
 
-            copyrightService.Verify(s => s.EditAsync(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<CopyrightEditDTO>(), It.IsAny<CancellationToken>()), Times.Never);
+            copyrightService.Verify(s => s.EditAsync(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<CopyrightEditDto>(), It.IsAny<CancellationToken>()), Times.Never);
         }
 
         [Test]
@@ -105,7 +105,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
 
             var copyrightService = new Mock<ICopyrightService>();
 
-            copyrightService.Setup(s => s.EditAsync("u1", id, It.IsAny<CopyrightEditDTO>(), It.IsAny<CancellationToken>()))
+            copyrightService.Setup(s => s.EditAsync("u1", id, It.IsAny<CopyrightEditDto>(), It.IsAny<CancellationToken>()))
                    .ReturnsAsync(false);
 
             var controller = TestCopyrightControllerFactory.CreateController(copyrightService.Object, userId: "u1");
@@ -134,7 +134,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
 
             var copyrightService = new Mock<ICopyrightService>();
 
-            copyrightService.Setup(s => s.EditAsync("u1", id, It.IsAny<CopyrightEditDTO>(), It.IsAny<CancellationToken>()))
+            copyrightService.Setup(s => s.EditAsync("u1", id, It.IsAny<CopyrightEditDto>(), It.IsAny<CancellationToken>()))
                    .ReturnsAsync(true);
 
             var controller = TestCopyrightControllerFactory.CreateController(copyrightService.Object, userId: "u1");
@@ -162,7 +162,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
 
             var copyrightService = new Mock<ICopyrightService>();
 
-            copyrightService.Setup(s => s.EditAsync("u1", id, It.IsAny<CopyrightEditDTO>(), It.IsAny<CancellationToken>()))
+            copyrightService.Setup(s => s.EditAsync("u1", id, It.IsAny<CopyrightEditDto>(), It.IsAny<CancellationToken>()))
                    .ReturnsAsync(true);
 
             var controller = TestCopyrightControllerFactory.CreateController(copyrightService.Object, userId: "u1");
@@ -232,7 +232,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
             var copyrightService = new Mock<ICopyrightService>();
 
             copyrightService.Setup(s => s.GetDetailsAsync("u1", id, It.IsAny<CancellationToken>()))
-                   .ReturnsAsync(new CopyrightDetailsDTO
+                   .ReturnsAsync(new CopyrightDetailsDto
                    {
                        PublicId = id,
                        RegistrationNumber = "TX-KNOWN",
@@ -260,7 +260,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
             var copyrightService = new Mock<ICopyrightService>();
 
             copyrightService.Setup(s => s.GetDetailsAsync("u1", id, It.IsAny<CancellationToken>()))
-                   .ReturnsAsync(new CopyrightDetailsDTO
+                   .ReturnsAsync(new CopyrightDetailsDto
                    {
                        PublicId = id,
                        RegistrationNumber = "TX-EMPTY",

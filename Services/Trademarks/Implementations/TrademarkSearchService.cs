@@ -17,13 +17,13 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
             this.trademarkRepository = trademarks;
         }
 
-        public async Task<TrademarkDetailsDTO?> GetDetailsAsync(Guid publicId, CancellationToken cancellationToken = default)
+        public async Task<TrademarkDetailsDto?> GetDetailsAsync(Guid publicId, CancellationToken cancellationToken = default)
         {
             TrademarkEntity? entity = await trademarkRepository.GetByPublicIdAsync(publicId, cancellationToken: cancellationToken);
 
             if (entity is null) return null;
 
-            return new TrademarkDetailsDTO
+            return new TrademarkDetailsDto
             {
                 Id = entity.Id,
                 PublicId = entity.PublicId,
@@ -43,7 +43,7 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
             };
         }
 
-        public async Task<PagedResult<TrademarkSingleItemDto>> SearchAsync(TrademarkFilterDTO filter, int currentPage, int resultsPerPage, CancellationToken cancellationToken = default)
+        public async Task<PagedResult<TrademarkSingleItemDto>> SearchAsync(TrademarkFilterDto filter, int currentPage, int resultsPerPage, CancellationToken cancellationToken = default)
         {
             var (normalizedPage, normalizedPageSize) = PagingConfiguration.NormalizePaging(currentPage, resultsPerPage);
 

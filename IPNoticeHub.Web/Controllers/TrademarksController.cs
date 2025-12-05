@@ -79,7 +79,7 @@ namespace IPNoticeHub.Web.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Details(Guid id, string? returnUrl = null, CancellationToken cancellationToken = default)
         {
-            TrademarkDetailsDTO? dto = await tmSearchService.GetDetailsAsync(id, cancellationToken);
+            TrademarkDetailsDto? dto = await tmSearchService.GetDetailsAsync(id, cancellationToken);
 
             if (dto is null) return NotFound();
 
@@ -223,11 +223,11 @@ namespace IPNoticeHub.Web.Controllers
                 return Forbid();
             }
 
-            var trademarkDetailsDTO = await tmSearchService.GetDetailsAsync(viewModel.PublicId, cancellationToken);
+            var trademarkDetailsDto = await tmSearchService.GetDetailsAsync(viewModel.PublicId, cancellationToken);
 
-            if (trademarkDetailsDTO != null)
+            if (trademarkDetailsDto != null)
             {
-                ApplyTrademarkCeaseDesistDetails(viewModel, trademarkDetailsDTO, MergeStrategy.FillBlanks);
+                ApplyTrademarkCeaseDesistDetails(viewModel, trademarkDetailsDto, MergeStrategy.FillBlanks);
             }
                 
             if (string.IsNullOrWhiteSpace(viewModel.BodyTemplate) || viewModel.BodyTemplate.Contains("{{"))
@@ -278,9 +278,9 @@ namespace IPNoticeHub.Web.Controllers
         }
 
 
-        private static TrademarkFilterDTO CreateNormalizedFilterDTO(TrademarkFilterViewModel filter, string searchTerm)
+        private static TrademarkFilterDto CreateNormalizedFilterDTO(TrademarkFilterViewModel filter, string searchTerm)
         {
-            return new TrademarkFilterDTO
+            return new TrademarkFilterDto
             {
                 SearchTerm = searchTerm,
                 SearchBy = filter.SearchBy,

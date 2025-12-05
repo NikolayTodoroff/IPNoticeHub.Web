@@ -2,6 +2,8 @@
 using IPNoticeHub.Common.Infrastructure;
 using IPNoticeHub.Services.Application.Abstractions;
 using IPNoticeHub.Services.Copyrights.Abstractions;
+using IPNoticeHub.Services.Copyrights.DTOs;
+using IPNoticeHub.Web.Infrastructure.Mappings;
 using IPNoticeHub.Web.Models.Copyrights;
 using IPNoticeHub.Web.Models.PdfGeneration;
 using Microsoft.AspNetCore.Authorization;
@@ -10,9 +12,8 @@ using System.Globalization;
 using static IPNoticeHub.Common.ValidationConstants.FormattingConstants;
 using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
 using static IPNoticeHub.Common.ValidationConstants.StatusMessages;
-using static IPNoticeHub.Web.Infrastructure.TemplateReplacer;
 using static IPNoticeHub.Web.Infrastructure.ApplyEntityDetails;
-using IPNoticeHub.Web.Infrastructure.Mappings;
+using static IPNoticeHub.Web.Infrastructure.TemplateReplacer;
 
 namespace IPNoticeHub.Web.Controllers
 {
@@ -203,21 +204,21 @@ namespace IPNoticeHub.Web.Controllers
                 return Forbid();
             }
 
-            var copyrightDetailsDTO = await copyrightService.GetDetailsAsync(userId, publicId, cancellationToken);
+            var copyrightDetailsDto = await copyrightService.GetDetailsAsync(userId, publicId, cancellationToken);
 
-            if (copyrightDetailsDTO is null)
+            if (copyrightDetailsDto is null)
             {
                 return NotFound();
             }
 
-            ApplyCopyrightDMCADetails(viewModel, copyrightDetailsDTO, MergeStrategy.OverwriteAll);
+            ApplyCopyrightDMCADetails(viewModel, copyrightDetailsDto, MergeStrategy.OverwriteAll);
 
             var input = CopyrightsMapping.MapDmcaViewModelToInput(viewModel);
 
             var pdf = await pdfService.GenerateCopyrightDMCAAsync(input, cancellationToken);
 
             return File(pdf, "application/pdf",
-                $"DMCA-{copyrightDetailsDTO.Title}-{DateTime.UtcNow:DateTimeFormat}.pdf");
+                $"DMCA-{copyrightDetailsDto.Title}-{DateTime.UtcNow:DateTimeFormat}.pdf");
         }
 
 
@@ -259,14 +260,14 @@ namespace IPNoticeHub.Web.Controllers
                 return Forbid();
             }
 
-            var copyrightDetailsDTO = await copyrightService.GetDetailsAsync(userId, viewModel.PublicId, cancellationToken);
+            var copyrightDetailsDto = await copyrightService.GetDetailsAsync(userId, viewModel.PublicId, cancellationToken);
 
-            if (copyrightDetailsDTO is null)
+            if (copyrightDetailsDto is null)
             {
                 return NotFound();
             }
 
-            ApplyCopyrightDMCADetails(viewModel, copyrightDetailsDTO, MergeStrategy.FillBlanks);
+            ApplyCopyrightDMCADetails(viewModel, copyrightDetailsDto, MergeStrategy.FillBlanks);
 
             if (string.IsNullOrWhiteSpace(viewModel.BodyTemplate) || viewModel.BodyTemplate.Contains("{{"))
             {
@@ -375,14 +376,14 @@ namespace IPNoticeHub.Web.Controllers
                 return Forbid();
             }
 
-            var copyrightDetailsDTO = await copyrightService.GetDetailsAsync(userId, viewModel.PublicId, cancellationToken);
+            var copyrightDetailsDto = await copyrightService.GetDetailsAsync(userId, viewModel.PublicId, cancellationToken);
 
-            if (copyrightDetailsDTO is null)
+            if (copyrightDetailsDto is null)
             {
                 return NotFound();
             }
 
-            ApplyCopyrightCeaseDesistDetails(viewModel, copyrightDetailsDTO, MergeStrategy.FillBlanks);
+            ApplyCopyrightCeaseDesistDetails(viewModel, copyrightDetailsDto, MergeStrategy.FillBlanks);
 
             if (string.IsNullOrWhiteSpace(viewModel.BodyTemplate) || viewModel.BodyTemplate.Contains("{{"))
             {
