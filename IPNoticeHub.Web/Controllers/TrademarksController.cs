@@ -12,8 +12,6 @@ using static IPNoticeHub.Common.ValidationConstants.StatusMessages;
 using static IPNoticeHub.Web.Infrastructure.TemplateReplacer;
 using static IPNoticeHub.Web.Infrastructure.ApplyEntityDetails;
 using IPNoticeHub.Web.Infrastructure.Mappings;
-using IPNoticeHub.Web.Models.Trademarks;
-using IPNoticeHub.Services.Common;
 
 namespace IPNoticeHub.Web.Controllers
 {
@@ -34,28 +32,6 @@ namespace IPNoticeHub.Web.Controllers
             this.pdfService = pdfService;
             this.letterTemplateProvider = letterTemplateProvider;
         }
-
-
-        [HttpGet]
-        public async Task<IActionResult> Index([FromQuery] TrademarkFilterViewModel filter, CancellationToken cancellationToken)
-        {
-            string searchTerm = (filter.SearchTerm ?? string.Empty).Trim();
-
-            if (string.IsNullOrWhiteSpace(searchTerm) || !ModelState.IsValid)
-            {
-                return CreateEmptyViewModel(filter);
-            }
-
-            var filterDTO = CreateNormalizedFilterDTO(filter, searchTerm);
-
-            var dto = await tmSearchService.SearchAsync(filterDTO, filter.CurrentPage, filter.ResultsPerPage, cancellationToken);
-
-            ViewBag.HasSearch = true;
-
-            var viewModel = TrademarksMapping.MapCollectionIndexDtoToViewModel(filter, dto);
-            return View(viewModel);
-        }
-
 
         [Authorize(Policy = "HasUserId")]
         [HttpGet]
@@ -257,41 +233,6 @@ namespace IPNoticeHub.Web.Controllers
         public IActionResult CeaseDesistEdit(CeaseDesistViewModel model)
         {
             return View("CeaseDesistEdit", model);
-        }
-
-
-        //Helper methods for internal use within the controller
-        private IActionResult CreateEmptyViewModel(TrademarkFilterViewModel filter)
-        {
-            ViewBag.HasSearch = false;
-
-            var emptyDTOPagedResult = new PagedResult<TrademarkSingleItemDto>
-            {
-                Results = Array.Empty<TrademarkSingleItemDto>(),
-                ResultsCount = 0,
-                CurrentPage = filter.CurrentPage,
-                ResultsCountPerPage = filter.ResultsPerPage
-            };
-
-            var viewModel = TrademarksMapping.MapCollectionIndexDtoToViewModel(filter, emptyDTOPagedResult);
-            return View(viewModel);
-        }
-
-
-        private static TrademarkFilterDto CreateNormalizedFilterDTO(TrademarkFilterViewModel filter, string searchTerm)
-        {
-            return new TrademarkFilterDto
-            {
-                SearchTerm = searchTerm,
-                SearchBy = filter.SearchBy,
-                Provider = filter.Provider,
-                Status = filter.Status,
-                ClassNumbers = (filter.ClassNumbers ?? Array.Empty<int>())
-                        .Where(cn => Enum.IsDefined(typeof(TrademarkClass), cn))
-                        .Distinct()
-                        .ToArray(),
-                ExactMatch = filter.ExactMatch
-            };
         }
     }
 }

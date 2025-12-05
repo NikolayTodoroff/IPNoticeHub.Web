@@ -36,40 +36,6 @@ namespace IPNoticeHub.Web.Infrastructure.Mappings
             };
         }
 
-        public static TrademarkCollectionIndexViewModel MapCollectionIndexDtoToViewModel(TrademarkFilterViewModel filter, PagedResult<TrademarkSingleItemDto> resultsPageDTO)
-        {
-            return new TrademarkCollectionIndexViewModel
-            {
-                SearchTerm = filter.SearchTerm?.Trim(),
-                SearchBy = filter.SearchBy,
-                Provider = filter.Provider,
-                Status = filter.Status,
-                ClassNumbers = filter.ClassNumbers ?? Array.Empty<int>(),
-                ExactMatch = filter.ExactMatch,
-
-                CurrentPage = resultsPageDTO.CurrentPage,
-                ResultsPerPage = resultsPageDTO.ResultsCountPerPage,
-                ResultsCount = resultsPageDTO.ResultsCount,
-
-                Results = resultsPageDTO.Results.Select(MapTrademarkSummaryViewModel).ToList()
-            };
-        }
-
-        private static TrademarkSummaryViewModel MapTrademarkSummaryViewModel(TrademarkSingleItemDto summaryDTO)
-        {
-            return new TrademarkSummaryViewModel()
-            {
-                Id = summaryDTO.Id,
-                PublicId = summaryDTO.PublicId,
-                Wordmark = summaryDTO.Wordmark,
-                SourceId = summaryDTO.SourceId,
-                Owner = summaryDTO.Owner,
-                Status = summaryDTO.Status,
-                Classes = summaryDTO.Classes ?? Array.Empty<int>(),
-                Provider = summaryDTO.Provider
-            };
-        }
-
         public static TrademarkDetailsViewModel MapDetailsDtoToViewModel(TrademarkDetailsDto dto,
             bool isInCollection, bool isInWatchlist, bool isAuthenticated)
         {
