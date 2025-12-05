@@ -4,7 +4,7 @@ using IPNoticeHub.Services.Common;
 using IPNoticeHub.Services.Trademarks.Abstractions;
 using IPNoticeHub.Services.Trademarks.DTOs;
 using IPNoticeHub.Tests.UnitTests.TestUtilities;
-using IPNoticeHub.Web.Models.TrademarkCollection;
+using IPNoticeHub.Web.Models.Trademarks;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;

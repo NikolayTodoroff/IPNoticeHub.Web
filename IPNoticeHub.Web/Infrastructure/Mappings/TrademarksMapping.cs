@@ -3,7 +3,6 @@ using IPNoticeHub.Services.Application.Abstractions;
 using IPNoticeHub.Services.Common;
 using IPNoticeHub.Services.Trademarks.DTOs;
 using IPNoticeHub.Web.Models.PdfGeneration;
-using IPNoticeHub.Web.Models.TrademarkCollection;
 using IPNoticeHub.Web.Models.Trademarks;
 using IPNoticeHub.Web.ViewModels.Trademarks;
 using System.Globalization;

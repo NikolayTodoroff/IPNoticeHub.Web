@@ -5,7 +5,6 @@ using IPNoticeHub.Services.Copyrights.DTOs;
 using IPNoticeHub.Services.Trademarks.DTOs;
 using IPNoticeHub.Web.Models.Copyrights;
 using IPNoticeHub.Web.Models.PdfGeneration;
-using IPNoticeHub.Web.Models.TrademarkCollection;
 using System.Globalization;
 using static IPNoticeHub.Common.ValidationConstants;
 

@@ -1,6 +1,4 @@
-﻿using IPNoticeHub.Web.Models.TrademarkCollection;
-
-namespace IPNoticeHub.Web.Models.Copyrights
+﻿namespace IPNoticeHub.Web.Models.Copyrights
 {
     public class CopyrightCollectionViewModel
     {

@@ -1,4 +1,4 @@
-﻿namespace IPNoticeHub.Web.Models.TrademarkCollection
+﻿namespace IPNoticeHub.Web.Models.Trademarks
 {
     public sealed class TrademarkCollectionViewModel
     {
