@@ -6,6 +6,8 @@ using IPNoticeHub.Web.Models.PdfGeneration;
 using IPNoticeHub.Web.Models.TrademarkCollection;
 using IPNoticeHub.Web.Models.Trademarks;
 using IPNoticeHub.Web.ViewModels.Trademarks;
+using System.Globalization;
+using static IPNoticeHub.Common.ValidationConstants;
 
 namespace IPNoticeHub.Web.Infrastructure.Mappings
 {
@@ -48,11 +50,11 @@ namespace IPNoticeHub.Web.Infrastructure.Mappings
                 ResultsPerPage = resultsPageDTO.ResultsCountPerPage,
                 ResultsCount = resultsPageDTO.ResultsCount,
 
-                Results = resultsPageDTO.Results.Select(TrademarkSummaryMapping).ToList()
+                Results = resultsPageDTO.Results.Select(MapTrademarkSummaryViewModel).ToList()
             };
         }
 
-        private static TrademarkSummaryViewModel TrademarkSummaryMapping(TrademarkSummaryDTO summaryDTO)
+        private static TrademarkSummaryViewModel MapTrademarkSummaryViewModel(TrademarkSummaryDTO summaryDTO)
         {
             return new TrademarkSummaryViewModel()
             {
@@ -98,6 +100,45 @@ namespace IPNoticeHub.Web.Infrastructure.Mappings
                 PublicId = publicId,
                 WorkTitle = wordMark ?? registrationNumber ?? "Trademark",
                 RegistrationNumber = registrationNumber
+            };
+        }
+
+        public static CeaseDesistInput MapCeaseDesistViewModelToInput(CeaseDesistViewModel viewModel)
+        {
+            return new CeaseDesistInput(
+                SenderName: viewModel.SenderName,
+                SenderAddress: viewModel.SenderAddress,
+                RecipientName: viewModel.RecipientName,
+                RecipientAddress: viewModel.RecipientAddress,
+                Date: DateTime.UtcNow,
+                WorkTitle: viewModel.WorkTitle,
+                RegistrationNumber: viewModel.RegistrationNumber ?? string.Empty,
+                AdditionalFacts: viewModel.AdditionalFacts,
+                BodyTemplate: viewModel.BodyTemplate
+            );
+        }
+
+        public static Dictionary<string, string> MapCeaseDesistViewModellToPlaceholders(CeaseDesistViewModel viewModel)
+        {
+            static string mapModel(string? v) => v ?? string.Empty;
+
+            return new Dictionary<string, string>
+            {
+                ["Date"] = DateTime.UtcNow
+                    .ToString(FormattingConstants.DateTimeFormat, CultureInfo.InvariantCulture),
+
+                ["RecipientName"] = mapModel(viewModel.RecipientName),
+                ["RecipientAddress"] = mapModel(viewModel.RecipientAddress),
+                ["RecipientEmail"] = mapModel(viewModel.RecipientEmail),
+
+                ["SenderName"] = mapModel(viewModel.SenderName),
+                ["SenderAddress"] = mapModel(viewModel.SenderAddress),
+                ["SenderEmail"] = mapModel(viewModel.SenderEmail),
+
+                ["InfringingUrl"] = mapModel(viewModel.InfringingUrl),
+                ["WorkTitle"] = mapModel(viewModel.WorkTitle),
+                ["RegistrationNumber"] = mapModel(viewModel.RegistrationNumber),
+                ["AdditionalFacts"] = mapModel(viewModel.AdditionalFacts)
             };
         }
     }

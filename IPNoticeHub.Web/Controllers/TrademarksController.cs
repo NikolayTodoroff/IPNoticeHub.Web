@@ -8,7 +8,6 @@ using IPNoticeHub.Web.Infrastructure;
 using IPNoticeHub.Web.Models.PdfGeneration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using static IPNoticeHub.Common.ValidationConstants.FormattingConstants;
 using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
 using static IPNoticeHub.Common.ValidationConstants.StatusMessages;
 using static IPNoticeHub.Web.Infrastructure.TemplateReplacer;
@@ -37,6 +36,7 @@ namespace IPNoticeHub.Web.Controllers
             this.letterTemplateProvider = letterTemplateProvider;
         }
 
+
         [HttpGet]
         public async Task<IActionResult> Index([FromQuery] TrademarkFilterViewModel filter, CancellationToken cancellationToken)
         {
@@ -57,6 +57,7 @@ namespace IPNoticeHub.Web.Controllers
             return View(viewModel);
         }
 
+
         [Authorize(Policy = "HasUserId")]
         [HttpGet]
         public async Task<IActionResult> MyCollection(CollectionSortBy sortBy = CollectionSortBy.DateAddedDesc,
@@ -73,6 +74,7 @@ namespace IPNoticeHub.Web.Controllers
 
             return View(viewModel);
         }
+
 
         [HttpGet("Trademarks/Details/{id:guid}")]
         [AllowAnonymous]
@@ -102,10 +104,10 @@ namespace IPNoticeHub.Web.Controllers
             return View(viewModel);
         }
 
+
         [Authorize(Policy = "HasUserId")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-
         public async Task<IActionResult> Add(int trademarkId, string? returnUrl = null, CancellationToken cancellationToken = default)
         {
             if (!User.TryGetUserId(out var userId)) return Forbid();
@@ -129,6 +131,7 @@ namespace IPNoticeHub.Web.Controllers
             }
         }
 
+
         [Authorize(Policy = "HasUserId")]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -141,6 +144,7 @@ namespace IPNoticeHub.Web.Controllers
             TempData["SuccessMessage"] = TmRemovedFromCollectionMessage;
             return this.RedirectToLocalOrAction(returnUrl, nameof(MyCollection));
         }
+
 
         [HttpGet,Authorize(Policy = "HasUserId")]
         public async Task<IActionResult> CeaseDesist(Guid publicId, CancellationToken cancellationToken = default)
@@ -174,6 +178,7 @@ namespace IPNoticeHub.Web.Controllers
             return View(viewModel);
         }
 
+
         [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
         public async Task<IActionResult> CeaseDesist(Guid publicId,CeaseDesistViewModel viewModel, CancellationToken cancellationToken = default)
         {
@@ -182,21 +187,12 @@ namespace IPNoticeHub.Web.Controllers
                 return View(viewModel);
             }
 
-            var input = new CeaseDesistInput(
-                SenderName: viewModel.SenderName,
-                SenderAddress: viewModel.SenderAddress,
-                RecipientName: viewModel.RecipientName,
-                RecipientAddress: viewModel.RecipientAddress,
-                Date: DateTime.UtcNow,
-                WorkTitle: viewModel.WorkTitle,
-                RegistrationNumber: viewModel.RegistrationNumber ?? string.Empty,
-                AdditionalFacts: viewModel.AdditionalFacts,
-                BodyTemplate: viewModel.BodyTemplate
-            );
+            var input = TrademarksMapping.MapCeaseDesistViewModelToInput(viewModel);
 
             var pdf = await pdfService.GenerateTrademarkCeaseDesistAsync(input, cancellationToken);
             return File(pdf, "application/pdf", $"CeaseDesist-{viewModel.WorkTitle}-{DateTime.UtcNow:DateTimeFormat}.pdf");
         }
+
 
         [HttpGet, Authorize(Policy = "HasUserId")]
         public IActionResult CeaseDesistPreview(CeaseDesistViewModel viewModel)
@@ -208,24 +204,12 @@ namespace IPNoticeHub.Web.Controllers
 
             var template = letterTemplateProvider.GetTemplateByKey(key: "CND-Trademark")?.BodyTemplate ?? string.Empty;
 
-            var placeholders = new Dictionary<string, string?>
-            {
-                ["Date"] = DateTime.UtcNow.ToString(DateTimeFormat, CultureInfo.InvariantCulture),
-                ["RecipientName"] = viewModel.RecipientName ?? "",
-                ["RecipientAddress"] = viewModel.RecipientAddress ?? "",
-                ["RecipientEmail"] = viewModel.RecipientEmail ?? "",
-                ["SenderName"] = viewModel.SenderName ?? "",
-                ["SenderAddress"] = viewModel.SenderAddress ?? "",
-                ["SenderEmail"] = viewModel.SenderEmail ?? "",
-                ["InfringingUrl"] = viewModel.InfringingUrl ?? "",
-                ["WorkTitle"] = viewModel.WorkTitle,
-                ["RegistrationNumber"] = viewModel.RegistrationNumber,
-                ["AdditionalFacts"] = viewModel.AdditionalFacts
-            };
+            var placeholders = TrademarksMapping.MapCeaseDesistViewModellToPlaceholders(viewModel);
 
             viewModel.BodyTemplate = ReplaceTemplate(template, placeholders!);
             return View(viewName: "CeaseDesistPreview", viewModel);
         }
+
 
         [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
         public async Task<IActionResult> CeaseDesistPreview(CeaseDesistViewModel viewModel, CancellationToken cancellationToken = default)
@@ -251,26 +235,14 @@ namespace IPNoticeHub.Web.Controllers
             {
                 var template = letterTemplateProvider.GetTemplateByKey("CND-Trademark")?.BodyTemplate ?? string.Empty;
 
-                var placeholders = new Dictionary<string, string>
-                {
-                    ["Date"] = DateTime.UtcNow.ToString(DateTimeFormat, CultureInfo.InvariantCulture),
-                    ["RecipientName"] = viewModel.RecipientName ?? "",
-                    ["RecipientAddress"] = viewModel.RecipientAddress ?? "",
-                    ["RecipientEmail"] = viewModel.RecipientEmail ?? "",
-                    ["SenderName"] = viewModel.SenderName ?? "",
-                    ["SenderAddress"] = viewModel.SenderAddress ?? "",
-                    ["SenderEmail"] = viewModel.SenderEmail ?? "",
-                    ["InfringingUrl"] = viewModel.InfringingUrl ?? "",
-                    ["WorkTitle"] = viewModel.WorkTitle ?? "",
-                    ["RegistrationNumber"] = viewModel.RegistrationNumber ?? "",
-                    ["AdditionalFacts"] = viewModel.AdditionalFacts ?? ""
-                };
+                var placeholders = TrademarksMapping.MapCeaseDesistViewModellToPlaceholders(viewModel);
 
                 viewModel.BodyTemplate = ReplaceTemplate(template, placeholders);
             }
 
             return View("CeaseDesistPreview", viewModel);
         }
+
 
         [HttpGet, Authorize(Policy = "HasUserId")]
         public IActionResult CeaseDesistEdit(string? returnUrl = null)
@@ -281,11 +253,13 @@ namespace IPNoticeHub.Web.Controllers
             return View(viewName: "CeaseDesistEdit", model: new CeaseDesistViewModel());
         }
 
+
         [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
         public IActionResult CeaseDesistEdit(CeaseDesistViewModel model)
         {
             return View("CeaseDesistEdit", model);
         }
+
 
         //Helper methods for internal use within the controller
         private IActionResult CreateEmptyViewModel(TrademarkFilterViewModel filter)
@@ -303,6 +277,8 @@ namespace IPNoticeHub.Web.Controllers
             var viewModel = TrademarksMapping.MapCollectionIndexDtoToViewModel(filter, emptyDTOPagedResult);
             return View(viewModel);
         }
+
+
         private static TrademarkFilterDTO CreateNormalizedFilterDTO(TrademarkFilterViewModel filter, string searchTerm)
         {
             return new TrademarkFilterDTO
