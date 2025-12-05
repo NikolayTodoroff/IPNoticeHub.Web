@@ -18,7 +18,7 @@ namespace IPNoticeHub.Web.Models.Application
 
         public SearchMode? Mode { get; set; }
 
-        public IEnumerable<TmSearchResultSingleItemViewModel> Results { get; set; } = Enumerable.Empty<TmSearchResultSingleItemViewModel>();
+        public IEnumerable<TreademarkSearchResultSingleItemViewModel> Results { get; set; } = Enumerable.Empty<TreademarkSearchResultSingleItemViewModel>();
 
 
         // CurrentPage, PageSize and computed TotalPages/HasPreviousPage/HasNextPage providing paging information.

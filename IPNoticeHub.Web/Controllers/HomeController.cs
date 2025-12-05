@@ -34,7 +34,7 @@ namespace IPNoticeHub.Web.Controllers
         TrademarkSearchBy? searchByItem, DataProvider? office, SearchMode? mode,
         int currentPage = DefaultPage, int pageSize = DefaultPageSize,CancellationToken cancellationToken = default)
         {
-            var request = new TrademarkSearchQueryDTO
+            var dto = new TrademarkSearchQueryDTO
             {
                 Query = trademark,
                 Class = classNumber,
@@ -46,9 +46,9 @@ namespace IPNoticeHub.Web.Controllers
                 PageSize = pageSize
             };
 
-            var (searchResults,resultsCount) = await searchService.SearchAsync(request,cancellationToken);
+            var (searchResults,resultsCount) = await searchService.SearchAsync(dto,cancellationToken);
 
-            var searchResultsViewModel = new TrademarkSearchResultsViewModel
+            var viewModel = new TrademarkSearchResultsViewModel
             {
                 Query = trademark,
                 Class = classNumber,
@@ -56,7 +56,7 @@ namespace IPNoticeHub.Web.Controllers
                 SearchBy = searchByItem,
                 Office = office,
                 Mode = mode,
-                Results = searchResults.Select(s => new TmSearchResultSingleItemViewModel
+                Results = searchResults.Select(s => new TreademarkSearchResultSingleItemViewModel
                 {
                     Id = s.Id,
                     PublicId = s.PublicId,
@@ -72,7 +72,7 @@ namespace IPNoticeHub.Web.Controllers
                 PageSize = pageSize
             };
 
-            return View(searchResultsViewModel);
+            return View(viewModel);
         }
 
         [AllowAnonymous]

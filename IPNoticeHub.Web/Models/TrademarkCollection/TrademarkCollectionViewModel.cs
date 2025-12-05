@@ -1,10 +1,10 @@
 ﻿namespace IPNoticeHub.Web.Models.TrademarkCollection
 {
-    public sealed class TrademarkCollectionIndexViewModel
+    public sealed class TrademarkCollectionViewModel
     {
         // Trademark registration that has been added to the user's collection.
-        public IReadOnlyList<TrademarkCollectionItemViewModel> Results { get; init; }
-            = Array.Empty<TrademarkCollectionItemViewModel>();
+        public IReadOnlyList<TrademarkCollectionSingleItemViewModel> Results { get; init; }
+            = Array.Empty<TrademarkCollectionSingleItemViewModel>();
 
 
         // CurrentPage, PageSize and computed TotalPages/HasPreviousPage/HasNextPage providing paging information.

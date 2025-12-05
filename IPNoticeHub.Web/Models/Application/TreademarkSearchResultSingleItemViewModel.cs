@@ -1,6 +1,6 @@
 ﻿namespace IPNoticeHub.Web.Models.Application
 {
-    public class TmSearchResultSingleItemViewModel
+    public class TreademarkSearchResultSingleItemViewModel
     {
         public int Id { get; init; }
 

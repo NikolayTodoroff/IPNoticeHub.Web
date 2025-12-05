@@ -57,7 +57,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
             var result = await controller.MyCollection(sortBy, currentPage, resultsPerPage);
 
             var myCollectionView = result.Should().BeOfType<ViewResult>().Subject;
-            myCollectionView.Model.Should().BeOfType<TrademarkCollectionIndexViewModel>();
+            myCollectionView.Model.Should().BeOfType<TrademarkCollectionViewModel>();
 
 
             var sortInBag = (CollectionSortBy)controller.ViewBag.SortBy;
@@ -94,7 +94,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
 
             myCollectionView.Should().NotBeNull();
 
-            myCollectionView.Model.Should().BeOfType<TrademarkCollectionIndexViewModel>();
+            myCollectionView.Model.Should().BeOfType<TrademarkCollectionViewModel>();
 
             var sortInBag = (CollectionSortBy)controller.ViewBag.SortBy;
             sortInBag.Should().Be(sortBy);

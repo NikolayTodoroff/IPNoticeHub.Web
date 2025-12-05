@@ -2,7 +2,7 @@
 
 namespace IPNoticeHub.Web.Models.TrademarkCollection
 {
-    public sealed class TrademarkCollectionItemViewModel
+    public sealed class TrademarkCollectionSingleItemViewModel
     {
         public int Id { get; init; }
 

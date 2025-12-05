@@ -10,14 +10,14 @@ namespace IPNoticeHub.Web.Infrastructure.Mapping
 {
     public class TrademarksMapping
     {
-        public static TrademarkCollectionIndexViewModel TrademarkDtoToViewModelMapping(PagedResult<TrademarkSummaryDTO> dtoPage)
+        public static TrademarkCollectionViewModel MapCollectionDtoToViewModel(PagedResult<TrademarkSummaryDTO> dtoPage)
         {
             return new()
             {
                 Total = dtoPage.ResultsCount,
                 CurrentPage = dtoPage.CurrentPage,
                 PageSize = dtoPage.ResultsCountPerPage,
-                Results = dtoPage.Results.Select(s => new TrademarkCollectionItemViewModel
+                Results = dtoPage.Results.Select(s => new TrademarkCollectionSingleItemViewModel
                 {
                     Id = s.Id,
                     PublicId = s.PublicId,
@@ -32,9 +32,9 @@ namespace IPNoticeHub.Web.Infrastructure.Mapping
             };
         }
 
-        public static TrademarksIndexViewModel TrademarkIndexViewModelMapping(TrademarkFilterViewModel filter, PagedResult<TrademarkSummaryDTO> resultsPageDTO)
+        public static TrademarkCollectionIndexViewModel MapCollectionIndexDtoToViewModel(TrademarkFilterViewModel filter, PagedResult<TrademarkSummaryDTO> resultsPageDTO)
         {
-            return new TrademarksIndexViewModel
+            return new TrademarkCollectionIndexViewModel
             {
                 SearchTerm = filter.SearchTerm?.Trim(),
                 SearchBy = filter.SearchBy,
@@ -66,7 +66,7 @@ namespace IPNoticeHub.Web.Infrastructure.Mapping
             };
         }
 
-        public static TrademarkDetailsViewModel TrademarksDetailsViewModelMapping(TrademarkDetailsDTO dto,
+        public static TrademarkDetailsViewModel MapDetailsDtoToViewModel(TrademarkDetailsDTO dto,
             bool isInCollection, bool isInWatchlist, bool isAuthenticated)
         {
             return new TrademarkDetailsViewModel
@@ -90,7 +90,7 @@ namespace IPNoticeHub.Web.Infrastructure.Mapping
             };
         }
 
-        public static CeaseDesistViewModel CeaseDesistViewModelMapping(Guid publicId,string wordMark,string registrationNumber)
+        public static CeaseDesistViewModel MapCeaseDesistViewModel(Guid publicId,string wordMark,string registrationNumber)
         {
             return new CeaseDesistViewModel
             {

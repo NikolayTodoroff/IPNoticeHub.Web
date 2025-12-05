@@ -49,11 +49,11 @@ namespace IPNoticeHub.Web.Controllers
 
             var filterDTO = CreateNormalizedFilterDTO(filter, searchTerm);
 
-            var pagedResult = await tmSearchService.SearchAsync(filterDTO, filter.CurrentPage, filter.ResultsPerPage, cancellationToken);
+            var dto = await tmSearchService.SearchAsync(filterDTO, filter.CurrentPage, filter.ResultsPerPage, cancellationToken);
 
             ViewBag.HasSearch = true;
 
-            var viewModel = TrademarksMapping.TrademarkIndexViewModelMapping(filter, pagedResult);
+            var viewModel = TrademarksMapping.MapCollectionIndexDtoToViewModel(filter, dto);
             return View(viewModel);
         }
 
@@ -75,7 +75,7 @@ namespace IPNoticeHub.Web.Controllers
                 isInWatchlist = await tmWatchlistService.ExistsAsync(userId, dto.Id, cancellationToken);
             }
 
-            var viewModel = TrademarksMapping.TrademarksDetailsViewModelMapping(dto,isInCollection,isInWatchlist,isAuthenticated);
+            var viewModel = TrademarksMapping.MapDetailsDtoToViewModel(dto,isInCollection,isInWatchlist,isAuthenticated);
 
             if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
             {
@@ -95,7 +95,7 @@ namespace IPNoticeHub.Web.Controllers
             var pagedResult = await tmCollectionService.
                 GetUserCollectionAsync(userId, sortBy, currentPage, resultsPerPage, cancellationToken);
 
-            var viewModel = TrademarksMapping.TrademarkDtoToViewModelMapping(pagedResult);
+            var viewModel = TrademarksMapping.MapCollectionDtoToViewModel(pagedResult);
 
             ViewBag.SortBy = sortBy;
 
@@ -166,7 +166,7 @@ namespace IPNoticeHub.Web.Controllers
             }
 
             var viewModel = TrademarksMapping.
-                CeaseDesistViewModelMapping(publicId,dto.Wordmark, dto.RegistrationNumber!);
+                MapCeaseDesistViewModel(publicId,dto.Wordmark, dto.RegistrationNumber!);
 
             viewModel.BodyTemplate = letterTemplateProvider.GetTemplateByKey("CND-Trademark")?.BodyTemplate ?? string.Empty;
             ViewData["ShowAdditionalFacts"] = true;
@@ -299,7 +299,7 @@ namespace IPNoticeHub.Web.Controllers
                 ResultsCountPerPage = filter.ResultsPerPage
             };
 
-            var viewModel = TrademarksMapping.TrademarkIndexViewModelMapping(filter, emptyDTOPagedResult);
+            var viewModel = TrademarksMapping.MapCollectionIndexDtoToViewModel(filter, emptyDTOPagedResult);
             return View(viewModel);
         }
         private static TrademarkFilterDTO CreateNormalizedFilterDTO(TrademarkFilterViewModel filter, string searchTerm)

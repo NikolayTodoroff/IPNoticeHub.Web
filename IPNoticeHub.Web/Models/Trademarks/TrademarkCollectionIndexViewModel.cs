@@ -6,7 +6,7 @@ namespace IPNoticeHub.Web.Models.Trademarks
     /// ViewModel for the Trademarks Index page (search results).
     /// Combines the current filter, paging info, and the list of results.
     /// </summary>
-    public sealed class TrademarksIndexViewModel
+    public sealed class TrademarkCollectionIndexViewModel
     {
         public string? SearchTerm { get; init; }
 
