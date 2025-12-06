@@ -204,21 +204,21 @@ namespace IPNoticeHub.Web.Controllers
                 return Forbid();
             }
 
-            var copyrightDetailsDto = await copyrightService.GetDetailsAsync(userId, publicId, cancellationToken);
+            var dto = await copyrightService.GetDetailsAsync(userId, publicId, cancellationToken);
 
-            if (copyrightDetailsDto is null)
+            if (dto is null)
             {
                 return NotFound();
             }
 
-            ApplyCopyrightDMCADetails(viewModel, copyrightDetailsDto, MergeStrategy.OverwriteAll);
+            ApplyCopyrightDMCADetails(viewModel, dto, MergeStrategy.OverwriteAll);
 
             var input = CopyrightsMapping.MapDmcaViewModelToInput(viewModel);
 
             var pdf = await pdfService.GenerateCopyrightDMCAAsync(input, cancellationToken);
 
             return File(pdf, "application/pdf",
-                $"DMCA-{copyrightDetailsDto.Title}-{DateTime.UtcNow:DateTimeFormat}.pdf");
+                $"DMCA-{dto.Title}-{DateTime.UtcNow:DateTimeFormat}.pdf");
         }
 
 
@@ -346,9 +346,9 @@ namespace IPNoticeHub.Web.Controllers
                 return Forbid();
             }
 
-            var copyrightDetailsDTO = await copyrightService.GetDetailsAsync(userId, publicId, cancellationToken);
+            var dto = await copyrightService.GetDetailsAsync(userId, publicId, cancellationToken);
 
-            if (copyrightDetailsDTO is null)
+            if (dto is null)
             {
                 return NotFound();
             }
@@ -376,14 +376,11 @@ namespace IPNoticeHub.Web.Controllers
                 return Forbid();
             }
 
-            var copyrightDetailsDto = await copyrightService.GetDetailsAsync(userId, viewModel.PublicId, cancellationToken);
+            var dto = await copyrightService.GetDetailsAsync(userId, viewModel.PublicId, cancellationToken);
 
-            if (copyrightDetailsDto is null)
-            {
-                return NotFound();
-            }
+            if (dto is null) return NotFound();
 
-            ApplyCopyrightCeaseDesistDetails(viewModel, copyrightDetailsDto, MergeStrategy.FillBlanks);
+            ApplyCopyrightCeaseDesistDetails(viewModel, dto, MergeStrategy.FillBlanks);
 
             if (string.IsNullOrWhiteSpace(viewModel.BodyTemplate) || viewModel.BodyTemplate.Contains("{{"))
             {

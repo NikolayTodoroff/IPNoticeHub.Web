@@ -199,11 +199,11 @@ namespace IPNoticeHub.Web.Controllers
                 return Forbid();
             }
 
-            var trademarkDetailsDto = await tmSearchService.GetDetailsAsync(viewModel.PublicId, cancellationToken);
+            var dto = await tmSearchService.GetDetailsAsync(viewModel.PublicId, cancellationToken);
 
-            if (trademarkDetailsDto != null)
+            if (dto != null)
             {
-                ApplyTrademarkCeaseDesistDetails(viewModel, trademarkDetailsDto, MergeStrategy.FillBlanks);
+                ApplyTrademarkCeaseDesistDetails(viewModel, dto, MergeStrategy.FillBlanks);
             }
                 
             if (string.IsNullOrWhiteSpace(viewModel.BodyTemplate) || viewModel.BodyTemplate.Contains("{{"))
