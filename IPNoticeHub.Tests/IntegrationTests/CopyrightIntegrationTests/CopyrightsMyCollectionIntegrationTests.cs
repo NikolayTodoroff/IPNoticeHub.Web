@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Data;
-using IPNoticeHub.Data.Entities.ApplicationUser;
+using IPNoticeHub.Data.Entities.Identity;
 using IPNoticeHub.Data.Entities.CopyrightRegistration;
 using IPNoticeHub.Tests.IntegrationTests.TestUtilities;
 using Microsoft.AspNetCore.Authentication;

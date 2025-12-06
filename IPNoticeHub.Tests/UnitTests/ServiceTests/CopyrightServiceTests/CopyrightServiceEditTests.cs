@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Common.EnumConstants;
 using IPNoticeHub.Data;
-using IPNoticeHub.Data.Entities.ApplicationUser;
+using IPNoticeHub.Data.Entities.Identity;
 using IPNoticeHub.Data.Repositories.Copyrights.Implementations;
 using IPNoticeHub.Services.Copyrights.DTOs;
 using IPNoticeHub.Services.Copyrights.Implementations;

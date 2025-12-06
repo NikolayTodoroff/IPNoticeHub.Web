@@ -1,4 +1,4 @@
-﻿using IPNoticeHub.Data.Entities.ApplicationUser;
+﻿using IPNoticeHub.Data.Entities.Identity;
 using IPNoticeHub.Data.Entities.TrademarkRegistration;
 using IPNoticeHub.Data.Repositories.Trademarks.Abstractions;
 using Microsoft.EntityFrameworkCore;

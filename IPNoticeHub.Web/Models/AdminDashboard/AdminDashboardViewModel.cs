@@ -1,4 +1,4 @@
-﻿using IPNoticeHub.Data.Entities.ApplicationUser;
+﻿using IPNoticeHub.Data.Entities.Identity;
 
 namespace IPNoticeHub.Web.Models.AdminDashboard
 {

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using static IPNoticeHub.Common.ValidationConstants.TrademarkRegistrationConstants;
 
-namespace IPNoticeHub.Data.Entities.ApplicationUser
+namespace IPNoticeHub.Data.Entities.Identity
 {
     public sealed class UserTrademarkWatchlist
     {

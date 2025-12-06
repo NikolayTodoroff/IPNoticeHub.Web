@@ -1,5 +1,5 @@
 ﻿using IPNoticeHub.Common.EnumConstants;
-using IPNoticeHub.Data.Entities.ApplicationUser;
+using IPNoticeHub.Data.Entities.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.ComponentModel.DataAnnotations;

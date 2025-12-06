@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using IPNoticeHub.Data.Entities.ApplicationUser;
+using IPNoticeHub.Data.Entities.Identity;
 using IPNoticeHub.Data.Entities.TrademarkRegistration;
 using IPNoticeHub.Data.Repositories.Application.Abstractions;
 using IPNoticeHub.Services.Application.Abstractions;

@@ -1,4 +1,4 @@
-﻿using IPNoticeHub.Data.Entities.ApplicationUser;
+﻿using IPNoticeHub.Data.Entities.Identity;
 using IPNoticeHub.Data.Entities.TrademarkRegistration;
 
 namespace IPNoticeHub.Data.Repositories.Trademarks.Abstractions

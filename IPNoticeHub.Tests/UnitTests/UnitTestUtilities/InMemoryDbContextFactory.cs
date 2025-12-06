@@ -2,7 +2,7 @@
 using IPNoticeHub.Data;
 using IPNoticeHub.Data.Entities.TrademarkRegistration;
 using IPNoticeHub.Data.Entities.CopyrightRegistration;
-using IPNoticeHub.Data.Entities.ApplicationUser;
+using IPNoticeHub.Data.Entities.Identity;
 using IPNoticeHub.Common.EnumConstants;
 
 namespace IPNoticeHub.Tests.TestUtilities

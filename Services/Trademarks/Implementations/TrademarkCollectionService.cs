@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using IPNoticeHub.Common.Infrastructure;
 using IPNoticeHub.Common.EnumConstants;
-using IPNoticeHub.Data.Entities.ApplicationUser;
+using IPNoticeHub.Data.Entities.Identity;
 using IPNoticeHub.Data.Entities.TrademarkRegistration;
 using IPNoticeHub.Data.Repositories.Trademarks.Abstractions;
 using IPNoticeHub.Services.Common;

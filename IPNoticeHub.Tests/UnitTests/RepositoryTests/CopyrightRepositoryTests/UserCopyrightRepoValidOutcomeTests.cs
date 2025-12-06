@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Data;
-using IPNoticeHub.Data.Entities.ApplicationUser;
+using IPNoticeHub.Data.Entities.Identity;
 using IPNoticeHub.Data.Repositories.Copyrights.Abstractions;
 using IPNoticeHub.Data.Repositories.Copyrights.Implementations;
 using IPNoticeHub.Tests.TestUtilities;

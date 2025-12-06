@@ -1,4 +1,4 @@
-﻿using IPNoticeHub.Data.Entities.ApplicationUser;
+﻿using IPNoticeHub.Data.Entities.Identity;
 using IPNoticeHub.Data.Repositories.Application.Abstractions;
 using Microsoft.EntityFrameworkCore;
 

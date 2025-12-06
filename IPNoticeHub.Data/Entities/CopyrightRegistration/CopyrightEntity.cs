@@ -1,4 +1,4 @@
-﻿using IPNoticeHub.Data.Entities.ApplicationUser;
+﻿using IPNoticeHub.Data.Entities.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using static IPNoticeHub.Common.ValidationConstants.CopyrightRegistrationConstants;

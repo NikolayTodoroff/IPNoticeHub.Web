@@ -39,6 +39,11 @@
             public const int NationOfFirstPublicationMaxLength = 100;
         }
 
+        public static class LegalDocumentConstants
+        {
+            public const int LegalDocumentsTitleMaxLength = 256;
+        }
+
         public static class PagingConstants
         {
             public const int DefaultPage = 1;

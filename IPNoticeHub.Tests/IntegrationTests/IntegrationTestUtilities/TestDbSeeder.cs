@@ -1,5 +1,5 @@
 ﻿using IPNoticeHub.Data;
-using IPNoticeHub.Data.Entities.ApplicationUser;
+using IPNoticeHub.Data.Entities.Identity;
 using IPNoticeHub.Data.Entities.CopyrightRegistration;
 
 namespace IPNoticeHub.Tests.IntegrationTests.TestUtilities

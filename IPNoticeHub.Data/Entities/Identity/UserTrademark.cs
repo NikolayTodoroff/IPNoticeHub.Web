@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using IPNoticeHub.Data.Entities.TrademarkRegistration;
 
-namespace IPNoticeHub.Data.Entities.ApplicationUser
+namespace IPNoticeHub.Data.Entities.Identity
 {
     public class UserTrademark
     {

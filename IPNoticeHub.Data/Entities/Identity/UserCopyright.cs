@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace IPNoticeHub.Data.Entities.ApplicationUser
+namespace IPNoticeHub.Data.Entities.Identity
 {
     public class UserCopyright
     {

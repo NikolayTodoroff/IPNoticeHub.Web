@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Data.Entities;
-using IPNoticeHub.Data.Entities.ApplicationUser;
+using IPNoticeHub.Data.Entities.Identity;
 using IPNoticeHub.Data.Seed;
 using IPNoticeHub.Tests.TestUtilities;
 using IPNoticeHub.Tests.UnitTests.UnitTestUtilities;

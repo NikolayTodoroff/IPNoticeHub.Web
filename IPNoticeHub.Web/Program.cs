@@ -1,5 +1,5 @@
 using IPNoticeHub.Data;
-using IPNoticeHub.Data.Entities.ApplicationUser;
+using IPNoticeHub.Data.Entities.Identity;
 using IPNoticeHub.Data.Repositories.Application.Abstractions;
 using IPNoticeHub.Data.Repositories.Application.Implementations;
 using IPNoticeHub.Data.Repositories.Copyrights.Abstractions;
