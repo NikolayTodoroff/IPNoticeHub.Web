@@ -1,5 +1,6 @@
-﻿using IPNoticeHub.Data.Entities.Identity;
-using IPNoticeHub.Data.Entities.CopyrightRegistration;
+﻿using IPNoticeHub.Data.Entities.CopyrightRegistration;
+using IPNoticeHub.Data.Entities.Identity;
+using IPNoticeHub.Data.Entities.LegalDocuments;
 using IPNoticeHub.Data.Entities.TrademarkRegistration;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -17,13 +18,13 @@ namespace IPNoticeHub.Data
         public DbSet<CopyrightEntity> CopyrightRegistrations { get; set; }
         public DbSet<UserTrademark> UserTrademarks { get; set; }
         public DbSet<UserCopyright> UserCopyrights { get; set; }
-        public DbSet<UserTrademarkWatchlist> UserTrademarkWatchlists { get; set; } = null!;
+        public DbSet<UserTrademarkWatchlist> UserTrademarkWatchlists { get; set; }
+        public DbSet<LegalDocument> LegalDocuments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
-            // Ensure that the combination of Source and SourceId is unique for TrademarkRegistration
             builder.Entity<TrademarkEntity>().
                 HasIndex(t => new { t.Source, t.SourceId }).
                 IsUnique();
@@ -33,80 +34,77 @@ namespace IPNoticeHub.Data
                 IsUnique().
                 HasDatabaseName("UX_Trademark_Source_SourceId");
 
-            // Ensure that the RegistrationNumber is unique for CopyrightRegistration
             builder.Entity<CopyrightEntity>().
                 HasIndex(c => c.RegistrationNumber).
                 IsUnique();
 
-            // Define composite primary key for UserTrademark entity
             builder.Entity<UserTrademark>().
                 HasKey(ut => new { ut.UserId, ut.TrademarkId });
 
-            // Adding indexes to improve query performance for RegistrationNumber and SourceId in TrademarkEntity
-            builder.Entity<TrademarkEntity>().HasIndex(t => t.RegistrationNumber);
-            builder.Entity<TrademarkEntity>().HasIndex(t => t.SourceId);
+            builder.Entity<TrademarkEntity>().
+                HasIndex(t => t.RegistrationNumber);
 
-            // Configure relationship between UserTrademark and ApplicationUser
+            builder.Entity<TrademarkEntity>().
+                HasIndex(t => t.SourceId);
+
             builder.Entity<UserTrademark>().
                 HasOne(ut => ut.User).
                 WithMany(u => u.UserTrademarks).
                 HasForeignKey(ut => ut.UserId).
                 OnDelete(DeleteBehavior.Restrict);
 
-            // Configure relationship between UserTrademark and TrademarkRegistration
             builder.Entity<UserTrademark>().
                 HasOne(ut => ut.Trademark).
                 WithMany(t => t.UserTrademarks).
                 HasForeignKey(ut => ut.TrademarkId).
                 OnDelete(DeleteBehavior.Restrict);
 
-            // Define composite primary key for UserCopyright entity
             builder.Entity<UserCopyright>().
                 HasKey(uc => new { uc.ApplicationUserId, uc.CopyrightRegistrationId });
 
-            // Configure relationship between UserCopyright and ApplicationUser
             builder.Entity<UserCopyright>().
                 HasOne(uc => uc.ApplicationUser).
                 WithMany(u => u.UserCopyrights).
                 HasForeignKey(uc => uc.ApplicationUserId).
                 OnDelete(DeleteBehavior.Restrict);
 
-            // Configure relationship between UserCopyright and CopyrightRegistration
             builder.Entity<UserCopyright>().
                 HasOne(uc => uc.CopyrightRegistration).
                 WithMany(c => c.UserCopyrights).
                 HasForeignKey(uc => uc.CopyrightRegistrationId).
                 OnDelete(DeleteBehavior.Restrict);
 
-            // Ensure that the combination of ApplicationUserId and CopyrightRegistrationId is unique for UserCopyright
             builder.Entity<UserCopyright>().
                 HasIndex(x => new { x.ApplicationUserId, x.CopyrightRegistrationId }).
                 IsUnique();
 
-            // Set default value for WatchlistNotificationsEnabled property to false
             builder.Entity<UserTrademarkWatchlist>().
                 Property(x => x.NotificationsEnabled).
                 HasDefaultValue(false);
 
-            // Adding a unique index on UserId and TrademarkId with a filter for non-deleted entries
             builder.Entity<UserTrademarkWatchlist>().
                 HasIndex(x => new { x.UserId, x.TrademarkId }).
                 HasFilter("[IsDeleted] = 0").
                 IsUnique();
 
-            // Apply a global query filter to exclude soft-deleted entries from UserTrademarkWatchlist
             builder.Entity<UserTrademarkWatchlist>().
                 HasQueryFilter(x => !x.IsDeleted);
 
-            // Define composite primary key for TrademarkClassAssignment entity
             builder.Entity<TrademarkClassAssignment>().
                 HasKey(tc => new { tc.TrademarkRegistrationId, tc.ClassNumber });
 
-            // Configure relationship between TrademarkClassAssignment and TrademarkRegistration
             builder.Entity<TrademarkClassAssignment>().
                 HasOne(tc => tc.TrademarkRegistration).
                 WithMany(t => t.Classes).
                 HasForeignKey(tc => tc.TrademarkRegistrationId);
+
+            builder.Entity<LegalDocument>().
+                HasOne(d => d.User).
+                WithMany(u => u.Documents).
+                OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<LegalDocument>()
+            .HasQueryFilter(d => !d.IsDeleted);
 
 
             // Only seed data if not disabled by an environment variable AND the database is not an in-memory or SQLite test database.
