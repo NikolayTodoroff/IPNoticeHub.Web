@@ -162,12 +162,14 @@ namespace IPNoticeHub.Web.Controllers
         {
             if (!User.TryGetUserId(out var userId)) return Forbid();
 
-            var template = letterTemplateProvider.GetTemplateByKey(key: "CND-Trademark")?.BodyTemplate ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(viewModel.BodyTemplate) || viewModel.BodyTemplate.Contains("{{"))
+            {
+                var template = letterTemplateProvider.GetTemplateByKey("CND-Trademark")?.BodyTemplate ?? string.Empty;
+                var placeholders = TrademarksMapping.MapCeaseDesistViewModellToPlaceholders(viewModel);
+                viewModel.BodyTemplate = ReplaceTemplate(template, placeholders!);
+            }
 
-            var placeholders = TrademarksMapping.MapCeaseDesistViewModellToPlaceholders(viewModel);
-
-            viewModel.BodyTemplate = ReplaceTemplate(template, placeholders!);
-            return View(viewName: "CeaseDesistPreview", viewModel);
+            return View("CeaseDesistPreview", viewModel);
         }
 
 
@@ -175,43 +177,54 @@ namespace IPNoticeHub.Web.Controllers
         public async Task<IActionResult> CeaseDesistPreview(CeaseDesistViewModel viewModel, CancellationToken cancellationToken = default)
         {
             if (!ModelState.IsValid) return View("CeaseDesist", viewModel);
-
             if (!User.TryGetUserId(out var userId)) return Forbid();
 
             var dto = await tmSearchService.GetDetailsAsync(viewModel.PublicId, cancellationToken);
-
-            if (dto != null)
-            {
-                ApplyTrademarkCeaseDesistDetails(viewModel, dto, MergeStrategy.FillBlanks);
-            }
+            if (dto != null) ApplyTrademarkCeaseDesistDetails(viewModel, dto, MergeStrategy.FillBlanks);    
                 
             if (string.IsNullOrWhiteSpace(viewModel.BodyTemplate) || viewModel.BodyTemplate.Contains("{{"))
             {
                 var template = letterTemplateProvider.GetTemplateByKey("CND-Trademark")?.BodyTemplate ?? string.Empty;
-
                 var placeholders = TrademarksMapping.MapCeaseDesistViewModellToPlaceholders(viewModel);
 
                 viewModel.BodyTemplate = ReplaceTemplate(template, placeholders);
             }
 
-            return View("CeaseDesistPreview", viewModel);
+            return RedirectToAction(nameof(CeaseDesistPreview), viewModel);
         }
 
 
         [HttpGet, Authorize(Policy = "HasUserId")]
-        public IActionResult CeaseDesistEdit(string? returnUrl = null)
+        public IActionResult CeaseDesistEdit(CeaseDesistViewModel viewModel)
         {
-            ViewBag.ReturnUrl = !string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl)
-                ? returnUrl : Url.Action(nameof(CeaseDesistPreview))!;
+            if (!User.TryGetUserId(out var userId)) return Forbid();
 
-            return View(viewName: "CeaseDesistEdit", model: new CeaseDesistViewModel());
+            return View("CeaseDesistEdit", viewModel);
         }
 
 
         [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
-        public IActionResult CeaseDesistEdit(CeaseDesistViewModel model)
+        public async Task<IActionResult> CeaseDesistEdit(CeaseDesistViewModel viewModel,
+            string command, CancellationToken cancellationToken = default)
         {
-            return View("CeaseDesistEdit", model);
+            if (!User.TryGetUserId(out var userId)) return Forbid();
+            if (!ModelState.IsValid) return View("CeaseDesistEdit", viewModel);
+
+            if (command == "save")
+            {
+                TempData["SuccessMessage"] = "Document saved to your library.";
+                return RedirectToAction("Index", "DocumentLibrary");
+            }
+
+            else if (command == "done")
+            {
+                return RedirectToAction("MyCollection", "Trademarks");
+            }
+
+            else
+            {
+                return View("CeaseDesistEdit", viewModel);
+            }
         }
     }
 }
