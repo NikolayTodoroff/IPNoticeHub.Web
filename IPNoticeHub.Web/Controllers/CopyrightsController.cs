@@ -304,64 +304,76 @@ namespace IPNoticeHub.Web.Controllers
 
 
         [HttpGet, Authorize(Policy = "HasUserId")]
-        public async Task<IActionResult> DmcaPreview(Guid publicId, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> DmcaPreview(DMCAViewModel viewModel)
         {
             if (!User.TryGetUserId(out var userId)) return Forbid();
 
-            var dto = await copyrightService.GetDetailsAsync(userId, publicId, cancellationToken);
-            if (dto is null) return NotFound();
+            if (string.IsNullOrWhiteSpace(viewModel.BodyTemplate) || viewModel.BodyTemplate.Contains("{{"))
+            {
+                var template = letterTemplateProvider
+                    .GetTemplateByKey("DMCA-Copyright")?.BodyTemplate ?? string.Empty;
 
-            var viewModel = new DMCAViewModel { PublicId = publicId };
+                var placeholders = CopyrightsMapping.MapDmcaViewModelToPlaceholders(viewModel);
+                viewModel.BodyTemplate = ReplaceTemplate(template, placeholders!);
+            }
 
-            ApplyCopyrightDMCADetails(viewModel, dto, MergeStrategy.FillBlanks);
-
-            var template = letterTemplateProvider.GetTemplateByKey("DMCA-General")?.BodyTemplate ?? string.Empty;
-
-            var placeholders = CopyrightsMapping.MapDmcaViewModelToPlaceholders(viewModel);
-
-            viewModel.BodyTemplate = ReplaceTemplate(template, placeholders!);
-            return View("DMCAPreview", viewModel);
+            return View("DmcaPreview", viewModel);
         }
 
-
-        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
-        public async Task<IActionResult> DmcaPreview(DMCAViewModel viewModel, CancellationToken cancellationToken = default)
+            [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
+            public async Task<IActionResult> DmcaPreview(DMCAViewModel viewModel, CancellationToken cancellationToken = default)
         {
             if (!ModelState.IsValid) return View("DMCA", viewModel);
             if (!User.TryGetUserId(out var userId)) return Forbid();
 
-            var copyrightDetailsDto = await copyrightService.GetDetailsAsync(userId, viewModel.PublicId, cancellationToken);
-            if (copyrightDetailsDto is null) return NotFound();
+            var dto = await copyrightService.GetDetailsAsync(userId, viewModel.PublicId, cancellationToken);
+            if (dto != null) ApplyCopyrightDMCADetails(viewModel, dto, MergeStrategy.FillBlanks);
 
-            ApplyCopyrightDMCADetails(viewModel, copyrightDetailsDto, MergeStrategy.FillBlanks);
 
             if (string.IsNullOrWhiteSpace(viewModel.BodyTemplate) || viewModel.BodyTemplate.Contains("{{"))
             {
-                var template = letterTemplateProvider.GetTemplateByKey("DMCA-General")?.BodyTemplate ?? viewModel.BodyTemplate;
+                var template = letterTemplateProvider.
+                    GetTemplateByKey("DMCA-General")?.BodyTemplate ?? viewModel.BodyTemplate;
 
                 var placeholders = CopyrightsMapping.MapDmcaViewModelToPlaceholders(viewModel);
 
                 viewModel.BodyTemplate = ReplaceTemplate(template, placeholders);
             }
 
-            return View("DMCAPreview", viewModel);
+            return RedirectToAction(nameof(DmcaPreview), viewModel);
         }
+        
 
 
         [HttpGet, Authorize(Policy = "HasUserId")]
-        public IActionResult DmcaEdit(Guid publicId, string? returnUrl = null)
+        public IActionResult DmcaEdit(DMCAViewModel viewModel)
         {
-            ViewBag.ReturnUrl = !string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl) ? 
-                returnUrl : Url.Action(nameof(DmcaPreview), new { publicId })!;
-
-            return View("DMCAEdit", new DMCAViewModel { PublicId = publicId });
+            if (!User.TryGetUserId(out var userId)) return Forbid();
+            return View("DmcaEdit", viewModel);
         }
 
 
         [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
-        public IActionResult DmcaEdit(DMCAViewModel model)
+        public IActionResult DmcaEdit(DMCAViewModel model, string command)
         {
-            return View("DMCAEdit", model);
+            if (!User.TryGetUserId(out var userId)) return Forbid();
+            if (!ModelState.IsValid) return View("DmcaEdit", model);
+
+            if (command == "save")
+            {
+                TempData["SuccessMessage"] = "Your DMCA notice was successfully saved to your library.";
+                return RedirectToAction("Index", "DocumentLibrary");
+            }
+
+            else if (command == "done")
+            {
+                return RedirectToAction("MyCollection", "Copyrights");
+            }
+
+            else
+            {
+                return View("DmcaEdit", model);
+            }
         }
 
         /// <summary>
