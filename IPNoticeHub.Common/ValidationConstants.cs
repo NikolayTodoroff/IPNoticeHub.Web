@@ -42,6 +42,8 @@
         public static class LegalDocumentConstants
         {
             public const int LegalDocumentsTitleMaxLength = 256;
+            public const int IpTitleMaxLength = 256;
+            public const int RegistrationNumberMaxLength = 50;
         }
 
         public static class PagingConstants
