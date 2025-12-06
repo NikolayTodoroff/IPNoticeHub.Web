@@ -54,7 +54,6 @@
         <input type="hidden" asp-for="RegistrationNumber" />
         <input type="hidden" asp-for="AdditionalFacts" />
 
-        <!-- Keep a copy of the last saved version that opened this Edit page -->
         <input type="hidden" id="OriginalBodyTemplate" value="@Model.BodyTemplate" />
 
         <div class="a4-frame">
@@ -62,10 +61,9 @@
         </div>
 
         <div class="mt-3 d-flex flex-wrap gap-2 justify-content-center">
-            <!-- Generate PDF (default POST to CeaseDesistEdit) -->
+
             <button type="submit" class="btn btn-primary">Generate PDF</button>
 
-            <!-- Save = POST to Preview with CURRENT edits -->
             <button type="submit"
                     class="btn btn-success"
                     formnovalidate
@@ -75,18 +73,16 @@
                 Save
             </button>
 
-            <!-- Cancel = POST to Preview but with the ORIGINAL saved text -->
+            <a class="btn btn-outline-danger" href="@resetUrl">Reset</a>
+
             <button type="submit"
                     class="btn btn-outline-secondary"
                     formnovalidate
                     formmethod="post"
                     formaction="@Url.Action("CeaseDesistPreview")"
                     id="btnCancel">
-                Cancel
+                Back
             </button>
-
-            <!-- Optional: full reset to baseline -->
-            <a class="btn btn-outline-danger" href="@resetUrl">Reset</a>
         </div>
     </form>
 </div>

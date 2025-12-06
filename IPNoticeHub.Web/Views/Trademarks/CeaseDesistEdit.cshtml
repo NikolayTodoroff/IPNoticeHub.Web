@@ -49,7 +49,6 @@
         <input type="hidden" asp-for="RegistrationNumber" />
         <input type="hidden" asp-for="AdditionalFacts" />
 
-        <!-- Original text (last saved) for Cancel -->
         <textarea id="OriginalBodyTemplate" class="d-none">@Model.BodyTemplate</textarea>
 
         <div class="a4-frame">
@@ -57,10 +56,9 @@
         </div>
 
         <div class="mt-3 d-flex flex-wrap gap-2 justify-content-center">
-            <!-- Generate PDF (default action) -->
+
             <button type="submit" class="btn btn-primary" id="btnGenerate">Generate PDF</button>
 
-            <!-- Save → Preview with current edits -->
             <button type="submit"
                     class="btn btn-success"
                     formnovalidate
@@ -70,18 +68,16 @@
                 Save
             </button>
 
-            <!-- Cancel → Preview with original (discard current edits) -->
+            <a href="@resetUrl" class="btn btn-outline-danger">Reset</a>
+
             <button type="submit"
                     class="btn btn-outline-secondary"
                     formnovalidate
                     formmethod="post"
                     formaction="@Url.Action("CeaseDesistPreview")"
                     id="btnCancel">
-                Cancel
+                Back
             </button>
-
-            <!-- Optional Reset (GET) -->
-            <a href="@resetUrl" class="btn btn-outline-danger">Reset</a>
         </div>
     </form>
 </div>

@@ -78,9 +78,9 @@
         <input type="hidden" asp-for="GoodFaithStatement" />
         <input type="hidden" asp-for="GoodFaithStatement" />
 
-        <!-- MVC binds from this hidden field -->
+
         <textarea asp-for="BodyTemplate" id="BodyTemplateHidden" class="d-none"></textarea>
-        <!-- Keep original (last saved) to support Cancel -->
+
         <textarea id="OriginalBodyTemplate" class="d-none">@Model.BodyTemplate</textarea>
 
         <div class="a4-frame">
@@ -98,7 +98,6 @@
                 Generate PDF
             </button>
 
-            <!-- Save → Preview with current edits -->
             <button type="submit"
                     class="btn btn-success"
                     formnovalidate
@@ -108,18 +107,16 @@
                 Save
             </button>
 
-            <!-- Cancel → Preview with original (discard current edits) -->
+            <a href="@resetUrl" class="btn btn-outline-danger">Reset</a>
+
             <button type="submit"
                     class="btn btn-outline-secondary"
                     formnovalidate
                     formmethod="post"
                     formaction="@Url.Action("DmcaPreview")"
                     id="btnCancel">
-                Cancel
+                Back
             </button>
-
-            <!-- Optional full baseline reset (GET) -->
-            <a href="@resetUrl" class="btn btn-outline-danger">Reset</a>
         </div>
     </form>
 </div>

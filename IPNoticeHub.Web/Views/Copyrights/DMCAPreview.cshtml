@@ -11,7 +11,6 @@
         <pre class="mb-0" style="white-space: pre-wrap;">@Model.BodyTemplate</pre>
     </div>
 
-    <!-- Generate PDF -->
     <form asp-controller="Copyrights"
           asp-action="Dmca"
           asp-route-publicId="@Model.PublicId"
@@ -36,7 +35,6 @@
         <button type="submit" class="btn btn-primary">Generate PDF</button>
     </form>
 
-    <!-- Edit -->
     <form asp-action="DmcaEdit" method="post" class="d-inline ms-2">
         @Html.AntiForgeryToken()
         <input type="hidden" asp-for="PublicId" />
