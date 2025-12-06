@@ -25,7 +25,7 @@ namespace IPNoticeHub.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("IPNoticeHub.Data.Entities.ApplicationUser.ApplicationUser", b =>
+            modelBuilder.Entity("IPNoticeHub.Data.Entities.Identity.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -124,7 +124,7 @@ namespace IPNoticeHub.Data.Migrations
                         });
                 });
 
-            modelBuilder.Entity("IPNoticeHub.Data.Entities.ApplicationUser.UserCopyright", b =>
+            modelBuilder.Entity("IPNoticeHub.Data.Entities.Identity.UserCopyright", b =>
                 {
                     b.Property<string>("ApplicationUserId")
                         .HasColumnType("nvarchar(450)");
@@ -159,7 +159,7 @@ namespace IPNoticeHub.Data.Migrations
                         });
                 });
 
-            modelBuilder.Entity("IPNoticeHub.Data.Entities.ApplicationUser.UserTrademark", b =>
+            modelBuilder.Entity("IPNoticeHub.Data.Entities.Identity.UserTrademark", b =>
                 {
                     b.Property<string>("ApplicationUserId")
                         .HasColumnType("nvarchar(450)");
@@ -637,9 +637,9 @@ namespace IPNoticeHub.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("IPNoticeHub.Data.Entities.ApplicationUser.UserCopyright", b =>
+            modelBuilder.Entity("IPNoticeHub.Data.Entities.Identity.UserCopyright", b =>
                 {
-                    b.HasOne("IPNoticeHub.Data.Entities.ApplicationUser.ApplicationUser", "ApplicationUser")
+                    b.HasOne("IPNoticeHub.Data.Entities.Identity.ApplicationUser", "ApplicationUser")
                         .WithMany("UserCopyrights")
                         .HasForeignKey("ApplicationUserId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -656,9 +656,9 @@ namespace IPNoticeHub.Data.Migrations
                     b.Navigation("CopyrightRegistration");
                 });
 
-            modelBuilder.Entity("IPNoticeHub.Data.Entities.ApplicationUser.UserTrademark", b =>
+            modelBuilder.Entity("IPNoticeHub.Data.Entities.Identity.UserTrademark", b =>
                 {
-                    b.HasOne("IPNoticeHub.Data.Entities.ApplicationUser.ApplicationUser", "ApplicationUser")
+                    b.HasOne("IPNoticeHub.Data.Entities.Identity.ApplicationUser", "ApplicationUser")
                         .WithMany("UserTrademarks")
                         .HasForeignKey("ApplicationUserId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -708,7 +708,7 @@ namespace IPNoticeHub.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("IPNoticeHub.Data.Entities.ApplicationUser.ApplicationUser", null)
+                    b.HasOne("IPNoticeHub.Data.Entities.Identity.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -717,7 +717,7 @@ namespace IPNoticeHub.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("IPNoticeHub.Data.Entities.ApplicationUser.ApplicationUser", null)
+                    b.HasOne("IPNoticeHub.Data.Entities.Identity.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -732,7 +732,7 @@ namespace IPNoticeHub.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("IPNoticeHub.Data.Entities.ApplicationUser.ApplicationUser", null)
+                    b.HasOne("IPNoticeHub.Data.Entities.Identity.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -741,14 +741,14 @@ namespace IPNoticeHub.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("IPNoticeHub.Data.Entities.ApplicationUser.ApplicationUser", null)
+                    b.HasOne("IPNoticeHub.Data.Entities.Identity.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("IPNoticeHub.Data.Entities.ApplicationUser.ApplicationUser", b =>
+            modelBuilder.Entity("IPNoticeHub.Data.Entities.Identity.ApplicationUser", b =>
                 {
                     b.Navigation("UserCopyrights");
 
