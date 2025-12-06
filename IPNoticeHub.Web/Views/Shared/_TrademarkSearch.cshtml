@@ -21,15 +21,23 @@
         <!-- Search hero -->
         <div class="text-center mb-4">
             <h1 class="h3 mb-3">Search Trademarks</h1>
-            <!-- Submit to Trademarks/Index (results page) -->
-            <form method="get" asp-controller="Home" asp-action="Results" class="d-flex justify-content-center">
+
+            <form id="trademarkSearchForm"
+                  method="get"
+                  asp-controller="Home"
+                  asp-action="Results"
+                  class="d-flex justify-content-center">
                 <div class="input-group input-group-lg" style="max-width: 820px;">
-                    <input name="trademark" value="@searchQuery"
-                           class="form-control" type="search"
-                           placeholder="Enter mark, owner, or reg. no." aria-label="Search trademarks" />
+                    <input name="trademark"
+                           value="@searchQuery"
+                           class="form-control"
+                           type="search"
+                           placeholder="Enter mark, owner, or reg. no."
+                           aria-label="Search trademarks" />
                     <button class="btn btn-primary" type="submit">Search</button>
                 </div>
             </form>
+
             <div class="text-muted small mt-2">
                 Search for trademark wordmarks, registration number, or owners
             </div>
@@ -40,7 +48,8 @@
             {
                 var member = value.GetType().GetMember(value.ToString()).First();
                 var display = member.GetCustomAttributes(typeof(DisplayAttribute), false)
-                .OfType<DisplayAttribute>().FirstOrDefault();
+                                    .OfType<DisplayAttribute>()
+                                    .FirstOrDefault();
                 return display?.Name ?? value.ToString();
             }
         }
@@ -48,88 +57,108 @@
         <!-- Filters -->
         <div class="card shadow-sm">
             <div class="card-body">
-                <form method="get" asp-controller="Home" asp-action="Results">
-                    <div class="row g-3">
-                        <!-- Search By Trademark Filter -->
-                        <div class="col-12 col-md-6 col-lg-4">
-                            <label class="form-label" for="f-searchByItem">Search By</label>
-                            <select id="f-searchByItem" name="searchByItem" class="form-select">
-                                @foreach (var searchByItem in searchByItems)
-                                {
-                                    var optionIsSelected =
-                                        (!Context.Request.Query.ContainsKey("searchByItem") && searchByItem == TrademarkSearchBy.Wordmark)
-                                        || (searchByFilter == searchByItem.ToString());
+                <div class="row g-3">
 
-                                    <option value="@searchByItem" selected="@(optionIsSelected)">
-                                        @searchByItem
-                                    </option>
-                                }
-                            </select>
-                        </div>
+                    <!-- Search By Trademark Filter -->
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <label class="form-label" for="f-searchByItem">Search By</label>
+                        <select id="f-searchByItem"
+                                name="searchByItem"
+                                class="form-select"
+                                form="trademarkSearchForm">
+                            @foreach (var searchByItem in searchByItems)
+                            {
+                                var optionIsSelected =
+                                    (!Context.Request.Query.ContainsKey("searchByItem") &&
+                                     searchByItem == TrademarkSearchBy.Wordmark)
+                                    || (searchByFilter == searchByItem.ToString());
 
-                        <!-- Trademark Status Filter -->
-                        <div class="col-12 col-md-6 col-lg-4">
-                            <label class="form-label" for="f-status">Trademark Status</label>
-                            <select id="f-status" name="status" class="form-select">
-                                <option value="">All</option>
-                                @foreach (var status in statusItems)
-                                {
-                                    <option value="@status" selected="@(statusFilter == status.ToString())">
-                                        @status
-                                    </option>
-                                }
-                            </select>
-                        </div>
-
-                        <!-- Trademark Class Numbers Filter -->
-                        <div class="col-12 col-md-6 col-lg-4">
-                            <label class="form-label" for="f-classNumber">Class Numbers</label>
-                            <select id="f-classNumber" name="classNumber" class="form-select">
-                                <option value="">All classes</option>
-                                @foreach (var classNumber in classNumbers)
-                                {
-                                    <option value="@classNumber"
-                                            selected="@(classNumberFilter == classNumber.ToString())">
-                                        @GetDisplayName(classNumber)
-                                    </option>
-                                }
-                            </select>
-                        </div>                       
-
-                        <!-- Trademark Registration Office Filter -->
-                        <div class="col-12 col-md-6 col-lg-4">
-                            <label class="form-label" for="f-office">Registration Office</label>
-                            <select id="f-office" name="office" class="form-select">
-                                <option value="">Any</option>
-                                @foreach (var office in officeItems)
-                                {
-                                    <option value="@office" selected="@(officeFilter == office.ToString())">
-                                        @office
-                                    </option>
-                                }
-                            </select>
-                        </div>
-
-                        <!-- Trademark Search Mode Filter -->
-                        <div class="col-12 col-md-6 col-lg-4">
-                            <label class="form-label" for="f-mode">Search Mode</label>
-                            <select id="f-mode" name="mode" class="form-select">
-                                <option value="">Any</option>
-                                @foreach (var mode in searchModeItems)
-                                {
-                                    <option value="@mode" selected="@(modeFilter == mode.ToString())">
-                                        @mode
-                                    </option>
-                                }
-                            </select>
-                        </div>
-                        
-                        <div class="col-12 col-lg-4 d-flex align-items-end">
-                            <button class="btn btn-outline-secondary me-2" type="reset">Clear</button>
-                            <button class="btn btn-primary" type="submit">Apply</button>
-                        </div>
+                                <option value="@searchByItem" selected="@(optionIsSelected)">
+                                    @GetDisplayName(searchByItem)
+                                </option>
+                            }
+                        </select>
                     </div>
-                </form>
+
+                    <!-- Trademark Status Filter -->
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <label class="form-label" for="f-status">Trademark Status</label>
+                        <select id="f-status"
+                                name="status"
+                                class="form-select"
+                                form="trademarkSearchForm">
+                            <option value="">Any</option>
+                            @foreach (var status in statusItems)
+                            {
+                                <option value="@status" selected="@(statusFilter == status.ToString())">
+                                    @GetDisplayName(status)
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Trademark Class Numbers Filter -->
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <label class="form-label" for="f-classNumber">Class Numbers</label>
+                        <select id="f-classNumber"
+                                name="classNumber"
+                                class="form-select"
+                                form="trademarkSearchForm">
+                            <option value="">All classes</option>
+                            @foreach (var classNumber in classNumbers)
+                            {
+                                <option value="@classNumber"
+                                        selected="@(classNumberFilter == classNumber.ToString())">
+                                    @GetDisplayName(classNumber)
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Trademark Registration Office Filter -->
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <label class="form-label" for="f-office">Registration Office</label>
+                        <select id="f-office"
+                                name="office"
+                                class="form-select"
+                                form="trademarkSearchForm">
+                            <option value="">Any</option>
+                            @foreach (var office in officeItems)
+                            {
+                                <option value="@office" selected="@(officeFilter == office.ToString())">
+                                    @office
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Trademark Search Mode Filter -->
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <label class="form-label" for="f-mode">Search Mode</label>
+                        <select id="f-mode"
+                                name="mode"
+                                class="form-select"
+                                form="trademarkSearchForm">
+                            <option value="">Any</option>
+                            @foreach (var mode in searchModeItems)
+                            {
+                                <option value="@mode" selected="@(modeFilter == mode.ToString())">
+                                    @mode
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="col-12 col-lg-4 d-flex align-items-end">
+                        <a class="btn btn-outline-secondary me-2"
+                           asp-controller="Home"
+                           asp-action="Index">
+                            Clear
+                        </a>
+                    </div>
+
+                </div>
             </div>
         </div>
 

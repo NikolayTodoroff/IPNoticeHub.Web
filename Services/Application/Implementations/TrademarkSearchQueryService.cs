@@ -15,26 +15,27 @@ namespace IPNoticeHub.Services.Application.Implementations
         }
 
         public async Task<(IReadOnlyList<TrademarkSearchResultDTO> Items, int Total)>
-            SearchAsync(TrademarkSearchQueryDTO requestQuery, CancellationToken cancellationToken = default)
+            SearchAsync(TrademarkSearchQueryDTO searchQuery, CancellationToken cancellationToken = default)
         {
-            var query = tmSearchServiceRepo.TrademarkQueryNoTracking();
+            var queryResult = tmSearchServiceRepo.TrademarkQueryNoTracking();
 
-            var searchByFilter = requestQuery.SearchBy ?? TrademarkSearchBy.Wordmark;
+            var searchByFilter = searchQuery.SearchBy ?? TrademarkSearchBy.Wordmark;
 
-            if (!string.IsNullOrWhiteSpace(requestQuery.Query))
+            if (!string.IsNullOrWhiteSpace(searchQuery.Query))
             {
-                string searchTerm = requestQuery.Query.Trim();
-                bool isSearchModeIdentical = requestQuery.Mode == SearchMode.Identical;
+                string searchTerm = searchQuery.Query.Trim();
+                bool isSearchModeIdentical = searchQuery.Mode == SearchMode.Identical;
 
                 if (searchByFilter == TrademarkSearchBy.Number)
                 {
                     if (isSearchModeIdentical)
                     {
-                        query = query.Where(t => t.RegistrationNumber == searchTerm);
+                        queryResult = queryResult.Where(te => te.RegistrationNumber == searchTerm);
                     }
+
                     else
                     {
-                        query = query.Where(t => EF.Functions.Like(t.RegistrationNumber, $"%{searchTerm}%"));
+                        queryResult = queryResult.Where(te => EF.Functions.Like(te.RegistrationNumber, $"%{searchTerm}%"));
                     }
                 }
 
@@ -42,11 +43,12 @@ namespace IPNoticeHub.Services.Application.Implementations
                 {
                     if (isSearchModeIdentical)
                     {
-                        query = query.Where(t => t.Owner == searchTerm);
+                        queryResult = queryResult.Where(te => te.Owner == searchTerm);
                     }
+
                     else
                     {
-                        query = query.Where(t => EF.Functions.Like(t.Owner, $"%{searchTerm}%"));
+                        queryResult = queryResult.Where(te => EF.Functions.Like(te.Owner, $"%{searchTerm}%"));
                     }
                 }
 
@@ -54,37 +56,38 @@ namespace IPNoticeHub.Services.Application.Implementations
                 {
                     if (isSearchModeIdentical)
                     {
-                        query = query.Where(t => t.Wordmark == searchTerm);
+                        queryResult = queryResult.Where(te => te.Wordmark == searchTerm);
                     }
+
                     else
                     {
-                        query = query.Where(t => EF.Functions.Like(t.Wordmark, $"%{searchTerm}%"));
+                        queryResult = queryResult.Where(te => EF.Functions.Like(te.Wordmark, $"%{searchTerm}%"));
                     }
                 }
             }
 
-            if (requestQuery.Status.HasValue)
+            if (searchQuery.Status.HasValue)
             {
-                query = query.Where(t => t.StatusCategory == requestQuery.Status.Value);
+                queryResult = queryResult.Where(t => t.StatusCategory == searchQuery.Status.Value);
             }
 
-            if (requestQuery.Class.HasValue)
+            if (searchQuery.Class.HasValue)
             {
-                query = query.Where(t => t.Classes.Any(c => c.ClassNumber == (int)requestQuery.Class.Value));
+                queryResult = queryResult.Where(t => t.Classes.Any(c => c.ClassNumber == (int)searchQuery.Class.Value));
             }
 
-            if (requestQuery.Office.HasValue)
+            if (searchQuery.Office.HasValue)
             {
-                query = query.Where(t => t.Source == requestQuery.Office);
+                queryResult = queryResult.Where(t => t.Source == searchQuery.Office);
             }
 
-            int skipItems = (requestQuery.Page - 1) * requestQuery.PageSize;
+            int skipItems = (searchQuery.Page - 1) * searchQuery.PageSize;
 
-            int resultsCount = await query.CountAsync(cancellationToken);
+            int resultsCount = await queryResult.CountAsync(cancellationToken);
 
-            var searchResults = await query
+            var searchResults = await queryResult
                 .OrderBy(t => t.RegistrationNumber)
-                .Skip(skipItems).Take(requestQuery.PageSize)
+                .Skip(skipItems).Take(searchQuery.PageSize)
                 .Select(t => new TrademarkSearchResultDTO
                 {
                     Id = t.Id,
