@@ -124,25 +124,16 @@ namespace IPNoticeHub.Web.Controllers
         [HttpGet,Authorize(Policy = "HasUserId")]
         public async Task<IActionResult> CeaseDesist(Guid publicId, CancellationToken cancellationToken = default)
         {
-            if (!User.TryGetUserId(out var userId))
-            {
-                return Forbid();
-            }
+            if (!User.TryGetUserId(out var userId)) return Forbid();
 
             var dto = await tmSearchService.GetDetailsAsync(publicId, cancellationToken);
 
-            if (dto == null)
-            {
-                return NotFound();
-            }
+            if (dto == null) return NotFound();
 
             bool isInCollection = await tmCollectionService.
                 IsInCollectionAsync(userId, dto.Id, false, cancellationToken);
 
-            if (!isInCollection)
-            {
-                return NotFound();
-            }
+            if (!isInCollection) return NotFound();
 
             var viewModel = TrademarksMapping.
                 MapCeaseDesistViewModel(publicId,dto.Wordmark, dto.RegistrationNumber!);
@@ -157,10 +148,7 @@ namespace IPNoticeHub.Web.Controllers
         [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
         public async Task<IActionResult> CeaseDesist(Guid publicId,CeaseDesistViewModel viewModel, CancellationToken cancellationToken = default)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(viewModel);
-            }
+            if (!ModelState.IsValid) return View(viewModel);
 
             var input = TrademarksMapping.MapCeaseDesistViewModelToInput(viewModel);
 
@@ -172,10 +160,7 @@ namespace IPNoticeHub.Web.Controllers
         [HttpGet, Authorize(Policy = "HasUserId")]
         public IActionResult CeaseDesistPreview(CeaseDesistViewModel viewModel)
         {
-            if (!User.TryGetUserId(out var userId))
-            {
-                return Forbid();
-            }
+            if (!User.TryGetUserId(out var userId)) return Forbid();
 
             var template = letterTemplateProvider.GetTemplateByKey(key: "CND-Trademark")?.BodyTemplate ?? string.Empty;
 
@@ -189,15 +174,9 @@ namespace IPNoticeHub.Web.Controllers
         [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
         public async Task<IActionResult> CeaseDesistPreview(CeaseDesistViewModel viewModel, CancellationToken cancellationToken = default)
         {
-            if (!ModelState.IsValid)
-            {
-                return View("CeaseDesist", viewModel);
-            }
+            if (!ModelState.IsValid) return View("CeaseDesist", viewModel);
 
-            if (!User.TryGetUserId(out var userId))
-            {
-                return Forbid();
-            }
+            if (!User.TryGetUserId(out var userId)) return Forbid();
 
             var dto = await tmSearchService.GetDetailsAsync(viewModel.PublicId, cancellationToken);
 

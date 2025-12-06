@@ -2,14 +2,11 @@
 using IPNoticeHub.Common.Infrastructure;
 using IPNoticeHub.Services.Application.Abstractions;
 using IPNoticeHub.Services.Copyrights.Abstractions;
-using IPNoticeHub.Services.Copyrights.DTOs;
 using IPNoticeHub.Web.Infrastructure.Mappings;
 using IPNoticeHub.Web.Models.Copyrights;
 using IPNoticeHub.Web.Models.PdfGeneration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Globalization;
-using static IPNoticeHub.Common.ValidationConstants.FormattingConstants;
 using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
 using static IPNoticeHub.Common.ValidationConstants.StatusMessages;
 using static IPNoticeHub.Web.Infrastructure.ApplyEntityDetails;
@@ -61,7 +58,6 @@ namespace IPNoticeHub.Web.Controllers
         public async Task<IActionResult> Create(CopyrightCreateViewModel viewModel, string? returnUrl = null, CancellationToken cancellationToken = default)
         {
             if (!User.TryGetUserId(out var userId)) return Forbid();
-
             if (!ModelState.IsValid)
             {
                 ViewBag.YearOptions = YearOptionsProvider.BuildYearOptions();
@@ -113,10 +109,7 @@ namespace IPNoticeHub.Web.Controllers
                 ModelState.AddModelError(nameof(CopyrightEditViewModel.OtherWorkType), "Please specify the work type.");
             }
 
-            if (!ModelState.IsValid)
-            {
-                return View(viewModel);
-            }
+            if (!ModelState.IsValid) return View(viewModel);
 
             var dto = CopyrightsMapping.MapEditViewModelToDto(viewModel);
 
@@ -145,7 +138,6 @@ namespace IPNoticeHub.Web.Controllers
             if (!User.TryGetUserId(out var userId)) return Forbid();
 
             var dto = await copyrightService.GetDetailsAsync(userId, id, cancellationToken);
-
             if (dto is null) return NotFound();
 
             var viewModel = CopyrightsMapping.MapDetailsDtoToViewModel(dto);
@@ -170,17 +162,11 @@ namespace IPNoticeHub.Web.Controllers
         [HttpGet, Authorize(Policy = "HasUserId")]
         public async Task<IActionResult> Dmca(Guid publicId, CancellationToken cancellationToken = default)
         {
-            if (!User.TryGetUserId(out var userId))
-            {
-                return Forbid();
-            }
+            if (!User.TryGetUserId(out var userId)) return Forbid();
 
             var dto = await copyrightService.GetDetailsAsync(userId, publicId, cancellationToken);
 
-            if (dto is null)
-            {
-                return NotFound();
-            }
+            if (dto is null) return NotFound();
 
             var viewModel = CopyrightsMapping.MapDetailsDtoToDmcaViewModel(dto,publicId);
 
@@ -194,22 +180,11 @@ namespace IPNoticeHub.Web.Controllers
         [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
         public async Task<IActionResult> Dmca(Guid publicId, DMCAViewModel viewModel, CancellationToken cancellationToken = default)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(viewModel);
-            }
-
-            if (!User.TryGetUserId(out var userId))
-            {
-                return Forbid();
-            }
+            if (!ModelState.IsValid) return View(viewModel);
+            if (!User.TryGetUserId(out var userId)) return Forbid();
 
             var dto = await copyrightService.GetDetailsAsync(userId, publicId, cancellationToken);
-
-            if (dto is null)
-            {
-                return NotFound();
-            }
+            if (dto is null) return NotFound();
 
             ApplyCopyrightDMCADetails(viewModel, dto, MergeStrategy.OverwriteAll);
 
@@ -225,13 +200,9 @@ namespace IPNoticeHub.Web.Controllers
         [HttpGet, Authorize(Policy = "HasUserId")]
         public async Task<IActionResult> DmcaPreview(Guid publicId, CancellationToken cancellationToken = default)
         {
-            if (!User.TryGetUserId(out var userId))
-            {
-                return Forbid();
-            }
+            if (!User.TryGetUserId(out var userId)) return Forbid();
 
             var dto = await copyrightService.GetDetailsAsync(userId, publicId, cancellationToken);
-
             if (dto is null) return NotFound();
 
             var viewModel = new DMCAViewModel { PublicId = publicId };
@@ -250,22 +221,11 @@ namespace IPNoticeHub.Web.Controllers
         [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
         public async Task<IActionResult> DmcaPreview(DMCAViewModel viewModel, CancellationToken cancellationToken = default)
         {
-            if (!ModelState.IsValid)
-            {
-                return View("DMCA", viewModel);
-            }
-
-            if (!User.TryGetUserId(out var userId))
-            {
-                return Forbid();
-            }
+            if (!ModelState.IsValid) return View("DMCA", viewModel);
+            if (!User.TryGetUserId(out var userId)) return Forbid();
 
             var copyrightDetailsDto = await copyrightService.GetDetailsAsync(userId, viewModel.PublicId, cancellationToken);
-
-            if (copyrightDetailsDto is null)
-            {
-                return NotFound();
-            }
+            if (copyrightDetailsDto is null) return NotFound();
 
             ApplyCopyrightDMCADetails(viewModel, copyrightDetailsDto, MergeStrategy.FillBlanks);
 
@@ -302,17 +262,10 @@ namespace IPNoticeHub.Web.Controllers
         [HttpGet, Authorize(Policy = "HasUserId")]
         public async Task<IActionResult>CeaseDesist(Guid publicId, CancellationToken cancellationToken = default)
         {
-            if (!User.TryGetUserId(out var userId))
-            {
-                return Forbid();
-            }
+            if (!User.TryGetUserId(out var userId)) return Forbid();
 
             var dto = await copyrightService.GetDetailsAsync(userId, publicId, cancellationToken);
-
-            if (dto is null)
-            {
-                return NotFound();
-            }
+            if (dto is null) return NotFound();
 
             var viewModel = CopyrightsMapping.MapDetailsDtoToCeaseDesistViewModel(dto, publicId);
 
@@ -326,10 +279,7 @@ namespace IPNoticeHub.Web.Controllers
         [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
         public async Task<IActionResult> CeaseDesist(Guid publicId, CeaseDesistViewModel viewModel, CancellationToken cancellationToken = default)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(viewModel);
-            }
+            if (!ModelState.IsValid) return View(viewModel);
 
             var input = CopyrightsMapping.MapCeaseDesistViewModelToInput(viewModel);
 
@@ -341,17 +291,10 @@ namespace IPNoticeHub.Web.Controllers
         [HttpGet, Authorize(Policy = "HasUserId")]
         public async Task<IActionResult> CeaseDesistPreview(Guid publicId, bool reset = false, CancellationToken cancellationToken = default)
         {
-            if (!User.TryGetUserId(out var userId))
-            {
-                return Forbid();
-            }
+            if (!User.TryGetUserId(out var userId)) return Forbid();
 
             var dto = await copyrightService.GetDetailsAsync(userId, publicId, cancellationToken);
-
-            if (dto is null)
-            {
-                return NotFound();
-            }
+            if (dto is null) return NotFound();
 
             var viewModel = new CeaseDesistViewModel { PublicId = publicId };
             var template = letterTemplateProvider.GetTemplateByKey(key: "CND-Copyright")?.BodyTemplate ?? string.Empty;
@@ -366,18 +309,10 @@ namespace IPNoticeHub.Web.Controllers
         [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
         public async Task<IActionResult> CeaseDesistPreview(CeaseDesistViewModel viewModel, CancellationToken cancellationToken = default)
         {
-            if (!ModelState.IsValid)
-            {
-                return View("CeaseDesist", viewModel);
-            }
-
-            if (!User.TryGetUserId(out var userId))
-            {
-                return Forbid();
-            }
+            if (!ModelState.IsValid) return View("CeaseDesist", viewModel);
+            if (!User.TryGetUserId(out var userId)) return Forbid();
 
             var dto = await copyrightService.GetDetailsAsync(userId, viewModel.PublicId, cancellationToken);
-
             if (dto is null) return NotFound();
 
             ApplyCopyrightCeaseDesistDetails(viewModel, dto, MergeStrategy.FillBlanks);
@@ -419,11 +354,11 @@ namespace IPNoticeHub.Web.Controllers
         {
 
             if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
-
+            {
                 return Redirect(returnUrl);
+            } 
 
             return null;
-
         }
 
         /// <summary>
