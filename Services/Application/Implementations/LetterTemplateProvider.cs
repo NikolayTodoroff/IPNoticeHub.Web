@@ -7,8 +7,6 @@ namespace IPNoticeHub.Services.Application.Implementations
     {
         private static readonly List<LetterTemplatePreset> Presets = new List<LetterTemplatePreset>()
         {
-            // --- Cease & Desist (General) ---
-
             new LetterTemplatePreset(LetterTemplateType.CeaseDesist,"CND-General", "Cease & Desist (General)",
                 BodyTemplate: @"{{Date}}
 
@@ -34,7 +32,6 @@ namespace IPNoticeHub.Services.Application.Implementations
                 {{SenderName}}
                 {{SenderAddress}}")
             ,
-            // --- Cease & Desist (Copyright) ---
 
             new LetterTemplatePreset (LetterTemplateType.CeaseDesist, "CND-Copyright", "Cease & Desist (Copyright)",
                 BodyTemplate: @"{{Date}}
@@ -60,8 +57,6 @@ namespace IPNoticeHub.Services.Application.Implementations
 
                 {{SenderName}}
                 {{SenderAddress}}"),
-            
-            // --- Cease & Desist (Trademark) ---
 
             new(LetterTemplateType.CeaseDesist, "CND-Trademark", "Cease & Desist (Trademark)",
                 BodyTemplate: @"{{Date}}
@@ -87,8 +82,6 @@ namespace IPNoticeHub.Services.Application.Implementations
 
                 {{SenderName}}
                 {{SenderAddress}}"),
-            
-            // --- DMCA (General) ---
 
             new(LetterTemplateType.Dmca, "DMCA-General", "DMCA Takedown (General)",
                 BodyTemplate: @"{{Date}}

@@ -116,10 +116,7 @@ namespace IPNoticeHub.Services.Application.Implementations
 
         private static IEnumerable<string> SplitIntoParagraphs(string text)
         {
-            if (string.IsNullOrWhiteSpace(text))
-            {
-                return Enumerable.Empty<string>();
-            }
+            if (string.IsNullOrWhiteSpace(text)) return Enumerable.Empty<string>();
 
             // Split whenever there are two or more consecutive blank lines
             var parts = Regex.Split(text.Trim(), @"(\r?\n){2,}");
@@ -130,22 +127,17 @@ namespace IPNoticeHub.Services.Application.Implementations
 
         private static string ReplaceTemplate(string template, Dictionary<string, string> vars)
         {
-            if (string.IsNullOrEmpty(template))
-            {
-                return string.Empty;
-            }           
+            if (string.IsNullOrEmpty(template)) return string.Empty;
 
             return Regex.Replace(template, @"{{\s*(\w+)\s*}}", match =>
             {
                 string key = match.Groups[1].Value;
 
                 // If we have a value for this key, use it; otherwise leave the placeholder unchanged
-                if (vars.TryGetValue(key, out string? value))
-                {
-                    return value ?? string.Empty;
-                }             
+                if (vars.TryGetValue(key, out string? value)) return value ?? string.Empty;
 
-                return match.Value; // keeps {{UnknownKey}} visible
+                // keeps {{UnknownKey}} visible
+                return match.Value; 
             });
         }
     }

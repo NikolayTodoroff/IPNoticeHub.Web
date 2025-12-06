@@ -47,7 +47,7 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
         {
             var (normalizedPage, normalizedPageSize) = PagingConfiguration.NormalizePaging(currentPage, resultsPerPage);
 
-            TrademarkSearchFilter? searchFilter = new TrademarkSearchFilter
+            var searchFilter = new TrademarkSearchFilter
             {
                 Provider = filter.Provider,
                 ClassNumbers = filter.ClassNumbers,

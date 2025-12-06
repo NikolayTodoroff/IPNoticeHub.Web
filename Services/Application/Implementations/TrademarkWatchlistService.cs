@@ -12,7 +12,8 @@ namespace IPNoticeHub.Services.Application.Implementations
 
         private readonly IStatusLabelProvider statusLabels;
 
-        public TrademarkWatchlistService(IUserTrademarkWatchlistRepository watchlistRepo, ITrademarkStatusSnapshotRepository snapshotRepo, IStatusLabelProvider statusLabels)
+        public TrademarkWatchlistService(IUserTrademarkWatchlistRepository watchlistRepo, 
+            ITrademarkStatusSnapshotRepository snapshotRepo, IStatusLabelProvider statusLabels)
         {
             this.watchlistRepo = watchlistRepo;
             this.snapshotRepo = snapshotRepo;
@@ -21,14 +22,16 @@ namespace IPNoticeHub.Services.Application.Implementations
 
         public async Task AddAsync(string userId, int trademarkId, CancellationToken cancellationToken)
         {
-            var statusSnapshot = await snapshotRepo.GetStatusSnapshotAsync(trademarkId, cancellationToken);
+            var statusSnapshot = 
+                await snapshotRepo.GetStatusSnapshotAsync(trademarkId, cancellationToken);
 
             if (statusSnapshot is null)
+            {
                 throw new InvalidOperationException($"No status snapshot found for trademarkId {trademarkId}.");
+            } 
 
             await watchlistRepo.AddOrUndeleteAsync(userId, trademarkId, statusSnapshot.Value.StatusCodeRaw,
-                statusSnapshot.Value.StatusDetail, statusSnapshot.Value.StatusDateUtc, cancellationToken
-            );
+                statusSnapshot.Value.StatusDetail, statusSnapshot.Value.StatusDateUtc, cancellationToken);
         }
 
         public async Task<IReadOnlyList<TrademarkWatchlistItemDto>> GetListByUserAsync(string userId, CancellationToken cancellationToken)
@@ -102,11 +105,9 @@ namespace IPNoticeHub.Services.Application.Implementations
 
         private static string Normalize(string text)
         {
-            if (string.IsNullOrWhiteSpace(text))
-                return string.Empty;
+            if (string.IsNullOrWhiteSpace(text)) return string.Empty;
 
-            return Regex.Replace(  
-                text.Trim().ToLowerInvariant(),pattern: @"\s+",replacement: " ");
+            return Regex.Replace(text.Trim().ToLowerInvariant(), pattern: @"\s+", replacement: " ");
         }
 
         private string LabelFromCode(int? statusCode)

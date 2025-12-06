@@ -23,12 +23,12 @@ namespace IPNoticeHub.Services.Copyrights.Implementations
 
         public async Task<Guid> CreateAsync(string userId, CopyrightCreateDto dto, CancellationToken cancellationToken = default)
         {
-            var existingEntity = await copyrightRepository.
+            var entity = await copyrightRepository.
                 GetByRegNumberAsync(dto.RegistrationNumber, asNoTracking: false, cancellationToken: cancellationToken);
 
             CopyrightEntity newEntity;
 
-            if (existingEntity is null)
+            if (entity is null)
             {
                 newEntity = new CopyrightEntity()
                 {
@@ -46,7 +46,7 @@ namespace IPNoticeHub.Services.Copyrights.Implementations
 
             else
             {
-                newEntity = existingEntity;
+                newEntity = entity;
             }
 
             await userCopyrightRepository.AddOrUndeleteAsync(userId, newEntity.Id, cancellationToken);
@@ -59,28 +59,18 @@ namespace IPNoticeHub.Services.Copyrights.Implementations
             var copyrightEntity = await copyrightRepository.
                 GetByPublicIdAsync(publicId, asNoTracking: false, cancellationToken: cancellationToken);
 
-            if (copyrightEntity is null)
-            {
-                return false;
-            }
+            if (copyrightEntity is null) return false;
 
             var linkedInCollection = await userCopyrightRepository.
                 IsLinkedAsync(userId, copyrightEntity.Id, includeSoftDeleted: false, cancellationToken: cancellationToken);
 
-            if (!linkedInCollection)
-            {
-                return false;
-            }
+            if (!linkedInCollection) return false;
 
-            // Preventing duplicate registration numbers if changed
             if (!string.Equals(copyrightEntity.RegistrationNumber, dto.RegistrationNumber, StringComparison.OrdinalIgnoreCase))
             {
-                var registrationExists = await copyrightRepository.ExistsByRegNumberAsync(dto.RegistrationNumber, cancellationToken);
+                bool registrationExists = await copyrightRepository.ExistsByRegNumberAsync(dto.RegistrationNumber, cancellationToken);
 
-                if (registrationExists)
-                {
-                    return false;
-                }
+                if (registrationExists) return false;
 
                 copyrightEntity.RegistrationNumber = dto.RegistrationNumber;
             }
