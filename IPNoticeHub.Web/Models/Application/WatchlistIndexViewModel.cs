@@ -1,5 +1,5 @@
 ﻿using IPNoticeHub.Services.Application.DTOs;
 public sealed class WatchlistIndexViewModel
 {
-    public IReadOnlyList<TrademarkWatchlistItemDTO> Items { get; init; } = Array.Empty<TrademarkWatchlistItemDTO>();
+    public IReadOnlyList<TrademarkWatchlistItemDto> Items { get; init; } = Array.Empty<TrademarkWatchlistItemDto>();
 }

@@ -4,8 +4,8 @@ namespace IPNoticeHub.Services.Application.Abstractions
 {
     public interface ITrademarkSearchQueryService
     {
-        Task<(IReadOnlyList<TrademarkSearchResultDTO> Items, int Total)>
-            SearchAsync(TrademarkSearchQueryDTO searchQuery, CancellationToken cancellationToken = default);
+        Task<(IReadOnlyList<TrademarkSearchResultDto> Items, int Total)>
+            SearchAsync(TrademarkSearchQueryDto searchQuery, CancellationToken cancellationToken = default);
     }
 }
 

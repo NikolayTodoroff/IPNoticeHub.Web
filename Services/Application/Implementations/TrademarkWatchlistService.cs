@@ -31,7 +31,7 @@ namespace IPNoticeHub.Services.Application.Implementations
             );
         }
 
-        public async Task<IReadOnlyList<TrademarkWatchlistItemDTO>> GetListByUserAsync(string userId, CancellationToken cancellationToken)
+        public async Task<IReadOnlyList<TrademarkWatchlistItemDto>> GetListByUserAsync(string userId, CancellationToken cancellationToken)
         {
             var links = await watchlistRepo.ListByUserAsync(userId, 0, 200, cancellationToken);
 
@@ -45,7 +45,7 @@ namespace IPNoticeHub.Services.Application.Implementations
 
                 bool isStatusChanged = ComputeStatusChange(initialStatusCode, currentStatusCode, initialStatusText, currentStatusText);
 
-                return new TrademarkWatchlistItemDTO
+                return new TrademarkWatchlistItemDto
                 {
                     Id = l.TrademarkId,
                     PublicId = l.Trademark.PublicId,

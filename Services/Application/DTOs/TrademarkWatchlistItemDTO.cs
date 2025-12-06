@@ -3,7 +3,7 @@ using static IPNoticeHub.Common.ValidationConstants.TrademarkRegistrationConstan
 
 namespace IPNoticeHub.Services.Application.DTOs
 {
-    public sealed class TrademarkWatchlistItemDTO
+    public sealed class TrademarkWatchlistItemDto
     {
         public int Id { get; init; }
 

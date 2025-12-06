@@ -17,9 +17,9 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.WatchlistControllerTests
             var (controller, watchlistService, _) =
                 TestWatchlistControllerFactory.CreateWatchlistController(userExists: true);
 
-            var items = new List<TrademarkWatchlistItemDTO>
+            var items = new List<TrademarkWatchlistItemDto>
             {
-                new TrademarkWatchlistItemDTO
+                new TrademarkWatchlistItemDto
                 {
                     Id = 101,
                     RegistrationNumber = "RN-101",

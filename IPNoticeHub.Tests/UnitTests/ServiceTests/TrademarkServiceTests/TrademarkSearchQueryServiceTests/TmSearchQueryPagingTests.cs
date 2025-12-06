@@ -56,7 +56,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
             ITrademarkReadRepository readRepo = new TestReadRepository(testDbContext);
             var queryService = new TrademarkSearchQueryService(readRepo);
 
-            var query = new TrademarkSearchQueryDTO
+            var query = new TrademarkSearchQueryDto
             {
                 Query = "",
                 SearchBy = TrademarkSearchBy.Wordmark,
@@ -114,7 +114,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
             ITrademarkReadRepository readRepo = new TestReadRepository(testDbContext);
             var queryService = new TrademarkSearchQueryService(readRepo);
 
-            var query = new TrademarkSearchQueryDTO
+            var query = new TrademarkSearchQueryDto
             {
                 Query = "",
                 SearchBy = TrademarkSearchBy.Wordmark,
@@ -172,7 +172,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
             ITrademarkReadRepository readRepo = new TestReadRepository(testDbContext);
             var queryService = new TrademarkSearchQueryService(readRepo);
 
-            var query = new TrademarkSearchQueryDTO
+            var query = new TrademarkSearchQueryDto
             {
                 Query = null, // Empty query => no text filter
                 SearchBy = TrademarkSearchBy.Wordmark,
@@ -232,7 +232,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
             ITrademarkReadRepository readRepo = new TestReadRepository(testDbContext);
             var queryService = new TrademarkSearchQueryService(readRepo);
 
-            var query = new TrademarkSearchQueryDTO
+            var query = new TrademarkSearchQueryDto
             {
                 Query = "",
                 SearchBy = TrademarkSearchBy.Wordmark,

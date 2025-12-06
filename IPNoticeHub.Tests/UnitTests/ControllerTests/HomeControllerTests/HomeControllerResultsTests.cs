@@ -39,7 +39,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.HomeControllerTests
 
             var searchResultsDTO = new[]
             {
-                new TrademarkSearchResultDTO
+                new TrademarkSearchResultDto
                 {
                     Id = 1,
                     PublicId = Guid.NewGuid(),
@@ -50,7 +50,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.HomeControllerTests
                 }
             };
 
-            tmSearchService.Setup(s => s.SearchAsync(It.IsAny<TrademarkSearchQueryDTO>(),It.IsAny<CancellationToken>())).
+            tmSearchService.Setup(s => s.SearchAsync(It.IsAny<TrademarkSearchQueryDto>(),It.IsAny<CancellationToken>())).
                 ReturnsAsync((searchResultsDTO, 1));
 
             var controller = TestHomeControllerFactory.CreateHomeController(tmSearchService.Object);
@@ -93,8 +93,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.HomeControllerTests
         {
             var tmSearchService = new Mock<ITrademarkSearchQueryService>(MockBehavior.Strict);
 
-            tmSearchService.Setup(s => s.SearchAsync(It.IsAny<TrademarkSearchQueryDTO>(), It.IsAny<CancellationToken>())).
-                ReturnsAsync((new List<TrademarkSearchResultDTO>(), 0));
+            tmSearchService.Setup(s => s.SearchAsync(It.IsAny<TrademarkSearchQueryDto>(), It.IsAny<CancellationToken>())).
+                ReturnsAsync((new List<TrademarkSearchResultDto>(), 0));
 
             var controller = TestHomeControllerFactory.CreateHomeController(tmSearchService.Object);
 
@@ -118,7 +118,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.HomeControllerTests
             resultViewModel.Total.Should().Be(0);
             resultViewModel.Results.Should().BeEmpty();
 
-            tmSearchService.Verify(s => s.SearchAsync(It.IsAny<TrademarkSearchQueryDTO>(), It.IsAny<CancellationToken>()), Times.Once);
+            tmSearchService.Verify(s => s.SearchAsync(It.IsAny<TrademarkSearchQueryDto>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Test]
@@ -126,8 +126,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.HomeControllerTests
         {
             var tmSearchService = new Mock<ITrademarkSearchQueryService>(MockBehavior.Strict);
 
-            tmSearchService.Setup(s => s.SearchAsync(It.IsAny<TrademarkSearchQueryDTO>(), It.IsAny<CancellationToken>())).
-                ReturnsAsync((new List<TrademarkSearchResultDTO>(), 0));
+            tmSearchService.Setup(s => s.SearchAsync(It.IsAny<TrademarkSearchQueryDto>(), It.IsAny<CancellationToken>())).
+                ReturnsAsync((new List<TrademarkSearchResultDto>(), 0));
 
             var controller = TestHomeControllerFactory.CreateHomeController(tmSearchService.Object);
 
@@ -145,7 +145,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.HomeControllerTests
             resultView!.Model.Should().BeOfType<TrademarkSearchResultsViewModel>();
 
             tmSearchService.Verify(s => s.SearchAsync(
-                It.Is<TrademarkSearchQueryDTO>(q =>
+                It.Is<TrademarkSearchQueryDto>(q =>
                     q.Query == null &&
                     q.Class == null &&
                     q.Status == null &&

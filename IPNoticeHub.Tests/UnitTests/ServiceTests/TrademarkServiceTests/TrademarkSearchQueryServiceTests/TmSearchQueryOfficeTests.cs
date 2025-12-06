@@ -61,7 +61,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
             ITrademarkReadRepository readRepo = new TestReadRepository(testDbContext);
             var queryService = new TrademarkSearchQueryService(readRepo);
 
-            var query = new TrademarkSearchQueryDTO
+            var query = new TrademarkSearchQueryDto
             {
                 Query = "",
                 SearchBy = TrademarkSearchBy.Wordmark,

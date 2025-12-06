@@ -14,8 +14,8 @@ namespace IPNoticeHub.Services.Application.Implementations
             this.tmSearchServiceRepo = tmSearchServiceRepository;
         }
 
-        public async Task<(IReadOnlyList<TrademarkSearchResultDTO> Items, int Total)>
-            SearchAsync(TrademarkSearchQueryDTO searchQuery, CancellationToken cancellationToken = default)
+        public async Task<(IReadOnlyList<TrademarkSearchResultDto> Items, int Total)>
+            SearchAsync(TrademarkSearchQueryDto searchQuery, CancellationToken cancellationToken = default)
         {
             var queryResult = tmSearchServiceRepo.TrademarkQueryNoTracking();
 
@@ -88,7 +88,7 @@ namespace IPNoticeHub.Services.Application.Implementations
             var searchResults = await queryResult
                 .OrderBy(t => t.RegistrationNumber)
                 .Skip(skipItems).Take(searchQuery.PageSize)
-                .Select(t => new TrademarkSearchResultDTO
+                .Select(t => new TrademarkSearchResultDto
                 {
                     Id = t.Id,
                     PublicId = t.PublicId,
