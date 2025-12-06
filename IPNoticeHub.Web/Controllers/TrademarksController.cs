@@ -212,7 +212,7 @@ namespace IPNoticeHub.Web.Controllers
 
             if (command == "save")
             {
-                TempData["SuccessMessage"] = "Document saved to your library.";
+                TempData["SuccessMessage"] = "Your Cease & Desist letter was successfully saved to your library.";
                 return RedirectToAction("Index", "DocumentLibrary");
             }
 

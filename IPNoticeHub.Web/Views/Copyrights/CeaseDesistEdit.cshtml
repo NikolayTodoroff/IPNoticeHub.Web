@@ -1,9 +1,8 @@
 ﻿@model IPNoticeHub.Web.Models.PdfGeneration.CeaseDesistViewModel
+
 @{
     ViewData["Title"] = "Edit Cease & Desist";
     Layout = "_Layout";
-
-    var resetUrl = Url.Action("CeaseDesistPreview", new { publicId = Model.PublicId, reset = 1 }); // optional Reset
 }
 
 <style>
@@ -11,7 +10,6 @@
         display: flex;
         justify-content: center;
         padding: 24px;
-        background: #f6f6f6;
     }
 
     .a4-paper {
@@ -20,8 +18,7 @@
         background: #fff;
         color: #222;
         box-shadow: 0 12px 32px rgba(16,24,40,.12);
-        border-radius: 6px;
-        border: 1px solid rgba(0,0,0,.06);
+        border-radius: 4px;
         padding: 20mm;
         overflow: auto;
         line-height: 1.6;
@@ -30,76 +27,99 @@
         white-space: pre-wrap;
     }
 
-        .a4-paper:focus {
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(59,130,246,.25), 0 12px 32px rgba(16,24,40,.12);
+        .a4-paper b,
+        .a4-paper strong {
+            font-weight: 700;
         }
 </style>
 
 <div class="container py-4">
     <h2>Edit Cease &amp; Desist</h2>
 
-    <form asp-action="CeaseDesistEdit" method="post" id="cdEditForm">
-        @Html.AntiForgeryToken()
+    <div class="a4-frame">
+        <textarea asp-for="BodyTemplate" class="a4-paper" id="BodyTemplate"></textarea>
+    </div>
 
-        <input type="hidden" asp-for="PublicId" />
-        <input type="hidden" asp-for="SenderName" />
-        <input type="hidden" asp-for="SenderAddress" />
-        <input type="hidden" asp-for="SenderEmail" />
-        <input type="hidden" asp-for="RecipientName" />
-        <input type="hidden" asp-for="RecipientAddress" />
-        <input type="hidden" asp-for="RecipientEmail" />
-        <input type="hidden" asp-for="InfringingUrl" />
-        <input type="hidden" asp-for="WorkTitle" />
-        <input type="hidden" asp-for="RegistrationNumber" />
-        <input type="hidden" asp-for="AdditionalFacts" />
+    <textarea id="OriginalBodyTemplate" class="d-none">@Model.BodyTemplate</textarea>
 
-        <input type="hidden" id="OriginalBodyTemplate" value="@Model.BodyTemplate" />
+    <div class="mt-3 d-flex flex-wrap gap-2 justify-content-center">
 
-        <div class="a4-frame">
-            <textarea asp-for="BodyTemplate" id="BodyTemplate" class="a4-paper" spellcheck="false"></textarea>
-        </div>
+        <form asp-action="CeaseDesist" method="post" id="generateForm" class="d-inline">
+            @Html.AntiForgeryToken()
 
-        <div class="mt-3 d-flex flex-wrap gap-2 justify-content-center">
+            <input type="hidden" asp-for="PublicId" />
+            <input type="hidden" asp-for="SenderName" />
+            <input type="hidden" asp-for="SenderAddress" />
+            <input type="hidden" asp-for="SenderEmail" />
+            <input type="hidden" asp-for="RecipientName" />
+            <input type="hidden" asp-for="RecipientAddress" />
+            <input type="hidden" asp-for="RecipientEmail" />
+            <input type="hidden" asp-for="InfringingUrl" />
+            <input type="hidden" asp-for="WorkTitle" />
+            <input type="hidden" asp-for="RegistrationNumber" />
+            <input type="hidden" asp-for="AdditionalFacts" />
 
-            <button type="submit" class="btn btn-primary">Generate PDF</button>
+            <input type="hidden" asp-for="BodyTemplate" id="BodyTemplatePdf" />
 
-            <button type="submit"
-                    class="btn btn-success"
-                    formnovalidate
-                    formmethod="post"
-                    formaction="@Url.Action("CeaseDesistPreview")"
-                    id="btnSave">
+            <button type="submit" class="btn btn-primary">
+                Generate PDF
+            </button>
+        </form>
+
+        <form asp-action="CeaseDesistEdit" method="post" id="editForm" class="d-inline">
+            @Html.AntiForgeryToken()
+
+            <input type="hidden" asp-for="PublicId" />
+            <input type="hidden" asp-for="SenderName" />
+            <input type="hidden" asp-for="SenderAddress" />
+            <input type="hidden" asp-for="SenderEmail" />
+            <input type="hidden" asp-for="RecipientName" />
+            <input type="hidden" asp-for="RecipientAddress" />
+            <input type="hidden" asp-for="RecipientEmail" />
+            <input type="hidden" asp-for="InfringingUrl" />
+            <input type="hidden" asp-for="WorkTitle" />
+            <input type="hidden" asp-for="RegistrationNumber" />
+            <input type="hidden" asp-for="AdditionalFacts" />
+
+            <input type="hidden" asp-for="BodyTemplate" id="BodyTemplateEdit" />
+
+            <button type="button" class="btn btn-outline-danger" id="btnReset">
+                Reset
+            </button>
+
+            <button type="submit" name="command" value="save" class="btn btn-success">
                 Save
             </button>
 
-            <a class="btn btn-outline-danger" href="@resetUrl">Reset</a>
-
-            <button type="submit"
-                    class="btn btn-outline-secondary"
-                    formnovalidate
-                    formmethod="post"
-                    formaction="@Url.Action("CeaseDesistPreview")"
-                    id="btnCancel">
-                Back
+            <button type="submit" name="command" value="done" class="btn btn-outline-secondary">
+                Done
             </button>
-        </div>
-    </form>
+        </form>
+    </div>
 </div>
 
 @section Scripts {
     <script>
         (function () {
-          const form = document.getElementById('cdEditForm');
-          const textarea = document.getElementById('BodyTemplate');
-          const original = document.getElementById('OriginalBodyTemplate');
+            const editor   = document.getElementById('BodyTemplate');
+            const original = document.getElementById('OriginalBodyTemplate');
+            const pdfBody  = document.getElementById('BodyTemplatePdf');
+            const editBody = document.getElementById('BodyTemplateEdit');
 
-          // Save does nothing special — it posts current textarea value
+            document.getElementById('btnReset')
+                .addEventListener('click', function () {
+                    editor.value = original.value;
+                });
 
-          // Cancel: before submit, swap the textarea value back to the original
-          document.getElementById('btnCancel').addEventListener('click', function () {
-            textarea.value = original.value; // discard current edits
-          });
+            document.getElementById('generateForm')
+                .addEventListener('submit', function () {
+                    pdfBody.value = editor.value;
+                });
+
+            document.getElementById('editForm')
+                .addEventListener('submit', function () {
+                    editBody.value = editor.value;
+                });
         })();
     </script>
 }
