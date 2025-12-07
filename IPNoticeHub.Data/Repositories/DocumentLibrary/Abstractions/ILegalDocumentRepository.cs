@@ -1,7 +1,7 @@
 ﻿using IPNoticeHub.Common.EnumConstants;
 using IPNoticeHub.Data.Entities.LegalDocuments;
 
-namespace IPNoticeHub.Data.Repositories.Trademarks.Abstractions
+namespace IPNoticeHub.Data.Repositories.DocumentLibrary.Abstractions
 {
     public interface ILegalDocumentRepository
     {

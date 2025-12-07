@@ -1,9 +1,9 @@
 ﻿using IPNoticeHub.Common.EnumConstants;
 using IPNoticeHub.Data.Entities.LegalDocuments;
-using IPNoticeHub.Data.Repositories.Trademarks.Abstractions;
+using IPNoticeHub.Data.Repositories.DocumentLibrary.Abstractions;
 using Microsoft.EntityFrameworkCore;
 
-namespace IPNoticeHub.Data.Repositories.Trademarks.Implementations
+namespace IPNoticeHub.Data.Repositories.DocumentLibrary.Implementations
 {
     public class LegalDocumentRepository : ILegalDocumentRepository
     {
