@@ -12,6 +12,7 @@ using static IPNoticeHub.Web.Infrastructure.TemplateReplacer;
 using static IPNoticeHub.Web.Infrastructure.ApplyEntityDetails;
 using IPNoticeHub.Web.Infrastructure.Mappings;
 using IPNoticeHub.Services.DocumentLibrary.Abstractions;
+using IPNoticeHub.Services.DocumentLibrary.DTOs;
 
 namespace IPNoticeHub.Web.Controllers
 {
@@ -285,10 +286,23 @@ namespace IPNoticeHub.Web.Controllers
 
             if (command == "save")
             {
+                var dto = new DocumentCreateDto
+                {
+                    RelatedPublicId = viewModel.PublicId,
+                    SourceType = DocumentSourceType.Trademark,
+                    TemplateType = LetterTemplateType.CeaseAndDesist,
+                    DocumentTitle = null,
+                    IpTitle = viewModel.WorkTitle,
+                    RegistrationNumber = viewModel.RegistrationNumber,
+                    BodyTemplate = viewModel.BodyTemplate
+                };
+
+                await documentLibraryService.SaveDocumentAsync(userId, dto,cancellationToken);
+
                 TempData["SuccessMessage"] = 
                     "Your Cease & Desist letter was successfully saved to your library.";
 
-                return RedirectToAction("Index", "DocumentLibrary");
+                return RedirectToAction(nameof(CeaseDesistEdit), viewModel);
             }
 
             else if (command == "done")
