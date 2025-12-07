@@ -17,7 +17,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="DocumentLibrary\Abstractions\" />
 	  <Folder Include="DocumentLibrary\Implementations\" />
 	</ItemGroup>
 

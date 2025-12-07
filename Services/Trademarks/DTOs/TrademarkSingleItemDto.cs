@@ -8,27 +8,20 @@ namespace IPNoticeHub.Services.Trademarks.DTOs
     {
         public int Id { get; init; }
 
-
         public Guid PublicId { get; init; }
-
 
         [Required, MaxLength(WordmarkMaxLength)]
         public string Wordmark { get; init; } = string.Empty;
 
-
         [Required, MaxLength(SourceIdMaxLength)]
         public string SourceId { get; init; } = string.Empty;
 
-
         [MaxLength(OwnerNameMaxLength)]
-        public string? Owner { get; init; }
-        
+        public string? Owner { get; init; }       
 
         public TrademarkStatusCategory Status { get; init; }
 
-
         public int[] Classes { get; init; } = Array.Empty<int>();
-
 
         public DataProvider Provider { get; init; }
     }

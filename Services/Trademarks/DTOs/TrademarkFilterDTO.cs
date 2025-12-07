@@ -8,19 +8,14 @@ namespace IPNoticeHub.Services.Trademarks.DTOs
     {
         public DataProvider? Provider { get; init; }
 
-
         public int[]? ClassNumbers { get; init; }
-
 
         public TrademarkStatusCategory? Status { get; init; }
 
-
         public TrademarkSearchBy SearchBy { get; init; } = TrademarkSearchBy.Wordmark;
-
 
         [StringLength(FilterSearchTermMaxLength)]
         public string? SearchTerm { get; init; }
-
 
         public bool ExactMatch { get; init; } = false;
     }

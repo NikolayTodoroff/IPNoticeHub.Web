@@ -63,7 +63,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
             };
 
             var pagedResult = await service.SearchAsync(
-                filter: filterDTO,
+                dto: filterDTO,
                 currentPage: 1,
                 resultsPerPage: 10,
                 cancellationToken: default);
@@ -116,7 +116,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
             };
 
             var pagedResult = await service.SearchAsync(
-                filter: filterDTO,
+                dto: filterDTO,
                 currentPage: 1,
                 resultsPerPage: 10,
                 cancellationToken: default);
@@ -169,7 +169,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
             };
 
             var pagedResult = await service.SearchAsync(
-                filter: filterDTO,
+                dto: filterDTO,
                 currentPage: 1,
                 resultsPerPage: 10,
                 cancellationToken: default);
@@ -251,7 +251,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
             };
 
             var pagedResult = await service.SearchAsync(
-                filter: filterDTO,
+                dto: filterDTO,
                 currentPage: 1,
                 resultsPerPage: 10,
                 cancellationToken: default);

@@ -17,9 +17,12 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
             this.trademarkRepository = trademarks;
         }
 
-        public async Task<TrademarkDetailsDto?> GetDetailsAsync(Guid publicId, CancellationToken cancellationToken = default)
+        public async Task<TrademarkDetailsDto?>GetDetailsAsync(
+            Guid publicId, 
+            CancellationToken cancellationToken = default)
         {
-            TrademarkEntity? entity = await trademarkRepository.GetByPublicIdAsync(publicId, cancellationToken: cancellationToken);
+            TrademarkEntity? entity = await trademarkRepository.
+                GetByPublicIdAsync(publicId, cancellationToken: cancellationToken);
 
             if (entity is null) return null;
 
@@ -37,24 +40,33 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
                 RegistrationDate = entity.RegistrationDate,
                 MarkImageUrl = entity.MarkImageUrl,
                 Provider = entity.Source,
-                Classes = entity.Classes.Select(c => c.ClassNumber).ToList(),
-                Events = entity.Events.OrderByDescending(e => e.EventDate).
-                     Select(e => (e.EventDate, e.Code, e.Description)).ToList()
+                Classes = entity.Classes.
+                    Select(c => c.ClassNumber).
+                    ToList(),
+                Events = entity.Events.
+                    OrderByDescending(e => e.EventDate).
+                        Select(e => (e.EventDate, e.Code, e.Description)).
+                        ToList()
             };
         }
 
-        public async Task<PagedResult<TrademarkSingleItemDto>> SearchAsync(TrademarkFilterDto filter, int currentPage, int resultsPerPage, CancellationToken cancellationToken = default)
+        public async Task<PagedResult<TrademarkSingleItemDto>>SearchAsync(
+            TrademarkFilterDto dto, 
+            int currentPage, 
+            int resultsPerPage, 
+            CancellationToken cancellationToken = default)
         {
-            var (normalizedPage, normalizedPageSize) = PagingConfiguration.NormalizePaging(currentPage, resultsPerPage);
+            var (normalizedPage, normalizedPageSize) = 
+                PagingConfiguration.NormalizePaging(currentPage, resultsPerPage);
 
             var searchFilter = new TrademarkSearchFilter
             {
-                Provider = filter.Provider,
-                ClassNumbers = filter.ClassNumbers,
-                Status = filter.Status,
-                SearchBy = filter.SearchBy,
-                SearchTerm = filter.SearchTerm,
-                ExactMatch = filter.ExactMatch
+                Provider = dto.Provider,
+                ClassNumbers = dto.ClassNumbers,
+                Status = dto.Status,
+                SearchBy = dto.SearchBy,
+                SearchTerm = dto.SearchTerm,
+                ExactMatch = dto.ExactMatch
             };
 
             IOrderedQueryable<TrademarkEntity>? query = trademarkRepository.
@@ -75,7 +87,9 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
                     Owner = t.Owner,
                     SourceId = t.SourceId,
                     Status = t.StatusCategory,
-                    Classes = t.Classes.Select(c => c.ClassNumber).ToArray(),
+                    Classes = t.Classes.
+                        Select(c => c.ClassNumber).
+                        ToArray(),
                     Provider = t.Source
                 })
                 .ToListAsync(cancellationToken);

@@ -1,8 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using IPNoticeHub.Common.Infrastructure;
 using IPNoticeHub.Common.EnumConstants;
-using IPNoticeHub.Data.Entities.Identity;
-using IPNoticeHub.Data.Entities.TrademarkRegistration;
 using IPNoticeHub.Data.Repositories.Trademarks.Abstractions;
 using IPNoticeHub.Services.Common;
 using IPNoticeHub.Services.Trademarks.Abstractions;
@@ -15,27 +13,36 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
         private readonly ITrademarkRepository trademarkRepository;
         private readonly IUserTrademarkRepository userTrademarkRepository;
 
-        public TrademarkCollectionService(ITrademarkRepository trademarks, IUserTrademarkRepository userTrademarks)
+        public TrademarkCollectionService(
+            ITrademarkRepository trademarks, 
+            IUserTrademarkRepository userTrademarks)
         {
             this.trademarkRepository = trademarks;
             this.userTrademarkRepository = userTrademarks;
         }
 
-        public async Task AddAsync(string userId, int trademarkId, CancellationToken cancellationToken = default)
+        public async Task AddAsync(
+            string userId, 
+            int trademarkId, 
+            CancellationToken cancellationToken = default)
         {
             bool linkExists = await trademarkRepository.ExistsAsync(trademarkId, cancellationToken);
-
             if (!linkExists) return;
 
             await userTrademarkRepository.AddOrUndeleteAsync(userId, trademarkId, cancellationToken);
         }
 
-        public async Task<PagedResult<TrademarkSingleItemDto>> GetUserCollectionAsync(string userId, 
-            int currentPage, int resultsPerPage, CancellationToken cancellationToken = default)
+        public async Task<PagedResult<TrademarkSingleItemDto>>GetUserCollectionAsync(
+            string userId, 
+            int currentPage, 
+            int resultsPerPage, 
+            CancellationToken cancellationToken = default)
         {
-            var (normalizedPage, normalizedPageSize) = PagingConfiguration.NormalizePaging(currentPage, resultsPerPage);
+            var (normalizedPage, normalizedPageSize) = 
+                PagingConfiguration.NormalizePaging(currentPage, resultsPerPage);
 
-            var userTrademarksQuery = userTrademarkRepository.QueryUserCollection(userId).
+            var userTrademarksQuery = userTrademarkRepository.
+                QueryUserCollection(userId).
                 AsNoTracking().
                 OrderByDescending(t => t.RegistrationDate.HasValue).
                 ThenByDescending(t => t.RegistrationDate).
@@ -54,7 +61,8 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
                     Owner = t.Owner,
                     SourceId = t.SourceId,
                     Status = t.StatusCategory,
-                    Classes = t.Classes.Select(c => c.ClassNumber).ToArray(),
+                    Classes = t.Classes.
+                        Select(c => c.ClassNumber).ToArray(),
                     Provider = t.Source
                 })
                 .ToListAsync(cancellationToken);
@@ -68,10 +76,15 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
             };
         }
 
-        public async Task<PagedResult<TrademarkSingleItemDto>> GetUserCollectionAsync(string userId, CollectionSortBy sortBy, 
-            int currentPage, int resultsPerPage, CancellationToken cancellationToken = default)
+        public async Task<PagedResult<TrademarkSingleItemDto>>GetUserCollectionAsync(
+            string userId, 
+            CollectionSortBy sortBy, 
+            int currentPage, 
+            int resultsPerPage, 
+            CancellationToken cancellationToken = default)
         {
-            var (normalizedPage, normalizedPageSize) = PagingConfiguration.NormalizePaging(currentPage, resultsPerPage);
+            var (normalizedPage, normalizedPageSize) = 
+                PagingConfiguration.NormalizePaging(currentPage, resultsPerPage);
 
             var collectionLinks = userTrademarkRepository.QueryUserLinks(userId);
 
@@ -123,12 +136,19 @@ namespace IPNoticeHub.Services.Trademarks.Implementations
             };
         }
 
-        public Task<bool> IsInCollectionAsync(string userId, int trademarkId, bool includeSoftDeleted = false, CancellationToken cancellationToken = default)
+        public Task<bool>IsInCollectionAsync(
+            string userId, 
+            int trademarkId, 
+            bool includeSoftDeleted = false, 
+            CancellationToken cancellationToken = default)
         {
             return userTrademarkRepository.IsLinkedAsync(userId, trademarkId, includeSoftDeleted, cancellationToken);
         }
 
-        public async Task RemoveAsync(string userId, int trademarkId, CancellationToken cancellationToken = default)
+        public async Task RemoveAsync(
+            string userId, 
+            int trademarkId, 
+            CancellationToken cancellationToken = default)
         {
             await userTrademarkRepository.SoftRemoveAsync(userId, trademarkId, cancellationToken);
         }

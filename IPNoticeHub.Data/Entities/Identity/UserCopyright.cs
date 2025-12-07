@@ -1,5 +1,4 @@
 ﻿using IPNoticeHub.Data.Entities.CopyrightRegistration;
-using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace IPNoticeHub.Data.Entities.Identity
@@ -15,11 +14,7 @@ namespace IPNoticeHub.Data.Entities.Identity
         public CopyrightEntity CopyrightRegistration { get; set; } = null!;
 
 
-        [Comment("Date when the user added this copyright registration to their account")]
         public DateTime DateAdded { get; set; } = DateTime.UtcNow;
-
-
-        [Comment("Indicates whether the user soft-deleted this from their collection/watchlist")]
         public bool IsDeleted { get; set; } = false;
     }
 }

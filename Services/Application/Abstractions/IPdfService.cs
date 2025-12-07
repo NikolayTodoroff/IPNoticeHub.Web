@@ -2,9 +2,17 @@
 {
     public interface IPdfService
     {
-        Task<byte[]> GenerateCopyrightDMCAAsync(DMCAInput data, CancellationToken cancellation = default);
-        Task<byte[]> GenerateCopyrightCeaseDesistAsync(CeaseDesistInput data, CancellationToken cancellation = default);
-        Task<byte[]> GenerateTrademarkCeaseDesistAsync(CeaseDesistInput data, CancellationToken cancellation = default);
+        Task<byte[]> GenerateCopyrightDMCAAsync(
+            DMCAInput data, 
+            CancellationToken cancellation = default);
+
+        Task<byte[]> GenerateCopyrightCeaseDesistAsync(
+            CeaseDesistInput data, 
+            CancellationToken cancellation = default);
+
+        Task<byte[]> GenerateTrademarkCeaseDesistAsync(
+            CeaseDesistInput data, 
+            CancellationToken cancellation = default);
     }
 
     public sealed record CeaseDesistInput(
