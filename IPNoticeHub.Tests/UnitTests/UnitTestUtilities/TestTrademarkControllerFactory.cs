@@ -1,5 +1,6 @@
 ﻿using IPNoticeHub.Services.Application.Abstractions;
 using IPNoticeHub.Services.Application.Implementations;
+using IPNoticeHub.Services.DocumentLibrary.Abstractions;
 using IPNoticeHub.Services.Trademarks.Abstractions;
 using IPNoticeHub.Web.Controllers;
 using Microsoft.AspNetCore.Http;
@@ -25,7 +26,8 @@ namespace IPNoticeHub.Tests.UnitTests.TestUtilities
             out ITempDataDictionary tempData,
             ITrademarkSearchService? searchService = null,
             ITrademarkWatchlistService? watchlistService = null,
-            string? userId = null)
+            string? userId = null,
+            IDocumentLibraryService? documentLibraryService = null)
         {
             return CreateTrademarksControllerCore(
                 collectionService,
@@ -34,7 +36,8 @@ namespace IPNoticeHub.Tests.UnitTests.TestUtilities
                 userId,
                 out tempData,
                 includeTempData: true,
-                includeUrlHelper: true);
+                includeUrlHelper: true,
+                documentLibraryService: documentLibraryService);
         }
 
         /// <summary>
@@ -46,7 +49,8 @@ namespace IPNoticeHub.Tests.UnitTests.TestUtilities
             ITrademarkCollectionService collectionService,
             ITrademarkSearchService? searchService = null,
             ITrademarkWatchlistService? watchlistService = null,
-            string? userId = null)
+            string? userId = null,
+            IDocumentLibraryService? documentLibraryService = null)
         {
             return CreateTrademarksControllerCore(
                 collectionService,
@@ -55,7 +59,8 @@ namespace IPNoticeHub.Tests.UnitTests.TestUtilities
                 userId,
                 out _,
                 includeTempData: true,
-                includeUrlHelper: false);
+                includeUrlHelper: false,
+                documentLibraryService: documentLibraryService);
         }
 
         /// <summary>
@@ -69,11 +74,13 @@ namespace IPNoticeHub.Tests.UnitTests.TestUtilities
             string? userId,
             out ITempDataDictionary tempData,
             bool includeTempData,
-            bool includeUrlHelper)
+            bool includeUrlHelper,
+            IDocumentLibraryService? documentLibraryService = null)
         {
             var httpContext = new DefaultHttpContext();
             var pdfService = new Mock<IPdfService>();
             var letterTemplate = new Mock<ILetterTemplateProvider>();
+            var docLibraryService = documentLibraryService ?? Mock.Of<IDocumentLibraryService>();
 
             // Simulate an authenticated user if a user ID is provided.
             if (!string.IsNullOrEmpty(userId))
@@ -87,7 +94,8 @@ namespace IPNoticeHub.Tests.UnitTests.TestUtilities
                 collectionService,
                 watchlistService ?? Mock.Of<ITrademarkWatchlistService>(),
                 pdfService.Object,
-                letterTemplate.Object)
+                letterTemplate.Object,
+                docLibraryService)
             {
                 ControllerContext = new ControllerContext { HttpContext = httpContext }
             };

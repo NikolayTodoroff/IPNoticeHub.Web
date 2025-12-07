@@ -1,5 +1,6 @@
 ﻿using IPNoticeHub.Services.Application.Abstractions;
 using IPNoticeHub.Services.Copyrights.Abstractions;
+using IPNoticeHub.Services.DocumentLibrary.Abstractions;
 using IPNoticeHub.Web.Controllers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -23,11 +24,16 @@ namespace IPNoticeHub.Tests.UnitTests.TestUtilities
             var httpContext = new DefaultHttpContext();
             var pdfService = new Mock<IPdfService>();
             var letterTemplate = new Mock<ILetterTemplateProvider>();
+            var documentLibraryService = new Mock<IDocumentLibraryService>();
 
             if (!string.IsNullOrEmpty(userId))
                 httpContext.User = CreatePrincipal(userId);
 
-            var controller = new CopyrightsController(service ?? Mock.Of<ICopyrightService>(), pdfService.Object,letterTemplate.Object)
+            var controller = new CopyrightsController(
+                service ?? Mock.Of<ICopyrightService>(),
+                pdfService.Object,
+                letterTemplate.Object,
+                documentLibraryService.Object)
             {
                 ControllerContext = new ControllerContext { HttpContext = httpContext }
             };

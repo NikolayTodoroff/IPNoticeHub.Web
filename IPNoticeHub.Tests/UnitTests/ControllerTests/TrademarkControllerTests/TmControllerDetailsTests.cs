@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Common.EnumConstants;
 using IPNoticeHub.Services.Application.Abstractions;
+using IPNoticeHub.Services.DocumentLibrary.Abstractions;
 using IPNoticeHub.Services.Trademarks.Abstractions;
 using IPNoticeHub.Services.Trademarks.DTOs;
 using IPNoticeHub.Tests.UnitTests.TestUtilities;
@@ -30,7 +31,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
         {
             var entityId = Guid.NewGuid();
 
-            var detailsDTO = new TrademarkDetailsDto
+            var dto = new TrademarkDetailsDto
             {
                 Id = 42,
                 PublicId = entityId,
@@ -45,17 +46,18 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
             var tmWatchlistService = new Mock<ITrademarkWatchlistService>();
             var pdfService = new Mock<IPdfService>();
             var letterTemplate = new Mock<ILetterTemplateProvider>();
+            var documentLibraryService = new Mock<IDocumentLibraryService>();
 
             tmSearchService
                 .Setup(s => s.GetDetailsAsync(entityId, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(detailsDTO);
+                .ReturnsAsync(dto);
 
             tmWatchlistService
                 .Setup(s => s.ExistsAsync("user-123", 42, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(false);
 
             var controller = new TrademarksController(
-                tmSearchService.Object, tmCollectionService.Object, tmWatchlistService.Object, pdfService.Object, letterTemplate.Object);
+                tmSearchService.Object, tmCollectionService.Object, tmWatchlistService.Object, pdfService.Object, letterTemplate.Object, documentLibraryService.Object);
 
             var user = new ClaimsPrincipal(new ClaimsIdentity(
                 new[] { new Claim(ClaimTypes.NameIdentifier, "user-123") }, "TestAuth"));
@@ -94,13 +96,14 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
             var tmWatchlistService = new Mock<ITrademarkWatchlistService>();
             var pdfService = new Mock<IPdfService>();
             var letterTemplate = new Mock<ILetterTemplateProvider>();
+            var documentLibraryService = new Mock<IDocumentLibraryService>();
 
             tmSearchService.Setup(s => s.GetDetailsAsync(entityId, It.IsAny<CancellationToken>())).
                 ReturnsAsync((TrademarkDetailsDto?)null);
 
 
             var controller = new TrademarksController
-                (tmSearchService.Object, tmCollectionService.Object, tmWatchlistService.Object, pdfService.Object,letterTemplate.Object);
+                (tmSearchService.Object, tmCollectionService.Object, tmWatchlistService.Object, pdfService.Object, letterTemplate.Object, documentLibraryService.Object);
 
             var detailsResult = await controller.Details(entityId, default);
 
@@ -129,13 +132,15 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
                 .ReturnsAsync(detailsDTO);
 
             var collectionService = new Mock<ITrademarkCollectionService>();
-            
+            var documentLibraryService = new Mock<IDocumentLibraryService>();
+
             var controller = TestTrademarkControllerFactory.CreateTrademarksController(
                 collectionService: collectionService.Object,
                 out _,
                 searchService: tmSearchService.Object,
                 watchlistService: null,
-                userId: "user-1"
+                userId: "user-1",
+                documentLibraryService: documentLibraryService.Object
             );
 
             controller.ConfigureUrlHelper(returnUrl: safeReturnUrl, isLocal: true);
@@ -172,13 +177,15 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
                      .ReturnsAsync(detailsDTO);
 
             var collectionService = new Mock<ITrademarkCollectionService>();
+            var documentLibraryService = new Mock<IDocumentLibraryService>();
 
             var controller = TestTrademarkControllerFactory.CreateTrademarksController(
                 collectionService: collectionService.Object,
                 out _,
                 searchService: tmSearchService.Object,
                 watchlistService: null,
-                userId: "user-1"
+                userId: "user-1",
+                documentLibraryService: documentLibraryService.Object
             );
 
             controller.ConfigureUrlHelper(returnUrl: externalUrl, isLocal: false);
