@@ -59,13 +59,6 @@
 <div class="container py-4">
     <h2 class="mb-3 text-center">Edit DMCA Notice</h2>
 
-    @if (TempData["SuccessMessage"] is string successMessage)
-    {
-        <div class="alert alert-success text-center" role="alert">
-            @successMessage
-        </div>
-    }
-
     <div class="a4-frame">
         <div id="a4Editor" class="a4-paper" contenteditable="true">
             @Model.BodyTemplate

@@ -1,7 +1,7 @@
 ﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
     <div class="container">
-        <!-- Homepage - Trademark Search -->
+
         <a class="navbar-brand fw-semibold" asp-controller="Home" asp-action="Index">IPNoticeHub</a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
@@ -12,7 +12,6 @@
         <div class="collapse navbar-collapse" id="mainNav">
             <ul class="navbar-nav me-auto">
 
-                <!-- Admin Dashboard -->
                 @if (User.IsInRole("Admin"))
                 {
                     <li class="nav-item">
@@ -22,12 +21,10 @@
                     </li>
                 }
 
-                <!-- Trademark Search (Homepage) -->
                 <li class="nav-item">
                     <a class="nav-link" asp-controller="Home" asp-action="Index">Trademark Search</a>
                 </li>
 
-                <!-- Trademark/Copyright Collections -->
                 <li class="nav-item">
                     <a class="nav-link" asp-controller="Trademarks" asp-action="MyCollection">My Trademarks</a>
                 </li>
@@ -35,12 +32,11 @@
                     <a class="nav-link" asp-controller="Copyrights" asp-action="MyCollection">My Copyrights</a>
                 </li>
 
-                <!-- Watchlist/Documents -->
                 <li class="nav-item">
                     <a class="nav-link" asp-controller="Watchlist" asp-action="Index">Watchlist</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" asp-controller="Documents" asp-action="Index">Document Library</a>
+                    <a class="nav-link" asp-controller="DocumentLibrary" asp-action="Index">Document Library</a>
                 </li>
             </ul>
 

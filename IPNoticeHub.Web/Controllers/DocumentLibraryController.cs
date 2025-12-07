@@ -1,8 +1,6 @@
 ﻿using IPNoticeHub.Common.EnumConstants;
 using IPNoticeHub.Common.Infrastructure;
 using IPNoticeHub.Services.DocumentLibrary.Abstractions;
-using IPNoticeHub.Services.DocumentLibrary.Implementations;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IPNoticeHub.Web.Controllers
