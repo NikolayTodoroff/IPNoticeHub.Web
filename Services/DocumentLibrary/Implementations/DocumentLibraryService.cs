@@ -9,9 +9,9 @@ namespace IPNoticeHub.Services.DocumentLibrary.Implementations
 {
     public class DocumentLibraryService : IDocumentLibraryService
     {
-        private readonly ILegalDocumentRepository documentRepository;
+        private readonly IDocumentLibraryRepository documentRepository;
 
-        public DocumentLibraryService(ILegalDocumentRepository repository)
+        public DocumentLibraryService(IDocumentLibraryRepository repository)
         {
             documentRepository = repository;
         }

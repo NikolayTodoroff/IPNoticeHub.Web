@@ -3,7 +3,7 @@ using IPNoticeHub.Data.Entities.LegalDocuments;
 
 namespace IPNoticeHub.Data.Repositories.DocumentLibrary.Abstractions
 {
-    public interface ILegalDocumentRepository
+    public interface IDocumentLibraryRepository
     {
         Task<int> AddAsync(LegalDocument document,CancellationToken cancellationToken = default);
 

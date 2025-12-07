@@ -4,24 +4,26 @@ using IPNoticeHub.Data.Repositories.Application.Abstractions;
 using IPNoticeHub.Data.Repositories.Application.Implementations;
 using IPNoticeHub.Data.Repositories.Copyrights.Abstractions;
 using IPNoticeHub.Data.Repositories.Copyrights.Implementations;
+using IPNoticeHub.Data.Repositories.DocumentLibrary.Abstractions;
+using IPNoticeHub.Data.Repositories.DocumentLibrary.Implementations;
 using IPNoticeHub.Data.Repositories.Trademarks.Abstractions;
 using IPNoticeHub.Data.Repositories.Trademarks.Implementations;
+using IPNoticeHub.Data.Seed;
 using IPNoticeHub.Services.Application.Abstractions;
 using IPNoticeHub.Services.Application.Extensions;
 using IPNoticeHub.Services.Application.Implementations;
 using IPNoticeHub.Services.Copyrights.Abstractions;
 using IPNoticeHub.Services.Copyrights.Implementations;
+using IPNoticeHub.Services.DocumentLibrary.Abstractions;
+using IPNoticeHub.Services.DocumentLibrary.Implementations;
 using IPNoticeHub.Services.Trademarks.Abstractions;
 using IPNoticeHub.Services.Trademarks.Implementations;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 using QuestPDF.Infrastructure;
-using IPNoticeHub.Data.Seed;
+using System.Security.Claims;
 using static IPNoticeHub.Common.ValidationConstants.AuthRedirectPaths;
-using Microsoft.AspNetCore.Identity;
-using IPNoticeHub.Data.Repositories.DocumentLibrary.Implementations;
-using IPNoticeHub.Data.Repositories.DocumentLibrary.Abstractions;
 
 namespace IPNoticeHub.Web
 {
@@ -86,7 +88,8 @@ namespace IPNoticeHub.Web
             builder.Services.AddScoped<IUserCopyrightRepository, UserCopyrightRepository>();
             builder.Services.AddScoped<ICopyrightService, CopyrightService>();
 
-            builder.Services.AddScoped<ILegalDocumentRepository, LegalDocumentRepository>();
+            builder.Services.AddScoped<IDocumentLibraryRepository, DocumentLibraryRepository>();
+            builder.Services.AddScoped<IDocumentLibraryService, DocumentLibraryService>();
 
             QuestPDF.Settings.License = LicenseType.Community;
 

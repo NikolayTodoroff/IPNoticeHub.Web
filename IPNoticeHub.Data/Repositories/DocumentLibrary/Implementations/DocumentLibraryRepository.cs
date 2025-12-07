@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IPNoticeHub.Data.Repositories.DocumentLibrary.Implementations
 {
-    public class LegalDocumentRepository : ILegalDocumentRepository
+    public class DocumentLibraryRepository : IDocumentLibraryRepository
     {
         private readonly IPNoticeHubDbContext dbContext;
 
-        public LegalDocumentRepository(IPNoticeHubDbContext context)
+        public DocumentLibraryRepository(IPNoticeHubDbContext context)
         {
             dbContext = context;
         }
