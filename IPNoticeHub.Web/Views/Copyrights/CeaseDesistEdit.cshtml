@@ -36,6 +36,13 @@
 <div class="container py-4">
     <h2>Edit Cease &amp; Desist</h2>
 
+    @if (TempData["SuccessMessage"] is string successMessage)
+    {
+        <div class="alert alert-success text-center" role="alert">
+            @successMessage
+        </div>
+    }
+
     <div class="a4-frame">
         <textarea asp-for="BodyTemplate" class="a4-paper" id="BodyTemplate"></textarea>
     </div>

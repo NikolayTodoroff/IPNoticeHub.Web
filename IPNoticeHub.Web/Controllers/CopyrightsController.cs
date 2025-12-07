@@ -3,11 +3,14 @@ using IPNoticeHub.Common.Infrastructure;
 using IPNoticeHub.Services.Application.Abstractions;
 using IPNoticeHub.Services.Copyrights.Abstractions;
 using IPNoticeHub.Services.DocumentLibrary.Abstractions;
+using IPNoticeHub.Services.DocumentLibrary.DTOs;
 using IPNoticeHub.Web.Infrastructure.Mappings;
 using IPNoticeHub.Web.Models.Copyrights;
 using IPNoticeHub.Web.Models.PdfGeneration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
 using static IPNoticeHub.Common.ValidationConstants.StatusMessages;
 using static IPNoticeHub.Web.Infrastructure.ApplyEntityDetails;
@@ -35,7 +38,6 @@ namespace IPNoticeHub.Web.Controllers
             this.documentLibraryService = documentLibraryService;
         }
 
-
         [HttpGet]
         public async Task<IActionResult> MyCollection(
             CollectionSortBy sortBy = CollectionSortBy.DateAddedDesc,
@@ -60,14 +62,12 @@ namespace IPNoticeHub.Web.Controllers
             return View(viewmodel);
         }
 
-
         [HttpGet]
         public IActionResult Create()
         {
             ViewBag.YearOptions = YearOptionsProvider.BuildYearOptions();
             return View(new CopyrightCreateViewModel());
         }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -97,7 +97,6 @@ namespace IPNoticeHub.Web.Controllers
                 RedirectToAction(nameof(Details), new { id = publicId });
         }
 
-
         [Authorize(Policy = "HasUserId")]
         [HttpGet("Copyrights/Edit/{id:guid}")]
         public async Task<IActionResult> Edit(
@@ -124,7 +123,6 @@ namespace IPNoticeHub.Web.Controllers
             ViewBag.YearOptions = YearOptionsProvider.BuildYearOptions();
             return View(viewModel);
         }
-
 
         [Authorize(Policy = "HasUserId")]
         [HttpPost("Copyrights/Edit/{id:guid}")]
@@ -174,7 +172,6 @@ namespace IPNoticeHub.Web.Controllers
 
             return RedirectToAction(nameof(Details), new { id });
         }
-
 
         [HttpGet]
         public async Task<IActionResult> Details(
@@ -318,7 +315,9 @@ namespace IPNoticeHub.Web.Controllers
         }
 
         [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
-        public IActionResult CeaseDesistEdit(CeaseDesistViewModel viewModel, string command,
+        public async Task<IActionResult> CeaseDesistEdit(
+            CeaseDesistViewModel viewModel, 
+            string command,
             CancellationToken cancellationToken = default)
         {
             if (!User.TryGetUserId(out var userId)) return Forbid();
@@ -327,10 +326,23 @@ namespace IPNoticeHub.Web.Controllers
 
             if (command == "save")
             {
-                TempData["SuccessMessage"] = 
+                var dto = new DocumentCreateDto
+                {
+                    RelatedPublicId = viewModel.PublicId,
+                    SourceType = DocumentSourceType.Copyright,
+                    TemplateType = LetterTemplateType.CeaseAndDesist,
+                    DocumentTitle = null,
+                    IpTitle = viewModel.WorkTitle,
+                    RegistrationNumber = viewModel.RegistrationNumber,
+                    BodyTemplate = viewModel.BodyTemplate
+                };
+
+                await documentLibraryService.SaveDocumentAsync(userId, dto, cancellationToken);
+
+                TempData["SuccessMessage"] =
                     "Your Cease & Desist letter was successfully saved to your library.";
 
-                return RedirectToAction("Index", "DocumentLibrary");
+                return RedirectToAction(nameof(CeaseDesistEdit), viewModel);
             }
 
             else if (command == "done")
@@ -396,7 +408,6 @@ namespace IPNoticeHub.Web.Controllers
                 $"DMCA-{dto.Title}-{DateTime.UtcNow:DateTimeFormat}.pdf");
         }
 
-
         [HttpGet, Authorize(Policy = "HasUserId")]
         public async Task<IActionResult> DmcaPreview(DMCAViewModel viewModel)
         {
@@ -461,20 +472,34 @@ namespace IPNoticeHub.Web.Controllers
         }
 
         [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
-        public IActionResult DmcaEdit(
-            DMCAViewModel model, 
-            string command)
+        public async Task<IActionResult> DmcaEdit(
+            DMCAViewModel viewModel, 
+            string command,
+            CancellationToken cancellationToken = default)
         {
             if (!User.TryGetUserId(out var userId)) return Forbid();
 
-            if (!ModelState.IsValid) return View("DmcaEdit", model);
+            if (!ModelState.IsValid) return View("DmcaEdit", viewModel);
 
             if (command == "save")
             {
-                TempData["SuccessMessage"] = 
+                var dto = new DocumentCreateDto
+                {
+                    RelatedPublicId = viewModel.PublicId,
+                    SourceType = DocumentSourceType.Copyright,
+                    TemplateType = LetterTemplateType.Dmca,
+                    DocumentTitle = null,
+                    IpTitle = viewModel.WorkTitle,
+                    RegistrationNumber = viewModel.RegistrationNumber,
+                    BodyTemplate = viewModel.BodyTemplate
+                };
+
+                await documentLibraryService.SaveDocumentAsync(userId, dto, cancellationToken);
+
+                TempData["SuccessMessage"] =
                     "Your DMCA notice was successfully saved to your library.";
 
-                return RedirectToAction("Index", "DocumentLibrary");
+                return RedirectToAction(nameof(DmcaEdit), viewModel);
             }
 
             else if (command == "done")
@@ -484,11 +509,9 @@ namespace IPNoticeHub.Web.Controllers
 
             else
             {
-                return View("DmcaEdit", model);
+                return View("DmcaEdit", viewModel);
             }
         }
-
-
 
         private IActionResult? RedirectToLocal(string? returnUrl)
         {

@@ -59,19 +59,23 @@
 <div class="container py-4">
     <h2 class="mb-3 text-center">Edit DMCA Notice</h2>
 
-    <!-- Main editable letter -->
+    @if (TempData["SuccessMessage"] is string successMessage)
+    {
+        <div class="alert alert-success text-center" role="alert">
+            @successMessage
+        </div>
+    }
+
     <div class="a4-frame">
         <div id="a4Editor" class="a4-paper" contenteditable="true">
             @Model.BodyTemplate
         </div>
     </div>
 
-    <!-- Original body so Reset can restore it -->
     <textarea id="OriginalBodyTemplate" class="d-none">@Model.BodyTemplate</textarea>
 
     <div class="mt-3 d-flex flex-wrap gap-2 justify-content-center">
 
-        <!-- Generate PDF (existing Dmca action) -->
         <form asp-action="Dmca" method="post" id="dmcaGenerateForm" class="d-inline">
             @Html.AntiForgeryToken()
 
@@ -90,7 +94,6 @@
             <input type="hidden" asp-for="NationOfFirstPublication" />
             <input type="hidden" asp-for="GoodFaithStatement" />
 
-            <!-- Body for PDF; will be filled from editor before submit -->
             <textarea asp-for="BodyTemplate" id="BodyTemplatePdf" class="d-none"></textarea>
 
             <button type="submit" class="btn btn-primary" id="btnGenerate">
@@ -98,7 +101,6 @@
             </button>
         </form>
 
-        <!-- Save / Done / Reset -->
         <form asp-action="DmcaEdit" method="post" id="dmcaEditForm" class="d-inline">
             @Html.AntiForgeryToken()
 
@@ -117,7 +119,6 @@
             <input type="hidden" asp-for="NationOfFirstPublication" />
             <input type="hidden" asp-for="GoodFaithStatement" />
 
-            <!-- Body for Save/Done; will be filled from editor before submit -->
             <textarea asp-for="BodyTemplate" id="BodyTemplateEdit" class="d-none"></textarea>
 
             <button type="button"
@@ -152,23 +153,18 @@
             const editBody = document.getElementById('BodyTemplateEdit');
 
             function plainText(el) {
-                // Normalize line endings a bit
                 return el.innerText.replace(/\r\n/g, '\n');
             }
-
-            // Reset: restore original text when Edit was opened
             document.getElementById('btnReset')
                 .addEventListener('click', function () {
                     editor.innerText = original.value;
                 });
 
-            // Before Generate PDF submit: copy current editor text into hidden field
             document.getElementById('dmcaGenerateForm')
                 .addEventListener('submit', function () {
                     pdfBody.value = plainText(editor);
                 });
 
-            // Before Save/Done submit: copy current editor text into hidden field
             document.getElementById('dmcaEditForm')
                 .addEventListener('submit', function () {
                     editBody.value = plainText(editor);
