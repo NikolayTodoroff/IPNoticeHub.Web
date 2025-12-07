@@ -34,47 +34,6 @@ namespace IPNoticeHub.Services.Application.Implementations
                 BuildLetter(data.BodyTemplate, BuildCnDTemplateVars(data)));
         }
 
-        public Task<byte[]> CaptureDocumentSnapshotAsync(
-            string title,
-            string body,
-            DateTime createdOn,
-            CancellationToken cancellation = default)
-        {
-            var document = Document.Create(container =>
-            {
-                container.Page(page =>
-                {
-                    page.Size(PageSizes.A4);
-                    page.Margin(40);
-                    page.PageColor(Colors.White);
-                    page.DefaultTextStyle(x => x.FontSize(11).FontFamily("Times New Roman"));
-
-                    page.Content().Column(col =>
-                    {
-                        col.Item().Row(row =>
-                        {
-                            row.RelativeItem().Text(title)
-                                .SemiBold()
-                                .FontSize(14);
-
-                            row.ConstantItem(120)
-                               .AlignRight()
-                               .Text(createdOn.ToString("yyyy-MM-dd"));
-                        });
-
-                        col.Item().PaddingVertical(10).LineHorizontal(0.5f);
-
-                        col.Item().PaddingTop(20)
-                           .Text(body)
-                           .LineHeight(1.4f);
-                    });
-                });
-            });
-
-            var bytes = document.GeneratePdf();
-            return Task.FromResult(bytes);
-        }
-
         private static Dictionary<string, string> BuildCnDTemplateVars(
             CeaseDesistInput input) => new()
         {

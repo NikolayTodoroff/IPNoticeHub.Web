@@ -292,8 +292,18 @@ namespace IPNoticeHub.Web.Controllers
                     SourceType = DocumentSourceType.Trademark,
                     TemplateType = LetterTemplateType.CeaseAndDesist,
                     DocumentTitle = null,
-                    IpTitle = viewModel.WorkTitle,
+                    IpTitle = viewModel.WorkTitle ?? "Intellectual property identified by registration",
                     RegistrationNumber = viewModel.RegistrationNumber,
+
+                    SenderName = viewModel.SenderName,
+                    SenderAddress = viewModel.SenderAddress,
+                    SenderEmail = viewModel.SenderEmail,
+
+                    RecipientName = viewModel.RecipientName,
+                    RecipientAddress = viewModel.RecipientAddress,
+                    RecipientEmail = viewModel.RecipientEmail,
+
+                    LetterDate = DateTime.UtcNow,
                     BodyTemplate = viewModel.BodyTemplate
                 };
 

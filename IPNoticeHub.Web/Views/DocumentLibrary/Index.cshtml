@@ -79,9 +79,13 @@
                         <td class="align-middle">@doc.CreatedOn.ToString("yyyy-MM-dd")</td>
 
                         <td class="text-end align-middle">
-                            <button class="btn btn-sm btn-primary me-1" disabled>
-                                Generate
-                            </button>
+                            <form asp-action="Generate" method="post" class="d-inline">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@doc.Id" />
+                                <button type="submit" class="btn btn-sm btn-primary me-1">
+                                    Generate
+                                </button>
+                            </form>
 
                             <form asp-action="Delete" method="post" class="d-inline ms-1 mb-0">
                                 @Html.AntiForgeryToken()

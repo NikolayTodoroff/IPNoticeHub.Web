@@ -4,6 +4,7 @@ using IPNoticeHub.Data.Repositories.DocumentLibrary.Abstractions;
 using IPNoticeHub.Services.Application.Abstractions;
 using IPNoticeHub.Services.DocumentLibrary.Abstractions;
 using IPNoticeHub.Services.DocumentLibrary.DTOs;
+using System.ComponentModel.Design;
 using System.Globalization;
 using static IPNoticeHub.Common.ValidationConstants.FormattingConstants;
 namespace IPNoticeHub.Services.DocumentLibrary.Implementations
@@ -55,7 +56,21 @@ namespace IPNoticeHub.Services.DocumentLibrary.Implementations
                 RegistrationNumber = dto.RegistrationNumber,
                 BodyTemplate = dto.BodyTemplate,
                 CreatedOn = DateTime.UtcNow,
-                IsDeleted = false
+                IsDeleted = false,
+
+                SenderName = dto.SenderName,
+                SenderAddress = dto.SenderAddress,
+                SenderEmail = dto.SenderEmail,
+                RecipientName = dto.RecipientName,
+                RecipientAddress = dto.RecipientAddress,
+                RecipientEmail = dto.RecipientEmail,
+                LetterDate = dto.LetterDate,
+                InfringingUrl = dto.InfringingUrl,
+                GoodFaithStatement = dto.GoodFaithStatement,
+                AdditionalFacts = dto.AdditionalFacts,
+                YearOfCreation = dto.YearOfCreation,
+                DateOfPublication = dto.DateOfPublication,
+                NationOfFirstPublication = dto.NationOfFirstPublication
             };
 
             return await documentRepository.AddAsync(entity, cancellationToken);
@@ -148,11 +163,64 @@ namespace IPNoticeHub.Services.DocumentLibrary.Implementations
 
             if (document is null) return null;
 
-            var pdfBytes = await pdfService.CaptureDocumentSnapshotAsync(
-            document.DocumentTitle,
-            document.BodyTemplate,
-            document.CreatedOn,
-            cancellationToken);
+            byte[] pdfBytes;
+
+            if (document.TemplateType == LetterTemplateType.CeaseAndDesist)
+            {
+                var input = new CeaseDesistInput(
+                    SenderName: document.SenderName,
+                    SenderAddress: document.SenderAddress,
+                    RecipientName: document.RecipientName,
+                    RecipientAddress: document.RecipientAddress,
+                    Date: document.LetterDate,
+                    WorkTitle: document.IpTitle ?? string.Empty,
+                    RegistrationNumber: document.RegistrationNumber ?? string.Empty,
+                    AdditionalFacts: document.AdditionalFacts,
+                    BodyTemplate: document.BodyTemplate
+                );
+
+                if (document.SourceType == DocumentSourceType.Trademark)
+                {
+                    pdfBytes = await pdfService.GenerateTrademarkCeaseDesistAsync(
+                        input, cancellationToken);
+                }
+
+                else
+                {
+                    pdfBytes = await pdfService.GenerateCopyrightCeaseDesistAsync(
+                        input,  cancellationToken);
+                }
+            }
+
+            else if (document.TemplateType == LetterTemplateType.Dmca)
+            {
+                var input = new DMCAInput(
+                    SenderName: document.SenderName,
+                    SenderEmail: document.SenderEmail ?? string.Empty,
+                    SenderAddress: document.SenderAddress,
+                    RecipientName: document.RecipientName,
+                    RecipientEmail: document.RecipientEmail ?? string.Empty,
+                    RecipientAddress: document.RecipientAddress,
+                    Date: document.LetterDate,
+                    WorkTitle: document.IpTitle ?? string.Empty,
+                    RegistrationNumber: document.RegistrationNumber ?? string.Empty,
+                    YearOfCreation: document.YearOfCreation,
+                    DateOfPublication: document.DateOfPublication,
+                    NationOfFirstPublication: document.NationOfFirstPublication,
+                    InfringingUrl: document.InfringingUrl ?? string.Empty,
+                    GoodFaithStatement: document.GoodFaithStatement ?? string.Empty,
+                    BodyTemplate: document.BodyTemplate
+                );
+
+                pdfBytes = await pdfService.GenerateCopyrightDMCAAsync(input, cancellationToken);
+            }
+
+            else
+            {
+                throw new InvalidOperationException(
+                    $"Unsupported document combination: " +
+                    $"{document.SourceType} / {document.TemplateType}");
+            }
 
             string documentTitle = string.Join(
             "_", document.DocumentTitle.Split(Path.GetInvalidFileNameChars(),

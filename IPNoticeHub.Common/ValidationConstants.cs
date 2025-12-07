@@ -46,6 +46,22 @@
             public const int RegistrationNumberMaxLength = 50;
         }
 
+        public static class InfringementPlaceholderConstants
+        {
+            public const int SenderNameMaxLength = 256;
+            public const int SenderAddressMaxLength = 512;
+            public const int SenderEmailMaxLength = 256;
+
+            public const int RecipientNameMaxLength = 256;
+            public const int RecipientAddressMaxLength = 512;
+            public const int RecipientEmailMaxLength = 256;
+
+            public const int InfringingUrlMaxLength = 2048;
+            public const int GoodFaithStatementMaxLength = 2048;
+            public const int AdditionalFactsMaxLength = 2048;
+            public const int NationOfFirstPublicationMaxLength = 256;
+        }
+
         public static class PagingConstants
         {
             public const int DefaultPage = 1;

@@ -327,11 +327,21 @@ namespace IPNoticeHub.Web.Controllers
                 var dto = new DocumentCreateDto
                 {
                     RelatedPublicId = viewModel.PublicId,
-                    SourceType = DocumentSourceType.Copyright,
+                    SourceType = DocumentSourceType.Trademark,
                     TemplateType = LetterTemplateType.CeaseAndDesist,
                     DocumentTitle = null,
-                    IpTitle = viewModel.WorkTitle,
+                    IpTitle = viewModel.WorkTitle ?? "Intellectual property identified by registration",
                     RegistrationNumber = viewModel.RegistrationNumber,
+
+                    SenderName = viewModel.SenderName,
+                    SenderAddress = viewModel.SenderAddress,
+                    SenderEmail = viewModel.SenderEmail,
+
+                    RecipientName = viewModel.RecipientName,
+                    RecipientAddress = viewModel.RecipientAddress,
+                    RecipientEmail = viewModel.RecipientEmail,
+
+                    LetterDate = DateTime.UtcNow,
                     BodyTemplate = viewModel.BodyTemplate
                 };
 
@@ -484,11 +494,27 @@ namespace IPNoticeHub.Web.Controllers
                 var dto = new DocumentCreateDto
                 {
                     RelatedPublicId = viewModel.PublicId,
-                    SourceType = DocumentSourceType.Copyright,
-                    TemplateType = LetterTemplateType.Dmca,
+                    SourceType = DocumentSourceType.Trademark,
+                    TemplateType = LetterTemplateType.CeaseAndDesist,
                     DocumentTitle = null,
-                    IpTitle = viewModel.WorkTitle,
+                    IpTitle = viewModel.WorkTitle ?? "Intellectual property identified by registration",
                     RegistrationNumber = viewModel.RegistrationNumber,
+
+                    SenderName = viewModel.SenderName,
+                    SenderAddress = viewModel.SenderAddress,
+                    SenderEmail = viewModel.SenderEmail,
+
+                    RecipientName = viewModel.RecipientName,
+                    RecipientAddress = viewModel.RecipientAddress,
+                    RecipientEmail = viewModel.RecipientEmail,
+
+                    InfringingUrl = viewModel.InfringingUrl,
+                    GoodFaithStatement = viewModel.GoodFaithStatement,
+                    YearOfCreation  = viewModel.YearOfCreation,
+                    DateOfPublication = viewModel.DateOfPublication,
+                    NationOfFirstPublication = viewModel.NationOfFirstPublication,
+
+                    LetterDate = DateTime.UtcNow,
                     BodyTemplate = viewModel.BodyTemplate
                 };
 
