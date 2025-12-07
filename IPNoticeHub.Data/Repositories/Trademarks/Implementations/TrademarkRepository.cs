@@ -30,10 +30,7 @@ namespace IPNoticeHub.Data.Repositories.Trademarks.Implementations
                Include(t => t.Events).
                AsSplitQuery();
 
-            if (asNoTracking)
-            {
-                trademarksQuery = trademarksQuery.AsNoTracking();
-            }
+            if (asNoTracking) trademarksQuery = trademarksQuery.AsNoTracking();
 
             return await trademarksQuery.SingleOrDefaultAsync(t => t.PublicId == publicId, cancellationToken);
         }
@@ -47,9 +44,6 @@ namespace IPNoticeHub.Data.Repositories.Trademarks.Implementations
                 FirstOrDefaultAsync(cancellationToken);
         }
 
-        /// <summary>
-        /// Queries the TrademarkEntity table based on the provided filter and optional navigation properties.
-        /// </summary>
         public IQueryable<TrademarkEntity> Query(TrademarkSearchFilter filter, bool includeNav = false)
         {
             IQueryable<TrademarkEntity> trademarksQuery = dbContext.TrademarkRegistrations;
@@ -118,9 +112,6 @@ namespace IPNoticeHub.Data.Repositories.Trademarks.Implementations
             return trademarksQuery.AsNoTracking();
         }
 
-        /// <summary>
-        /// Applies a normalized search filter to the provided trademark query based on the given search term.
-        /// </summary>
         private static IQueryable<TrademarkEntity> ApplyNormalizedSearchFilter(IQueryable<TrademarkEntity> query,
             string normalizedSearchTerm, bool exactMatch)
         {

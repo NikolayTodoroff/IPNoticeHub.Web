@@ -62,23 +62,29 @@ namespace IPNoticeHub.Web
             });
 
             builder.Services.AddControllersWithViews();
+            builder.Services.AddRazorPages();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddSingleton<IStatusLabelProvider, StatusLabelProvider>();
+            builder.Services.AddSingleton<ILetterTemplateProvider, LetterTemplateProvider>();
+            builder.Services.AddScoped<IPdfService, PdfService>();
+
             builder.Services.AddScoped<ITrademarkRepository, TrademarkRepository>();
+            builder.Services.AddScoped<ITrademarkReadRepository, TrademarkReadRepository>();
+            builder.Services.AddScoped<ITrademarkStatusSnapshotRepository, TrademarkStatusSnapshotRepository>();
             builder.Services.AddScoped<IUserTrademarkRepository, UserTrademarkRepository>();
-            builder.Services.AddScoped<ITrademarkSearchService, TrademarkSearchService>();
+            builder.Services.AddScoped<IUserTrademarkWatchlistRepository, UserTrademarkWatchlistRepository>();
+
             builder.Services.AddScoped<ITrademarkCollectionService, TrademarkCollectionService>();
+            builder.Services.AddScoped<ITrademarkSearchQueryService, TrademarkSearchQueryService>();
+            builder.Services.AddScoped<ITrademarkSearchService, TrademarkSearchService>();
+            builder.Services.AddScoped<ITrademarkWatchlistService, TrademarkWatchlistService>();
+
             builder.Services.AddScoped<ICopyrightRepository, CopyrightRepository>();
             builder.Services.AddScoped<IUserCopyrightRepository, UserCopyrightRepository>();
             builder.Services.AddScoped<ICopyrightService, CopyrightService>();
-            builder.Services.AddScoped<ITrademarkReadRepository, TrademarkReadRepository>();
-            builder.Services.AddScoped<ITrademarkSearchQueryService, TrademarkSearchQueryService>();
-            builder.Services.AddScoped<ITrademarkStatusSnapshotRepository, TrademarkStatusSnapshotRepository>();
-            builder.Services.AddScoped<IUserTrademarkWatchlistRepository, UserTrademarkWatchlistRepository>();
-            builder.Services.AddScoped<ITrademarkWatchlistService, TrademarkWatchlistService>();
-            builder.Services.AddSingleton<IStatusLabelProvider, StatusLabelProvider>();
-            builder.Services.AddScoped<IPdfService, PdfService>();
-            builder.Services.AddSingleton<ILetterTemplateProvider, LetterTemplateProvider>();
-            builder.Services.AddRazorPages();
+
+            builder.Services.AddScoped<ILegalDocumentRepository, LegalDocumentRepository>();
 
             QuestPDF.Settings.License = LicenseType.Community;
 
