@@ -1,6 +1,7 @@
 ﻿using IPNoticeHub.Common.EnumConstants;
 using IPNoticeHub.Common.Infrastructure;
 using IPNoticeHub.Services.DocumentLibrary.Abstractions;
+using IPNoticeHub.Services.DocumentLibrary.Implementations;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IPNoticeHub.Web.Controllers
@@ -64,6 +65,31 @@ namespace IPNoticeHub.Web.Controllers
 
             TempData["SuccessMessage"] = "Document deleted successfully.";
             return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Generate(
+            int id, 
+            CancellationToken cancellationToken = default)
+        {
+            if (!User.TryGetUserId(out var userId)) return Forbid();
+
+            var restoredFile = await documentService.RestoreDocumentSnapshotAsync(
+                id, 
+                userId, 
+                cancellationToken);
+
+            if (restoredFile is null)
+            {
+                TempData["ErrorMessage"] = 
+                    "Document not found or you do not have access to it.";
+
+                return RedirectToAction(nameof(Index));
+            }
+
+            var (fileName, pdf) = restoredFile.Value;
+
+            return File(pdf, "application/pdf", fileName);
         }
     }
 }

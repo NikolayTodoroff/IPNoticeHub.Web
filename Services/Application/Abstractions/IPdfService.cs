@@ -13,6 +13,12 @@
         Task<byte[]> GenerateTrademarkCeaseDesistAsync(
             CeaseDesistInput data, 
             CancellationToken cancellation = default);
+
+        Task<byte[]> CaptureDocumentSnapshotAsync(
+            string title,
+            string body,
+            DateTime createdOn,
+            CancellationToken cancellation = default);
     }
 
     public sealed record CeaseDesistInput(

@@ -26,5 +26,10 @@ namespace IPNoticeHub.Services.DocumentLibrary.Abstractions
             int documentId,
             string userId,
             CancellationToken cancellationToken = default);
+
+        Task<(string fileName, byte[] Pdf)?> RestoreDocumentSnapshotAsync(
+            int documentId,
+            string userId,
+            CancellationToken cancellationToken = default);
     }
 }

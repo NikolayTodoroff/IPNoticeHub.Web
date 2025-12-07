@@ -1,6 +1,7 @@
 ﻿using IPNoticeHub.Common.EnumConstants;
 using IPNoticeHub.Data.Entities.LegalDocuments;
 using IPNoticeHub.Data.Repositories.DocumentLibrary.Abstractions;
+using IPNoticeHub.Services.Application.Abstractions;
 using IPNoticeHub.Services.DocumentLibrary.Abstractions;
 using IPNoticeHub.Services.DocumentLibrary.DTOs;
 using System.Globalization;
@@ -10,10 +11,14 @@ namespace IPNoticeHub.Services.DocumentLibrary.Implementations
     public class DocumentLibraryService : IDocumentLibraryService
     {
         private readonly IDocumentLibraryRepository documentRepository;
+        private readonly IPdfService pdfService;
 
-        public DocumentLibraryService(IDocumentLibraryRepository repository)
+        public DocumentLibraryService(
+            IDocumentLibraryRepository repository,
+            IPdfService pdfService)
         {
             documentRepository = repository;
+            this.pdfService = pdfService;
         }
 
         public async Task<int> SaveDocumentAsync(
@@ -125,7 +130,43 @@ namespace IPNoticeHub.Services.DocumentLibrary.Implementations
                 cancellationToken);
 
             return true;
-        }  
+        }
+
+        public async Task<(string fileName, byte[] Pdf)?> RestoreDocumentSnapshotAsync(
+            int documentId, 
+            string userId, 
+            CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(userId))
+                throw new ArgumentException(
+                   "UserId cannot be null or whitespace.", nameof(userId));
+
+            var document = await documentRepository.GetDocumentByIdAsync(
+                documentId, 
+                userId, 
+                cancellationToken);
+
+            if (document is null) return null;
+
+            var pdfBytes = await pdfService.CaptureDocumentSnapshotAsync(
+            document.DocumentTitle,
+            document.BodyTemplate,
+            document.CreatedOn,
+            cancellationToken);
+
+            string documentTitle = string.Join(
+            "_", document.DocumentTitle.Split(Path.GetInvalidFileNameChars(),
+                StringSplitOptions.RemoveEmptyEntries));
+
+            if (string.IsNullOrWhiteSpace(documentTitle))
+            {
+                documentTitle = "IP Infringement Notice";
+            } 
+
+            var fileName = $"{documentTitle}-{document.CreatedOn:DateTimeFormat}.pdf";
+
+            return (fileName, pdfBytes);
+        }
 
         private static string GenerateDefaultTitle(DocumentCreateDto dto)
         {

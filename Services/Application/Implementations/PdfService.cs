@@ -10,22 +10,73 @@ namespace IPNoticeHub.Services.Application.Implementations
 {
     public sealed class PdfService : IPdfService
     {
-        public Task<byte[]> GenerateCopyrightCeaseDesistAsync(CeaseDesistInput data, CancellationToken cancellation = default)
+        public Task<byte[]> GenerateCopyrightCeaseDesistAsync(
+            CeaseDesistInput data, 
+            CancellationToken cancellation = default)
         {
-            return Task.FromResult(BuildLetter(data.BodyTemplate, BuildCnDTemplateVars(data)));
+            return Task.FromResult(
+                BuildLetter(data.BodyTemplate, BuildCnDTemplateVars(data)));
         }
 
-        public Task<byte[]> GenerateCopyrightDMCAAsync(DMCAInput data, CancellationToken cancellation = default)
+        public Task<byte[]> GenerateCopyrightDMCAAsync(
+            DMCAInput data, 
+            CancellationToken cancellation = default)
         {
-            return Task.FromResult(BuildLetter(data.BodyTemplate, BuildDMCATemplateVars(data)));
+            return Task.FromResult(
+                BuildLetter(data.BodyTemplate, BuildDMCATemplateVars(data)));
         }
 
-        public Task<byte[]> GenerateTrademarkCeaseDesistAsync(CeaseDesistInput data, CancellationToken cancellation = default)
+        public Task<byte[]> GenerateTrademarkCeaseDesistAsync(
+            CeaseDesistInput data, 
+            CancellationToken cancellation = default)
         {
-            return Task.FromResult(BuildLetter(data.BodyTemplate, BuildCnDTemplateVars(data)));
+            return Task.FromResult(
+                BuildLetter(data.BodyTemplate, BuildCnDTemplateVars(data)));
         }
 
-        private static Dictionary<string, string> BuildCnDTemplateVars(CeaseDesistInput input) => new()
+        public Task<byte[]> CaptureDocumentSnapshotAsync(
+            string title,
+            string body,
+            DateTime createdOn,
+            CancellationToken cancellation = default)
+        {
+            var document = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A4);
+                    page.Margin(40);
+                    page.PageColor(Colors.White);
+                    page.DefaultTextStyle(x => x.FontSize(11).FontFamily("Times New Roman"));
+
+                    page.Content().Column(col =>
+                    {
+                        col.Item().Row(row =>
+                        {
+                            row.RelativeItem().Text(title)
+                                .SemiBold()
+                                .FontSize(14);
+
+                            row.ConstantItem(120)
+                               .AlignRight()
+                               .Text(createdOn.ToString("yyyy-MM-dd"));
+                        });
+
+                        col.Item().PaddingVertical(10).LineHorizontal(0.5f);
+
+                        col.Item().PaddingTop(20)
+                           .Text(body)
+                           .LineHeight(1.4f);
+                    });
+                });
+            });
+
+            var bytes = document.GeneratePdf();
+            return Task.FromResult(bytes);
+        }
+
+        private static Dictionary<string, string> BuildCnDTemplateVars(
+            CeaseDesistInput input) => new()
         {
             ["SenderName"] = input.SenderName,
             ["SenderAddress"] = input.SenderAddress,
@@ -37,7 +88,8 @@ namespace IPNoticeHub.Services.Application.Implementations
             ["AdditionalFacts"] = input.AdditionalFacts ?? string.Empty
         };
 
-        private static Dictionary<string, string> BuildDMCATemplateVars(DMCAInput input) => new()
+        private static Dictionary<string, string> BuildDMCATemplateVars(
+            DMCAInput input) => new()
         {
             ["SenderName"] = input.SenderName,
             ["SenderEmail"] = input.SenderEmail,
@@ -55,12 +107,12 @@ namespace IPNoticeHub.Services.Application.Implementations
             ["GoodFaithStatement"] = input.GoodFaithStatement
         };
 
-        private static byte[] BuildLetter(string template,Dictionary<string, string> vars)
+        private static byte[] BuildLetter(
+            string template,
+            Dictionary<string, string> vars)
         {
-            // Replacing the {{Placeholders}} in the template
             string resolved = ReplaceTemplate(template, vars);
 
-            // Building the letter layout (header → body → footer)
             var bytes = Document.Create(container =>
             {
                 container.Page(page =>
@@ -118,10 +170,8 @@ namespace IPNoticeHub.Services.Application.Implementations
         {
             if (string.IsNullOrWhiteSpace(text)) return Enumerable.Empty<string>();
 
-            // Split whenever there are two or more consecutive blank lines
             var parts = Regex.Split(text.Trim(), @"(\r?\n){2,}");
 
-            // Return only non-empty paragraphs
             return parts.Select(p => p.Trim()).Where(p => p.Length > 0);
         }
 
@@ -133,10 +183,8 @@ namespace IPNoticeHub.Services.Application.Implementations
             {
                 string key = match.Groups[1].Value;
 
-                // If we have a value for this key, use it; otherwise leave the placeholder unchanged
                 if (vars.TryGetValue(key, out string? value)) return value ?? string.Empty;
 
-                // keeps {{UnknownKey}} visible
                 return match.Value; 
             });
         }
