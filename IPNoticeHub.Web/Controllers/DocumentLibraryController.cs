@@ -47,7 +47,6 @@ namespace IPNoticeHub.Web.Controllers
 
             await documentService.RenameDocumentAsync(id, userId, newTitle, cancellationToken);
 
-            TempData["SuccessMessage"] = "Document renamed successfully.";
             return RedirectToAction(nameof(Index));
         }
 

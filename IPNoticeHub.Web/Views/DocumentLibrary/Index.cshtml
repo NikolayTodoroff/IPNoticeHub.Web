@@ -1,16 +1,25 @@
-﻿@model IReadOnlyList<IPNoticeHub.Services.DocumentLibrary.DTOs.DocumentListItemDto>
+﻿@using static IPNoticeHub.Web.Infrastructure.EnumExtensions;
+@model IReadOnlyList<IPNoticeHub.Services.DocumentLibrary.DTOs.DocumentListItemDto>
 
 @{
     ViewData["Title"] = "Document Library";
 }
 
+<style>
+.rename-btn {
+    text-decoration: none !important;
+    box-shadow: none !important;
+}
+
+.rename-btn:hover,
+.rename-btn:focus {
+    text-decoration: none !important;
+    box-shadow: none !important;
+}
+</style>
+
 <div class="container py-4">
     <h2>Document Library</h2>
-
-    @* @if (TempData["SuccessMessage"] is string success)
-    {
-        <div class="alert alert-success">@success</div>
-    } *@
 
     @if (TempData["ErrorMessage"] is string error)
     {
@@ -46,21 +55,24 @@
                                 @Html.AntiForgeryToken()
                                 <input type="hidden" name="id" value="@doc.Id" />
 
-                                <button type="submit"
-                                        class="btn btn-link p-0 me-2"
-                                        title="Rename document">
+                                <button type="button"
+                                        class="btn btn-link p-0 me-2 rename-btn"
+                                        title="Rename document"
+                                        onclick="focusTitleInput(this);">
                                     <span class="fs-5">✏️</span>
                                 </button>
 
                                 <input type="text"
                                        name="newTitle"
                                        value="@doc.DocumentTitle"
-                                       class="form-control form-control-plaintext flex-grow-1 py-0"
-                                       style="min-width: 260px;" />
+                                       class="form-control form-control-plaintext flex-grow-1"
+                                       style="min-width: 260px;"
+                                       onkeydown="submitOnEnter(event, this);" />
+
                             </form>
                         </td>
 
-                        <td class="align-middle">@doc.TemplateType</td>
+                        <td class="align-middle">@doc.TemplateType.GetDisplayName()</td>
                         <td class="align-middle">@doc.SourceType</td>
                         <td class="align-middle">@doc.IpTitle</td>
                         <td class="align-middle">@doc.RegistrationNumber</td>
@@ -85,3 +97,21 @@
         </table>
     }
 </div>
+
+<script>
+    function focusTitleInput(button) {
+        const input = button.closest("form").querySelector("input[name='newTitle']");
+        if (input) {
+            input.focus();
+            input.select();
+        }
+    }
+
+    function submitOnEnter(event, input) {
+        if (event.key === "Enter") {
+            event.preventDefault(); // stop newline / default behavior
+            input.closest("form").submit(); // submit rename
+        }
+    }
+</script>
+
