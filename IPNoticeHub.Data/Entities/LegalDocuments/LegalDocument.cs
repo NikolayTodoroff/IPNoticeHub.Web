@@ -13,7 +13,7 @@ namespace IPNoticeHub.Data.Entities.LegalDocuments
         public int Id { get; set; }
 
         [Required, ForeignKey(nameof(User))]
-        public string UserId { get; set; } = string.Empty;
+        public string UserId { get; set; } = null!;
 
         public ApplicationUser User { get; set; } = null!;
 
@@ -25,7 +25,7 @@ namespace IPNoticeHub.Data.Entities.LegalDocuments
         public LetterTemplateType TemplateType { get; set; }
 
         [Required, MaxLength(LegalDocumentsTitleMaxLength)]
-        public string DocumentTitle { get; set; } = string.Empty;
+        public string DocumentTitle { get; set; } = null!;
 
         [MaxLength(IpTitleMaxLength)]
         public string? IpTitle { get; set; }
@@ -38,19 +38,19 @@ namespace IPNoticeHub.Data.Entities.LegalDocuments
         public bool IsDeleted { get; set; }
 
         [Required, MaxLength(SenderNameMaxLength)]
-        public string SenderName { get; set; } = string.Empty;
+        public string SenderName { get; set; } = null!;
 
         [Required, MaxLength(SenderAddressMaxLength)]
-        public string SenderAddress { get; set; } = string.Empty;
+        public string SenderAddress { get; set; } = null!;
 
         [MaxLength(SenderEmailMaxLength)]
         public string? SenderEmail { get; set; }
 
         [Required, MaxLength(RecipientNameMaxLength)]
-        public string RecipientName { get; set; } = string.Empty;
+        public string RecipientName { get; set; } = null!;
 
         [Required, MaxLength(RecipientAddressMaxLength)]
-        public string RecipientAddress { get; set; } = string.Empty;
+        public string RecipientAddress { get; set; } = null!;
 
         [MaxLength(RecipientEmailMaxLength)]
         public string? RecipientEmail { get; set; }
@@ -74,6 +74,6 @@ namespace IPNoticeHub.Data.Entities.LegalDocuments
         public string? NationOfFirstPublication { get; set; }
 
         [Required]
-        public string BodyTemplate { get; set; } = string.Empty;
+        public string BodyTemplate { get; set; } = null!;
     }
 }

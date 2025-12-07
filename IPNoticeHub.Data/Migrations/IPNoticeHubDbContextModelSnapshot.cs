@@ -77,7 +77,7 @@ namespace IPNoticeHub.Data.Migrations
                     b.HasIndex("RegistrationNumber")
                         .IsUnique();
 
-                    b.ToTable("CopyrightRegistrations");
+                    b.ToTable("CopyrightRegistrations", (string)null);
 
                     b.HasData(
                         new
@@ -216,7 +216,7 @@ namespace IPNoticeHub.Data.Migrations
                     b.HasIndex("ApplicationUserId", "CopyrightRegistrationId")
                         .IsUnique();
 
-                    b.ToTable("UserCopyrights");
+                    b.ToTable("UserCopyrights", (string)null);
 
                     b.HasData(
                         new
@@ -248,7 +248,7 @@ namespace IPNoticeHub.Data.Migrations
 
                     b.HasIndex("TrademarkId");
 
-                    b.ToTable("UserTrademarks");
+                    b.ToTable("UserTrademarks", (string)null);
 
                     b.HasData(
                         new
@@ -317,7 +317,7 @@ namespace IPNoticeHub.Data.Migrations
                         .IsUnique()
                         .HasFilter("[IsDeleted] = 0");
 
-                    b.ToTable("UserTrademarkWatchlists");
+                    b.ToTable("UserTrademarkWatchlists", (string)null);
                 });
 
             modelBuilder.Entity("IPNoticeHub.Data.Entities.LegalDocuments.LegalDocument", b =>
@@ -368,7 +368,7 @@ namespace IPNoticeHub.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("LegalDocuments");
+                    b.ToTable("LegalDocuments", (string)null);
                 });
 
             modelBuilder.Entity("IPNoticeHub.Data.Entities.TrademarkRegistration.TrademarkClassAssignment", b =>
@@ -382,7 +382,7 @@ namespace IPNoticeHub.Data.Migrations
 
                     b.HasKey("TrademarkRegistrationId", "ClassNumber");
 
-                    b.ToTable("TrademarkClassAssignment");
+                    b.ToTable("TrademarkClassAssignment", (string)null);
 
                     b.HasData(
                         new
@@ -488,7 +488,7 @@ namespace IPNoticeHub.Data.Migrations
                         .IsUnique()
                         .HasDatabaseName("UX_Trademark_Source_SourceId");
 
-                    b.ToTable("TrademarkRegistrations");
+                    b.ToTable("TrademarkRegistrations", (string)null);
 
                     b.HasData(
                         new
@@ -565,7 +565,7 @@ namespace IPNoticeHub.Data.Migrations
 
                     b.HasIndex("TrademarkId");
 
-                    b.ToTable("TrademarkEvents");
+                    b.ToTable("TrademarkEvents", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
