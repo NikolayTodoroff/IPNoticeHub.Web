@@ -11,6 +11,5 @@ namespace IPNoticeHub.Data.Repositories.Trademarks.Abstractions
         Task<int?> GetIdByPublicIdAsync(Guid publicId, CancellationToken cancellationToken);
 
         Task<bool> ExistsAsync(int id, CancellationToken cancellationToken);
-
     }
 }
