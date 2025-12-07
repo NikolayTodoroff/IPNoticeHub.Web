@@ -2,7 +2,7 @@
 {
     public enum LetterTemplateType
     {
-        CeaseDesist = 1,
+        CeaseAndDesist = 1,
         Dmca = 2
     }
 }
