@@ -9,8 +9,6 @@ using IPNoticeHub.Web.Models.Copyrights;
 using IPNoticeHub.Web.Models.PdfGeneration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Runtime.CompilerServices;
-using System.Threading;
 using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
 using static IPNoticeHub.Common.ValidationConstants.StatusMessages;
 using static IPNoticeHub.Web.Infrastructure.ApplyEntityDetails;
@@ -526,7 +524,8 @@ namespace IPNoticeHub.Web.Controllers
 
         private static (CopyrightWorkType workType, string? other) TypeOfWorkMapper(string stored)
         {
-            if (Enum.TryParse<CopyrightWorkType>(stored, ignoreCase: true, out var parsedWorkType) &&
+            if (Enum.TryParse<CopyrightWorkType>(
+                stored, ignoreCase: true, out var parsedWorkType) &&
                 parsedWorkType != CopyrightWorkType.Other)
             {
                 return (parsedWorkType, null);
