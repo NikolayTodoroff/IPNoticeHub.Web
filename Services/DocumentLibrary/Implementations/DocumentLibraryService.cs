@@ -130,7 +130,7 @@ namespace IPNoticeHub.Services.DocumentLibrary.Implementations
             return true;
         }
 
-        public async Task EditDocumentAsync(
+        public async Task UpdateDocumentAsync(
             string userId, 
             DocumentEditDto dto, 
             CancellationToken cancellationToken = default)
@@ -161,7 +161,7 @@ namespace IPNoticeHub.Services.DocumentLibrary.Implementations
             document.NationOfFirstPublication = dto.NationOfFirstPublication;
             document.BodyTemplate = dto.BodyTemplate;
 
-            await documentRepository.EditAsync(document, cancellationToken);
+            await documentRepository.UpdateAsync(document, cancellationToken);
         }
 
         public async Task<bool>DeleteDocumentAsync(

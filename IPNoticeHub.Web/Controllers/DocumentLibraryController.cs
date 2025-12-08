@@ -1,6 +1,8 @@
 ﻿using IPNoticeHub.Common.EnumConstants;
 using IPNoticeHub.Common.Infrastructure;
 using IPNoticeHub.Services.DocumentLibrary.Abstractions;
+using IPNoticeHub.Web.Infrastructure.Mappings;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IPNoticeHub.Web.Controllers
@@ -31,6 +33,39 @@ namespace IPNoticeHub.Web.Controllers
 
             return View(documents);
         }
+
+        [HttpGet]
+        [Authorize(Policy = "HasUserId")]
+        public async Task<IActionResult> Edit(
+            int id, 
+            CancellationToken cancellationToken = default)
+        {
+            if (!User.TryGetUserId(out var userId)) return Forbid();
+
+            var document = await documentService.GetDocumentByIdAsync(
+                id, 
+                userId, 
+                cancellationToken);
+            
+            if (document is null) return NotFound();
+
+            if (document.TemplateType == LetterTemplateType.CeaseAndDesist)
+            {
+                var vm = TrademarksMapping.MapLegalDocumentToCeaseDesistViewModel(document);
+                vm.Command = "update";          // hidden field or similar
+                return View("CeaseDesistEdit", vm);
+            }
+
+            if (document.TemplateType == LetterTemplateType.Dmca)
+            {
+                var vm = CopyrightsMapping.MapLegalDocumentToDmcaViewModel(document);
+                vm.Command = "update";
+                return View("DmcaEdit", vm);
+            }
+
+            return BadRequest("Unsupported template.");
+        }
+
 
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> Rename(
