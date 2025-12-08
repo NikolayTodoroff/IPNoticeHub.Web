@@ -2,8 +2,6 @@
 using static IPNoticeHub.Common.ValidationConstants;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
-using QuestPDF.Infrastructure;
-using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 
 namespace IPNoticeHub.Services.Application.Implementations
@@ -70,10 +68,8 @@ namespace IPNoticeHub.Services.Application.Implementations
     string template,
     Dictionary<string, string> vars)
         {
-            // 1) Replace {{placeholders}} but do NOT trim or split
             string resolved = ReplaceTemplate(template, vars);
 
-            // Normalise newlines just in case (optional but nice)
             resolved = resolved.Replace("\r\n", "\n");
 
             var bytes = Document.Create(container =>
@@ -84,7 +80,6 @@ namespace IPNoticeHub.Services.Application.Implementations
                     page.Margin(36);
                     page.DefaultTextStyle(x => x.FontSize(11));
 
-                    // HEADER: sender + date
                     page.Header().Column(col =>
                     {
                         col.Item()
@@ -107,7 +102,6 @@ namespace IPNoticeHub.Services.Application.Implementations
                         }
                     });
 
-                    // CONTENT: recipient + full body text
                     page.Content().Column(col =>
                     {
                         var recipientName = vars.GetValueOrDefault("RecipientName");
@@ -121,15 +115,12 @@ namespace IPNoticeHub.Services.Application.Implementations
                                .Text($"{recipientName}\n{recipientAddress}".Trim());
                         }
 
-                        // Key change: render the whole body in one go,
-                        // preserving all line breaks from the textarea.
                         col.Item()
                            .Text(resolved)
                            .AlignLeft()
                            .LineHeight(1.4f);
                     });
 
-                    // FOOTER
                     page.Footer()
                         .AlignRight()
                         .Text(txt =>
@@ -144,7 +135,6 @@ namespace IPNoticeHub.Services.Application.Implementations
 
             return bytes;
         }
-
 
         private static string ReplaceTemplate(string template, Dictionary<string, string> vars)
         {
