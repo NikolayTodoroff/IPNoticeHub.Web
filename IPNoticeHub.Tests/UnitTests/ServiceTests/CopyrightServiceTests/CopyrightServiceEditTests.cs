@@ -11,14 +11,6 @@ using NUnit.Framework;
 
 namespace IPNoticeHub.Tests.UnitTests.ServiceTests.CopyrightServiceTests
 {
-    /// <summary>
-    /// Section: CopyrightService – Edit
-    /// - Confirms EditAsync updates all fields when the user is linked to the copyright entity.  
-    /// - Validates EditAsync returns false if no item is found for the provided PublicId.  
-    /// - Ensures EditAsync returns false if the user and copyright entity lack an active link.  
-    /// - Verifies EditAsync returns false when attempting to change the RegistrationNumber to one that already exists.  
-    /// - Confirms EditAsync updates other fields even when the RegistrationNumber remains unchanged.
-    /// </summary>
     [TestFixture]
     public class CopyrightServiceEditTests
     {

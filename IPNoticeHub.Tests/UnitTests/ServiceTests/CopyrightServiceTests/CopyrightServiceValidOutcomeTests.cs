@@ -1,8 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using FluentAssertions;
+﻿using FluentAssertions;
 using IPNoticeHub.Common.EnumConstants;
 using IPNoticeHub.Data;
 using IPNoticeHub.Data.Entities.Identity;
@@ -18,14 +14,6 @@ using NUnit.Framework;
 
 namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Copyrights
 {
-    /// <summary>
-    /// Summary: CopyrightService – Create, Retrieve Details, and Remove Operations
-    /// - Validates that CreateAsync with a new registration creates a copyright entity, associates it with the user, and returns the PublicId.
-    /// - Confirms that CreateAsync with an existing registration number avoids duplication, reuses the existing entity, and links it to the user.
-    /// - Ensures GetDetailsAsync for a linked copyright returns a fully populated details DTO.
-    /// - Verifies that RemoveAsync for a linked and existing entity returns true and performs a soft delete of the link.
-    /// - Validates that GetUserCollectionAsync normalizes invalid page or size inputs and returns the correct data.
-    /// </summary>
     [TestFixture]
     public class CopyrightServiceValidOutcomeTests
     {

@@ -8,13 +8,6 @@ using NUnit.Framework;
 
 namespace IPNoticeHub.Tests.UnitTests.ServiceTests.CopyrightServiceTests
 {
-    /// <summary>
-    /// Section: CopyrightService – Edge cases
-    ///  - Verifies GetDetailsAsync with unknown PublicId returns null.
-    ///  - Verifies GetDetailsAsync when user not linked returns null.
-    ///  - Verifies RemoveAsync when PublicId missing returns false.
-    ///  - Verifies GetUserCollectionAsync when user has no links returns empty page with sane metadata.
-    /// </summary>
     [TestFixture]
     public class CopyrightServiceEdgeCasesTests
     {
