@@ -30,8 +30,4 @@
     <ProjectReference Include="..\Services\IPNoticeHub.Services.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="UnitTests\RepositoryTests\ApplicationRepositoryTests\" />
-  </ItemGroup>
-
 </Project>

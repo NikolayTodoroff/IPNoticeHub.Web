@@ -4,7 +4,7 @@ using IPNoticeHub.Services.Application.Implementations;
 using NUnit.Framework;
 using QuestPDF.Infrastructure;
 
-namespace IPNoticeHub.Tests.UnitTests.PdfTests
+namespace IPNoticeHub.Tests.UnitTests.ServiceTests.PdfServiceTests
 {
     public class PdfServiceTests
     {

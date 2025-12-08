@@ -11,13 +11,6 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
     [TestFixture]
     public class TmRepoCaseInsensitivityContractTests
     {
-        /// <summary>
-        /// Section: Case-insensitivity contracts
-        /// Ensure that Wordmark and Owner searches ignore case for both Exact and Contains modes.
-        /// Trademark data is stored with inconsistent capitalization, and users rarely type search
-        /// terms with perfect casing. If queries ever become case-sensitive, valid marks could be
-        /// missed silently, causing broken search results in the UI.
-        /// </summary>
         [Test]
         public void Query_Wordmark_ExactSearch_IsCaseInsensitive()
         {

@@ -8,10 +8,10 @@ using IPNoticeHub.Services.DocumentLibrary.Implementations;
 using Moq;
 using NUnit.Framework;
 
-namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryTests
+namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
 {
     [TestFixture]
-    public class DocumentLibraryServiceTests
+    public class DocumentLibraryTests
     {
         [Test]
         public async Task SaveDocumentAsync_GeneratesDefaultTitle_WhenTitleMissing()

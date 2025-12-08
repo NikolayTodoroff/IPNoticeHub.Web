@@ -7,7 +7,7 @@ using IPNoticeHub.Services.Application.Implementations;
 using Moq;
 using NUnit.Framework;
 
-namespace IPNoticeHub.Tests.UnitTests.ServiceTests.ApplicationServiceTests
+namespace IPNoticeHub.Tests.UnitTests.ServiceTests.WatchlistServiceTests
 {
     [TestFixture]
     public class TrademarkWatchlistServiceTests
