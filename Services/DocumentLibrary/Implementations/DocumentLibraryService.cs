@@ -130,6 +130,40 @@ namespace IPNoticeHub.Services.DocumentLibrary.Implementations
             return true;
         }
 
+        public async Task EditDocumentAsync(
+            string userId, 
+            DocumentEditDto dto, 
+            CancellationToken cancellationToken = default)
+        {
+            var document = await documentRepository.GetDocumentByIdAsync(
+                dto.Id, 
+                userId, 
+                cancellationToken);
+
+            if (document is null) throw new InvalidOperationException(
+                "Document not found or access denied.");
+
+            document.DocumentTitle = dto.DocumentTitle ?? GenerateDefaultTitle(dto);
+            document.IpTitle = dto.IpTitle;
+            document.RegistrationNumber = dto.RegistrationNumber;
+            document.SenderName = dto.SenderName;
+            document.SenderAddress = dto.SenderAddress;
+            document.SenderEmail = dto.SenderEmail;
+            document.RecipientName = dto.RecipientName;
+            document.RecipientAddress = dto.RecipientAddress;
+            document.RecipientEmail = dto.RecipientEmail;
+            document.LetterDate = dto.LetterDate;
+            document.InfringingUrl = dto.InfringingUrl;
+            document.GoodFaithStatement = dto.GoodFaithStatement;
+            document.AdditionalFacts = dto.AdditionalFacts;
+            document.YearOfCreation = dto.YearOfCreation;
+            document.DateOfPublication = dto.DateOfPublication;
+            document.NationOfFirstPublication = dto.NationOfFirstPublication;
+            document.BodyTemplate = dto.BodyTemplate;
+
+            await documentRepository.EditAsync(document, cancellationToken);
+        }
+
         public async Task<bool>DeleteDocumentAsync(
             int documentId, 
             string userId, 

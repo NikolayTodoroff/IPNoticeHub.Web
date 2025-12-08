@@ -32,5 +32,10 @@ namespace IPNoticeHub.Services.DocumentLibrary.Abstractions
             int documentId,
             string userId,
             CancellationToken cancellationToken = default);
+
+        Task EditDocumentAsync(
+            string userId, 
+            DocumentEditDto dto, 
+            CancellationToken cancellationToken = default);
     }
 }
