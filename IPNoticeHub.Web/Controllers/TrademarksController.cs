@@ -175,7 +175,7 @@ namespace IPNoticeHub.Web.Controllers
             bool isInCollection = await tmCollectionService.IsInCollectionAsync(
                 userId, 
                 dto.Id, 
-                false, 
+                includeSoftDeleted: false, 
                 cancellationToken);
 
             if (!isInCollection) return NotFound();
@@ -325,7 +325,5 @@ namespace IPNoticeHub.Web.Controllers
                 return View("CeaseDesistEdit", viewModel);
             }
         }
-
-
     }
 }

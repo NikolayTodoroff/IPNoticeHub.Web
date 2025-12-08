@@ -1,16 +1,16 @@
 ﻿using IPNoticeHub.Common.EnumConstants;
 using IPNoticeHub.Common.Infrastructure;
 using IPNoticeHub.Services.DocumentLibrary.Abstractions;
-using IPNoticeHub.Services.DocumentLibrary.Implementations;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IPNoticeHub.Web.Controllers
 {
     public class DocumentLibraryController : Controller
     {
-        private readonly IDocumentLibraryService documentService;   
+        private readonly IDocumentLibraryService documentService;
 
-        public DocumentLibraryController(IDocumentLibraryService service)
+        public DocumentLibraryController(
+            IDocumentLibraryService service)
         {
             this.documentService = service;
         }

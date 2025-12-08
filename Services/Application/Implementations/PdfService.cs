@@ -67,72 +67,84 @@ namespace IPNoticeHub.Services.Application.Implementations
         };
 
         private static byte[] BuildLetter(
-            string template,
-            Dictionary<string, string> vars)
+    string template,
+    Dictionary<string, string> vars)
         {
+            // 1) Replace {{placeholders}} but do NOT trim or split
             string resolved = ReplaceTemplate(template, vars);
+
+            // Normalise newlines just in case (optional but nice)
+            resolved = resolved.Replace("\r\n", "\n");
 
             var bytes = Document.Create(container =>
             {
                 container.Page(page =>
                 {
-                    page.Margin(36);
                     page.Size(PageSizes.A4);
+                    page.Margin(36);
                     page.DefaultTextStyle(x => x.FontSize(11));
 
+                    // HEADER: sender + date
                     page.Header().Column(col =>
                     {
-                        col.Item().Text(vars.GetValueOrDefault("SenderName")).SemiBold();
+                        col.Item()
+                           .Text(vars.GetValueOrDefault("SenderName"))
+                           .SemiBold();
 
                         var address = vars.GetValueOrDefault("SenderAddress");
-
                         if (!string.IsNullOrWhiteSpace(address))
                         {
                             col.Item().Text(address);
                         }
 
                         var date = vars.GetValueOrDefault("Date");
-
                         if (!string.IsNullOrWhiteSpace(date))
                         {
-                            col.Item().Text(date).FontSize(10).FontColor(Colors.Grey.Darken2);
+                            col.Item()
+                               .Text(date)
+                               .FontSize(10)
+                               .FontColor(Colors.Grey.Darken2);
                         }
                     });
 
+                    // CONTENT: recipient + full body text
                     page.Content().Column(col =>
                     {
                         var recipientName = vars.GetValueOrDefault("RecipientName");
                         var recipientAddress = vars.GetValueOrDefault("RecipientAddress");
 
-                        if (!string.IsNullOrWhiteSpace(recipientName) || !string.IsNullOrWhiteSpace(recipientAddress))
+                        if (!string.IsNullOrWhiteSpace(recipientName) ||
+                            !string.IsNullOrWhiteSpace(recipientAddress))
                         {
-                            col.Item().PaddingBottom(8).Text($"{recipientName}\n{recipientAddress}".Trim());
+                            col.Item()
+                               .PaddingBottom(8)
+                               .Text($"{recipientName}\n{recipientAddress}".Trim());
                         }
 
-                        foreach (var paragraph in SplitIntoParagraphs(resolved))
-                        {
-                            col.Item().PaddingBottom(6).Text(paragraph).AlignLeft();
-                        }
+                        // Key change: render the whole body in one go,
+                        // preserving all line breaks from the textarea.
+                        col.Item()
+                           .Text(resolved)
+                           .AlignLeft()
+                           .LineHeight(1.4f);
                     });
 
-                    page.Footer().AlignRight().Text(txt =>
-                    {
-                        txt.Span("Generated with IPNoticeHub").FontSize(9).FontColor(Colors.Grey.Darken1);
-                    });
+                    // FOOTER
+                    page.Footer()
+                        .AlignRight()
+                        .Text(txt =>
+                        {
+                            txt.Span("Generated with IPNoticeHub")
+                               .FontSize(9)
+                               .FontColor(Colors.Grey.Darken1);
+                        });
                 });
-            }).GeneratePdf();
+            })
+            .GeneratePdf();
 
             return bytes;
         }
 
-        private static IEnumerable<string> SplitIntoParagraphs(string text)
-        {
-            if (string.IsNullOrWhiteSpace(text)) return Enumerable.Empty<string>();
-
-            var parts = Regex.Split(text.Trim(), @"(\r?\n){2,}");
-
-            return parts.Select(p => p.Trim()).Where(p => p.Length > 0);
-        }
 
         private static string ReplaceTemplate(string template, Dictionary<string, string> vars)
         {
