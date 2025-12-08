@@ -4,7 +4,7 @@ using IPNoticeHub.Services.DocumentLibrary.Abstractions;
 using IPNoticeHub.Web.Infrastructure.Mappings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
+using IPNoticeHub.Web.Infrastructure.Mappings;
 namespace IPNoticeHub.Web.Controllers
 {
     public class DocumentLibraryController : Controller
@@ -42,7 +42,7 @@ namespace IPNoticeHub.Web.Controllers
         {
             if (!User.TryGetUserId(out var userId)) return Forbid();
 
-            var document = await documentService.GetDocumentByIdAsync(
+            var document = await documentService.GetSingleDocumentByIdAsync(
                 id, 
                 userId, 
                 cancellationToken);
@@ -51,16 +51,16 @@ namespace IPNoticeHub.Web.Controllers
 
             if (document.TemplateType == LetterTemplateType.CeaseAndDesist)
             {
-                var vm = TrademarksMapping.MapLegalDocumentToCeaseDesistViewModel(document);
-                vm.Command = "update";          // hidden field or similar
-                return View("CeaseDesistEdit", vm);
+                var viewModel = LegalDocumentMapping.MapDocumentToCeaseDesistViewModel(document);
+                //viewModel.Command = "update";          // hidden field or similar
+                return View("CeaseDesistEdit", viewModel);
             }
 
             if (document.TemplateType == LetterTemplateType.Dmca)
             {
-                var vm = CopyrightsMapping.MapLegalDocumentToDmcaViewModel(document);
-                vm.Command = "update";
-                return View("DmcaEdit", vm);
+                var viewModel = LegalDocumentMapping.MapDocumentToDmcaViewModel(document);
+                //vm.Command = "update";
+                return View("DmcaEdit", viewModel);
             }
 
             return BadRequest("Unsupported template.");

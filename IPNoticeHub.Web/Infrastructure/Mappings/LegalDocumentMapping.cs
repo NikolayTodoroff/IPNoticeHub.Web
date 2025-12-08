@@ -1,0 +1,50 @@
+﻿using IPNoticeHub.Data.Entities.LegalDocuments;
+using IPNoticeHub.Web.Models.PdfGeneration;
+
+namespace IPNoticeHub.Web.Infrastructure.Mappings
+{
+    public class LegalDocumentMapping
+    {
+        public static CeaseDesistViewModel MapDocumentToCeaseDesistViewModel(LegalDocument document)
+        {
+            return new CeaseDesistViewModel()
+            {
+               PublicId = document.RelatedPublicId,
+                WorkTitle = document.IpTitle!,
+                RegistrationNumber = document.RegistrationNumber,
+                SenderName = document.SenderName,
+                SenderAddress = document.SenderAddress,
+                SenderEmail = document.SenderEmail!,
+                RecipientName = document.RecipientName,
+                RecipientAddress = document.RecipientAddress,
+                RecipientEmail = document.RecipientEmail!,
+                InfringingUrl = document.InfringingUrl!,
+                AdditionalFacts = document.AdditionalFacts,
+                BodyTemplate = document.BodyTemplate
+            };
+        }
+
+        public static DMCAViewModel MapDocumentToDmcaViewModel(LegalDocument document)
+        {
+            return new DMCAViewModel()
+            {
+                PublicId = document.RelatedPublicId,
+                WorkTitle = document.IpTitle!,
+                RegistrationNumber = document.RegistrationNumber,
+                YearOfCreation = document.YearOfCreation,
+                DateOfPublication = document.DateOfPublication,
+                NationOfFirstPublication = document.NationOfFirstPublication,
+                SenderName = document.SenderName, 
+                SenderAddress = document.SenderAddress,
+                SenderEmail= document.SenderEmail!,
+                RecipientName= document.RecipientName,
+                RecipientAddress= document.RecipientAddress,
+                RecipientEmail= document.RecipientEmail!,
+                InfringingUrl = document.InfringingUrl!,
+                AdditionalFacts= document.AdditionalFacts,
+                GoodFaithStatement = document.GoodFaithStatement!,
+                BodyTemplate = document.BodyTemplate
+            };
+        }
+    }
+}

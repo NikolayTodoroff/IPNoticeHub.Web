@@ -107,7 +107,26 @@ namespace IPNoticeHub.Services.DocumentLibrary.Implementations
                 .ToList();
         }
 
-        public async Task<bool>RenameDocumentAsync(
+        public async Task<LegalDocument> GetSingleDocumentByIdAsync(int documentId, string userId, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                throw new ArgumentException(
+                    "UserId cannot be null or whitespace.", nameof(userId));
+            }
+
+            var document = await documentRepository.GetDocumentByIdAsync(
+                documentId,
+                userId,
+                cancellationToken);
+
+            if (document is null) throw new InvalidOperationException(
+                "Document not found or access denied.");
+
+            return document;
+        }
+
+        public async Task<bool> RenameDocumentAsync(
             int documentId, 
             string userId, 
             string newTitle, 
@@ -116,6 +135,10 @@ namespace IPNoticeHub.Services.DocumentLibrary.Implementations
             if (string.IsNullOrWhiteSpace(userId))
                 throw new ArgumentException(
                     "UserId cannot be null or whitespace.", nameof(userId));
+
+            if (documentId <= 0)
+                throw new ArgumentOutOfRangeException(nameof(documentId),
+                    "DocumentId must be a positive integer.");
 
             if (string.IsNullOrWhiteSpace(newTitle))
                 throw new ArgumentException(

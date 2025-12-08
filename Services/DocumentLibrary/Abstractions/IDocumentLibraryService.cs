@@ -23,6 +23,11 @@ namespace IPNoticeHub.Services.DocumentLibrary.Abstractions
             string newTitle,
             CancellationToken cancellationToken = default);
 
+        Task<LegalDocument> GetSingleDocumentByIdAsync(
+            int documentId,
+            string userId,
+            CancellationToken cancellationToken = default);
+
         Task<bool> DeleteDocumentAsync(
             int documentId,
             string userId,

@@ -71,7 +71,8 @@ namespace IPNoticeHub.Data.Repositories.DocumentLibrary.Implementations
             return await dbContext.LegalDocuments.
                 AsNoTracking().
                 FirstOrDefaultAsync(
-                d => d.Id == documentId && d.UserId == userId,
+                d => d.Id == documentId && 
+                d.UserId == userId,
                 cancellationToken);
         }
 
