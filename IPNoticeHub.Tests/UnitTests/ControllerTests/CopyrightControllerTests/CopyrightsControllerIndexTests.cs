@@ -36,30 +36,54 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
 
             var copyrightService = new Mock<ICopyrightService>();
 
-            copyrightService.Setup(s => s.GetUserCollectionAsync(userId, sortBy, 1, 10, It.IsAny<CancellationToken>()))
-               .ReturnsAsync(dto);
+            copyrightService.Setup(s => s.GetUserCollectionAsync(
+                userId, 
+                sortBy, 
+                1, 
+                10, 
+                It.IsAny<CancellationToken>())).
+                ReturnsAsync(dto);
 
-            var controller = TestCopyrightControllerFactory.CreateController(copyrightService.Object, userId);
+            var controller = TestCopyrightControllerFactory.CreateController(
+                copyrightService.Object, 
+                userId);
 
-            var indexActionResult = await controller.MyCollection(sortBy, 1, 10);
+            var indexActionResult = await controller.MyCollection(
+                sortBy, 
+                1, 
+                10);
 
-            var viewResult = indexActionResult.Should().BeOfType<ViewResult>().Subject;
+            var viewResult = indexActionResult.Should().
+                BeOfType<ViewResult>().Subject;
 
-            viewResult.Model.Should().BeOfType<CopyrightCollectionViewModel>();
-            ((CollectionSortBy)controller.ViewBag.SortBy).Should().Be(sortBy);
+            viewResult.Model.Should().
+                BeOfType<CopyrightCollectionViewModel>();
 
-            copyrightService.Verify(s => s.GetUserCollectionAsync(userId, sortBy, 1, 10, It.IsAny<CancellationToken>()), Times.Once);
+            ((CollectionSortBy)controller.ViewBag.SortBy).Should().
+                Be(sortBy);
+
+            copyrightService.Verify(s => s.GetUserCollectionAsync(
+                userId, 
+                sortBy, 
+                1, 
+                10, It.IsAny<CancellationToken>()), 
+                Times.Once);
         }
 
         [Test]
         public async Task Index_NoUser_ReturnsForbid()
         {
-            var copyrightService = new Mock<ICopyrightService>(MockBehavior.Strict);
-            var controller = TestCopyrightControllerFactory.CreateController(copyrightService.Object, userId: null);
+            var copyrightService = 
+                new Mock<ICopyrightService>(MockBehavior.Strict);
+            var controller = TestCopyrightControllerFactory.CreateController(
+                copyrightService.Object, 
+                userId: null);
 
             var indexActionResult = await controller.MyCollection();
 
-            indexActionResult.Should().BeOfType<ForbidResult>();
+            indexActionResult.Should().
+                BeOfType<ForbidResult>();
+
             copyrightService.VerifyNoOtherCalls();
         }
 
@@ -83,11 +107,14 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
                 It.IsAny<CancellationToken>())).
                 ReturnsAsync(pagedResult);
 
-            var controller = TestCopyrightControllerFactory.CreateController(copyrightService.Object, userId: "u1");
+            var controller = TestCopyrightControllerFactory.CreateController(
+                copyrightService.Object, 
+                userId: "u1");
 
             var indexActionResult = await controller.MyCollection();
 
-            indexActionResult.Should().BeOfType<ViewResult>();
+            indexActionResult.Should().
+                BeOfType<ViewResult>();
 
             copyrightService.Verify(
                 s => s.GetUserCollectionAsync(

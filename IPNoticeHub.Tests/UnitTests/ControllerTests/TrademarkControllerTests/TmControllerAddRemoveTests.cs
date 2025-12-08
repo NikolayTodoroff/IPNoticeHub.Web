@@ -9,83 +9,128 @@ using static IPNoticeHub.Common.ValidationConstants.StatusMessages;
 
 namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
 {
-    /// <summary>
-    /// Section: TrademarksController – Add/Remove
-    ///  - Verifies that Add and Remove with provided valid user id call service,
-    /// sets TempData status, redirects to local returnUrl (if provided) or MyCollection.
-    ///  - Verifies that Add and Remove without provided valid user id return Forbid() .
-    /// </summary>
     [TestFixture]
     public class TmControllerAddRemoveTests
     {
         [Test]
         public async Task Add_WithUserAndLocalReturnUrl_CallsService_SetsTempData_RedirectsToReturnUrl()
         {
-            var tmCollectionService = new Mock<ITrademarkCollectionService>();
-            tmCollectionService.Setup(s => s.AddAsync("u1", 42, It.IsAny<CancellationToken>()))
-                               .Returns(Task.CompletedTask);
+            var tmCollectionService = 
+                new Mock<ITrademarkCollectionService>();
+
+            tmCollectionService.Setup(s => s.AddAsync(
+                "u1", 
+                42, 
+                It.IsAny<CancellationToken>())).
+                Returns(Task.CompletedTask);
 
             var controller = TestTrademarkControllerFactory.CreateTrademarksController(
-                tmCollectionService.Object, out var tempData, userId: "u1");
+                tmCollectionService.Object, 
+                out var tempData, 
+                userId: "u1");
 
-            var addActionResult = await controller.Add(42, "/local", CancellationToken.None);
+            var addActionResult = await controller.Add(
+                42, 
+                "/local", 
+                CancellationToken.None);
 
-            tmCollectionService.Verify(s => s.AddAsync("u1", 42, It.IsAny<CancellationToken>()), Times.Once);
+            tmCollectionService.Verify(s => s.AddAsync(
+                "u1", 
+                42, 
+                It.IsAny<CancellationToken>()), 
+                Times.Once);
 
-            tempData["SuccessMessage"].Should().Be(TmAddedToCollectionMessage);
+            tempData["SuccessMessage"].Should().
+                Be(TmAddedToCollectionMessage);
 
-            var redirect = addActionResult.Should().BeOfType<LocalRedirectResult>().Subject;
-            redirect.Url.Should().Be("/local");
+            var redirect = addActionResult.Should().
+                BeOfType<LocalRedirectResult>().Subject;
+
+            redirect.Url.Should().
+                Be("/local");
         }
 
         [Test]
         public async Task Remove_WithUserAndNoReturnUrl_CallsService_SetsTempData_RedirectsToMyCollection()
         {
-            var tmCollectionService = new Mock<ITrademarkCollectionService>();
+            var tmCollectionService = 
+                new Mock<ITrademarkCollectionService>();
 
             tmCollectionService.Setup(s => s.RemoveAsync(
-                "u1", 42, It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+                "u1", 
+                42, 
+                It.IsAny<CancellationToken>())).
+                Returns(Task.CompletedTask);
 
             var controller = TestTrademarkControllerFactory.CreateTrademarksController(
-                tmCollectionService.Object, out var tempData, userId: "u1");
+                tmCollectionService.Object, 
+                out var tempData, 
+                userId: "u1");
 
             var removeActionResult = await controller.Remove(
-                42, null, CancellationToken.None);
+                42, 
+                null, 
+                CancellationToken.None);
 
-            tmCollectionService.Verify(s => s.RemoveAsync("u1", 42, It.IsAny<CancellationToken>()), Times.Once);
+            tmCollectionService.Verify(s => s.RemoveAsync(
+                "u1", 
+                42, 
+                It.IsAny<CancellationToken>()), 
+                Times.Once);
 
-            tempData["SuccessMessage"].Should().Be(TmRemovedFromCollectionMessage);
+            tempData["SuccessMessage"].Should().
+                Be(TmRemovedFromCollectionMessage);
 
             var redirect = removeActionResult as RedirectToActionResult;
-            redirect.Should().NotBeNull();
-            redirect!.ActionName.Should().Be(nameof(IPNoticeHub.Web.Controllers.TrademarksController.MyCollection));
+
+            redirect.Should().
+                NotBeNull();
+
+            redirect!.ActionName.Should().
+                Be(nameof(TrademarksController.MyCollection));
         }
 
         [Test]
         public async Task Add_WhenUserMissing_ReturnsForbid()
         {
-            var tmCollectionService = new Mock<ITrademarkCollectionService>(MockBehavior.Strict);
+            var tmCollectionService = 
+                new Mock<ITrademarkCollectionService>(MockBehavior.Strict);
 
             var controller = TestTrademarkControllerFactory.CreateTrademarksController(
-                tmCollectionService.Object, out var _, userId: null);
+                tmCollectionService.Object, 
+                out var _, 
+                userId: null);
 
-            var addActionResult = await controller.Add(trademarkId: 42, returnUrl: null, CancellationToken.None);
+            var addActionResult = await controller.Add(
+                trademarkId: 42, 
+                returnUrl: null, 
+                CancellationToken.None);
 
-            addActionResult.Should().BeOfType<ForbidResult>();
+            addActionResult.Should().
+                BeOfType<ForbidResult>();
+
             tmCollectionService.VerifyNoOtherCalls();
         }
 
         [Test]
         public async Task Remove_WhenUserMissing_ReturnsForbid()
         {
-            var tmCollectionService = new Mock<ITrademarkCollectionService>(MockBehavior.Strict);
+            var tmCollectionService = 
+                new Mock<ITrademarkCollectionService>(MockBehavior.Strict);
 
             var controller = TestTrademarkControllerFactory.CreateTrademarksController(
-                tmCollectionService.Object, out var _, userId: null);
+                tmCollectionService.Object, 
+                out var _, 
+                userId: null);
 
-            var removeActionResult = await controller.Remove(trademarkId: 42, returnUrl: null, CancellationToken.None);
+            var removeActionResult = await controller.Remove(
+                trademarkId: 42, 
+                returnUrl: null, 
+                CancellationToken.None);
 
-            removeActionResult.Should().BeOfType<ForbidResult>();
+            removeActionResult.Should().
+                BeOfType<ForbidResult>();
+
             tmCollectionService.VerifyNoOtherCalls();
         }
 
@@ -96,21 +141,33 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
             const int trademarkId = 42;
 
             var tmCollectionService = new Mock<ITrademarkCollectionService>();
-            tmCollectionService
-                .Setup(s => s.AddAsync(userId, trademarkId, It.IsAny<CancellationToken>()))
-                .Returns(Task.CompletedTask);
+
+            tmCollectionService.Setup(s => s.AddAsync(
+                userId, 
+                trademarkId, 
+                It.IsAny<CancellationToken>())).
+                Returns(Task.CompletedTask);
 
             var controller = TestTrademarkControllerFactory.CreateTrademarksController(
                 tmCollectionService.Object,
                 userId: userId);
 
-            var addActionResult = await controller.Add(trademarkId, null, CancellationToken.None);
+            var addActionResult = await controller.Add(
+                trademarkId, 
+                null, 
+                CancellationToken.None);
 
-            var redirectResult = addActionResult.Should().BeOfType<RedirectToActionResult>().Subject;
-            redirectResult.ActionName.Should().Be(nameof(TrademarksController.MyCollection));
+            var redirectResult = addActionResult.Should().
+                BeOfType<RedirectToActionResult>().Subject;
+
+            redirectResult.ActionName.Should().
+                Be(nameof(TrademarksController.MyCollection));
 
             tmCollectionService.Verify(
-                s => s.AddAsync(userId, trademarkId, It.IsAny<CancellationToken>()),
+                s => s.AddAsync(
+                userId, 
+                trademarkId, 
+                It.IsAny<CancellationToken>()),
                 Times.Once);
         }
     }
