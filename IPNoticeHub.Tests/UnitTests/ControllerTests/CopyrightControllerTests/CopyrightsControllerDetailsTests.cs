@@ -32,7 +32,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
                 "u1", 
                 id, 
                 It.IsAny<CancellationToken>())).
-                ReturnsAsync(dto);
+            ReturnsAsync(dto);
 
             var controller = TestCopyrightControllerFactory.CreateController(
                 service.Object, 
@@ -81,7 +81,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
                 "u1", 
                 It.IsAny<Guid>(), 
                 It.IsAny<CancellationToken>())).
-                ReturnsAsync((CopyrightDetailsDto?)null);
+            ReturnsAsync((CopyrightDetailsDto?)null);
 
             var controller = TestCopyrightControllerFactory.CreateController(
                 copyrightService.Object, 

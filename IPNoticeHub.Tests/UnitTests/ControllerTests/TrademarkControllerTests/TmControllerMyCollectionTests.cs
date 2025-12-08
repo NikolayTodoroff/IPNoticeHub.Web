@@ -56,7 +56,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
                 sortBy, 
                 currentPage, 
                 resultsPerPage, It.IsAny<CancellationToken>())).
-                ReturnsAsync(pagedResult);
+            ReturnsAsync(pagedResult);
 
             var controller = TestTrademarkControllerFactory.CreateTrademarksController(
                 tmCollectionService.Object, 
@@ -111,7 +111,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
                 1, 
                 10, 
                 It.IsAny<CancellationToken>())).
-                ReturnsAsync(pagedResult);
+            ReturnsAsync(pagedResult);
 
             var controller = TestTrademarkControllerFactory.CreateTrademarksController(
                 tmCollectionService.Object, 

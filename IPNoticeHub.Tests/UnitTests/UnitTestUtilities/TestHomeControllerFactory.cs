@@ -8,15 +8,8 @@ using Moq;
 
 namespace IPNoticeHub.Tests.UnitTests.TestUtilities
 {
-    /// <summary>
-    /// Utilities to create configured HomeController instances for tests.
-    /// </summary>
     public static class TestHomeControllerFactory
     {
-        /// <summary>
-        /// Creates a HomeController and wires TempData (and optionally UrlHelper).
-        /// Use this when a test needs TempData and/or Url behaviour.
-        /// </summary>
         public static HomeController CreateHomeController(
             ITrademarkSearchQueryService searchQueryService,
             out ITempDataDictionary tempData,
@@ -32,7 +25,8 @@ namespace IPNoticeHub.Tests.UnitTests.TestUtilities
         }
 
         public static HomeController CreateHomeController(
-            ITrademarkSearchQueryService searchQueryService, string? userId = null)
+            ITrademarkSearchQueryService searchQueryService, 
+            string? userId = null)
         {
             return CreateHomeControllerCore(
                 searchQueryService,
@@ -51,12 +45,12 @@ namespace IPNoticeHub.Tests.UnitTests.TestUtilities
         {
             var httpContext = new DefaultHttpContext();
 
-            // Simulate an authenticated user if requested.
             if (!string.IsNullOrEmpty(userId))
             {
                 httpContext.User = new ClaimsPrincipal(
                     new ClaimsIdentity(
-                        new[] { new Claim(ClaimTypes.NameIdentifier, userId) }, "TestAuth"));
+                        new[] { new Claim(ClaimTypes.NameIdentifier, userId) }, 
+                        "TestAuth"));
             }
 
             var controller = new HomeController(searchQueryService)
@@ -80,7 +74,8 @@ namespace IPNoticeHub.Tests.UnitTests.TestUtilities
                 var urlHelperMock = new Mock<IUrlHelper>();
                 urlHelperMock
                     .Setup(u => u.IsLocalUrl(It.IsAny<string>()))
-                    .Returns<string>(url => !string.IsNullOrWhiteSpace(url) && url.StartsWith("/"));
+                    .Returns<string>(url => !string.IsNullOrWhiteSpace(url) && 
+                    url.StartsWith("/"));
 
                 controller.Url = urlHelperMock.Object;
             }

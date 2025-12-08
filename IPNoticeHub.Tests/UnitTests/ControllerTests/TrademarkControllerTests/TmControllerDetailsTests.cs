@@ -55,13 +55,13 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
             tmSearchService.Setup(s => s.GetDetailsAsync(
                 entityId, 
                 It.IsAny<CancellationToken>())).
-                ReturnsAsync(dto);
+            ReturnsAsync(dto);
 
             tmWatchlistService.Setup(s => s.ExistsAsync(
                 "user-123", 
                 42, 
                 It.IsAny<CancellationToken>())).
-                ReturnsAsync(false);
+            ReturnsAsync(false);
 
             var controller = new TrademarksController(
                 tmSearchService.Object, 
@@ -151,7 +151,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
             tmSearchService.Setup(s => s.GetDetailsAsync(
                 entityId, 
                 It.IsAny<CancellationToken>())).
-                ReturnsAsync((TrademarkDetailsDto?)null);
+            ReturnsAsync((TrademarkDetailsDto?)null);
 
 
             var controller = new TrademarksController
@@ -195,7 +195,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
                 Setup(s => s.GetDetailsAsync(
                 entityId, 
                 It.IsAny<CancellationToken>())).
-                ReturnsAsync(detailsDTO);
+            ReturnsAsync(detailsDTO);
 
             var collectionService = 
                 new Mock<ITrademarkCollectionService>();
@@ -260,7 +260,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
             tmSearchService.Setup(s => s.GetDetailsAsync(
                 entityId, 
                 It.IsAny<CancellationToken>())).
-                ReturnsAsync(detailsDTO);
+            ReturnsAsync(detailsDTO);
 
             var collectionService = 
                 new Mock<ITrademarkCollectionService>();

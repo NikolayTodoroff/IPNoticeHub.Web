@@ -1,8 +1,5 @@
 ﻿using FluentAssertions;
-using IPNoticeHub.Common.EnumConstants;
-using IPNoticeHub.Services.Common;
 using IPNoticeHub.Services.Copyrights.Abstractions;
-using IPNoticeHub.Services.Copyrights.DTOs;
 using IPNoticeHub.Tests.UnitTests.TestUtilities;
 using IPNoticeHub.Web.Controllers;
 using Microsoft.AspNetCore.Mvc;
@@ -42,7 +39,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
                 "u1", 
                 It.IsAny<Guid>(), 
                 It.IsAny<CancellationToken>())).
-                ReturnsAsync(true);
+            ReturnsAsync(true);
 
             var controller = TestCopyrightControllerFactory.CreateController(
                 copyrightService.Object, 
@@ -77,7 +74,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
                 "u1", 
                 It.IsAny<Guid>(), 
                 It.IsAny<CancellationToken>())).
-                ReturnsAsync(true);
+            ReturnsAsync(true);
 
             var controller = TestCopyrightControllerFactory.CreateController(
                 copyrightService.Object, 

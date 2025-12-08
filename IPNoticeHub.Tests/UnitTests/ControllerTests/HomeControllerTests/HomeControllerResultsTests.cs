@@ -52,7 +52,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.HomeControllerTests
 
             tmSearchService.Setup(s => s.SearchAsync(
                 It.IsAny<TrademarkSearchQueryDto>(),It.IsAny<CancellationToken>())).
-                ReturnsAsync((searchResultsDTO, 1));
+            ReturnsAsync((searchResultsDTO, 1));
 
             var controller = TestHomeControllerFactory.CreateHomeController(
                 tmSearchService.Object);
@@ -127,7 +127,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.HomeControllerTests
             tmSearchService.Setup(s => s.SearchAsync(
                 It.IsAny<TrademarkSearchQueryDto>(), 
                 It.IsAny<CancellationToken>())).
-                ReturnsAsync((new List<TrademarkSearchResultDto>(), 0));
+            ReturnsAsync((new List<TrademarkSearchResultDto>(), 0));
 
             var controller = TestHomeControllerFactory.CreateHomeController(
                 tmSearchService.Object);
@@ -175,7 +175,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.HomeControllerTests
             tmSearchService.Setup(s => s.SearchAsync(
                 It.IsAny<TrademarkSearchQueryDto>(), 
                 It.IsAny<CancellationToken>())).
-                ReturnsAsync((new List<TrademarkSearchResultDto>(), 0));
+            ReturnsAsync((new List<TrademarkSearchResultDto>(), 0));
 
             var controller = TestHomeControllerFactory.CreateHomeController(
                 tmSearchService.Object);

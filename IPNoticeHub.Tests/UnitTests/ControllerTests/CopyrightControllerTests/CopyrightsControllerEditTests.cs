@@ -24,7 +24,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
                 "u1", 
                 It.IsAny<Guid>(), 
                 It.IsAny<CancellationToken>())).
-                   ReturnsAsync((CopyrightDetailsDto?) null);
+            ReturnsAsync((CopyrightDetailsDto?) null);
 
             var controller = TestCopyrightControllerFactory.CreateController(
                 copyrightService.Object, 
@@ -47,14 +47,15 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
                 "u1", 
                 id, 
                 It.IsAny<CancellationToken>())).
-                   ReturnsAsync(new CopyrightDetailsDto
-                   {
-                       PublicId = id,
-                       RegistrationNumber = "TX-1",
-                       TypeOfWork = "Custom Type Of Work",
-                       Title = "New Title",
-                       Owner = "New Owner"
-                   });
+            ReturnsAsync(new CopyrightDetailsDto
+            {
+                PublicId = id,
+                RegistrationNumber = "TX-1",
+                TypeOfWork = "Custom Type Of Work",
+                Title = "New Title",
+                Owner = "New Owner"
+            });
+
 
             var controller = TestCopyrightControllerFactory.CreateController(
                 copyrightService.Object, 
@@ -133,7 +134,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
                 id, 
                 It.IsAny<CopyrightEditDto>(), 
                 It.IsAny<CancellationToken>())).
-                   ReturnsAsync(false);
+            ReturnsAsync(false);
 
             var controller = TestCopyrightControllerFactory.CreateController(
                 copyrightService.Object, 
@@ -175,7 +176,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
                 id, 
                 It.IsAny<CopyrightEditDto>(), 
                 It.IsAny<CancellationToken>())).
-                   ReturnsAsync(true);
+            ReturnsAsync(true);
 
             var controller = TestCopyrightControllerFactory.CreateController(
                 copyrightService.Object, 
@@ -217,7 +218,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
                 id, 
                 It.IsAny<CopyrightEditDto>(), 
                 It.IsAny<CancellationToken>())).
-                   ReturnsAsync(true);
+            ReturnsAsync(true);
 
             var controller = TestCopyrightControllerFactory.CreateController(
                 copyrightService.Object, 
@@ -309,15 +310,15 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
             copyrightService.Setup(s => s.GetDetailsAsync(
                 "u1", 
                 id, 
-                It.IsAny<CancellationToken>()))
-                   .ReturnsAsync(new CopyrightDetailsDto
-                   {
-                       PublicId = id,
-                       RegistrationNumber = "TX-KNOWN",
-                       TypeOfWork = "VisualArts",
-                       Title = "Title",
-                       Owner = "Owner"
-                   });
+                It.IsAny<CancellationToken>())).
+            ReturnsAsync(new CopyrightDetailsDto
+            {
+                PublicId = id,
+                RegistrationNumber = "TX-KNOWN",
+                TypeOfWork = "VisualArts",
+                Title = "Title",
+                Owner = "Owner"
+            });
 
             var controller = TestCopyrightControllerFactory.CreateController(
                 copyrightService.Object, 
@@ -348,15 +349,15 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
             copyrightService.Setup(s => s.GetDetailsAsync(
                 "u1", 
                 id, 
-                It.IsAny<CancellationToken>()))
-                   .ReturnsAsync(new CopyrightDetailsDto
-                   {
-                       PublicId = id,
-                       RegistrationNumber = "TX-EMPTY",
-                       TypeOfWork = "",
-                       Title = "Title",
-                       Owner = "Owner"
-                   });
+                It.IsAny<CancellationToken>())).
+            ReturnsAsync(new CopyrightDetailsDto
+            {
+                PublicId = id,
+                RegistrationNumber = "TX-EMPTY",
+                TypeOfWork = "",
+                Title = "Title",
+                Owner = "Owner"
+            });
 
             var controller = TestCopyrightControllerFactory.CreateController(
                 copyrightService.Object, 

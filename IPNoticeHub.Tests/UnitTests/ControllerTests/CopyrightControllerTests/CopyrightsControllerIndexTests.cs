@@ -42,7 +42,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
                 1, 
                 10, 
                 It.IsAny<CancellationToken>())).
-                ReturnsAsync(dto);
+            ReturnsAsync(dto);
 
             var controller = TestCopyrightControllerFactory.CreateController(
                 copyrightService.Object, 
@@ -105,7 +105,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
                 DefaultPage,
                 DefaultPageSize,
                 It.IsAny<CancellationToken>())).
-                ReturnsAsync(pagedResult);
+            ReturnsAsync(pagedResult);
 
             var controller = TestCopyrightControllerFactory.CreateController(
                 copyrightService.Object, 
@@ -122,7 +122,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
                 CollectionSortBy.DateAddedDesc,
                 DefaultPage,
                 DefaultPageSize,
-                It.IsAny<CancellationToken>()), Times.Once);
+                It.IsAny<CancellationToken>()), 
+                Times.Once);
         }
     }
 }
