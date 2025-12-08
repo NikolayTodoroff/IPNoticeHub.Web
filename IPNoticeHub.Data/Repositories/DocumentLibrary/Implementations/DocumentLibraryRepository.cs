@@ -25,41 +25,6 @@ namespace IPNoticeHub.Data.Repositories.DocumentLibrary.Implementations
             return document.Id;
         }
 
-        public async Task UpdateAsync(LegalDocument document, CancellationToken cancellationToken = default)
-        {
-            if (document is null) throw new ArgumentNullException(nameof(document));
-
-            var entity = await dbContext.LegalDocuments.
-                FirstOrDefaultAsync(d =>
-                d.Id == document.Id &&
-                d.UserId == document.UserId &&
-                !d.IsDeleted,
-                cancellationToken);
-
-            if (entity is null) throw new InvalidOperationException(
-                $"LegalDocument with Id {document.Id} was not found.");     
-
-            entity.DocumentTitle = document.DocumentTitle;
-            entity.IpTitle = document.IpTitle;
-            entity.RegistrationNumber = document.RegistrationNumber;
-            entity.SenderName = document.SenderName;
-            entity.SenderAddress = document.SenderAddress;
-            entity.SenderEmail = document.SenderEmail;
-            entity.RecipientName = document.RecipientName;
-            entity.RecipientAddress = document.RecipientAddress;
-            entity.RecipientEmail = document.RecipientEmail;
-            entity.LetterDate = document.LetterDate;
-            entity.InfringingUrl = document.InfringingUrl;
-            entity.GoodFaithStatement = document.GoodFaithStatement;
-            entity.AdditionalFacts = document.AdditionalFacts;
-            entity.YearOfCreation = document.YearOfCreation;
-            entity.DateOfPublication = document.DateOfPublication;
-            entity.NationOfFirstPublication = document.NationOfFirstPublication;
-            entity.BodyTemplate = document.BodyTemplate;
-
-            await dbContext.SaveChangesAsync(cancellationToken);
-        }
-
         public async Task<LegalDocument?> GetDocumentByIdAsync(int documentId, string userId, 
             CancellationToken cancellationToken = default)
         {
@@ -75,7 +40,6 @@ namespace IPNoticeHub.Data.Repositories.DocumentLibrary.Implementations
                 d.UserId == userId,
                 cancellationToken);
         }
-
         public async Task<IReadOnlyList<LegalDocument>> GetUserDocumentsAsync(string userId, 
             DocumentSourceType? sourceType = null, LetterTemplateType? templateType = null, 
             CancellationToken cancellationToken = default)

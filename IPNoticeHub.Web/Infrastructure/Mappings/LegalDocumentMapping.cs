@@ -10,7 +10,7 @@ namespace IPNoticeHub.Web.Infrastructure.Mappings
             return new CeaseDesistViewModel()
             {
                PublicId = document.RelatedPublicId,
-                WorkTitle = document.IpTitle!,
+                WorkTitle = document.IpTitle ?? "Intellectual property identified by registration",
                 RegistrationNumber = document.RegistrationNumber,
                 SenderName = document.SenderName,
                 SenderAddress = document.SenderAddress,
@@ -29,7 +29,7 @@ namespace IPNoticeHub.Web.Infrastructure.Mappings
             return new DMCAViewModel()
             {
                 PublicId = document.RelatedPublicId,
-                WorkTitle = document.IpTitle!,
+                WorkTitle = document.IpTitle ?? "Intellectual property identified by registration",
                 RegistrationNumber = document.RegistrationNumber,
                 YearOfCreation = document.YearOfCreation,
                 DateOfPublication = document.DateOfPublication,

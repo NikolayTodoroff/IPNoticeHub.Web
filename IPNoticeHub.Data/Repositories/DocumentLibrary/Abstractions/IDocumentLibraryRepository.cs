@@ -30,9 +30,5 @@ namespace IPNoticeHub.Data.Repositories.DocumentLibrary.Abstractions
             int documentId, 
             string userId, 
             CancellationToken cancellationToken = default);
-
-        Task UpdateAsync(
-            LegalDocument document, 
-            CancellationToken cancellationToken = default);
     }
 }

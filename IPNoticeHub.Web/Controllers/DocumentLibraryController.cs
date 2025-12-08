@@ -4,7 +4,6 @@ using IPNoticeHub.Services.DocumentLibrary.Abstractions;
 using IPNoticeHub.Web.Infrastructure.Mappings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using IPNoticeHub.Web.Infrastructure.Mappings;
 namespace IPNoticeHub.Web.Controllers
 {
     public class DocumentLibraryController : Controller
@@ -49,23 +48,30 @@ namespace IPNoticeHub.Web.Controllers
             
             if (document is null) return NotFound();
 
-            if (document.TemplateType == LetterTemplateType.CeaseAndDesist)
+            string viewPath = string.Empty;
+            object viewModel;
+
+            if (document.SourceType == DocumentSourceType.Trademark)
             {
-                var viewModel = LegalDocumentMapping.MapDocumentToCeaseDesistViewModel(document);
-                //viewModel.Command = "update";          // hidden field or similar
-                return View("CeaseDesistEdit", viewModel);
+                viewModel = LegalDocumentMapping.MapDocumentToCeaseDesistViewModel(document);
+                viewPath = "~/Views/Trademarks/CeaseDesistEdit.cshtml";
             }
 
-            if (document.TemplateType == LetterTemplateType.Dmca)
+            else if (document.SourceType == DocumentSourceType.Copyright &&
+                     document.TemplateType == LetterTemplateType.CeaseAndDesist)
             {
-                var viewModel = LegalDocumentMapping.MapDocumentToDmcaViewModel(document);
-                //vm.Command = "update";
-                return View("DmcaEdit", viewModel);
+                viewModel = LegalDocumentMapping.MapDocumentToCeaseDesistViewModel(document);
+                viewPath = "~/Views/Copyrights/CeaseDesistEdit.cshtml";
             }
 
-            return BadRequest("Unsupported template.");
+            else
+            {
+                viewModel = LegalDocumentMapping.MapDocumentToDmcaViewModel(document);
+                viewPath = "~/Views/Copyrights/DmcaEdit.cshtml";
+            }
+
+            return View(viewPath, viewModel);
         }
-
 
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> Rename(

@@ -37,10 +37,5 @@ namespace IPNoticeHub.Services.DocumentLibrary.Abstractions
             int documentId,
             string userId,
             CancellationToken cancellationToken = default);
-
-        Task UpdateDocumentAsync(
-            string userId, 
-            DocumentEditDto dto, 
-            CancellationToken cancellationToken = default);
     }
 }

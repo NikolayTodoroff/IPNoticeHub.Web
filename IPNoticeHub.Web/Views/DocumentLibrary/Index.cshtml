@@ -79,11 +79,22 @@
                         <td class="align-middle">@doc.CreatedOn.ToString("yyyy-MM-dd")</td>
 
                         <td class="text-end align-middle">
+
                             <form asp-action="Generate" method="post" class="d-inline">
                                 @Html.AntiForgeryToken()
                                 <input type="hidden" name="id" value="@doc.Id" />
                                 <button type="submit" class="btn btn-sm btn-primary me-1">
                                     Generate
+                                </button>
+                            </form>
+
+                            <form asp-action="Edit"
+                                  asp-controller="DocumentLibrary"
+                                  method="get"
+                                  class="d-inline ms-1 mb-0">
+                                <input type="hidden" name="id" value="@doc.Id" />
+                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                    Edit
                                 </button>
                             </form>
 

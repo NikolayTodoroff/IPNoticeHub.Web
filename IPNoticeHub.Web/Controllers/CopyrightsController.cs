@@ -352,7 +352,7 @@ namespace IPNoticeHub.Web.Controllers
 
                 return RedirectToAction(nameof(CeaseDesistEdit), viewModel);
             }
-
+ 
             else if (command == "done")
             {
                 return RedirectToAction("MyCollection", "Copyrights");
