@@ -1,6 +1,5 @@
 ﻿using IPNoticeHub.Common.EnumConstants;
 using IPNoticeHub.Web.Extensions;
-using IPNoticeHub.Services.Application.Abstractions;
 using IPNoticeHub.Services.Copyrights.Abstractions;
 using IPNoticeHub.Services.DocumentLibrary.Abstractions;
 using IPNoticeHub.Services.DocumentLibrary.DTOs;
@@ -13,6 +12,7 @@ using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
 using static IPNoticeHub.Common.ValidationConstants.StatusMessages;
 using static IPNoticeHub.Web.Infrastructure.ApplyEntityDetails;
 using static IPNoticeHub.Web.Infrastructure.TemplateReplacer;
+using IPNoticeHub.Services.PdfGeneration.Abstractions;
 
 namespace IPNoticeHub.Web.Controllers
 {

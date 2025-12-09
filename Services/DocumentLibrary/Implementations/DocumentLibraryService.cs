@@ -1,9 +1,9 @@
 ﻿using IPNoticeHub.Common.EnumConstants;
 using IPNoticeHub.Data.Entities.LegalDocuments;
 using IPNoticeHub.Data.Repositories.DocumentLibrary.Abstractions;
-using IPNoticeHub.Services.Application.Abstractions;
 using IPNoticeHub.Services.DocumentLibrary.Abstractions;
 using IPNoticeHub.Services.DocumentLibrary.DTOs;
+using IPNoticeHub.Services.PdfGeneration.Abstractions;
 using System.ComponentModel.Design;
 using System.Globalization;
 using static IPNoticeHub.Common.ValidationConstants.FormattingConstants;

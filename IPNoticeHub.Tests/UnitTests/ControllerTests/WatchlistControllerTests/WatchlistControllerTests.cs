@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using IPNoticeHub.Services.Application.DTOs;
+using IPNoticeHub.Services.Watchlist.DTOs;
 using IPNoticeHub.Tests.UnitTests.UnitTestUtilities;
 using IPNoticeHub.Web.Controllers;
 using Microsoft.AspNetCore.Mvc;

@@ -4,7 +4,6 @@ using IPNoticeHub.Data;
 using IPNoticeHub.Data.Entities.Identity;
 using IPNoticeHub.Data.Repositories.Copyrights.Abstractions;
 using IPNoticeHub.Data.Repositories.Copyrights.Implementations;
-using IPNoticeHub.Services.Common;
 using IPNoticeHub.Services.Copyrights.Abstractions;
 using IPNoticeHub.Services.Copyrights.DTOs;
 using IPNoticeHub.Services.Copyrights.Implementations;

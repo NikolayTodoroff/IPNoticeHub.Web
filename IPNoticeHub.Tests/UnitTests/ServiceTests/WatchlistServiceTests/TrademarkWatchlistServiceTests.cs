@@ -2,8 +2,8 @@
 using IPNoticeHub.Data.Entities.Identity;
 using IPNoticeHub.Data.Entities.TrademarkRegistration;
 using IPNoticeHub.Data.Repositories.Application.Abstractions;
-using IPNoticeHub.Services.Application.Abstractions;
-using IPNoticeHub.Services.Application.Implementations;
+using IPNoticeHub.Services.Watchlist.Implementations;
+using IPNoticeHub.Services.Watchlist.Abstractions;
 using Moq;
 using NUnit.Framework;
 

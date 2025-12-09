@@ -1,7 +1,8 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Common.EnumConstants;
-using IPNoticeHub.Services.Application.Abstractions;
+using IPNoticeHub.Services.Watchlist.Abstractions;
 using IPNoticeHub.Services.DocumentLibrary.Abstractions;
+using IPNoticeHub.Services.PdfGeneration.Abstractions;
 using IPNoticeHub.Services.Trademarks.Abstractions;
 using IPNoticeHub.Services.Trademarks.DTOs;
 using IPNoticeHub.Tests.UnitTests.TestUtilities;

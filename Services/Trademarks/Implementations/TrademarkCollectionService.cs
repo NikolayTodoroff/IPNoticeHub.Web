@@ -1,10 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using IPNoticeHub.Common.Infrastructure;
 using IPNoticeHub.Common.EnumConstants;
 using IPNoticeHub.Data.Repositories.Trademarks.Abstractions;
-using IPNoticeHub.Services.Common;
 using IPNoticeHub.Services.Trademarks.Abstractions;
 using IPNoticeHub.Services.Trademarks.DTOs;
+using IPNoticeHub.Common.Infrastructure.Paging;
 
 namespace IPNoticeHub.Services.Trademarks.Implementations
 {

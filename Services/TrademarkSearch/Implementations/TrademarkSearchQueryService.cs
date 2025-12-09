@@ -1,9 +1,9 @@
 ﻿using IPNoticeHub.Common.EnumConstants;
-using IPNoticeHub.Services.Application.Abstractions;
-using IPNoticeHub.Services.Application.DTOs;
+using IPNoticeHub.Services.TrademarkSearch.Abstractions;
+using IPNoticeHub.Services.TrademarkSearch.DTOs;
 using Microsoft.EntityFrameworkCore;
 
-namespace IPNoticeHub.Services.Application.Implementations
+namespace IPNoticeHub.Services.TrademarkSearch.Implementations
 {
     public sealed class TrademarkSearchQueryService : ITrademarkSearchQueryService
     {

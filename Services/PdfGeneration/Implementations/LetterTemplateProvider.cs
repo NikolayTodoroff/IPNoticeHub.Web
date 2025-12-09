@@ -1,7 +1,7 @@
-﻿using IPNoticeHub.Services.Application.Abstractions;
-using IPNoticeHub.Common.EnumConstants;
+﻿using IPNoticeHub.Common.EnumConstants;
+using IPNoticeHub.Services.PdfGeneration.Abstractions;
 
-namespace IPNoticeHub.Services.Application.Implementations
+namespace IPNoticeHub.Services.PdfGeneration.Implementations
 {
     public sealed class LetterTemplateProvider : ILetterTemplateProvider
     {

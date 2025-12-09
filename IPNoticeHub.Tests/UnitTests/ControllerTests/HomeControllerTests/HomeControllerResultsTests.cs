@@ -1,7 +1,8 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Common.EnumConstants;
-using IPNoticeHub.Services.Application.Abstractions;
-using IPNoticeHub.Services.Application.DTOs;
+using IPNoticeHub.Services.TrademarkSearch.Abstractions;
+using IPNoticeHub.Services.TrademarkSearch.DTOs;
+using IPNoticeHub.Services.TrademarkSearch.Implementations;
 using IPNoticeHub.Tests.UnitTests.TestUtilities;
 using IPNoticeHub.Web.Models.Application;
 using Microsoft.AspNetCore.Mvc;

@@ -1,9 +1,9 @@
 ﻿using IPNoticeHub.Web.Extensions;
-using IPNoticeHub.Services.Application.Abstractions;
 using IPNoticeHub.Web.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static IPNoticeHub.Common.ValidationConstants.StatusMessages;
+using IPNoticeHub.Services.Watchlist.Abstractions;
 
 namespace IPNoticeHub.Web.Controllers
 {

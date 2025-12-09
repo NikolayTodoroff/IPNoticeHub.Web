@@ -1,6 +1,6 @@
 ﻿using IPNoticeHub.Services.Copyrights.DTOs;
 using IPNoticeHub.Common.EnumConstants;
-using IPNoticeHub.Services.Common;
+using IPNoticeHub.Common.Infrastructure.Paging;
 
 namespace IPNoticeHub.Services.Copyrights.Abstractions
 {

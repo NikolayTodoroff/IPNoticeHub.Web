@@ -1,4 +1,4 @@
-﻿namespace IPNoticeHub.Services.Common
+﻿namespace IPNoticeHub.Common.Infrastructure.Paging
 {
     public sealed class PagedResult<T>
     {

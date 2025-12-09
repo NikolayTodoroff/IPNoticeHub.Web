@@ -1,9 +1,9 @@
 ﻿using IPNoticeHub.Data.Repositories.Application.Abstractions;
-using IPNoticeHub.Services.Application.Abstractions;
-using IPNoticeHub.Services.Application.DTOs;
 using System.Text.RegularExpressions;
+using IPNoticeHub.Services.Watchlist.Abstractions;
+using IPNoticeHub.Services.Watchlist.DTOs;
 
-namespace IPNoticeHub.Services.Application.Implementations
+namespace IPNoticeHub.Services.Watchlist.Implementations
 {
     public sealed class TrademarkWatchlistService : ITrademarkWatchlistService
     {

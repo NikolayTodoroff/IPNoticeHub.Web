@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Common.EnumConstants;
-using IPNoticeHub.Services.Common;
+using IPNoticeHub.Common.Infrastructure.Paging;
 using IPNoticeHub.Services.Trademarks.Abstractions;
 using IPNoticeHub.Services.Trademarks.DTOs;
 using IPNoticeHub.Tests.UnitTests.TestUtilities;

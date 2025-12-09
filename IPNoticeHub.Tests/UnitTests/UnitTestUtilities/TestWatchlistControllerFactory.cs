@@ -1,6 +1,4 @@
-﻿// Tests/UnitTests/UnitTestUtilities/TestWatchlistControllerFactory.cs
-using IPNoticeHub.Services.Application.Abstractions;
-using IPNoticeHub.Services.Trademarks.Abstractions;
+﻿using IPNoticeHub.Services.Watchlist.Abstractions;
 using IPNoticeHub.Web.Controllers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

@@ -1,4 +1,4 @@
-﻿using IPNoticeHub.Services.Common;
+﻿using IPNoticeHub.Common.Infrastructure.Paging;
 using IPNoticeHub.Services.Trademarks.DTOs;
 
 namespace IPNoticeHub.Services.Trademarks.Abstractions

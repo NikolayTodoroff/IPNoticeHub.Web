@@ -1,12 +1,9 @@
 ﻿using static IPNoticeHub.Common.ValidationConstants;
 
-namespace IPNoticeHub.Common.Infrastructure
+namespace IPNoticeHub.Common.Infrastructure.Paging
 {
     public static class PagingConfiguration
     {
-        /// <summary>
-        /// Sets the page and page size values, ensuring they fall within the defined constraints.
-        /// </summary>
         public static (int Page, int PageSize) NormalizePaging(int page, int resultsPerPage)
         {
             page = page < PagingConstants.DefaultPage ? PagingConstants.DefaultPage : page;

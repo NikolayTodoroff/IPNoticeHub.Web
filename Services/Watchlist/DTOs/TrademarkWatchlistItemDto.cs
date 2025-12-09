@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using static IPNoticeHub.Common.ValidationConstants.TrademarkRegistrationConstants;
 
-namespace IPNoticeHub.Services.Application.DTOs
+namespace IPNoticeHub.Services.Watchlist.DTOs
 {
-    public sealed class TrademarkSearchResultDto
+    public sealed class TrademarkWatchlistItemDto
     {
         public int Id { get; init; }
 
@@ -18,9 +18,16 @@ namespace IPNoticeHub.Services.Application.DTOs
         [Required, MaxLength(OwnerNameMaxLength)]
         public string Owner { get; init; } = string.Empty;
 
-        [Required, MaxLength(TrademarkStatusDetailsMaxLength)]
-        public string Status { get; init; } = string.Empty;
+        public DateTime? AddedOnDate { get; init; }
 
-        public DateTime? RegistrationDate { get; init; }
+        [MaxLength(TrademarkStatusDetailsMaxLength)]
+        public string? InitialStatus { get; init; }
+
+        [MaxLength(TrademarkStatusDetailsMaxLength)]
+        public string CurrentStatus { get; init; } = string.Empty;
+
+        public bool HasStatusChange { get; init; }
+
+        public bool NotificationsEnabled { get; init; }
     }
 }

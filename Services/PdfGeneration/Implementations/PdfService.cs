@@ -1,10 +1,10 @@
-﻿using IPNoticeHub.Services.Application.Abstractions;
-using static IPNoticeHub.Common.ValidationConstants;
+﻿using static IPNoticeHub.Common.ValidationConstants;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using System.Text.RegularExpressions;
+using IPNoticeHub.Services.PdfGeneration.Abstractions;
 
-namespace IPNoticeHub.Services.Application.Implementations
+namespace IPNoticeHub.Services.PdfGeneration.Implementations
 {
     public sealed class PdfService : IPdfService
     {

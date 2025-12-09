@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
-using IPNoticeHub.Services.Application.Abstractions;
-using IPNoticeHub.Services.Application.Implementations;
+using IPNoticeHub.Services.PdfGeneration.Abstractions;
+using IPNoticeHub.Services.PdfGeneration.Implementations;
 using NUnit.Framework;
 using QuestPDF.Infrastructure;
 
