@@ -216,7 +216,7 @@ namespace IPNoticeHub.Web.Infrastructure.Mappings
             return new DocumentCreateDto
             {
                 RelatedPublicId = viewModel.PublicId,
-                SourceType = DocumentSourceType.Trademark,
+                SourceType = DocumentSourceType.Copyright,
                 TemplateType = LetterTemplateType.CeaseAndDesist,
                 DocumentTitle = null,
                 IpTitle = viewModel.WorkTitle ?? "Intellectual property identified by registration",
@@ -241,8 +241,8 @@ namespace IPNoticeHub.Web.Infrastructure.Mappings
             return new DocumentCreateDto
             {
                 RelatedPublicId = viewModel.PublicId,
-                SourceType = DocumentSourceType.Trademark,
-                TemplateType = LetterTemplateType.CeaseAndDesist,
+                SourceType = DocumentSourceType.Copyright,
+                TemplateType = LetterTemplateType.Dmca,
                 DocumentTitle = null,
                 IpTitle = viewModel.WorkTitle ?? "Intellectual property identified by registration",
                 RegistrationNumber = viewModel.RegistrationNumber,

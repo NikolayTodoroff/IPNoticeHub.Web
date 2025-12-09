@@ -183,10 +183,7 @@ namespace IPNoticeHub.Web.Controllers
                 return RedirectToAction("MyCollection", "Trademarks");
             }
 
-            else
-            {
-                return View("CeaseDesistEdit", viewModel);
-            }
+            else return View("CeaseDesistEdit", viewModel);
         }
 
         [HttpGet]

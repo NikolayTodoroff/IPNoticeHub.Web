@@ -32,7 +32,7 @@ namespace IPNoticeHub.Web.Models.PdfGeneration
         [EmailAddress]
         public string RecipientEmail { get; set; } = string.Empty;
 
-        public string InfringingUrl { get; set; } = string.Empty;
+        public string? InfringingUrl { get; set; }
 
         public string? AdditionalFacts { get; set; }
 

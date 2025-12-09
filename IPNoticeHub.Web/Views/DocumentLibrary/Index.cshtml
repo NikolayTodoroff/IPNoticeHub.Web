@@ -1,4 +1,5 @@
-﻿@using static IPNoticeHub.Web.Infrastructure.EnumExtensions;
+﻿@using static IPNoticeHub.Common.ValidationConstants.FormattingConstants;
+@using static IPNoticeHub.Web.Infrastructure.EnumExtensions;
 @model IReadOnlyList<IPNoticeHub.Services.DocumentLibrary.DTOs.DocumentListItemDto>
 
 @{
@@ -76,35 +77,36 @@
                         <td class="align-middle">@doc.SourceType</td>
                         <td class="align-middle">@doc.IpTitle</td>
                         <td class="align-middle">@doc.RegistrationNumber</td>
-                        <td class="align-middle">@doc.CreatedOn.ToString("yyyy-MM-dd")</td>
+                        <td class="align-middle">@doc.CreatedOn.ToString(DateTimeFormat)</td>
 
                         <td class="text-end align-middle">
+                            <div class="d-flex align-items-center justify-content-end gap-1">
+                                <form asp-action="Generate" method="post" class="m-0">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@doc.Id" />
+                                    <button type="submit" class="btn btn-sm btn-primary">
+                                        Generate
+                                    </button>
+                                </form>
 
-                            <form asp-action="Generate" method="post" class="d-inline">
-                                @Html.AntiForgeryToken()
-                                <input type="hidden" name="id" value="@doc.Id" />
-                                <button type="submit" class="btn btn-sm btn-primary me-1">
-                                    Generate
-                                </button>
-                            </form>
+                                <form asp-action="Edit"
+                                      asp-controller="DocumentLibrary"
+                                      method="get"
+                                      class="m-0">
+                                    <input type="hidden" name="id" value="@doc.Id" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        Edit
+                                    </button>
+                                </form>
 
-                            <form asp-action="Edit"
-                                  asp-controller="DocumentLibrary"
-                                  method="get"
-                                  class="d-inline ms-1 mb-0">
-                                <input type="hidden" name="id" value="@doc.Id" />
-                                <button type="submit" class="btn btn-sm btn-outline-danger">
-                                    Edit
-                                </button>
-                            </form>
-
-                            <form asp-action="Delete" method="post" class="d-inline ms-1 mb-0">
-                                @Html.AntiForgeryToken()
-                                <input type="hidden" name="id" value="@doc.Id" />
-                                <button type="submit" class="btn btn-sm btn-outline-danger">
-                                    Delete
-                                </button>
-                            </form>
+                                <form asp-action="Delete" method="post" class="m-0">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@doc.Id" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        Delete
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                 }

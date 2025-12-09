@@ -52,7 +52,7 @@ namespace IPNoticeHub.Web.Controllers
             {
                 return RedirectToAction(
                     actionName: "RecoverCeaseDesist",
-                    controllerName: "Trademarks",
+                    controllerName: "TrademarkCad",
                     routeValues: new { documentId = document.Id });
             }
 
@@ -61,7 +61,7 @@ namespace IPNoticeHub.Web.Controllers
             {
                 return RedirectToAction(
                     actionName: "RecoverCeaseDesist",
-                    controllerName: "Copyrights",
+                    controllerName: "CopyrightCad",
                     routeValues: new { documentId = document.Id });
             }
 
@@ -70,7 +70,7 @@ namespace IPNoticeHub.Web.Controllers
             {
                 return RedirectToAction(
                     actionName: "RecoverDmca",
-                    controllerName: "Copyrights",
+                    controllerName: "CopyrightDmca",
                     routeValues: new { documentId = document.Id });
             }
 

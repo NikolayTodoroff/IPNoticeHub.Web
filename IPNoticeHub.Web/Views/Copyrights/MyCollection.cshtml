@@ -8,7 +8,6 @@
 @{
     ViewData["Title"] = "My Copyrights";
 
-    // Safe guards + simple values first (keep attributes boring)
     var hasRows = Model != null && Model.Results != null && Model.Results.Count > 0;
 
     var page = Model?.CurrentPage ?? 1;
@@ -59,13 +58,15 @@
                                 <td class="text-end">
                                     <div class="d-flex justify-content-end align-items-stretch gap-2">
 
-                                        <a asp-action="CeaseDesist"
+                                        <a asp-controller="CopyrightCad"
+                                            asp-action="CeaseDesist"
                                            asp-route-publicId="@item.PublicId"
                                            class="btn btn-outline-secondary">
                                             Cease &amp; Desist
                                         </a>
 
-                                        <a asp-action="Dmca"
+                                        <a asp-controller="CopyrightDmca" 
+                                           asp-action="Dmca"
                                            asp-route-publicId="@item.PublicId"
                                            class="btn btn-outline-secondary">
                                             DMCA Notice
