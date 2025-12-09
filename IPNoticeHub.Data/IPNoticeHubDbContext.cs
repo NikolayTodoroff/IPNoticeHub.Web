@@ -4,7 +4,6 @@ using IPNoticeHub.Data.Entities.LegalDocuments;
 using IPNoticeHub.Data.Entities.TrademarkRegistration;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Emit;
 
 namespace IPNoticeHub.Data
 {

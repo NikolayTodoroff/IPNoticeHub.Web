@@ -7,6 +7,7 @@ using IPNoticeHub.Tests.TestUtilities;
 using NUnit.Framework;
 using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
 using IPNoticeHub.Tests.UnitTests.TestUtilities;
+using IPNoticeHub.Data.Repositories.TrademarkSearch.Abstractions;
 
 namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.TrademarkSearchQueryServiceTests
 {

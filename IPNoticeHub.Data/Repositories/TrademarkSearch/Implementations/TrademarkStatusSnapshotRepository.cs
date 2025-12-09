@@ -1,4 +1,4 @@
-﻿using IPNoticeHub.Data.Repositories.Application.Abstractions;
+﻿using IPNoticeHub.Data.Repositories.TrademarkSearch.Abstractions;
 using Microsoft.EntityFrameworkCore;
 
 namespace IPNoticeHub.Data.Repositories.Application.Implementations

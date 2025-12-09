@@ -1,5 +1,6 @@
 ﻿using IPNoticeHub.Data.Entities.TrademarkRegistration;
 using Microsoft.EntityFrameworkCore;
+using IPNoticeHub.Data.Repositories.TrademarkSearch.Abstractions;
 
 namespace IPNoticeHub.Data.Repositories.Application.Implementations
 {

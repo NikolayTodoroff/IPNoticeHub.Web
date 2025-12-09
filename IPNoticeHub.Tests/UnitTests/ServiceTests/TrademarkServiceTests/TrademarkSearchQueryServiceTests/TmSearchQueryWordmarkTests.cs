@@ -7,15 +7,10 @@ using IPNoticeHub.Tests.TestUtilities;
 using NUnit.Framework;
 using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
 using IPNoticeHub.Tests.UnitTests.TestUtilities;
+using IPNoticeHub.Data.Repositories.TrademarkSearch.Abstractions;
 
 namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.TrademarkSearchQueryServiceTests
 {
-    /// <summary>
-    /// Section: TrademarkSearchQueryService – Trademark Search By Wordmark.
-    ///  - Verifies the behavior of the SearchAsync method under various scenarios.
-    ///  - Ensures the service correctly filters and retrieves trademarks based on
-    /// different search criteria such as wordmark, owner, registration number, status, and class.
-    /// </summary>
     [TestFixture]
     public class TmSearchQueryWordmarkTests
     {

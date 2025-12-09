@@ -1,7 +1,8 @@
-﻿using IPNoticeHub.Data.Repositories.Application.Abstractions;
+﻿using IPNoticeHub.Data.Repositories.TrademarkSearch.Abstractions;
 using System.Text.RegularExpressions;
 using IPNoticeHub.Services.Watchlist.Abstractions;
 using IPNoticeHub.Services.Watchlist.DTOs;
+using IPNoticeHub.Data.Repositories.Watchlist.Abstractions;
 
 namespace IPNoticeHub.Services.Watchlist.Implementations
 {

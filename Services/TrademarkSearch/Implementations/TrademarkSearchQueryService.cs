@@ -2,6 +2,7 @@
 using IPNoticeHub.Services.TrademarkSearch.Abstractions;
 using IPNoticeHub.Services.TrademarkSearch.DTOs;
 using Microsoft.EntityFrameworkCore;
+using IPNoticeHub.Data.Repositories.TrademarkSearch.Abstractions;
 
 namespace IPNoticeHub.Services.TrademarkSearch.Implementations
 {

@@ -1,11 +1,12 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Data.Entities.Identity;
 using IPNoticeHub.Data.Entities.TrademarkRegistration;
-using IPNoticeHub.Data.Repositories.Application.Abstractions;
+using IPNoticeHub.Data.Repositories.TrademarkSearch.Abstractions;
 using IPNoticeHub.Services.Watchlist.Implementations;
 using IPNoticeHub.Services.Watchlist.Abstractions;
 using Moq;
 using NUnit.Framework;
+using IPNoticeHub.Data.Repositories.Watchlist.Abstractions;
 
 namespace IPNoticeHub.Tests.UnitTests.ServiceTests.WatchlistServiceTests
 {

@@ -1,4 +1,4 @@
-﻿namespace IPNoticeHub.Data.Repositories.Application.Abstractions
+﻿namespace IPNoticeHub.Data.Repositories.TrademarkSearch.Abstractions
 {
     public interface ITrademarkStatusSnapshotRepository
     {

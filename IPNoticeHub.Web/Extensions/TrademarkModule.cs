@@ -1,5 +1,4 @@
-﻿using IPNoticeHub.Data.Repositories.Application.Abstractions;
-using IPNoticeHub.Data.Repositories.Application.Implementations;
+﻿using IPNoticeHub.Data.Repositories.Application.Implementations;
 using IPNoticeHub.Data.Repositories.Trademarks.Abstractions;
 using IPNoticeHub.Data.Repositories.Trademarks.Implementations;
 using IPNoticeHub.Services.TrademarkSearch.Abstractions;
@@ -10,6 +9,9 @@ using IPNoticeHub.Services.Trademarks.Abstractions;
 using IPNoticeHub.Services.Trademarks.Implementations;
 using IPNoticeHub.Services.Watchlist.Abstractions;
 using IPNoticeHub.Services.Watchlist.Implementations;
+using IPNoticeHub.Data.Repositories.Watchlist.Abstractions;
+using IPNoticeHub.Data.Repositories.Watchlist.Implementations;
+using IPNoticeHub.Data.Repositories.TrademarkSearch.Abstractions;
 
 namespace IPNoticeHub.Web.Extensions
 {
