@@ -1,4 +1,4 @@
-﻿using IPNoticeHub.Common.Infrastructure;
+﻿using IPNoticeHub.Web.Extensions;
 using IPNoticeHub.Services.Application.Abstractions;
 using IPNoticeHub.Web.Infrastructure;
 using Microsoft.AspNetCore.Authorization;

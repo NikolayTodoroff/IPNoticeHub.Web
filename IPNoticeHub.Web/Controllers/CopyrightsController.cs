@@ -1,5 +1,5 @@
 ﻿using IPNoticeHub.Common.EnumConstants;
-using IPNoticeHub.Common.Infrastructure;
+using IPNoticeHub.Web.Extensions;
 using IPNoticeHub.Services.Application.Abstractions;
 using IPNoticeHub.Services.Copyrights.Abstractions;
 using IPNoticeHub.Services.DocumentLibrary.Abstractions;

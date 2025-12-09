@@ -1,5 +1,5 @@
 ﻿using IPNoticeHub.Common.EnumConstants;
-using IPNoticeHub.Common.Infrastructure;
+using IPNoticeHub.Web.Extensions;
 using IPNoticeHub.Services.DocumentLibrary.Abstractions;
 using IPNoticeHub.Web.Infrastructure.Mappings;
 using Microsoft.AspNetCore.Authorization;
