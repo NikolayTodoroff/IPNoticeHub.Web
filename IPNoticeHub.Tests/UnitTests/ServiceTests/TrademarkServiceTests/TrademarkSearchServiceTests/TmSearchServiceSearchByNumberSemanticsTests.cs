@@ -155,12 +155,17 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
                 source: DataProvider.EUIPO,
                 classNumbers: new[] { 30 });
 
-            testDbContext.TrademarkRegistrations.AddRange(tmEntity1, tmEntity2);
+            testDbContext.TrademarkRegistrations.AddRange(
+                tmEntity1, 
+                tmEntity2);
 
             await testDbContext.SaveChangesAsync();
 
-            ITrademarkRepository trademarkRepository = new TrademarkRepository(testDbContext);
-            var service = new TrademarkSearchService(trademarkRepository);
+            ITrademarkRepository trademarkRepository = 
+                new TrademarkRepository(testDbContext);
+
+            var service = 
+                new TrademarkSearchService(trademarkRepository);
 
             var filterDTO = new TrademarkFilterDto
             {
@@ -175,12 +180,19 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
                 resultsPerPage: 10,
                 cancellationToken: default);
 
-            pagedResult.ResultsCount.Should().Be(1);
-            pagedResult.Results.Should().ContainSingle();
+            pagedResult.ResultsCount.Should().
+                Be(1);
+
+            pagedResult.Results.Should().
+                ContainSingle();
 
             var singleTmSummaryDTO = pagedResult.Results.Single();
-            singleTmSummaryDTO.Id.Should().Be(tmEntity1.Id);
-            singleTmSummaryDTO.Wordmark.Should().Be("First WM");
+
+            singleTmSummaryDTO.Id.Should().
+                Be(tmEntity1.Id);
+
+            singleTmSummaryDTO.Wordmark.Should().
+                Be("First WM");
         }
     }
 }

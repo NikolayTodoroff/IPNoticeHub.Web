@@ -2,6 +2,8 @@
 using IPNoticeHub.Services.Watchlist.DTOs;
 using IPNoticeHub.Tests.UnitTests.UnitTestUtilities;
 using IPNoticeHub.Web.Controllers;
+using IPNoticeHub.Web.Models.TrademarkSearch;
+using IPNoticeHub.Web.Models.Watchlist;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;

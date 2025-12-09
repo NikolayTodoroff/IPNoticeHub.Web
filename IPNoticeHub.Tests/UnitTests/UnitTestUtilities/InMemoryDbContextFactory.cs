@@ -7,14 +7,8 @@ using IPNoticeHub.Common.EnumConstants;
 
 namespace IPNoticeHub.Tests.TestUtilities
 {
-    /// <summary>
-    /// Provides utility methods for creating in-memory database contexts and test data for unit tests.
-    /// </summary>
     public static class InMemoryDbContextFactory
     {
-        /// <summary>
-        /// Creates a clean in-memory database context for testing purposes.
-        /// </summary>
         public static IPNoticeHubDbContext CreateTestDbContext(string? dbContextName = null)
         {
             DbContextOptions<IPNoticeHubDbContext>? options = new DbContextOptionsBuilder<IPNoticeHubDbContext>()
@@ -28,9 +22,6 @@ namespace IPNoticeHub.Tests.TestUtilities
             return testDbContext;
         }
 
-        /// <summary>
-        /// Creates a TrademarkEntity and its associated classes for testing purposes.
-        /// </summary>
         public static (TrademarkEntity trademarkEntity, List<TrademarkClassAssignment> trademarkClasses) CreateTrademark(
             string wordmark, string owner, string goodsAndServices,string sourceId, string statusDetail, 
             string? regNumber,TrademarkStatusCategory status = TrademarkStatusCategory.Pending,
@@ -65,10 +56,6 @@ namespace IPNoticeHub.Tests.TestUtilities
             return (trademarkEntity, trademarkClassesList);
         }
 
-        /// <summary>
-        /// Creates a CopyrightRegistration entity for testing.
-        /// Only sets the core fields you use in tests; everything else stays default/null.
-        /// </summary>
         public static CopyrightEntity CreateCopyright(
             string registrationNumber = "TX-0000000",
             string title = "Test Title",

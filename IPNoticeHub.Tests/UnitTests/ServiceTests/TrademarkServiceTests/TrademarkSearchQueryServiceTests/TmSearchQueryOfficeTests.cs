@@ -11,10 +11,6 @@ using IPNoticeHub.Data.Repositories.TrademarkSearch.Abstractions;
 
 namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.TrademarkSearchQueryServiceTests
 {
-    /// <summary>
-    /// Section: TrademarkSearchQueryService – Trademark Search By Office.
-    ///  - Verifies the behavior of the SearchAsync method when filtering trademarks by the specified office.
-    /// </summary>
     [TestFixture]
     public class TmSearchQueryOfficeTests
     {
@@ -72,9 +68,16 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
                 PageSize = DefaultPageSize
             };
 
-            var (queryResult, total) = await queryService.SearchAsync(query, CancellationToken.None);
-            total.Should().Be(1);
-            queryResult.Single().Wordmark.Should().Be("Anubis");
+            var (queryResult, total) = 
+                await queryService.SearchAsync(
+                    query, 
+                    CancellationToken.None);
+
+            total.Should().
+                Be(1);
+
+            queryResult.Single().Wordmark.Should().
+                Be("Anubis");
         }
     }
 }

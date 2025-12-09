@@ -1,11 +1,9 @@
 ﻿using IPNoticeHub.Common.EnumConstants;
 
-namespace IPNoticeHub.Web.Models.Application
+namespace IPNoticeHub.Web.Models.TrademarkSearch
 {
     public class TrademarkSearchResultsViewModel
     {
-        // Search parameters, active filters, and returned results for the trademark search.
-        
         public string? Query { get; set; }
 
         public TrademarkClass? Class { get; set; }
@@ -18,10 +16,10 @@ namespace IPNoticeHub.Web.Models.Application
 
         public SearchMode? Mode { get; set; }
 
-        public IEnumerable<TreademarkSearchResultSingleItemViewModel> Results { get; set; } = Enumerable.Empty<TreademarkSearchResultSingleItemViewModel>();
+        public IEnumerable<TreademarkSearchResultSingleItemViewModel> 
+            Results { get; set; } = Enumerable.Empty<
+                TreademarkSearchResultSingleItemViewModel>();
 
-
-        // CurrentPage, PageSize and computed TotalPages/HasPreviousPage/HasNextPage providing paging information.
 
         public int Total { get; set; }
 
@@ -29,7 +27,8 @@ namespace IPNoticeHub.Web.Models.Application
 
         public int PageSize { get; set; }
 
-        public int TotalPages => PageSize <= 0 ? 1 : (int)Math.Ceiling(Total / (double)PageSize);
+        public int TotalPages => PageSize <= 0 ? 1 : 
+            (int)Math.Ceiling(Total / (double)PageSize);
 
         public bool HasPreviousPage => CurrentPage > 1;
 

@@ -1,4 +1,4 @@
-﻿namespace IPNoticeHub.Web.Models.Application
+﻿namespace IPNoticeHub.Web.Models.TrademarkSearch
 {
     public class TreademarkSearchResultSingleItemViewModel
     {

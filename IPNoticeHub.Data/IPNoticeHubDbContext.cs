@@ -27,7 +27,7 @@ namespace IPNoticeHub.Data
 
             builder.ApplyConfigurationsFromAssembly(typeof(IPNoticeHubDbContext).Assembly);
 
-            Seed.FakeDataSeeder.Seed(builder);
+            //Seed.FakeDataSeeder.Seed(builder);
         }
     }
 }

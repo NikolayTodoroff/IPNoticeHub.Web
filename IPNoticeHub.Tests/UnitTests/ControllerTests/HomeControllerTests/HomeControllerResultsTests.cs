@@ -2,9 +2,8 @@
 using IPNoticeHub.Common.EnumConstants;
 using IPNoticeHub.Services.TrademarkSearch.Abstractions;
 using IPNoticeHub.Services.TrademarkSearch.DTOs;
-using IPNoticeHub.Services.TrademarkSearch.Implementations;
 using IPNoticeHub.Tests.UnitTests.TestUtilities;
-using IPNoticeHub.Web.Models.Application;
+using IPNoticeHub.Web.Models.TrademarkSearch;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
