@@ -20,12 +20,10 @@
 
         string RecipientEmail { get; set; }
 
-        string InfringingUrl { get; set; }
+        string? InfringingUrl { get; set; }
 
         string BodyTemplate { get; set; }
 
-
-        // Optional – used only by Cease & Desist
         string? AdditionalFacts { get; set; }
     }
 }

@@ -260,7 +260,9 @@ namespace IPNoticeHub.Web.Controllers
                 var placeholders = 
                     TrademarksMapping.MapCeaseDesistViewModellToPlaceholders(viewModel);
 
-                viewModel.BodyTemplate = ReplaceTemplate(template, placeholders);
+                viewModel.BodyTemplate = ReplaceTemplate(
+                    template, 
+                    placeholders);
             }
 
             return RedirectToAction(nameof(CeaseDesistPreview), viewModel);
@@ -286,28 +288,13 @@ namespace IPNoticeHub.Web.Controllers
 
             if (command == "save")
             {
-                var dto = new DocumentCreateDto
-                {
-                    RelatedPublicId = viewModel.PublicId,
-                    SourceType = DocumentSourceType.Trademark,
-                    TemplateType = LetterTemplateType.CeaseAndDesist,
-                    DocumentTitle = null,
-                    IpTitle = viewModel.WorkTitle ?? "Intellectual property identified by registration",
-                    RegistrationNumber = viewModel.RegistrationNumber,
+                var dto = 
+                    TrademarksMapping.MapCdViewModelToDocCreateDto(viewModel);
 
-                    SenderName = viewModel.SenderName,
-                    SenderAddress = viewModel.SenderAddress,
-                    SenderEmail = viewModel.SenderEmail,
-
-                    RecipientName = viewModel.RecipientName,
-                    RecipientAddress = viewModel.RecipientAddress,
-                    RecipientEmail = viewModel.RecipientEmail,
-
-                    LetterDate = DateTime.UtcNow,
-                    BodyTemplate = viewModel.BodyTemplate
-                };
-
-                await documentLibraryService.SaveDocumentAsync(userId, dto,cancellationToken);
+                await documentLibraryService.SaveDocumentAsync(
+                    userId, 
+                    dto,
+                    cancellationToken);
 
                 TempData["SuccessMessage"] = 
                     "Your Cease & Desist letter was successfully saved to your library.";
@@ -324,6 +311,32 @@ namespace IPNoticeHub.Web.Controllers
             {
                 return View("CeaseDesistEdit", viewModel);
             }
+        }
+
+        [HttpGet]
+        [Authorize(Policy = "HasUserId")]
+        public async Task<IActionResult> RecoverCeaseDesist(
+            int documentId,
+            CancellationToken cancellationToken = default)
+        {
+            if (!User.TryGetUserId(out var userId)) return Forbid();
+
+            var document = await documentLibraryService.GetSingleDocumentByIdAsync(
+                documentId,
+                userId,
+                cancellationToken);
+
+            if (document == null ||
+                document.SourceType != DocumentSourceType.Trademark ||
+                document.TemplateType != LetterTemplateType.CeaseAndDesist)
+            {
+                return NotFound();
+            }
+
+            var viewModel = 
+                LegalDocumentMapping.MapDocumentToCeaseDesistViewModel(document);
+
+            return View("CeaseDesistEdit", viewModel);
         }
     }
 }

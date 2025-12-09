@@ -48,29 +48,33 @@ namespace IPNoticeHub.Web.Controllers
             
             if (document is null) return NotFound();
 
-            string viewPath = string.Empty;
-            object viewModel;
-
             if (document.SourceType == DocumentSourceType.Trademark)
             {
-                viewModel = LegalDocumentMapping.MapDocumentToCeaseDesistViewModel(document);
-                viewPath = "~/Views/Trademarks/CeaseDesistEdit.cshtml";
+                return RedirectToAction(
+                    actionName: "RecoverCeaseDesist",
+                    controllerName: "Trademarks",
+                    routeValues: new { documentId = document.Id });
             }
 
-            else if (document.SourceType == DocumentSourceType.Copyright &&
-                     document.TemplateType == LetterTemplateType.CeaseAndDesist)
+            if (document.SourceType == DocumentSourceType.Copyright &&
+                document.TemplateType == LetterTemplateType.CeaseAndDesist)
             {
-                viewModel = LegalDocumentMapping.MapDocumentToCeaseDesistViewModel(document);
-                viewPath = "~/Views/Copyrights/CeaseDesistEdit.cshtml";
+                return RedirectToAction(
+                    actionName: "RecoverCeaseDesist",
+                    controllerName: "Copyrights",
+                    routeValues: new { documentId = document.Id });
             }
 
-            else
+            if (document.SourceType == DocumentSourceType.Copyright &&
+                document.TemplateType == LetterTemplateType.Dmca)
             {
-                viewModel = LegalDocumentMapping.MapDocumentToDmcaViewModel(document);
-                viewPath = "~/Views/Copyrights/DmcaEdit.cshtml";
+                return RedirectToAction(
+                    actionName: "RecoverDmca",
+                    controllerName: "Copyrights",
+                    routeValues: new { documentId = document.Id });
             }
 
-            return View(viewPath, viewModel);
+            return BadRequest("Unsupported document type.");
         }
 
         [HttpPost, ValidateAntiForgeryToken]

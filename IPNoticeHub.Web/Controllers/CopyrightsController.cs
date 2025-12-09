@@ -324,26 +324,8 @@ namespace IPNoticeHub.Web.Controllers
 
             if (command == "save")
             {
-                var dto = new DocumentCreateDto
-                {
-                    RelatedPublicId = viewModel.PublicId,
-                    SourceType = DocumentSourceType.Trademark,
-                    TemplateType = LetterTemplateType.CeaseAndDesist,
-                    DocumentTitle = null,
-                    IpTitle = viewModel.WorkTitle ?? "Intellectual property identified by registration",
-                    RegistrationNumber = viewModel.RegistrationNumber,
-
-                    SenderName = viewModel.SenderName,
-                    SenderAddress = viewModel.SenderAddress,
-                    SenderEmail = viewModel.SenderEmail,
-
-                    RecipientName = viewModel.RecipientName,
-                    RecipientAddress = viewModel.RecipientAddress,
-                    RecipientEmail = viewModel.RecipientEmail,
-
-                    LetterDate = DateTime.UtcNow,
-                    BodyTemplate = viewModel.BodyTemplate
-                };
+                var dto = 
+                    CopyrightsMapping.MapCdViewModelToDocCreateDto(viewModel);
 
                 await documentLibraryService.SaveDocumentAsync(userId, dto, cancellationToken);
 
@@ -491,32 +473,8 @@ namespace IPNoticeHub.Web.Controllers
 
             if (command == "save")
             {
-                var dto = new DocumentCreateDto
-                {
-                    RelatedPublicId = viewModel.PublicId,
-                    SourceType = DocumentSourceType.Trademark,
-                    TemplateType = LetterTemplateType.CeaseAndDesist,
-                    DocumentTitle = null,
-                    IpTitle = viewModel.WorkTitle ?? "Intellectual property identified by registration",
-                    RegistrationNumber = viewModel.RegistrationNumber,
-
-                    SenderName = viewModel.SenderName,
-                    SenderAddress = viewModel.SenderAddress,
-                    SenderEmail = viewModel.SenderEmail,
-
-                    RecipientName = viewModel.RecipientName,
-                    RecipientAddress = viewModel.RecipientAddress,
-                    RecipientEmail = viewModel.RecipientEmail,
-
-                    InfringingUrl = viewModel.InfringingUrl,
-                    GoodFaithStatement = viewModel.GoodFaithStatement,
-                    YearOfCreation  = viewModel.YearOfCreation,
-                    DateOfPublication = viewModel.DateOfPublication,
-                    NationOfFirstPublication = viewModel.NationOfFirstPublication,
-
-                    LetterDate = DateTime.UtcNow,
-                    BodyTemplate = viewModel.BodyTemplate
-                };
+                var dto = 
+                    CopyrightsMapping.MapDmcaViewModelToDocCreateDto(viewModel);
 
                 await documentLibraryService.SaveDocumentAsync(userId, dto, cancellationToken);
 
@@ -536,6 +494,57 @@ namespace IPNoticeHub.Web.Controllers
                 return View("DmcaEdit", viewModel);
             }
         }
+
+        [HttpGet]
+        [Authorize(Policy = "HasUserId")]
+        public async Task<IActionResult> RecoverCeaseDesist(
+            int documentId,
+            CancellationToken cancellationToken = default)
+        {
+            if (!User.TryGetUserId(out var userId)) return Forbid();
+
+            var document = await documentLibraryService.GetSingleDocumentByIdAsync(
+                documentId,
+                userId,
+                cancellationToken);
+
+            if (document == null ||
+                document.SourceType != DocumentSourceType.Copyright ||
+                document.TemplateType != LetterTemplateType.CeaseAndDesist)
+            {
+                return NotFound();
+            }
+
+            var viewModel = LegalDocumentMapping.MapDocumentToCeaseDesistViewModel(document);
+
+            return View("CeaseDesistEdit", viewModel);
+        }
+
+        [HttpGet]
+        [Authorize(Policy = "HasUserId")]
+        public async Task<IActionResult> RecoverDmca(
+            int documentId,
+            CancellationToken cancellationToken = default)
+        {
+            if (!User.TryGetUserId(out var userId)) return Forbid();
+
+            var document = await documentLibraryService.GetSingleDocumentByIdAsync(
+                documentId,
+                userId,
+                cancellationToken);
+
+            if (document == null ||
+                document.SourceType != DocumentSourceType.Copyright ||
+                document.TemplateType != LetterTemplateType.Dmca)
+            {
+                return NotFound();
+            }
+
+            var viewModel = LegalDocumentMapping.MapDocumentToDmcaViewModel(document);
+
+            return View("DmcaEdit", viewModel);
+        }
+
 
         private IActionResult? RedirectToLocal(string? returnUrl)
         {

@@ -2,7 +2,7 @@
 using IPNoticeHub.Services.Application.Abstractions;
 using IPNoticeHub.Services.Common;
 using IPNoticeHub.Services.Copyrights.DTOs;
-using IPNoticeHub.Services.Trademarks.DTOs;
+using IPNoticeHub.Services.DocumentLibrary.DTOs;
 using IPNoticeHub.Web.Models.Copyrights;
 using IPNoticeHub.Web.Models.PdfGeneration;
 using System.Globalization;
@@ -208,6 +208,62 @@ namespace IPNoticeHub.Web.Infrastructure.Mappings
                 RegistrationNumber: viewModel.RegistrationNumber ?? string.Empty,
                 AdditionalFacts: viewModel.AdditionalFacts,
                 BodyTemplate: viewModel.BodyTemplate);
+        }
+
+        public static DocumentCreateDto MapCdViewModelToDocCreateDto(
+            CeaseDesistViewModel viewModel)
+        {
+            return new DocumentCreateDto
+            {
+                RelatedPublicId = viewModel.PublicId,
+                SourceType = DocumentSourceType.Trademark,
+                TemplateType = LetterTemplateType.CeaseAndDesist,
+                DocumentTitle = null,
+                IpTitle = viewModel.WorkTitle ?? "Intellectual property identified by registration",
+                RegistrationNumber = viewModel.RegistrationNumber,
+
+                SenderName = viewModel.SenderName,
+                SenderAddress = viewModel.SenderAddress,
+                SenderEmail = viewModel.SenderEmail,
+
+                RecipientName = viewModel.RecipientName,
+                RecipientAddress = viewModel.RecipientAddress,
+                RecipientEmail = viewModel.RecipientEmail,
+
+                LetterDate = DateTime.UtcNow,
+                BodyTemplate = viewModel.BodyTemplate
+            };
+        }
+
+        public static DocumentCreateDto MapDmcaViewModelToDocCreateDto(
+            DMCAViewModel viewModel)
+        {
+            return new DocumentCreateDto
+            {
+                RelatedPublicId = viewModel.PublicId,
+                SourceType = DocumentSourceType.Trademark,
+                TemplateType = LetterTemplateType.CeaseAndDesist,
+                DocumentTitle = null,
+                IpTitle = viewModel.WorkTitle ?? "Intellectual property identified by registration",
+                RegistrationNumber = viewModel.RegistrationNumber,
+
+                SenderName = viewModel.SenderName,
+                SenderAddress = viewModel.SenderAddress,
+                SenderEmail = viewModel.SenderEmail,
+
+                RecipientName = viewModel.RecipientName,
+                RecipientAddress = viewModel.RecipientAddress,
+                RecipientEmail = viewModel.RecipientEmail,
+
+                InfringingUrl = viewModel.InfringingUrl,
+                GoodFaithStatement = viewModel.GoodFaithStatement,
+                YearOfCreation = viewModel.YearOfCreation,
+                DateOfPublication = viewModel.DateOfPublication,
+                NationOfFirstPublication = viewModel.NationOfFirstPublication,
+
+                LetterDate = DateTime.UtcNow,
+                BodyTemplate = viewModel.BodyTemplate
+            };
         }
     }
 }

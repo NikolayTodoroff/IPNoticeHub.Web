@@ -1,6 +1,8 @@
 ﻿using Humanizer;
+using IPNoticeHub.Common.EnumConstants;
 using IPNoticeHub.Services.Application.Abstractions;
 using IPNoticeHub.Services.Common;
+using IPNoticeHub.Services.DocumentLibrary.DTOs;
 using IPNoticeHub.Services.Trademarks.DTOs;
 using IPNoticeHub.Web.Models.PdfGeneration;
 using IPNoticeHub.Web.Models.Trademarks;
@@ -12,7 +14,8 @@ namespace IPNoticeHub.Web.Infrastructure.Mappings
 {
     public class TrademarksMapping
     {
-        public static TrademarkCollectionViewModel MapCollectionDtoToViewModel(PagedResult<TrademarkSingleItemDto> dto)
+        public static TrademarkCollectionViewModel MapCollectionDtoToViewModel(
+            PagedResult<TrademarkSingleItemDto> dto)
         {
             return new()
             {
@@ -35,8 +38,11 @@ namespace IPNoticeHub.Web.Infrastructure.Mappings
             };
         }
 
-        public static TrademarkDetailsViewModel MapDetailsDtoToViewModel(TrademarkDetailsDto dto,
-            bool isInCollection, bool isInWatchlist, bool isAuthenticated)
+        public static TrademarkDetailsViewModel MapDetailsDtoToViewModel(
+            TrademarkDetailsDto dto,
+            bool isInCollection, 
+            bool isInWatchlist, 
+            bool isAuthenticated)
         {
             return new TrademarkDetailsViewModel
             {
@@ -59,7 +65,10 @@ namespace IPNoticeHub.Web.Infrastructure.Mappings
             };
         }
 
-        public static CeaseDesistViewModel MapCeaseDesistViewModel(Guid publicId,string wordMark,string registrationNumber)
+        public static CeaseDesistViewModel MapCeaseDesistViewModel(
+            Guid publicId,
+            string wordMark,
+            string registrationNumber)
         {
             return new CeaseDesistViewModel
             {
@@ -69,7 +78,8 @@ namespace IPNoticeHub.Web.Infrastructure.Mappings
             };
         }
 
-        public static CeaseDesistInput MapCeaseDesistViewModelToInput(CeaseDesistViewModel viewModel)
+        public static CeaseDesistInput MapCeaseDesistViewModelToInput(
+            CeaseDesistViewModel viewModel)
         {
             return new CeaseDesistInput(
                 SenderName: viewModel.SenderName,
@@ -84,7 +94,8 @@ namespace IPNoticeHub.Web.Infrastructure.Mappings
             );
         }
 
-        public static Dictionary<string, string> MapCeaseDesistViewModellToPlaceholders(CeaseDesistViewModel viewModel)
+        public static Dictionary<string, string> MapCeaseDesistViewModellToPlaceholders(
+            CeaseDesistViewModel viewModel)
         {
             static string mapModel(string? v) => v ?? string.Empty;
 
@@ -105,6 +116,31 @@ namespace IPNoticeHub.Web.Infrastructure.Mappings
                 ["WorkTitle"] = mapModel(viewModel.WorkTitle),
                 ["RegistrationNumber"] = mapModel(viewModel.RegistrationNumber),
                 ["AdditionalFacts"] = mapModel(viewModel.AdditionalFacts)
+            };
+        }
+
+        public static DocumentCreateDto MapCdViewModelToDocCreateDto(
+            CeaseDesistViewModel viewModel)
+        {
+            return new DocumentCreateDto
+            {
+                RelatedPublicId = viewModel.PublicId,
+                SourceType = DocumentSourceType.Trademark,
+                TemplateType = LetterTemplateType.CeaseAndDesist,
+                DocumentTitle = null,
+                IpTitle = viewModel.WorkTitle ?? "Intellectual property identified by registration",
+                RegistrationNumber = viewModel.RegistrationNumber,
+
+                SenderName = viewModel.SenderName,
+                SenderAddress = viewModel.SenderAddress,
+                SenderEmail = viewModel.SenderEmail,
+
+                RecipientName = viewModel.RecipientName,
+                RecipientAddress = viewModel.RecipientAddress,
+                RecipientEmail = viewModel.RecipientEmail,
+
+                LetterDate = DateTime.UtcNow,
+                BodyTemplate = viewModel.BodyTemplate
             };
         }
     }
