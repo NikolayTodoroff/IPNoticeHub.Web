@@ -1,12 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using IPNoticeHub.Data.Entities.CopyrightRegistration;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace IPNoticeHub.Data.Entities.Configurations
 {
-    internal class CopyrightEntityConfig
+    public sealed class CopyrightEntityConfig : IEntityTypeConfiguration<CopyrightEntity>
     {
+        public void Configure(EntityTypeBuilder<CopyrightEntity> builder)
+        {
+            builder.HasIndex(c => c.RegistrationNumber).
+               IsUnique();
+        }
     }
 }
