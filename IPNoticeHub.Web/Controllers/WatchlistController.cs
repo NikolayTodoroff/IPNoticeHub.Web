@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static IPNoticeHub.Shared.Constants.StatusMessages.TrademarkStatusMessages;
 using static IPNoticeHub.Shared.Constants.StatusMessages.EmailNotificationsStatusMessages;
-using IPNoticeHub.Services.Watchlist.Abstractions;
+using IPNoticeHub.Application.Watchlist.Abstractions;
 using IPNoticeHub.Web.Models.TrademarkSearch;
 using IPNoticeHub.Web.Models.Watchlist;
 

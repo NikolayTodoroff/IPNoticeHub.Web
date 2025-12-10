@@ -1,8 +1,8 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Data;
-using IPNoticeHub.Services.TrademarkSearch.DTOs;
-using IPNoticeHub.Services.TrademarkSearch.Implementations;
+using IPNoticeHub.Application.TrademarkSearch.DTOs;
+using IPNoticeHub.Application.TrademarkSearch.Implementations;
 using IPNoticeHub.Tests.TestUtilities;
 using NUnit.Framework;
 using static IPNoticeHub.Shared.Constants.PagingConstants.DefaultPagingConstants;

@@ -2,9 +2,9 @@
 using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Data.Entities.LegalDocuments;
 using IPNoticeHub.Data.Repositories.DocumentLibrary.Abstractions;
-using IPNoticeHub.Services.DocumentLibrary.DTOs;
-using IPNoticeHub.Services.DocumentLibrary.Implementations;
-using IPNoticeHub.Services.PdfGeneration.Abstractions;
+using IPNoticeHub.Application.DocumentLibrary.DTOs;
+using IPNoticeHub.Application.DocumentLibrary.Implementations;
+using IPNoticeHub.Application.PdfGeneration.Abstractions;
 using Moq;
 using NUnit.Framework;
 

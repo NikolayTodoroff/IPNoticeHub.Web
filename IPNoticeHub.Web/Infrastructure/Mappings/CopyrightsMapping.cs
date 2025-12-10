@@ -1,8 +1,8 @@
 ﻿using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Shared.Infrastructure.Paging;
-using IPNoticeHub.Services.Copyrights.DTOs;
-using IPNoticeHub.Services.DocumentLibrary.DTOs;
-using IPNoticeHub.Services.PdfGeneration.Abstractions;
+using IPNoticeHub.Application.Copyrights.DTOs;
+using IPNoticeHub.Application.DocumentLibrary.DTOs;
+using IPNoticeHub.Application.PdfGeneration.Abstractions;
 using IPNoticeHub.Web.Models.Copyrights;
 using IPNoticeHub.Web.Models.PdfGeneration;
 using System.Globalization;

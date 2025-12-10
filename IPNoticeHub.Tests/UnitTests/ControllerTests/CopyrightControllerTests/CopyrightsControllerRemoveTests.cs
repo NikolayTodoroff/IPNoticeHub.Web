@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using IPNoticeHub.Services.Copyrights.Abstractions;
+using IPNoticeHub.Application.Copyrights.Abstractions;
 using IPNoticeHub.Tests.UnitTests.TestUtilities;
 using IPNoticeHub.Web.Controllers;
 using Microsoft.AspNetCore.Mvc;

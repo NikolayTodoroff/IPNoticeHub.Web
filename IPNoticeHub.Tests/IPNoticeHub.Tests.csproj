@@ -24,10 +24,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\IPNoticeHub.Application\IPNoticeHub.Application.csproj" />
     <ProjectReference Include="..\IPNoticeHub.Data\IPNoticeHub.Data.csproj" />
     <ProjectReference Include="..\IPNoticeHub.Shared\IPNoticeHub.Shared.csproj" />
     <ProjectReference Include="..\IPNoticeHub.Web\IPNoticeHub.Web.csproj" />
-    <ProjectReference Include="..\Services\IPNoticeHub.Services.csproj" />
   </ItemGroup>
 
 </Project>

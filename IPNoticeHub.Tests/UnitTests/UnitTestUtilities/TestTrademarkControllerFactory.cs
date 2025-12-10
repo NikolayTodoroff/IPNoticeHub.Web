@@ -1,8 +1,8 @@
-﻿using IPNoticeHub.Services.Watchlist.Abstractions;
-using IPNoticeHub.Services.Watchlist.Implementations;
-using IPNoticeHub.Services.DocumentLibrary.Abstractions;
-using IPNoticeHub.Services.PdfGeneration.Abstractions;
-using IPNoticeHub.Services.Trademarks.Abstractions;
+﻿using IPNoticeHub.Application.Watchlist.Abstractions;
+using IPNoticeHub.Application.Watchlist.Implementations;
+using IPNoticeHub.Application.DocumentLibrary.Abstractions;
+using IPNoticeHub.Application.PdfGeneration.Abstractions;
+using IPNoticeHub.Application.Trademarks.Abstractions;
 using IPNoticeHub.Web.Controllers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

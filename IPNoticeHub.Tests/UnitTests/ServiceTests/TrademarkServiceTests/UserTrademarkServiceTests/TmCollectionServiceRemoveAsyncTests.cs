@@ -3,7 +3,7 @@ using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Data.Entities.Identity;
 using IPNoticeHub.Data.Repositories.Trademarks.Abstractions;
 using IPNoticeHub.Data.Repositories.Trademarks.Implementations;
-using IPNoticeHub.Services.Trademarks.Implementations;
+using IPNoticeHub.Application.Trademarks.Implementations;
 using IPNoticeHub.Tests.TestUtilities;
 using NUnit.Framework;
 

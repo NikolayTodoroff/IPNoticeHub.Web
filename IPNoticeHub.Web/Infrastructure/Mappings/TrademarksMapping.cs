@@ -1,9 +1,9 @@
 ﻿using Humanizer;
 using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Shared.Infrastructure.Paging;
-using IPNoticeHub.Services.DocumentLibrary.DTOs;
-using IPNoticeHub.Services.PdfGeneration.Abstractions;
-using IPNoticeHub.Services.Trademarks.DTOs;
+using IPNoticeHub.Application.DocumentLibrary.DTOs;
+using IPNoticeHub.Application.PdfGeneration.Abstractions;
+using IPNoticeHub.Application.Trademarks.DTOs;
 using IPNoticeHub.Web.Models.PdfGeneration;
 using IPNoticeHub.Web.Models.Trademarks;
 using IPNoticeHub.Web.ViewModels.Trademarks;

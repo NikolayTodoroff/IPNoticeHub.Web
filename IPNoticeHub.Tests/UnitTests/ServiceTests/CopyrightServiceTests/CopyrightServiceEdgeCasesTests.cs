@@ -2,7 +2,7 @@
 using IPNoticeHub.Data.Entities.Identity;
 using IPNoticeHub.Data.Repositories.Copyrights.Abstractions;
 using IPNoticeHub.Data.Repositories.Copyrights.Implementations;
-using IPNoticeHub.Services.Copyrights.Implementations;
+using IPNoticeHub.Application.Copyrights.Implementations;
 using IPNoticeHub.Tests.TestUtilities;
 using NUnit.Framework;
 

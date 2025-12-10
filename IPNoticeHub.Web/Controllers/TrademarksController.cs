@@ -1,15 +1,15 @@
 ﻿using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Web.Extensions;
-using IPNoticeHub.Services.Trademarks.Abstractions;
+using IPNoticeHub.Application.Trademarks.Abstractions;
 using IPNoticeHub.Web.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static IPNoticeHub.Shared.Constants.StatusMessages.TrademarkStatusMessages;
 using static IPNoticeHub.Shared.Constants.PagingConstants.DefaultPagingConstants;
 using IPNoticeHub.Web.Infrastructure.Mappings;
-using IPNoticeHub.Services.DocumentLibrary.Abstractions;
-using IPNoticeHub.Services.PdfGeneration.Abstractions;
-using IPNoticeHub.Services.Watchlist.Abstractions;
+using IPNoticeHub.Application.DocumentLibrary.Abstractions;
+using IPNoticeHub.Application.PdfGeneration.Abstractions;
+using IPNoticeHub.Application.Watchlist.Abstractions;
 
 namespace IPNoticeHub.Web.Controllers
 {

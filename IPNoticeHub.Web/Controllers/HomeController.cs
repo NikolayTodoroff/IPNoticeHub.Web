@@ -1,6 +1,6 @@
 using IPNoticeHub.Shared.Enums;
-using IPNoticeHub.Services.TrademarkSearch.Abstractions;
-using IPNoticeHub.Services.TrademarkSearch.DTOs;
+using IPNoticeHub.Application.TrademarkSearch.Abstractions;
+using IPNoticeHub.Application.TrademarkSearch.DTOs;
 using IPNoticeHub.Web.Models;
 using IPNoticeHub.Web.Models.TrademarkSearch;
 using Microsoft.AspNetCore.Authorization;

@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Shared.Enums;
-using IPNoticeHub.Services.Copyrights.Abstractions;
-using IPNoticeHub.Services.Copyrights.DTOs;
+using IPNoticeHub.Application.Copyrights.Abstractions;
+using IPNoticeHub.Application.Copyrights.DTOs;
 using IPNoticeHub.Tests.UnitTests.TestUtilities;
 using IPNoticeHub.Web.Controllers;
 using IPNoticeHub.Web.Models.Copyrights;

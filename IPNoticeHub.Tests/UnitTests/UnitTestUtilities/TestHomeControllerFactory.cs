@@ -1,5 +1,5 @@
 ﻿using System.Security.Claims;
-using IPNoticeHub.Services.TrademarkSearch.Abstractions;
+using IPNoticeHub.Application.TrademarkSearch.Abstractions;
 using IPNoticeHub.Web.Controllers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

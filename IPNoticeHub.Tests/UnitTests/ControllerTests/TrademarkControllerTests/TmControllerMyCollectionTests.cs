@@ -1,8 +1,8 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Shared.Infrastructure.Paging;
-using IPNoticeHub.Services.Trademarks.Abstractions;
-using IPNoticeHub.Services.Trademarks.DTOs;
+using IPNoticeHub.Application.Trademarks.Abstractions;
+using IPNoticeHub.Application.Trademarks.DTOs;
 using IPNoticeHub.Tests.UnitTests.TestUtilities;
 using IPNoticeHub.Web.Models.Trademarks;
 using Microsoft.AspNetCore.Mvc;

@@ -1,6 +1,6 @@
 ﻿using IPNoticeHub.Shared.Enums;
-using IPNoticeHub.Services.Copyrights.DTOs;
-using IPNoticeHub.Services.Trademarks.DTOs;
+using IPNoticeHub.Application.Copyrights.DTOs;
+using IPNoticeHub.Application.Trademarks.DTOs;
 using IPNoticeHub.Web.Models.PdfGeneration;
 
 namespace IPNoticeHub.Web.Infrastructure

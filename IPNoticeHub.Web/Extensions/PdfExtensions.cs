@@ -1,5 +1,5 @@
-﻿using IPNoticeHub.Services.PdfGeneration.Abstractions;
-using IPNoticeHub.Services.PdfGeneration.Implementations;
+﻿using IPNoticeHub.Application.PdfGeneration.Abstractions;
+using IPNoticeHub.Application.PdfGeneration.Implementations;
 using QuestPDF.Infrastructure;
 
 namespace IPNoticeHub.Web.Extensions

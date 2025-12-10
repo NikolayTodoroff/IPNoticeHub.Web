@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using IPNoticeHub.Services.Watchlist.DTOs;
+using IPNoticeHub.Application.Watchlist.DTOs;
 using IPNoticeHub.Tests.UnitTests.UnitTestUtilities;
 using IPNoticeHub.Web.Controllers;
 using IPNoticeHub.Web.Models.TrademarkSearch;

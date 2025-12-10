@@ -1,10 +1,10 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Shared.Enums;
-using IPNoticeHub.Services.Watchlist.Abstractions;
-using IPNoticeHub.Services.DocumentLibrary.Abstractions;
-using IPNoticeHub.Services.PdfGeneration.Abstractions;
-using IPNoticeHub.Services.Trademarks.Abstractions;
-using IPNoticeHub.Services.Trademarks.DTOs;
+using IPNoticeHub.Application.Watchlist.Abstractions;
+using IPNoticeHub.Application.DocumentLibrary.Abstractions;
+using IPNoticeHub.Application.PdfGeneration.Abstractions;
+using IPNoticeHub.Application.Trademarks.Abstractions;
+using IPNoticeHub.Application.Trademarks.DTOs;
 using IPNoticeHub.Tests.UnitTests.TestUtilities;
 using IPNoticeHub.Tests.UnitTests.UnitTestUtilities;
 using IPNoticeHub.Web.Controllers;

@@ -1,4 +1,4 @@
-﻿using IPNoticeHub.Services.Watchlist.Abstractions;
+﻿using IPNoticeHub.Application.Watchlist.Abstractions;
 using IPNoticeHub.Web.Controllers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

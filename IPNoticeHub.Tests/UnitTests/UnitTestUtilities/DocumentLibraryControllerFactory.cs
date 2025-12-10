@@ -1,4 +1,4 @@
-﻿using IPNoticeHub.Services.DocumentLibrary.Abstractions;
+﻿using IPNoticeHub.Application.DocumentLibrary.Abstractions;
 using IPNoticeHub.Web.Controllers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

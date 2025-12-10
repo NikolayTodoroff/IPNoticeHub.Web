@@ -1,6 +1,6 @@
 ﻿using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Web.Extensions;
-using IPNoticeHub.Services.DocumentLibrary.Abstractions;
+using IPNoticeHub.Application.DocumentLibrary.Abstractions;
 using IPNoticeHub.Web.Infrastructure.Mappings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

@@ -1,14 +1,14 @@
 ﻿using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Web.Extensions;
-using IPNoticeHub.Services.Copyrights.Abstractions;
-using IPNoticeHub.Services.DocumentLibrary.Abstractions;
+using IPNoticeHub.Application.Copyrights.Abstractions;
+using IPNoticeHub.Application.DocumentLibrary.Abstractions;
 using IPNoticeHub.Web.Infrastructure.Mappings;
 using IPNoticeHub.Web.Models.Copyrights;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static IPNoticeHub.Shared.Constants.StatusMessages.CopyrightStatusMessages;
 using static IPNoticeHub.Shared.Constants.PagingConstants.DefaultPagingConstants;
-using IPNoticeHub.Services.PdfGeneration.Abstractions;
+using IPNoticeHub.Application.PdfGeneration.Abstractions;
 
 namespace IPNoticeHub.Web.Controllers
 {
