@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace IPNoticeHub.Common.Infrastructure
+namespace IPNoticeHub.Shared.Infrastructure
 {
     public static class SearchNumberNormalizer
     {

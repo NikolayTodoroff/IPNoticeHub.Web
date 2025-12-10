@@ -1,4 +1,4 @@
-﻿using IPNoticeHub.Common.EnumConstants;
+﻿using IPNoticeHub.Shared.Enums;
 
 namespace IPNoticeHub.Services.PdfGeneration.Abstractions
 {

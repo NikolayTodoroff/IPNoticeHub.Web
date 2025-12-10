@@ -1,4 +1,4 @@
-﻿namespace IPNoticeHub.Common.EnumConstants
+﻿namespace IPNoticeHub.Shared.Enums
 {
     /// <summary>
     /// Specifies the available sorting options for trademark and copyright collections.

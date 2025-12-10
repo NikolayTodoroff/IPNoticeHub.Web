@@ -1,5 +1,5 @@
-﻿using IPNoticeHub.Common.EnumConstants;
-using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
+﻿using IPNoticeHub.Shared.Enums;
+using static IPNoticeHub.Shared.Constants.PagingConstants.DefaultPagingConstants;
 
 namespace IPNoticeHub.Services.TrademarkSearch.DTOs
 {

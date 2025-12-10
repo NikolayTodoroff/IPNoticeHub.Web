@@ -1,6 +1,7 @@
-﻿using IPNoticeHub.Common.EnumConstants;
+﻿using IPNoticeHub.Shared.EnumConstants;
+using IPNoticeHub.Shared.Enums;
 
-namespace IPNoticeHub.Common.Infrastructure
+namespace IPNoticeHub.Shared.Infrastructure
 {
     /// <summary>
     /// Provides a mapping utility to convert raw event type codes into their corresponding enumeration values. 

@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using static IPNoticeHub.Common.ValidationConstants.AdminAccountCredentials;
-using static IPNoticeHub.Common.Infrastructure.RoleNames;
+using static IPNoticeHub.Shared.Constants.IdentityConstants.AdminAccountCredentials;
+using static IPNoticeHub.Shared.Infrastructure.RoleNames;
 using IPNoticeHub.Data.Entities.Identity;
 
 namespace IPNoticeHub.Data.Seed

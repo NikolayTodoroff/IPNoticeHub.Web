@@ -90,7 +90,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.CopyrightServiceTests
 
             var pagedResult = await copyrightService.GetUserCollectionAsync(
                 userId: user.Id,
-                sortBy: Common.EnumConstants.CollectionSortBy.DateAddedDesc,
+                sortBy: Shared.Enums.CollectionSortBy.DateAddedDesc,
                 page: 1,
                 resultsPerPage: 10,
                 cancellationToken: default);

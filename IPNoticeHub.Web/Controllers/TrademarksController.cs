@@ -1,11 +1,11 @@
-﻿using IPNoticeHub.Common.EnumConstants;
+﻿using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Web.Extensions;
 using IPNoticeHub.Services.Trademarks.Abstractions;
 using IPNoticeHub.Web.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
-using static IPNoticeHub.Common.ValidationConstants.StatusMessages;
+using static IPNoticeHub.Shared.Constants.StatusMessages.TrademarkStatusMessages;
+using static IPNoticeHub.Shared.Constants.PagingConstants.DefaultPagingConstants;
 using IPNoticeHub.Web.Infrastructure.Mappings;
 using IPNoticeHub.Services.DocumentLibrary.Abstractions;
 using IPNoticeHub.Services.PdfGeneration.Abstractions;

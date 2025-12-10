@@ -1,12 +1,12 @@
-﻿using IPNoticeHub.Common.EnumConstants;
-using IPNoticeHub.Common.Infrastructure.Paging;
+﻿using IPNoticeHub.Shared.Enums;
+using IPNoticeHub.Shared.Infrastructure.Paging;
 using IPNoticeHub.Services.Copyrights.DTOs;
 using IPNoticeHub.Services.DocumentLibrary.DTOs;
 using IPNoticeHub.Services.PdfGeneration.Abstractions;
 using IPNoticeHub.Web.Models.Copyrights;
 using IPNoticeHub.Web.Models.PdfGeneration;
 using System.Globalization;
-using static IPNoticeHub.Common.ValidationConstants;
+using static IPNoticeHub.Shared.Constants.DateTimeFormats.DefaultDateTimeFormat;
 
 namespace IPNoticeHub.Web.Infrastructure.Mappings
 {
@@ -126,7 +126,7 @@ namespace IPNoticeHub.Web.Infrastructure.Mappings
                 YearOfCreation: viewModel.YearOfCreation,
                 DateOfPublication: viewModel.DateOfPublication,
                 NationOfFirstPublication: viewModel.NationOfFirstPublication,
-                InfringingUrl: viewModel.InfringingUrl,
+                InfringingUrl: viewModel.InfringingUrl!,
                 GoodFaithStatement: viewModel.GoodFaithStatement,
                 BodyTemplate: viewModel.BodyTemplate);
         }
@@ -138,7 +138,7 @@ namespace IPNoticeHub.Web.Infrastructure.Mappings
             return new Dictionary<string, string>
             {
                 ["Date"] = DateTime.UtcNow
-                    .ToString(FormattingConstants.DateTimeFormat, CultureInfo.InvariantCulture),
+                    .ToString(DateTimeFormat, CultureInfo.InvariantCulture),
 
                 ["RecipientName"] = mapModel(viewModel.RecipientName),
                 ["RecipientAddress"] = mapModel(viewModel.RecipientAddress),
@@ -154,7 +154,7 @@ namespace IPNoticeHub.Web.Infrastructure.Mappings
 
                 ["YearOfCreation"] = mapModel(viewModel.YearOfCreation?.ToString()),
                 ["DateOfPublication"] = mapModel(viewModel.DateOfPublication?
-                    .ToString(FormattingConstants.DateTimeFormat, CultureInfo.InvariantCulture)),
+                    .ToString(DateTimeFormat, CultureInfo.InvariantCulture)),
 
                 ["NationOfFirstPublication"] = mapModel(viewModel.NationOfFirstPublication),
                 ["GoodFaithStatement"] = mapModel(viewModel.GoodFaithStatement)
@@ -168,7 +168,7 @@ namespace IPNoticeHub.Web.Infrastructure.Mappings
             return new Dictionary<string, string>
             {
                 ["Date"] = DateTime.UtcNow
-                    .ToString(FormattingConstants.DateTimeFormat, CultureInfo.InvariantCulture),
+                    .ToString(DateTimeFormat, CultureInfo.InvariantCulture),
 
                 ["RecipientName"] = mapModel(viewModel.RecipientName),
                 ["RecipientAddress"] = mapModel(viewModel.RecipientAddress),

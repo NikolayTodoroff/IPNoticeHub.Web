@@ -1,6 +1,6 @@
 ﻿using Humanizer;
-using IPNoticeHub.Common.EnumConstants;
-using IPNoticeHub.Common.Infrastructure.Paging;
+using IPNoticeHub.Shared.Enums;
+using IPNoticeHub.Shared.Infrastructure.Paging;
 using IPNoticeHub.Services.DocumentLibrary.DTOs;
 using IPNoticeHub.Services.PdfGeneration.Abstractions;
 using IPNoticeHub.Services.Trademarks.DTOs;
@@ -8,7 +8,7 @@ using IPNoticeHub.Web.Models.PdfGeneration;
 using IPNoticeHub.Web.Models.Trademarks;
 using IPNoticeHub.Web.ViewModels.Trademarks;
 using System.Globalization;
-using static IPNoticeHub.Common.ValidationConstants;
+using static IPNoticeHub.Shared.Constants.DateTimeFormats.DefaultDateTimeFormat;
 
 namespace IPNoticeHub.Web.Infrastructure.Mappings
 {
@@ -102,7 +102,7 @@ namespace IPNoticeHub.Web.Infrastructure.Mappings
             return new Dictionary<string, string>
             {
                 ["Date"] = DateTime.UtcNow
-                    .ToString(FormattingConstants.DateTimeFormat, CultureInfo.InvariantCulture),
+                    .ToString(DateTimeFormat, CultureInfo.InvariantCulture),
 
                 ["RecipientName"] = mapModel(viewModel.RecipientName),
                 ["RecipientAddress"] = mapModel(viewModel.RecipientAddress),

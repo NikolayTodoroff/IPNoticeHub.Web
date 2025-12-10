@@ -2,7 +2,7 @@
 using IPNoticeHub.Web.Models.AdminDashboard;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using static IPNoticeHub.Common.ValidationConstants.StatusMessages;
+using static IPNoticeHub.Shared.Constants.StatusMessages.EmailNotificationsStatusMessages;
 
 namespace IPNoticeHub.Web.Controllers
 {

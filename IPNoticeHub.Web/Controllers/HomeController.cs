@@ -1,4 +1,4 @@
-using IPNoticeHub.Common.EnumConstants;
+using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Services.TrademarkSearch.Abstractions;
 using IPNoticeHub.Services.TrademarkSearch.DTOs;
 using IPNoticeHub.Web.Models;
@@ -6,7 +6,7 @@ using IPNoticeHub.Web.Models.TrademarkSearch;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
-using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
+using static IPNoticeHub.Shared.Constants.PagingConstants.DefaultPagingConstants;
 
 namespace IPNoticeHub.Web.Controllers
 {

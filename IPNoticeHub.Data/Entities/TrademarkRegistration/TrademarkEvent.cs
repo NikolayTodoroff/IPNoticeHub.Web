@@ -1,7 +1,7 @@
-﻿using IPNoticeHub.Common.EnumConstants;
+﻿using IPNoticeHub.Shared.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using static IPNoticeHub.Common.ValidationConstants.TrademarkEventConstants;
+using static IPNoticeHub.Shared.Constants.ValidationConstants.TrademarkEventConstants;
 
 namespace IPNoticeHub.Data.Entities.TrademarkRegistration
 {

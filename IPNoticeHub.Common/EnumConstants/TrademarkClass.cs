@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace IPNoticeHub.Common.EnumConstants
+namespace IPNoticeHub.Shared.EnumConstants
 {
     /// <summary>
     /// Represents the WIPO Nice Classification system, which categorizes international classes for USPTO trademarks.

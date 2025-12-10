@@ -1,9 +1,9 @@
-﻿using IPNoticeHub.Common.EnumConstants;
+﻿using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Data.Entities.Identity;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using static IPNoticeHub.Common.ValidationConstants.LegalDocumentConstants;
-using static IPNoticeHub.Common.ValidationConstants.InfringementPlaceholderConstants;
+using static IPNoticeHub.Shared.Constants.ValidationConstants.LegalDocumentConstants;
+using static IPNoticeHub.Shared.Constants.ValidationConstants.InfringementPlaceholderConstants;
 
 namespace IPNoticeHub.Data.Entities.LegalDocuments
 {

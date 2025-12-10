@@ -3,7 +3,7 @@ using IPNoticeHub.Data.Entities.TrademarkRegistration;
 using IPNoticeHub.Data.Repositories.Trademarks.Abstractions;
 using IPNoticeHub.Services.Trademarks.Abstractions;
 using IPNoticeHub.Services.Trademarks.DTOs;
-using IPNoticeHub.Common.Infrastructure.Paging;
+using IPNoticeHub.Shared.Infrastructure.Paging;
 
 namespace IPNoticeHub.Services.Trademarks.Implementations
 {

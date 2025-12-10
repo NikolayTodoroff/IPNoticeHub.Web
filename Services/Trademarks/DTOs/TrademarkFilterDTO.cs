@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using IPNoticeHub.Common.EnumConstants;
-using static IPNoticeHub.Common.ValidationConstants.TrademarkRegistrationConstants;
+using IPNoticeHub.Shared.Enums;
+using static IPNoticeHub.Shared.Constants.ValidationConstants.TrademarkRegistrationConstants;
 
 namespace IPNoticeHub.Services.Trademarks.DTOs
 {

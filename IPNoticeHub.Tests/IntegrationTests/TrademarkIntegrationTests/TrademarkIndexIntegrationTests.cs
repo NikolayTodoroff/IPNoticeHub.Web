@@ -1,5 +1,5 @@
 ﻿//using FluentAssertions;
-//using IPNoticeHub.Common.EnumConstants;
+//using IPNoticeHub.Shared.Enums;
 //using IPNoticeHub.Data;
 //using IPNoticeHub.Data.Entities.TrademarkRegistration;
 //using IPNoticeHub.Tests.IntegrationTests.TestUtilities;

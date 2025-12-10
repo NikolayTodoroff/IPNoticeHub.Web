@@ -1,4 +1,4 @@
-﻿namespace IPNoticeHub.Common.EnumConstants
+﻿namespace IPNoticeHub.Shared.EnumConstants
 {
     /// <summary>
     /// Defines the various status categories for trademarks, representing their current state in the application or registration process.

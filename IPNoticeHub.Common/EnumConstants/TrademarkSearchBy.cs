@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace IPNoticeHub.Common.EnumConstants
+namespace IPNoticeHub.Shared.EnumConstants
 {
     /// <summary>
     /// Represents the criteria by which a trademark can be searched.

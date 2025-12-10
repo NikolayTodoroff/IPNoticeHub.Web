@@ -1,4 +1,4 @@
-﻿namespace IPNoticeHub.Common.EnumConstants
+﻿namespace IPNoticeHub.Shared.EnumConstants
 {
     /// <summary>
     /// Enum representing different data providers.

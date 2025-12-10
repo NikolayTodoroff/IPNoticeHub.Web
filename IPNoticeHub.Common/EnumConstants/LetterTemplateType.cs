@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace IPNoticeHub.Common.EnumConstants
+namespace IPNoticeHub.Shared.EnumConstants
 {
     public enum LetterTemplateType
     {

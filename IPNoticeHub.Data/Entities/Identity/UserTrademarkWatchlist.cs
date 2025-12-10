@@ -1,7 +1,7 @@
 ﻿using IPNoticeHub.Data.Entities.TrademarkRegistration;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using static IPNoticeHub.Common.ValidationConstants.TrademarkRegistrationConstants;
+using static IPNoticeHub.Shared.Constants.ValidationConstants.TrademarkRegistrationConstants;
 
 namespace IPNoticeHub.Data.Entities.Identity
 {

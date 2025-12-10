@@ -1,4 +1,4 @@
-﻿namespace IPNoticeHub.Common.EnumConstants
+﻿namespace IPNoticeHub.Shared.EnumConstants
 {
     public enum CopyrightWorkType
     {

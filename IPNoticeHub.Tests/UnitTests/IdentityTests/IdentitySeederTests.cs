@@ -7,8 +7,8 @@ using IPNoticeHub.Tests.UnitTests.UnitTestUtilities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using static IPNoticeHub.Common.Infrastructure.RoleNames;
-using static IPNoticeHub.Common.ValidationConstants.AdminAccountCredentials;
+using static IPNoticeHub.Shared.Infrastructure.RoleNames;
+using static IPNoticeHub.Shared.Constants.IdentityConstants.AdminAccountCredentials;
 
 namespace IPNoticeHub.Tests.UnitTests.IdentityTests
 {

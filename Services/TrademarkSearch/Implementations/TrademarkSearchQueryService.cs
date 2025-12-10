@@ -1,4 +1,4 @@
-﻿using IPNoticeHub.Common.EnumConstants;
+﻿using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Services.TrademarkSearch.Abstractions;
 using IPNoticeHub.Services.TrademarkSearch.DTOs;
 using Microsoft.EntityFrameworkCore;

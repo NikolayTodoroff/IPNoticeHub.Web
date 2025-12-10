@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using IPNoticeHub.Common.EnumConstants;
+using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Data;
 using IPNoticeHub.Data.Entities.Identity;
 using IPNoticeHub.Data.Repositories.Trademarks.Implementations;

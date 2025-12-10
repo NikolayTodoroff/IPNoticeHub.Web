@@ -1,11 +1,11 @@
 ﻿using FluentAssertions;
-using IPNoticeHub.Common.EnumConstants;
+using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Data;
 using IPNoticeHub.Services.TrademarkSearch.DTOs;
 using IPNoticeHub.Services.TrademarkSearch.Implementations;
 using IPNoticeHub.Tests.TestUtilities;
 using NUnit.Framework;
-using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
+using static IPNoticeHub.Shared.Constants.PagingConstants.DefaultPagingConstants;
 using IPNoticeHub.Tests.UnitTests.TestUtilities;
 using IPNoticeHub.Data.Repositories.TrademarkSearch.Abstractions;
 

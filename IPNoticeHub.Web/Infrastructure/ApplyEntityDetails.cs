@@ -1,4 +1,4 @@
-﻿using IPNoticeHub.Common.EnumConstants;
+﻿using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Services.Copyrights.DTOs;
 using IPNoticeHub.Services.Trademarks.DTOs;
 using IPNoticeHub.Web.Models.PdfGeneration;

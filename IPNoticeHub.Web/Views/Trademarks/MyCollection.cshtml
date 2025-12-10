@@ -2,7 +2,6 @@
 
 @{
     ViewBag.Title = "My Trademark Collection";
-    // Canonical return target for this page (keeps pagination/query)
     var currentUrl = (Context?.Request?.Path + Context?.Request?.QueryString) ?? Url.Action("MyCollection", "Trademarks");
 }
 
@@ -38,7 +37,7 @@
                                 </a>                               
                             </td>
                             <td>
-                                <span class="badge text-bg-@(tm.Status == IPNoticeHub.Common.EnumConstants.TrademarkStatusCategory.Registered ? "success" : "secondary")">
+                                <span class="badge text-bg-@(tm.Status == IPNoticeHub.Shared.Enums.TrademarkStatusCategory.Registered ? "success" : "secondary")">
                                     @tm.Status
                                 </span>
                             </td>

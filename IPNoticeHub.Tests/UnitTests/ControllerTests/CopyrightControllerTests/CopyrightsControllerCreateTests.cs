@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using IPNoticeHub.Common.EnumConstants;
+using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Services.Copyrights.Abstractions;
 using IPNoticeHub.Services.Copyrights.DTOs;
 using IPNoticeHub.Tests.UnitTests.TestUtilities;
@@ -8,7 +8,7 @@ using IPNoticeHub.Web.Models.Copyrights;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using static IPNoticeHub.Common.ValidationConstants.StatusMessages;
+using static IPNoticeHub.Shared.Constants.StatusMessages.CopyrightStatusMessages;
 
 namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
 {

@@ -1,6 +1,6 @@
-﻿using IPNoticeHub.Common.EnumConstants;
+﻿using IPNoticeHub.Shared.Enums;
 using System.ComponentModel.DataAnnotations;
-using static IPNoticeHub.Common.ValidationConstants.LegalDocumentConstants;
+using static IPNoticeHub.Shared.Constants.ValidationConstants.LegalDocumentConstants;
 
 namespace IPNoticeHub.Services.DocumentLibrary.DTOs
 {

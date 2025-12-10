@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using IPNoticeHub.Common.EnumConstants;
+using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Services.TrademarkSearch.Abstractions;
 using IPNoticeHub.Services.TrademarkSearch.DTOs;
 using IPNoticeHub.Tests.UnitTests.TestUtilities;
@@ -7,7 +7,7 @@ using IPNoticeHub.Web.Models.TrademarkSearch;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
+using static IPNoticeHub.Shared.Constants.PagingConstants.DefaultPagingConstants;
 
 namespace IPNoticeHub.Tests.UnitTests.ControllerTests.HomeControllerTests
 {

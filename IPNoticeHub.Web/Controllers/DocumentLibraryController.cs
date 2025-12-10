@@ -1,4 +1,4 @@
-﻿using IPNoticeHub.Common.EnumConstants;
+﻿using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Web.Extensions;
 using IPNoticeHub.Services.DocumentLibrary.Abstractions;
 using IPNoticeHub.Web.Infrastructure.Mappings;
