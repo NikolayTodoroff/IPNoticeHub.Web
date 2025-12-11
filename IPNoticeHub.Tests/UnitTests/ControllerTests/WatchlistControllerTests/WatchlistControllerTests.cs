@@ -103,7 +103,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.WatchlistControllerTests
                 "user-1", 
                 trademarkId, 
                 It.IsAny<CancellationToken>())).
-                ReturnsAsync(Task.CompletedTask);
+                Returns(Task.CompletedTask);
 
             var actionResult = await controller.Add(
                 trademarkId, 
@@ -195,7 +195,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.WatchlistControllerTests
                 "user-1", 
                 trademarkId, 
                 It.IsAny<CancellationToken>())).
-                ReturnsAsync(Task.CompletedTask);
+                Returns(Task.CompletedTask);
 
             var actionResult = await controller.Remove(
                 trademarkId, 
@@ -235,7 +235,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.WatchlistControllerTests
                 trademarkId, 
                 true, 
                 It.IsAny<CancellationToken>())).
-                ReturnsAsync(Task.CompletedTask);
+                Returns(Task.CompletedTask);
 
             var actionResult = 
                 await controller.ToggleNotifications(
@@ -276,7 +276,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.WatchlistControllerTests
                 trademarkId, 
                 false, 
                 It.IsAny<CancellationToken>())).
-                ReturnsAsync(Task.CompletedTask);
+                Returns(Task.CompletedTask);
 
             var actionResult = await controller.ToggleNotifications(
                 trademarkId, 

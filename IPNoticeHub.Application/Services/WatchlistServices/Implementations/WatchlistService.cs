@@ -21,23 +21,39 @@ namespace IPNoticeHub.Application.Services.WatchlistService.Implementations
             this.statusLabels = statusLabels;
         }
 
-        public async Task AddAsync(string userId, int trademarkId, CancellationToken cancellationToken)
+        public async Task AddAsync(
+            string userId, 
+            int trademarkId, 
+            CancellationToken cancellationToken)
         {
             var statusSnapshot = 
                 await snapshotRepo.GetStatusSnapshotAsync(trademarkId, cancellationToken);
 
             if (statusSnapshot is null)
             {
-                throw new InvalidOperationException($"No status snapshot found for trademarkId {trademarkId}.");
+                throw new InvalidOperationException(
+                    $"No status snapshot found for trademarkId {trademarkId}.");
             } 
 
-            await watchlistRepo.AddOrUndeleteAsync(userId, trademarkId, statusSnapshot.Value.StatusCodeRaw,
-                statusSnapshot.Value.StatusDetail, statusSnapshot.Value.StatusDateUtc, cancellationToken);
+            await watchlistRepo.AddOrUndeleteAsync(
+                userId, 
+                trademarkId, 
+                statusSnapshot.Value.StatusCodeRaw,
+                statusSnapshot.Value.StatusDetail, 
+                statusSnapshot.Value.StatusDateUtc, 
+                cancellationToken);
         }
 
-        public async Task<IReadOnlyList<WatchlistItemDto>> GetListByUserAsync(string userId, CancellationToken cancellationToken)
+        public async Task<IReadOnlyList<WatchlistItemDto>> GetListByUserAsync(
+            string userId, 
+            CancellationToken cancellationToken)
         {
-            var links = await watchlistRepo.ListByUserAsync(userId, 0, 200, cancellationToken);
+            var links = 
+                await watchlistRepo.ListByUserAsync(
+                    userId, 
+                    0, 
+                    200, 
+                    cancellationToken);
 
             var items = links.Select(l =>
             {
@@ -47,7 +63,11 @@ namespace IPNoticeHub.Application.Services.WatchlistService.Implementations
                 int? initialStatusCode = l.InitialStatusCodeRaw;
                 string? initialStatusText = l.InitialStatusText;
 
-                bool isStatusChanged = ComputeStatusChange(initialStatusCode, currentStatusCode, initialStatusText, currentStatusText);
+                bool isStatusChanged = ComputeStatusChange(
+                    initialStatusCode, 
+                    currentStatusCode, 
+                    initialStatusText, 
+                    currentStatusText);
 
                 return new WatchlistItemDto
                 {
@@ -58,7 +78,8 @@ namespace IPNoticeHub.Application.Services.WatchlistService.Implementations
                     Owner = l.Trademark.Owner,
                     AddedOnDate = l.AddedOnUtc,
                     InitialStatus = initialStatusText ?? LabelFromCode(initialStatusCode),
-                    CurrentStatus = string.IsNullOrWhiteSpace(currentStatusText) ? LabelFromCode(currentStatusCode) : currentStatusText,
+                    CurrentStatus = string.IsNullOrWhiteSpace(currentStatusText) ? 
+                    LabelFromCode(currentStatusCode) : currentStatusText,
                     HasStatusChange = isStatusChanged,
                     NotificationsEnabled = l.NotificationsEnabled
                 };
@@ -67,38 +88,57 @@ namespace IPNoticeHub.Application.Services.WatchlistService.Implementations
 
             return items;
         }
-        public async Task RemoveAsync(string userId, int trademarkId, CancellationToken cancellationToken)
+        public async Task RemoveAsync(
+            string userId, 
+            int trademarkId, 
+            CancellationToken cancellationToken)
         {
-            await watchlistRepo.SoftRemoveAsync(userId, trademarkId, cancellationToken);
+            await watchlistRepo.SoftRemoveAsync(
+                userId, 
+                trademarkId, 
+                cancellationToken);
         }
 
-        public async Task ToggleNotificationsAsync(string userId, int trademarkId, bool notificationsEnabled, CancellationToken cancellationToken)
+        public async Task ToggleNotificationsAsync(
+            string userId, 
+            int trademarkId, 
+            bool notificationsEnabled, 
+            CancellationToken cancellationToken)
         {
-            await watchlistRepo.ToggleNotificationsAsync(userId, trademarkId, notificationsEnabled, cancellationToken);
+            await watchlistRepo.ToggleNotificationsAsync(
+                userId, 
+                trademarkId, 
+                notificationsEnabled, 
+                cancellationToken);
         }
 
-        public async Task<bool> ExistsAsync(string userId, int trademarkId, CancellationToken cancellationToken)
+        public async Task<bool> ExistsAsync(
+            string userId, 
+            int trademarkId, 
+            CancellationToken cancellationToken)
         {
-            return await watchlistRepo.ExistsAsync(userId, trademarkId, cancellationToken);
+            return await watchlistRepo.ExistsAsync(
+                userId, 
+                trademarkId, 
+                cancellationToken);
         }
 
-        /// <summary>
-        /// Determines whether the trademark status has changed between the initial and current values.
-        /// Rules for determining status change:
-        /// 1) If both status codes are available, compare them directly.
-        /// 2) If status codes are unavailable but both status texts exist, compare their normalized forms.
-        /// 3) If neither condition is met, there is insufficient information to determine a status change.
-        /// </summary>
-        private static bool ComputeStatusChange(int? initialStatusCode, int? currentStatusCode, string? initialStatusText, string? currentStatusText)
+        private static bool ComputeStatusChange(
+            int? initialStatusCode, 
+            int? currentStatusCode, 
+            string? initialStatusText, 
+            string? currentStatusText)
         {
             if (initialStatusCode.HasValue && currentStatusCode.HasValue)
             {
                 return initialStatusCode.Value != currentStatusCode.Value;
             }
 
-            if (!string.IsNullOrWhiteSpace(initialStatusText) && !string.IsNullOrWhiteSpace(currentStatusText))
+            if (!string.IsNullOrWhiteSpace(initialStatusText) && 
+                !string.IsNullOrWhiteSpace(currentStatusText))
             {
-                return !Normalize(initialStatusText).Equals(Normalize(currentStatusText), StringComparison.Ordinal);
+                return !Normalize(initialStatusText).Equals(
+                    Normalize(currentStatusText), StringComparison.Ordinal);
             }
 
             return false;
@@ -108,12 +148,14 @@ namespace IPNoticeHub.Application.Services.WatchlistService.Implementations
         {
             if (string.IsNullOrWhiteSpace(text)) return string.Empty;
 
-            return Regex.Replace(text.Trim().ToLowerInvariant(), pattern: @"\s+", replacement: " ");
+            return Regex.Replace(
+                text.Trim().ToLowerInvariant(), pattern: @"\s+", replacement: " ");
         }
 
         private string LabelFromCode(int? statusCode)
         {
-            return statusCode.HasValue ? statusLabels.GetStatusLabel("USPTO", statusCode.Value) : string.Empty;
+            return statusCode.HasValue ? statusLabels.GetStatusLabel(
+                "USPTO", statusCode.Value) : string.Empty;
         }
     }
 }
