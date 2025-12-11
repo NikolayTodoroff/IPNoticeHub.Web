@@ -5,13 +5,15 @@ VisualStudioVersion = 18.3.11304.161 d18.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPNoticeHub.Web", "IPNoticeHub.Web\IPNoticeHub.Web.csproj", "{CDCC8550-AACA-400B-82DE-14DD38A62D0D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPNoticeHub.Data", "IPNoticeHub.Data\IPNoticeHub.Data.csproj", "{E5035112-5E52-4D55-9D08-01EF570874AA}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPNoticeHub.Tests", "IPNoticeHub.Tests\IPNoticeHub.Tests.csproj", "{65E47B5A-D513-45B6-B179-21FE5F2CC700}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPNoticeHub.Shared", "IPNoticeHub.Shared\IPNoticeHub.Shared.csproj", "{2685C3C0-5B11-4697-911E-7DCED6E4E0F6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPNoticeHub.Application", "IPNoticeHub.Application\IPNoticeHub.Application.csproj", "{7C5D036F-0457-4E07-BEBA-FAA77E3BE9CD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPNoticeHub.Infrastructure", "IPNoticeHub.Infrastructure\IPNoticeHub.Infrastructure.csproj", "{751ADF82-4347-4B27-A5D3-FCEE67D9A937}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPNoticeHub.Domain", "IPNoticeHub.Domain\IPNoticeHub.Domain.csproj", "{F702CCCF-8C81-4514-B1EC-3057946F9729}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +25,6 @@ Global
 		{CDCC8550-AACA-400B-82DE-14DD38A62D0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CDCC8550-AACA-400B-82DE-14DD38A62D0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CDCC8550-AACA-400B-82DE-14DD38A62D0D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E5035112-5E52-4D55-9D08-01EF570874AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E5035112-5E52-4D55-9D08-01EF570874AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E5035112-5E52-4D55-9D08-01EF570874AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E5035112-5E52-4D55-9D08-01EF570874AA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{65E47B5A-D513-45B6-B179-21FE5F2CC700}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{65E47B5A-D513-45B6-B179-21FE5F2CC700}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{65E47B5A-D513-45B6-B179-21FE5F2CC700}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -39,6 +37,14 @@ Global
 		{7C5D036F-0457-4E07-BEBA-FAA77E3BE9CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7C5D036F-0457-4E07-BEBA-FAA77E3BE9CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7C5D036F-0457-4E07-BEBA-FAA77E3BE9CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{751ADF82-4347-4B27-A5D3-FCEE67D9A937}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{751ADF82-4347-4B27-A5D3-FCEE67D9A937}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{751ADF82-4347-4B27-A5D3-FCEE67D9A937}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{751ADF82-4347-4B27-A5D3-FCEE67D9A937}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F702CCCF-8C81-4514-B1EC-3057946F9729}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F702CCCF-8C81-4514-B1EC-3057946F9729}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F702CCCF-8C81-4514-B1EC-3057946F9729}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F702CCCF-8C81-4514-B1EC-3057946F9729}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

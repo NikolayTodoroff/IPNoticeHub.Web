@@ -1,28 +1,22 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Shared.Enums;
-using IPNoticeHub.Data;
-using IPNoticeHub.Data.Entities.Identity;
-using IPNoticeHub.Data.Repositories.Trademarks.Abstractions;
-using IPNoticeHub.Data.Repositories.Trademarks.Implementations;
-using IPNoticeHub.Application.Trademarks.Implementations;
+using IPNoticeHub.Application.Repositories.TrademarkRepository;
+using IPNoticeHub.Infrastructure.Persistence.Repositories.TrademarkRepository;
 using IPNoticeHub.Tests.TestUtilities;
 using NUnit.Framework;
+using IPNoticeHub.Infrastructure.Identity;
+using IPNoticeHub.Application.Services.TrademarkService.Implementations;
 
 namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServiceTests
 {
-    /// <summary>
-    /// Section: TrademarkCollectionService - AddAsync behaviour.
-    /// - Verifies that when a trademark is not already in the user's collection, it is added successfully,
-    /// and subsequent checks confirm its presence in the collection.
-    /// - Verifies that if a soft-deleted link exists, AddAsync reactivates the same link (IsDeleted=false).
-    /// </summary>
     [TestFixture]
     public class TmCollectionServiceAddAsyncTests
     {
         [Test]
         public async Task AddAsync_WhenNotInCollection_AddsLink_ThenIsInCollectionReturnsTrue()
         {
-            using var testDbContext = InMemoryDbContextFactory.CreateTestDbContext();
+            using var testDbContext = 
+                InMemoryDbContextFactory.CreateTestDbContext();
 
             var user = new ApplicationUser
             {
@@ -31,7 +25,8 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServi
                 Email = "user1@test.local"
             };
 
-            var (trademarkEntity, _) = InMemoryDbContextFactory.CreateTrademark(
+            var (trademarkEntity, _) = 
+                InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "AAA",
                 owner: "Owner A",
                 goodsAndServices: "testGoodsAndSerices",
@@ -47,10 +42,15 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServi
             testDbContext.TrademarkRegistrations.Add(trademarkEntity);
             await testDbContext.SaveChangesAsync();
 
-            ITrademarkRepository tmRepository = new TrademarkRepository(testDbContext);
-            IUserTrademarkRepository userTmRepository = new UserTrademarkRepository(testDbContext);
+            ITrademarkRepository tmRepository = 
+                new TrademarkRepository(testDbContext);
 
-            var service = new TrademarkCollectionService(tmRepository, userTmRepository);
+            IUserTrademarkRepository userTmRepository = 
+                new UserTrademarkRepository(testDbContext);
+
+            var service = new TrademarkCollectionService(
+                tmRepository, 
+                userTmRepository);
 
             await service.AddAsync(
                 userId: user.Id,
@@ -58,19 +58,30 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServi
                 cancellationToken: default);
 
             bool linkedInCollection = await service.IsInCollectionAsync(
-                user.Id, trademarkEntity.Id, includeSoftDeleted: false, cancellationToken: default);
+                user.Id, 
+                trademarkEntity.Id, 
+                includeSoftDeleted: false, 
+                cancellationToken: default);
 
             linkedInCollection.Should().BeTrue();
 
-            var existingLink = testDbContext.UserTrademarks.Where(x => x.UserId == user.Id && x.TrademarkId == trademarkEntity.Id).ToList();
-            existingLink.Should().HaveCount(1);
-            existingLink[0].IsDeleted.Should().BeFalse();
+            var existingLink = testDbContext.UserTrademarks.Where
+                (x => x.ApplicationUserId == user.Id && 
+                x.TrademarkEntityId == trademarkEntity.Id).
+                ToList();
+
+            existingLink.Should().
+                HaveCount(1);
+
+            existingLink[0].IsDeleted.Should().
+                BeFalse();
         }
 
         [Test]
         public async Task AddAsync_WhenPreviouslySoftDeleted_UndeletesExistingLink()
         {
-            using var testDbContext = InMemoryDbContextFactory.CreateTestDbContext();
+            using var testDbContext = 
+                InMemoryDbContextFactory.CreateTestDbContext();
 
             var user = new ApplicationUser
             {
@@ -79,7 +90,8 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServi
                 Email = "user1@test.local"
             };
 
-            var (trademarkEntity, _) = InMemoryDbContextFactory.CreateTrademark(
+            var (trademarkEntity, _) = 
+                InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "AAA",
                 owner: "Owner A",
                 goodsAndServices: "testGoodsAndSerices",
@@ -95,12 +107,16 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServi
             testDbContext.TrademarkRegistrations.Add(trademarkEntity);
             await testDbContext.SaveChangesAsync();
 
-            ITrademarkRepository tmRepository = new TrademarkRepository(testDbContext);
-            IUserTrademarkRepository userTmRepository = new UserTrademarkRepository(testDbContext);
+            ITrademarkRepository tmRepository = 
+                new TrademarkRepository(testDbContext);
 
-            var service = new TrademarkCollectionService(tmRepository, userTmRepository);
+            IUserTrademarkRepository userTmRepository = 
+                new UserTrademarkRepository(testDbContext);
 
-            // Create a link, then soft-delete it, assert that the link exists but is soft-deleted
+            var service = new TrademarkCollectionService(
+                tmRepository, 
+                userTmRepository);
+
             await service.AddAsync(
                 userId: user.Id,
                 trademarkId: trademarkEntity.Id,
@@ -112,28 +128,41 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServi
                 cancellationToken: default);
 
             var softDeletedLinks = testDbContext.UserTrademarks.Where(
-                x => x.UserId == user.Id && x.TrademarkId == trademarkEntity.Id).ToList();
+                x => x.ApplicationUserId == user.Id && 
+                x.TrademarkEntityId == trademarkEntity.Id).
+                ToList();
 
-            softDeletedLinks.Should().HaveCount(1);
-            softDeletedLinks[0].IsDeleted.Should().BeTrue();
+            softDeletedLinks.Should().
+                HaveCount(1);
 
-            // AddAsync again should "undelete" the same link, assert that the link is active again
+            softDeletedLinks[0].IsDeleted.Should().
+                BeTrue();
+
             await service.AddAsync(
                userId: user.Id,
                trademarkId: trademarkEntity.Id,
                cancellationToken: default);
 
             var unDeletedLinks = testDbContext.UserTrademarks.Where(
-                x => x.UserId == user.Id && x.TrademarkId == trademarkEntity.Id).ToList();
+                x => x.ApplicationUserId == user.Id && 
+                x.TrademarkEntityId == trademarkEntity.Id).
+                ToList();
 
-            unDeletedLinks.Should().HaveCount(1);
-            unDeletedLinks[index: 0].IsDeleted.Should().BeFalse();
+            unDeletedLinks.Should().
+                HaveCount(1);
+
+            unDeletedLinks[index: 0].IsDeleted.Should().
+                BeFalse();
 
 
             bool linkedInCollection = await service.IsInCollectionAsync(
-                user.Id, trademarkEntity.Id, includeSoftDeleted: false, cancellationToken: default);
+                user.Id, 
+                trademarkEntity.Id, 
+                includeSoftDeleted: false, 
+                cancellationToken: default);
 
-            linkedInCollection.Should().BeTrue();
+            linkedInCollection.Should().
+                BeTrue();
         }
     }
 }

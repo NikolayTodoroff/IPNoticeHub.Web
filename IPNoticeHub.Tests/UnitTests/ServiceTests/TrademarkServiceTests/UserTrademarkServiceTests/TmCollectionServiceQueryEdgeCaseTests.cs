@@ -1,23 +1,14 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Shared.Enums;
-using IPNoticeHub.Data;
-using IPNoticeHub.Data.Entities.Identity;
-using IPNoticeHub.Data.Repositories.Trademarks.Abstractions;
-using IPNoticeHub.Data.Repositories.Trademarks.Implementations;
-using IPNoticeHub.Application.Trademarks.Implementations;
+using IPNoticeHub.Infrastructure.Identity;
+using IPNoticeHub.Application.Repositories.TrademarkRepository;
 using IPNoticeHub.Tests.TestUtilities;
 using NUnit.Framework;
-using System.Linq;
-using System.Threading.Tasks;
+using IPNoticeHub.Infrastructure.Persistence.Repositories.TrademarkRepository;
+using IPNoticeHub.Application.Services.TrademarkService.Implementations;
 
 namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServiceTests
 {
-    /// <summary>
-    /// Section: TrademarkCollectionService – Query Edge Cases
-    /// - Ensures IsInCollectionAsync returns false when the collection is empty.
-    /// - Verifies GetUserCollectionAsync returns an empty page result when the collection is empty.
-    /// - Confirms GetUserCollectionAsync returns normalized page result when the current page or results per page values are invalid.
-    /// </summary>
     [TestFixture]
     public class TmCollectionServiceQueryEdgeCaseTests
     {

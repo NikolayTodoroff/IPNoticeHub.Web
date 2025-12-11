@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using IPNoticeHub.Application.DocumentLibrary.Abstractions;
+using IPNoticeHub.Application.Services.DocumentLibraryService.Abstractions;
 using IPNoticeHub.Tests.UnitTests.UnitTestUtilities;
 using IPNoticeHub.Web.Controllers;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +14,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.DocumentLibraryControllerT
         [Test]
         public async Task Generate_WhenUserIdMissing_ReturnsForbid()
         {
-            var serviceMock = new Mock<IDocumentLibraryService>();
+            var serviceMock = 
+                new Mock<IDocumentLibraryService>();
 
             var controller = 
                 DocumentLibraryControllerFactory.CreateDocumentLibraryController(
@@ -37,10 +38,12 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.DocumentLibraryControllerT
         [Test]
         public async Task Generate_WhenSnapshotNotFound_SetsErrorMessage_AndRedirectsToIndex()
         {
-            var serviceMock = new Mock<IDocumentLibraryService>();
+            var serviceMock = 
+                new Mock<IDocumentLibraryService>();
 
             serviceMock
-                .Setup(s => s.RestoreDocumentSnapshotAsync(
+                .Setup(
+                s => s.RestoreDocumentSnapshotAsync(
                     It.IsAny<int>(),
                     It.IsAny<string>(),
                     It.IsAny<CancellationToken>())).
@@ -59,13 +62,15 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.DocumentLibraryControllerT
             redirect.ActionName.Should().Be(nameof(DocumentLibraryController.Index));
 
             controller.TempData.ContainsKey("ErrorMessage").Should().
-                BeTrue("Generate should inform the user when the document cannot be restored.");
+                BeTrue("Generate should inform the user " +
+                "when the document cannot be restored.");
         }
 
         [Test]
         public async Task Generate_WhenSnapshotFound_ReturnsPdfFileResult()
         {
-            var serviceMock = new Mock<IDocumentLibraryService>();
+            var serviceMock = 
+                new Mock<IDocumentLibraryService>();
 
             var expectedBytes = new byte[] { 1, 2, 3, 4 };
             const string expectedFileName = "my-letter.pdf";
@@ -115,9 +120,12 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.DocumentLibraryControllerT
                     serviceMock, 
                     userId: null);
 
-            var result = await controller.Rename(id: 5, newTitle: "New title");
+            var result = await controller.Rename(
+                id: 5, 
+                newTitle: "New title");
 
-            result.Should().BeOfType<ForbidResult>();
+            result.Should().
+                BeOfType<ForbidResult>();
 
             serviceMock.Verify(
                 s => s.RenameDocumentAsync(
@@ -131,14 +139,16 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.DocumentLibraryControllerT
         [Test]
         public async Task Rename_WhenValid_CallsService_SetsSuccessMessage_AndRedirectsToIndex()
         {
-            var serviceMock = new Mock<IDocumentLibraryService>();
+            var serviceMock = 
+                new Mock<IDocumentLibraryService>();
 
             const int documentId = 5;
             const string userId = "user-123";
             const string newTitle = "Renamed letter";
 
             serviceMock
-                .Setup(s => s.RenameDocumentAsync(
+                .Setup(
+                s => s.RenameDocumentAsync(
                     documentId,
                     userId,
                     newTitle,
@@ -158,7 +168,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.DocumentLibraryControllerT
                 .BeOfType<RedirectToActionResult>()
                 .Subject;
 
-            redirect.ActionName.Should().Be(nameof(DocumentLibraryController.Index));
+            redirect.ActionName.Should().
+                Be(nameof(DocumentLibraryController.Index));
 
             serviceMock.Verify(
                 service => service.RenameDocumentAsync(
@@ -172,7 +183,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.DocumentLibraryControllerT
         [Test]
         public async Task Delete_WhenUserIdMissing_ReturnsForbid_AndDoesNotCallService()
         {
-            var serviceMock = new Mock<IDocumentLibraryService>();
+            var serviceMock = 
+                new Mock<IDocumentLibraryService>();
 
             var controller =
                 DocumentLibraryControllerFactory.CreateDocumentLibraryController(
@@ -196,13 +208,15 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.DocumentLibraryControllerT
         [Test]
         public async Task Delete_WhenValid_CallsService_SetsSuccessMessage_AndRedirectsToIndex()
         {
-            var serviceMock = new Mock<IDocumentLibraryService>();
+            var serviceMock = 
+                new Mock<IDocumentLibraryService>();
 
             const int docId = 7;
             const string userId = "user-123";
 
             serviceMock
-                .Setup(s => s.DeleteDocumentAsync(
+                .Setup(
+                s => s.DeleteDocumentAsync(
                     docId,
                     userId,
                     It.IsAny<CancellationToken>()))

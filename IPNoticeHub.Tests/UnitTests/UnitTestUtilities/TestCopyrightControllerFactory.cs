@@ -1,6 +1,6 @@
-﻿using IPNoticeHub.Application.Copyrights.Abstractions;
-using IPNoticeHub.Application.DocumentLibrary.Abstractions;
-using IPNoticeHub.Application.PdfGeneration.Abstractions;
+﻿using IPNoticeHub.Application.Services.CopyrightServices.Abstractions;
+using IPNoticeHub.Application.Services.DocumentLibraryService.Abstractions;
+using IPNoticeHub.Application.Services.PdfGenerationService.Abstractions;
 using IPNoticeHub.Web.Controllers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

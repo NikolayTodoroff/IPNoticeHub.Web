@@ -1,5 +1,5 @@
 ﻿using IPNoticeHub.Shared.Enums;
-using IPNoticeHub.Data.Entities.LegalDocuments;
+using IPNoticeHub.Domain.Entities.LegalDocuments;
 
 namespace IPNoticeHub.Data.Repositories.DocumentLibrary.Abstractions
 {

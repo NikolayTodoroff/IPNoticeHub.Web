@@ -1,8 +1,7 @@
-﻿using IPNoticeHub.Data.Repositories.Copyrights.Abstractions;
-using IPNoticeHub.Data.Repositories.Copyrights.Implementations;
-using IPNoticeHub.Application.Copyrights.Abstractions;
-using IPNoticeHub.Application.Copyrights.Implementations;
-
+﻿using IPNoticeHub.Infrastructure.Persistence.Repositories.CopyrightRepository;
+using IPNoticeHub.Application.Repositories.CopyrightRepository;
+using IPNoticeHub.Application.Services.CopyrightService.Implementations;
+using IPNoticeHub.Application.Services.CopyrightServices.Abstractions;
 
 namespace IPNoticeHub.Web.Extensions
 {

@@ -1,5 +1,5 @@
 ﻿using IPNoticeHub.Shared.Enums;
-using IPNoticeHub.Data.Entities.TrademarkRegistration;
+using IPNoticeHub.Domain.Entities.TrademarkRegistration;
 using IPNoticeHub.Data.Repositories.Trademarks.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using static IPNoticeHub.Shared.Infrastructure.SearchNumberNormalizer;

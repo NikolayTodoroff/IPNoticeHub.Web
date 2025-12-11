@@ -1,4 +1,4 @@
-﻿using IPNoticeHub.Data.Entities.Identity;
+﻿using IPNoticeHub.Domain.Entities.Identity;
 using IPNoticeHub.Data.Repositories.Watchlist.Abstractions;
 using Microsoft.EntityFrameworkCore;
 

@@ -1,12 +1,14 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Data;
-using IPNoticeHub.Data.Entities.TrademarkRegistration;
-using IPNoticeHub.Data.Repositories.Trademarks.Abstractions;
-using IPNoticeHub.Data.Repositories.Trademarks.Implementations;
+using IPNoticeHub.Domain.Entities.Trademarks;
+using IPNoticeHub.Application.Repositories.TrademarkRepository;
+using IPNoticeHub.Infrastructure.Persistence.Repositories.TrademarkRepository;
 using IPNoticeHub.Tests.TestUtilities;
 using NUnit.Framework;
 using System.Text;
+using IPNoticeHub.Application.DTOs.TrademarkDTOs;
+using IPNoticeHub.Infrastructure.Persistence;
 
 namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkRepositoryTests
 {

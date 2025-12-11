@@ -1,14 +1,15 @@
 ﻿using IPNoticeHub.Shared.Enums;
-using IPNoticeHub.Application.DocumentLibrary.Abstractions;
-using IPNoticeHub.Application.PdfGeneration.Abstractions;
 using IPNoticeHub.Application.Trademarks.Abstractions;
 using IPNoticeHub.Web.Extensions;
-using IPNoticeHub.Web.Infrastructure.Mappings;
+using IPNoticeHub.Web.WebHelpers.Mappings;
 using IPNoticeHub.Web.Models.PdfGeneration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using static IPNoticeHub.Web.Infrastructure.TemplateReplacer;
-using static IPNoticeHub.Web.Infrastructure.ApplyEntityDetails;
+using static IPNoticeHub.Web.WebHelpers.TemplateReplacer;
+using static IPNoticeHub.Web.WebHelpers.ApplyEntityDetails;
+using IPNoticeHub.Application.Services.DocumentLibraryService.Abstractions;
+using IPNoticeHub.Application.Services.PdfGenerationService.Abstractions;
+using IPNoticeHub.Application.Services.TrademarkService.Abstractions;
 
 namespace IPNoticeHub.Web.Controllers
 {
@@ -42,13 +43,15 @@ namespace IPNoticeHub.Web.Controllers
         {
             if (!User.TryGetUserId(out var userId)) return Forbid();
 
-            var dto = await trademarkSearchService.GetDetailsAsync(
+            var dto = 
+                await trademarkSearchService.GetDetailsAsync(
                 publicId,
                 cancellationToken);
 
             if (dto == null) return NotFound();
 
-            bool isInCollection = await trademarkCollectionService.IsInCollectionAsync(
+            bool isInCollection = 
+                await trademarkCollectionService.IsInCollectionAsync(
                 userId,
                 dto.Id,
                 includeSoftDeleted: false,
@@ -56,12 +59,14 @@ namespace IPNoticeHub.Web.Controllers
 
             if (!isInCollection) return NotFound();
 
-            var viewModel = TrademarksMapping.MapCeaseDesistViewModel(
+            var viewModel = 
+                TrademarksMapping.MapCeaseDesistViewModel(
                 publicId,
                 dto.Wordmark,
                 dto.RegistrationNumber!);
 
-            viewModel.BodyTemplate = letterTemplateProvider.GetTemplateByKey(
+            viewModel.BodyTemplate = 
+                letterTemplateProvider.GetTemplateByKey(
                 "CND-Trademark")?.BodyTemplate ?? string.Empty;
 
             ViewData["ShowAdditionalFacts"] = true;
@@ -116,6 +121,7 @@ namespace IPNoticeHub.Web.Controllers
             CancellationToken cancellationToken = default)
         {
             if (!ModelState.IsValid) return View("CeaseDesist", viewModel);
+
             if (!User.TryGetUserId(out var userId)) return Forbid();
 
             var dto = await trademarkSearchService.GetDetailsAsync(

@@ -1,5 +1,5 @@
-﻿using IPNoticeHub.Data.Entities.Identity;
-using IPNoticeHub.Data.Entities.CopyrightRegistration;
+﻿using IPNoticeHub.Domain.Entities.Identity;
+using IPNoticeHub.Domain.Entities.CopyrightRegistration;
 
 namespace IPNoticeHub.Data.Repositories.Copyrights.Abstractions
 {

@@ -1,5 +1,5 @@
 ﻿using System.Security.Claims;
-using IPNoticeHub.Application.TrademarkSearch.Abstractions;
+using IPNoticeHub.Application.Services.TrademarkSearchService.Abstractions;
 using IPNoticeHub.Web.Controllers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -64,10 +64,7 @@ namespace IPNoticeHub.Tests.UnitTests.TestUtilities
                 controller.TempData = tempData;
             }
 
-            else
-            {
-                tempData = null!;
-            }
+            else tempData = null!;
 
             if (includeUrlHelper)
             {

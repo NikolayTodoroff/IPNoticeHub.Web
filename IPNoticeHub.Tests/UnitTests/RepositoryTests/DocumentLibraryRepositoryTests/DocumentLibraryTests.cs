@@ -1,11 +1,11 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Shared.Enums;
-using IPNoticeHub.Data;
-using IPNoticeHub.Data.Entities.LegalDocuments;
-using IPNoticeHub.Data.Repositories.DocumentLibrary.Implementations;
+using IPNoticeHub.Domain.Entities.LegalDocuments;
 using IPNoticeHub.Tests.TestUtilities;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
+using IPNoticeHub.Infrastructure.Persistence;
+using IPNoticeHub.Infrastructure.Persistence.Repositories.DocumentLibraryRepository;
 
 namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.DocumentLibraryRepositoryTests
 {
@@ -32,19 +32,19 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.DocumentLibraryRepositoryT
             id.Should().
                 BeGreaterThan(0);
 
-            document.Id.Should().
+            document.LegalDocumentId.Should().
                 Be(id);
 
             var recoveredDocument = 
                 await testDbContext.LegalDocuments.SingleAsync();
 
-            recoveredDocument.Id.Should().
+            recoveredDocument.LegalDocumentId.Should().
                 Be(id);
 
             recoveredDocument.DocumentTitle.Should().
                 Be("My first document");
 
-            recoveredDocument.UserId.Should().
+            recoveredDocument.ApplicationUserId.Should().
                 Be("user-1");
         }
 
@@ -157,7 +157,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.DocumentLibraryRepositoryT
                 new DocumentLibraryRepository(testDbContext);
 
             var recoveredDocument = await repository.GetDocumentByIdAsync(
-                document1.Id, 
+                document1.LegalDocumentId, 
                 "user-1", 
                 CancellationToken.None);
             
@@ -168,18 +168,20 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.DocumentLibraryRepositoryT
                 Be("Owned");
 
             var deletedDocument = await repository.GetDocumentByIdAsync(
-                document2.Id, 
+                document2.LegalDocumentId, 
                 "user-1", 
                 CancellationToken.None);
 
-            deletedDocument.Should().BeNull();
+            deletedDocument.Should().
+                BeNull();
 
             var foreignDocument = await repository.GetDocumentByIdAsync(
-                document3.Id, 
+                document3.LegalDocumentId, 
                 "user-1", 
                 CancellationToken.None);
 
-            foreignDocument.Should().BeNull();
+            foreignDocument.Should().
+                BeNull();
         }
 
         [Test]
@@ -205,13 +207,13 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.DocumentLibraryRepositoryT
             var repository = new DocumentLibraryRepository(testDbContext);
 
             await repository.RenameAsync(
-                doc1.Id, 
+                doc1.LegalDocumentId, 
                 "user-1", 
                 "New title", 
                 CancellationToken.None);
 
             var recoveredDocuments = await testDbContext.LegalDocuments.
-                OrderBy(d => d.Id).
+                OrderBy(d => d.LegalDocumentId).
                 ToListAsync();
 
             recoveredDocuments[0].DocumentTitle.Should().
@@ -230,7 +232,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.DocumentLibraryRepositoryT
         {
             return new LegalDocument
             {
-                UserId = userId,
+                ApplicationUserId = userId,
                 RelatedPublicId = Guid.NewGuid(),
                 SourceType = source,
                 TemplateType = template,

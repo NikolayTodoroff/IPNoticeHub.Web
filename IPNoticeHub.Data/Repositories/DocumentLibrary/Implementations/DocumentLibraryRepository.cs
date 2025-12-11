@@ -1,5 +1,5 @@
 ﻿using IPNoticeHub.Shared.Enums;
-using IPNoticeHub.Data.Entities.LegalDocuments;
+using IPNoticeHub.Domain.Entities.LegalDocuments;
 using IPNoticeHub.Data.Repositories.DocumentLibrary.Abstractions;
 using Microsoft.EntityFrameworkCore;
 

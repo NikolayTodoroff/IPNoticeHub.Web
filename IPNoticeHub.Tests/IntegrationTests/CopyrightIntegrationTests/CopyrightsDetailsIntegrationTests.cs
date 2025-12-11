@@ -1,9 +1,8 @@
 ﻿using System.Net;
 using FluentAssertions;
-using IPNoticeHub.Data;
-using IPNoticeHub.Data.Entities.Identity;
+using IPNoticeHub.Domain.Entities.Identity;
+using IPNoticeHub.Infrastructure.Persistence;
 using IPNoticeHub.Tests.IntegrationTests.TestUtilities;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
@@ -29,20 +28,27 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
 
             using (var serviceScope = appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
 
-                var entity = await TestDbSeeder.SeedCopyrightAsync(
+                var entity = 
+                    await TestDbSeeder.SeedCopyrightAsync(
                     testDbContext,
                     regNumber: "TX-9-DET-200",
                     typeOfWork: "Literary",
                     title: "Details Title");
 
-                testDbContext.Set<UserCopyright>().Add(new UserCopyright
+                testDbContext.
+                    Set<UserCopyright>().
+                    Add(new UserCopyright
                 {
                     ApplicationUserId = userId,
-                    CopyrightRegistrationId = entity.Id,
+                    CopyrightEntityId = entity.Id,
                     IsDeleted = false
                 });
 
@@ -50,9 +56,11 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                 publicId = entity.PublicId;
             }
 
-            var response = await client.GetAsync($"/Copyrights/Details/{publicId}");
+            var response = await client.GetAsync(
+                $"/Copyrights/Details/{publicId}");
 
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.OK);
         }
 
         [Test]
@@ -64,23 +72,34 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
 
             Guid publicId;
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
-                await TestDbSeeder.SeedUserAsync(testDbContext, randomUserId);
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
 
-                var entity = await TestDbSeeder.SeedCopyrightAsync(
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    randomUserId);
+
+                var entity = 
+                    await TestDbSeeder.SeedCopyrightAsync(
                     testDbContext,
                     regNumber: "TX-9-DET-404",
                     typeOfWork: "Literary",
                     title: "Unlinked Title");
 
-                testDbContext.Set<UserCopyright>().Add(new UserCopyright
+                testDbContext.
+                    Set<UserCopyright>().
+                    Add(new UserCopyright
                 {
                     ApplicationUserId = randomUserId,
-                    CopyrightRegistrationId = entity.Id,
+                    CopyrightEntityId = entity.Id,
                     IsDeleted = false
                 });
 
@@ -88,9 +107,11 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                 publicId = entity.PublicId;
             }
 
-            var response = await client.GetAsync($"/Copyrights/Details/{publicId}");
+            var response = await client.GetAsync(
+                $"/Copyrights/Details/{publicId}");
 
-            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.NotFound);
         }
 
         [Test]
@@ -99,29 +120,38 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
             var userId = "u1";
             var client = appFactory.CreateClientAs(userId);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
+
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
             }
 
             var missingId = Guid.NewGuid();
 
-            var response = await client.GetAsync($"/Copyrights/Details/{missingId}");
+            var response = await client.GetAsync(
+                $"/Copyrights/Details/{missingId}");
 
-            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.NotFound);
         }
 
         [Test]
         public async Task GetCopyrightDetails_Unauthenticated_Returns401()
         {
-            // No user: CreateClientAs() is not called
             var client = appFactory.CreateClient();
 
             var anyId = Guid.NewGuid();
-            var response = await client.GetAsync($"/Copyrights/Details/{anyId}");
+            var response = await client.GetAsync(
+                $"/Copyrights/Details/{anyId}");
 
-            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.Unauthorized);
         }
     }
 }

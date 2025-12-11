@@ -1,0 +1,19 @@
+﻿using Microsoft.EntityFrameworkCore;
+using IPNoticeHub.Domain.Entities.Trademarks;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace IPNoticeHub.Infrastructure.Persistence.Configurations
+{
+    public sealed class TrademarkClassConfig : IEntityTypeConfiguration<TrademarkClassAssignment>
+    {
+        public void Configure(EntityTypeBuilder<TrademarkClassAssignment> builder)
+        {
+            builder.HasKey(tc => 
+            new { tc.TrademarkRegistrationId, tc.ClassNumber });
+
+            builder.HasOne(tc => tc.TrademarkRegistration).
+                WithMany(t => t.Classes).
+                HasForeignKey(tc => tc.TrademarkRegistrationId);
+        }
+    }
+}

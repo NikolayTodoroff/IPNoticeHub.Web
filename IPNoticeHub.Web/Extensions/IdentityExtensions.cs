@@ -1,5 +1,5 @@
-﻿using IPNoticeHub.Data;
-using IPNoticeHub.Data.Entities.Identity;
+﻿using IPNoticeHub.Infrastructure.Identity;
+using IPNoticeHub.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
 
 namespace IPNoticeHub.Web.Extensions

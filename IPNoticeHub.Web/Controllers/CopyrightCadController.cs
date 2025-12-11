@@ -1,14 +1,14 @@
 ﻿using IPNoticeHub.Shared.Enums;
-using IPNoticeHub.Application.Copyrights.Abstractions;
-using IPNoticeHub.Application.DocumentLibrary.Abstractions;
-using IPNoticeHub.Application.PdfGeneration.Abstractions;
 using IPNoticeHub.Web.Extensions;
-using IPNoticeHub.Web.Infrastructure.Mappings;
 using IPNoticeHub.Web.Models.PdfGeneration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using static IPNoticeHub.Web.Infrastructure.TemplateReplacer;
-using static IPNoticeHub.Web.Infrastructure.ApplyEntityDetails;
+using static IPNoticeHub.Web.WebHelpers.TemplateReplacer;
+using static IPNoticeHub.Web.WebHelpers.ApplyEntityDetails;
+using IPNoticeHub.Application.Services.DocumentLibraryService.Abstractions;
+using IPNoticeHub.Application.Services.PdfGenerationService.Abstractions;
+using IPNoticeHub.Web.WebHelpers.Mappings;
+using IPNoticeHub.Application.Services.CopyrightServices.Abstractions;
 
 namespace IPNoticeHub.Web.Controllers
 {
@@ -39,7 +39,8 @@ namespace IPNoticeHub.Web.Controllers
         {
             if (!User.TryGetUserId(out var userId)) return Forbid();
 
-            var dto = await copyrightService.GetDetailsAsync(
+            var dto = 
+                await copyrightService.GetDetailsAsync(
                 userId,
                 publicId,
                 cancellationToken);
@@ -47,9 +48,12 @@ namespace IPNoticeHub.Web.Controllers
             if (dto is null) return NotFound();
 
             var viewModel =
-                CopyrightsMapping.MapDetailsDtoToCeaseDesistViewModel(dto, publicId);
+                CopyrightsMapping.MapDetailsDtoToCeaseDesistViewModel(
+                    dto, 
+                    publicId);
 
-            viewModel.BodyTemplate = letterTemplateProvider.GetTemplateByKey(
+            viewModel.BodyTemplate = 
+                letterTemplateProvider.GetTemplateByKey(
                 "CND-Copyright")!.BodyTemplate ?? string.Empty;
 
             ViewData["ShowAdditionalFacts"] = true;
@@ -90,7 +94,9 @@ namespace IPNoticeHub.Web.Controllers
                 var placeholders =
                     CopyrightsMapping.MapCeaseDesistViewModelToPlaceholders(viewModel);
 
-                viewModel.BodyTemplate = ReplaceTemplate(template, placeholders!);
+                viewModel.BodyTemplate = ReplaceTemplate(
+                    template, 
+                    placeholders!);
             }
 
             return View("CeaseDesistPreview", viewModel);
@@ -153,7 +159,10 @@ namespace IPNoticeHub.Web.Controllers
                 var dto =
                     CopyrightsMapping.MapCdViewModelToDocCreateDto(viewModel);
 
-                await documentLibraryService.SaveDocumentAsync(userId, dto, cancellationToken);
+                await documentLibraryService.SaveDocumentAsync(
+                    userId, 
+                    dto, 
+                    cancellationToken);
 
                 TempData["SuccessMessage"] =
                     "Your Cease & Desist letter was successfully saved to your library.";
@@ -189,7 +198,8 @@ namespace IPNoticeHub.Web.Controllers
                 return NotFound();
             }
 
-            var viewModel = LegalDocumentMapping.MapDocumentToCeaseDesistViewModel(document);
+            var viewModel = 
+                LegalDocumentMapping.MapDocumentToCeaseDesistViewModel(document);
 
             return View("CeaseDesistEdit", viewModel);
         }

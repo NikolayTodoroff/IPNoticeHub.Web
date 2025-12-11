@@ -1,8 +1,8 @@
-﻿using IPNoticeHub.Application.Watchlist.DTOs;
+﻿using IPNoticeHub.Application.DTOs.WatchlistDTOs;
 
 namespace IPNoticeHub.Web.Models.Watchlist;
 public sealed class WatchlistIndexViewModel
 {
-    public IReadOnlyList<TrademarkWatchlistItemDto> Items { get; init; } = 
-        Array.Empty<TrademarkWatchlistItemDto>();
+    public IReadOnlyList<WatchlistItemDto> Items { get; init; } = 
+        Array.Empty<WatchlistItemDto>();
 }

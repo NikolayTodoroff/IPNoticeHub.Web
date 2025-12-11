@@ -1,4 +1,4 @@
-﻿using IPNoticeHub.Data;
+﻿using IPNoticeHub.Infrastructure.Persistence;
 using IPNoticeHub.Web.Models.AdminDashboard;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

@@ -19,6 +19,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\IPNoticeHub.Application\IPNoticeHub.Application.csproj" />
+    <ProjectReference Include="..\IPNoticeHub.Domain\IPNoticeHub.Domain.csproj" />
+    <ProjectReference Include="..\IPNoticeHub.Infrastructure\IPNoticeHub.Infrastructure.csproj" />
     <ProjectReference Include="..\IPNoticeHub.Shared\IPNoticeHub.Shared.csproj" />
   </ItemGroup>
 

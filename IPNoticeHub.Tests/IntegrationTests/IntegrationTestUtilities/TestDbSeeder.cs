@@ -1,6 +1,8 @@
 ﻿using IPNoticeHub.Data;
-using IPNoticeHub.Data.Entities.Identity;
-using IPNoticeHub.Data.Entities.CopyrightRegistration;
+using IPNoticeHub.Domain.Entities.Identity;
+using IPNoticeHub.Domain.Entities.Copyrights;
+using IPNoticeHub.Infrastructure.Persistence;
+using IPNoticeHub.Infrastructure.Identity;
 
 namespace IPNoticeHub.Tests.IntegrationTests.TestUtilities
 {

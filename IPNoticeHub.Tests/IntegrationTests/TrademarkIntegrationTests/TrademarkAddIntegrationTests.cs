@@ -1,8 +1,6 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Shared.Enums;
-using IPNoticeHub.Data;
-using IPNoticeHub.Data.Entities.Identity;
-using IPNoticeHub.Data.Entities.TrademarkRegistration;
+using IPNoticeHub.Domain.Entities.Identity;
 using IPNoticeHub.Tests.IntegrationTests.TestUtilities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.TestHost;
@@ -14,6 +12,8 @@ using System.Net;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using Microsoft.Extensions.Logging;
+using IPNoticeHub.Infrastructure.Persistence;
+using IPNoticeHub.Domain.Entities.Trademarks;
 
 namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
 {
@@ -43,8 +43,13 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
 
             using (var serviceScope = appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
+
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
 
                 var entity = new TrademarkEntity
                 {
@@ -67,27 +72,49 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                 entityId = entity.Id;
             }
 
-            var form = new Dictionary<string, string?>
+            var form = 
+                new Dictionary<string, string?>
             {
                 ["trademarkId"] = entityId.ToString()
             };
 
-            var response = await client.PostAsync("/Trademarks/Add", new FormUrlEncodedContent(form));
+            var response = await client.PostAsync(
+                "/Trademarks/Add", 
+                new FormUrlEncodedContent(form));
 
-            response.StatusCode.Should().Be(HttpStatusCode.Found);
-            response.Headers.Location.Should().NotBeNull();
+            response.StatusCode.Should().
+                Be(HttpStatusCode.Found);
 
-            var uriLocation = response.Headers.Location!;            var resolvedUri = uriLocation.IsAbsoluteUri ? uriLocation : new Uri(client.BaseAddress!, uriLocation);
-            resolvedUri.AbsolutePath.Should().Be("/Trademarks/MyCollection");
+            response.Headers.Location.Should().
+                NotBeNull();
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            var uriLocation = response.Headers.Location!;  
+            
+            var resolvedUri = uriLocation.IsAbsoluteUri ? 
+                uriLocation : new Uri(client.BaseAddress!, uriLocation);
+
+            resolvedUri.AbsolutePath.Should().
+                Be("/Trademarks/MyCollection");
+
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                var link = await testDbContext.Set<UserTrademark>().AsNoTracking()
-                    .FirstOrDefaultAsync(ut => ut.UserId == userId && ut.TrademarkId == entityId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                link.Should().NotBeNull();
-                link!.IsDeleted.Should().BeFalse();
+                var link = await testDbContext.
+                    Set<UserTrademark>().
+                    AsNoTracking().
+                    FirstOrDefaultAsync(
+                    ut => ut.ApplicationUserId == userId && 
+                    ut.TrademarkEntityId == entityId);
+
+                link.Should().
+                    NotBeNull();
+
+                link!.IsDeleted.Should().
+                    BeFalse();
             }
         }
 
@@ -98,12 +125,19 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
             var client = appFactory.CreateClientAs(userId);
 
             int entityId;
-            const string returnUrl = "/Trademarks/MyCollection?page=2&sortBy=WordmarkAsc";
+            const string returnUrl = 
+                "/Trademarks/MyCollection?page=2&sortBy=WordmarkAsc";
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
+
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
 
                 var entity = new TrademarkEntity
                 {
@@ -126,29 +160,50 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                 entityId = entity.Id;
             }
 
-            var form = new Dictionary<string, string?>
+            var form = 
+                new Dictionary<string, string?>
             {
                 ["trademarkId"] = entityId.ToString(),
                 ["returnUrl"] = returnUrl
             };
 
-            var response = await client.PostAsync("/Trademarks/Add", new FormUrlEncodedContent(form));
+            var response = await client.PostAsync(
+                "/Trademarks/Add", 
+                new FormUrlEncodedContent(form));
 
-            response.StatusCode.Should().Be(HttpStatusCode.Found);
-            response.Headers.Location.Should().NotBeNull();
+            response.StatusCode.Should().
+                Be(HttpStatusCode.Found);
+
+            response.Headers.Location.Should().
+                NotBeNull();
 
             var uriLocation = response.Headers.Location!;
-            var resolvedUri = uriLocation.IsAbsoluteUri ? uriLocation : new Uri(client.BaseAddress!, uriLocation);
-            resolvedUri.PathAndQuery.Should().Be(returnUrl);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            var resolvedUri = uriLocation.IsAbsoluteUri ? 
+                uriLocation : new Uri(client.BaseAddress!, uriLocation);
+
+            resolvedUri.PathAndQuery.Should().
+                Be(returnUrl);
+
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                var link = await testDbContext.Set<UserTrademark>().AsNoTracking()
-                    .FirstOrDefaultAsync(ut => ut.UserId == userId && ut.TrademarkId == entityId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                link.Should().NotBeNull();
-                link!.IsDeleted.Should().BeFalse();
+                var link = await testDbContext.
+                    Set<UserTrademark>().
+                    AsNoTracking().
+                    FirstOrDefaultAsync(
+                    ut => ut.ApplicationUserId == userId && 
+                    ut.TrademarkEntityId == entityId);
+
+                link.Should().
+                    NotBeNull();
+
+                link!.IsDeleted.Should().
+                    BeFalse();
             }
         }
 
@@ -160,11 +215,16 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
 
             int entityId;
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
 
                 var entity = new TrademarkEntity
                 {
@@ -187,44 +247,67 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                 entityId = entity.Id;
             }
 
-            var form = new Dictionary<string, string?>
+            var form = 
+                new Dictionary<string, string?>
             {
                 ["trademarkId"] = entityId.ToString(),
                 ["returnUrl"] = "https://example.com/away"
             };
 
-            var response = await client.PostAsync("/Trademarks/Add", new FormUrlEncodedContent(form));
+            var response = await client.PostAsync(
+                "/Trademarks/Add", 
+                new FormUrlEncodedContent(form));
 
-            response.StatusCode.Should().Be(HttpStatusCode.Found);
-            response.Headers.Location.Should().NotBeNull();
+            response.StatusCode.Should().
+                Be(HttpStatusCode.Found);
+
+            response.Headers.Location.Should().
+                NotBeNull();
 
             var uriLocation = response.Headers.Location!;
-            var resolvedUri = uriLocation.IsAbsoluteUri ? uriLocation : new Uri(client.BaseAddress!, uriLocation);
 
-            resolvedUri.AbsolutePath.Should().Be("/Trademarks/MyCollection");
+            var resolvedUri = uriLocation.IsAbsoluteUri ? 
+                uriLocation : new Uri(client.BaseAddress!, uriLocation);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            resolvedUri.AbsolutePath.Should().
+                Be("/Trademarks/MyCollection");
+
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                var link = await testDbContext.Set<UserTrademark>()
-                    .AsNoTracking()
-                    .FirstOrDefaultAsync(ut => ut.UserId == userId && ut.TrademarkId == entityId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                link.Should().NotBeNull();
-                link!.IsDeleted.Should().BeFalse();
+                var link = await testDbContext.
+                    Set<UserTrademark>().
+                    AsNoTracking().
+                    FirstOrDefaultAsync(
+                    ut => ut.ApplicationUserId == userId && 
+                    ut.TrademarkEntityId == entityId);
+
+                link.Should().
+                    NotBeNull();
+
+                link!.IsDeleted.Should().
+                    BeFalse();
             }
         }
 
         [Test]
         public async Task Post_Add_Unauthenticated_Returns401_AndNoLinkCreated()
         {
-            var client = appFactory.CreateClient(new() { AllowAutoRedirect = false });
+            var client = appFactory.CreateClient(
+                new() { AllowAutoRedirect = false });
 
             int entityId;
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
                 var entity = new TrademarkEntity
                 {
@@ -247,20 +330,30 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                 entityId = entity.Id;
             }
 
-            var form = new Dictionary<string, string?> { ["trademarkId"] = entityId.ToString() };
+            var form = 
+                new Dictionary<string, string?> { ["trademarkId"] = 
+                entityId.ToString() };
 
-            var response = await client.PostAsync("/Trademarks/Add", new FormUrlEncodedContent(form));
+            var response = await client.PostAsync(
+                "/Trademarks/Add", 
+                new FormUrlEncodedContent(form));
 
-            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.Unauthorized);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                var linkCount = await testDbContext.UserTrademarks.AsNoTracking()
-                    .CountAsync(ut => ut.TrademarkId == entityId);
+                var linkCount = await testDbContext.UserTrademarks.
+                    AsNoTracking().
+                    CountAsync(ut => ut.TrademarkEntityId == entityId);
 
-                linkCount.Should().Be(0);
+                linkCount.Should().
+                    Be(0);
             }
         }
 
@@ -272,10 +365,16 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
 
             int entityId;
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
+
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
 
                 var entity = new TrademarkEntity
                 {
@@ -297,39 +396,57 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
 
                 entityId = entity.Id;
 
-                testDbContext.Set<UserTrademark>().Add(new UserTrademark
+                testDbContext.
+                    Set<UserTrademark>().
+                    Add(new UserTrademark
                 {
-                    UserId = userId,
-                    TrademarkId = entityId,
+                    ApplicationUserId = userId,
+                    TrademarkEntityId = entityId,
                     IsDeleted = true
                 });
+
                 await testDbContext.SaveChangesAsync();
             }
 
-            var form = new Dictionary<string, string?>
+            var form = 
+                new Dictionary<string, string?>
             {
                 ["trademarkId"] = entityId.ToString()
             };
 
-            var response = await client.PostAsync("/Trademarks/Add", new FormUrlEncodedContent(form));
+            var response = await client.PostAsync(
+                "/Trademarks/Add", new FormUrlEncodedContent(form));
 
-            response.StatusCode.Should().Be(HttpStatusCode.Found);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.Found);
 
             var uriLocation = response.Headers.Location!;
-            var resolvedUri = uriLocation.IsAbsoluteUri ? uriLocation : new Uri(client.BaseAddress!, uriLocation);
 
-            resolvedUri.AbsolutePath.Should().Be("/Trademarks/MyCollection");
+            var resolvedUri = uriLocation.IsAbsoluteUri ? 
+                uriLocation : new Uri(client.BaseAddress!, uriLocation);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            resolvedUri.AbsolutePath.Should().
+                Be("/Trademarks/MyCollection");
+
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                var links = await testDbContext.UserTrademarks.AsNoTracking()
-                    .Where(ut => ut.UserId == userId && ut.TrademarkId == entityId)
-                    .ToListAsync();
+                var links = 
+                    await testDbContext.UserTrademarks.
+                    AsNoTracking().
+                    Where(ut => ut.ApplicationUserId == userId && 
+                    ut.TrademarkEntityId == entityId).
+                    ToListAsync();
 
-                links.Count.Should().Be(1);
-                links.Single().IsDeleted.Should().BeFalse();
+                links.Count.Should().
+                    Be(1);
+
+                links.Single().IsDeleted.Should().
+                    BeFalse();
             }
         }
 
@@ -339,10 +456,16 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
             var userId = "u1";
             var client = appFactory.CreateClientAs(userId);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
+
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
             }
 
             var form = new Dictionary<string, string?>
@@ -350,21 +473,34 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                 ["trademarkId"] = "999999"
             };
 
-            var response = await client.PostAsync("/Trademarks/Add", new FormUrlEncodedContent(form));
+            var response = await client.PostAsync(
+                "/Trademarks/Add", 
+                new FormUrlEncodedContent(form));
 
-            response.StatusCode.Should().Be(HttpStatusCode.Found);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.Found);
 
             var uriLocation = response.Headers.Location!;
-            var resolvedUri = uriLocation.IsAbsoluteUri ? uriLocation : new Uri(client.BaseAddress!, uriLocation);
 
-            resolvedUri.AbsolutePath.Should().Be("/Trademarks/MyCollection");
+            var resolvedUri = uriLocation.IsAbsoluteUri ? 
+                uriLocation : new Uri(client.BaseAddress!, uriLocation);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            resolvedUri.AbsolutePath.Should().
+                Be("/Trademarks/MyCollection");
+
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                var linkCount = await testDbContext.UserTrademarks.AsNoTracking().CountAsync();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                linkCount.Should().Be(0);
+                var linkCount = await testDbContext.UserTrademarks.
+                    AsNoTracking().
+                    CountAsync();
+
+                linkCount.Should().
+                    Be(0);
             }
         }
 
@@ -373,9 +509,12 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
         {
             int entityId;
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
                 var entity = new TrademarkEntity
                 {
@@ -394,7 +533,8 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                 entityId = entity.Id;
             }
 
-            var layeredFactory = appFactory.WithWebHostBuilder(builder =>
+            var layeredFactory = 
+                appFactory.WithWebHostBuilder(builder =>
             {
                 builder.ConfigureTestServices(services =>
                 {
@@ -403,33 +543,56 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                         o.DefaultAuthenticateScheme = "NoId";
                         o.DefaultChallengeScheme = "NoId";
                     })
-                    .AddScheme<AuthenticationSchemeOptions, NoIdAuthHandler>("NoId", _ => { });
+                    .AddScheme<
+                        AuthenticationSchemeOptions, 
+                        NoIdAuthHandler>(
+                        "NoId", 
+                        _ => { });
                 });
             });
 
             await using (layeredFactory)
             {
-                var client = layeredFactory.CreateClient(new() { AllowAutoRedirect = false });
+                var client = layeredFactory.CreateClient(
+                    new() { AllowAutoRedirect = false });
 
-                var form = new Dictionary<string, string?> { ["trademarkId"] = entityId.ToString() };
-                var response = await client.PostAsync("/Trademarks/Add", new FormUrlEncodedContent(form));
+                var form = 
+                    new Dictionary<string, string?> 
+                    { ["trademarkId"] = entityId.ToString() };
 
-                response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+                var response = await client.PostAsync(
+                    "/Trademarks/Add", 
+                    new FormUrlEncodedContent(form));
 
-                using (var serviceScope = layeredFactory.Services.CreateScope())
+                response.StatusCode.Should().
+                    Be(HttpStatusCode.Forbidden);
+
+                using (var serviceScope = 
+                    layeredFactory.Services.CreateScope())
                 {
-                    var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                    var linkCount = await testDbContext.UserTrademarks.AsNoTracking().CountAsync();
-                    linkCount.Should().Be(0);
+                    var testDbContext = 
+                        serviceScope.ServiceProvider.
+                        GetRequiredService<IPNoticeHubDbContext>();
+
+                    var linkCount = 
+                        await testDbContext.UserTrademarks.
+                        AsNoTracking().
+                        CountAsync();
+
+                    linkCount.Should().
+                        Be(0);
                 }
             }
         }
 
         private sealed class NoIdAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
         {
-            public NoIdAuthHandler(IOptionsMonitor<AuthenticationSchemeOptions> options,
-                                   ILoggerFactory logger,
-                                   UrlEncoder encoder) : base(options, logger, encoder) { }
+            public NoIdAuthHandler(
+                IOptionsMonitor<AuthenticationSchemeOptions> options,
+                ILoggerFactory logger,UrlEncoder encoder) : base(
+                    options, 
+                    logger, 
+                    encoder) { }
             protected override Task<AuthenticateResult> HandleAuthenticateAsync()
             {
                 var identity = new ClaimsIdentity(new[]
@@ -439,7 +602,11 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                 }, "NoId");
 
                 var principal = new ClaimsPrincipal(identity);
-                var ticket = new AuthenticationTicket(principal, "NoId");
+
+                var ticket = new AuthenticationTicket(
+                    principal, 
+                    "NoId");
+                
                 return Task.FromResult(AuthenticateResult.Success(ticket));
             }
         }
@@ -450,27 +617,45 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
             var userId = "u1";
             var client = appFactory.CreateClientAs(userId);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
+
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
             }
 
-            var response = await client.PostAsync("/Trademarks/Add",
-                new FormUrlEncodedContent(new Dictionary<string, string?>()));
+            var response = await client.PostAsync(
+                "/Trademarks/Add",
+                new FormUrlEncodedContent(
+                    new Dictionary<string, string?>()));
 
-            response.StatusCode.Should().Be(HttpStatusCode.Found);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.Found);
 
             var uriLocation = response.Headers.Location!;
-            var resolvedUri = uriLocation.IsAbsoluteUri ? uriLocation : new Uri(client.BaseAddress!, uriLocation);
 
-            resolvedUri.AbsolutePath.Should().Be("/Trademarks/MyCollection");
+            var resolvedUri = uriLocation.IsAbsoluteUri ? 
+                uriLocation : new Uri(client.BaseAddress!, uriLocation);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            resolvedUri.AbsolutePath.Should().
+                Be("/Trademarks/MyCollection");
+
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                var linkCount = await testDbContext.UserTrademarks.AsNoTracking()
-                    .CountAsync(ut => ut.UserId == userId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
+
+                var linkCount = await testDbContext.UserTrademarks.
+                    AsNoTracking().
+                    CountAsync(ut => ut.ApplicationUserId == userId);
+
                 linkCount.Should().Be(0);
             }
         }
@@ -482,30 +667,48 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
             var userId = "u1";
             var client = appFactory.CreateClientAs(userId);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
+
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
             }
 
-            var form = new Dictionary<string, string?> { ["trademarkId"] = badId };
+            var form = 
+                new Dictionary<string, string?> { ["trademarkId"] = badId };
 
-            var response = await client.PostAsync("/Trademarks/Add", new FormUrlEncodedContent(form));
+            var response = await client.PostAsync(
+                "/Trademarks/Add", 
+                new FormUrlEncodedContent(form));
 
-            response.StatusCode.Should().Be(HttpStatusCode.Found);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.Found);
 
             var uriLocation = response.Headers.Location!;
-            var resolvedUri = uriLocation.IsAbsoluteUri ? uriLocation : new Uri(client.BaseAddress!, uriLocation);
-            resolvedUri.AbsolutePath.Should().Be("/Trademarks/MyCollection");
+
+            var resolvedUri = uriLocation.IsAbsoluteUri ? 
+                uriLocation : new Uri(client.BaseAddress!, uriLocation);
+
+            resolvedUri.AbsolutePath.Should().
+                Be("/Trademarks/MyCollection");
 
             using (var serviceScope = appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                var linksCount = await testDbContext.UserTrademarks.AsNoTracking()
-                    .CountAsync(ut => ut.UserId == userId);
+                var linksCount = await testDbContext.UserTrademarks.
+                    AsNoTracking().
+                    CountAsync(ut => ut.ApplicationUserId == userId);
 
-                linksCount.Should().Be(0);
+                linksCount.Should().
+                    Be(0);
             }
         }
 
@@ -516,10 +719,16 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
             var client = appFactory.CreateClientAs(userId);
             int entityId;
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
+
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
 
                 var entity = new TrademarkEntity
                 {
@@ -538,32 +747,50 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
 
                 testDbContext.UserTrademarks.Add(new UserTrademark
                 {
-                    UserId = userId,
-                    TrademarkId = entityId,
+                    ApplicationUserId = userId,
+                    TrademarkEntityId = entityId,
                     IsDeleted = false
                 });
                 await testDbContext.SaveChangesAsync();
             }
 
-            var form = new Dictionary<string, string?> { ["trademarkId"] = entityId.ToString() };
+            var form = 
+                new Dictionary<string, string?> 
+                { ["trademarkId"] = entityId.ToString() };
 
-            var response = await client.PostAsync("/Trademarks/Add", new FormUrlEncodedContent(form));
+            var response = await client.PostAsync(
+                "/Trademarks/Add", 
+                new FormUrlEncodedContent(form));
 
-            response.StatusCode.Should().Be(HttpStatusCode.Found);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.Found);
+
             var uriLocation = response.Headers.Location!;
-            var resolvedUri = uriLocation.IsAbsoluteUri ? uriLocation : new Uri(client.BaseAddress!, uriLocation);
-            resolvedUri.AbsolutePath.Should().Be("/Trademarks/MyCollection");
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            var resolvedUri = uriLocation.IsAbsoluteUri ? 
+                uriLocation : new Uri(client.BaseAddress!, uriLocation);
+
+            resolvedUri.AbsolutePath.Should().
+                Be("/Trademarks/MyCollection");
+
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                var links = await testDbContext.UserTrademarks.AsNoTracking()
-                    .Where(ut => ut.UserId == userId && ut.TrademarkId == entityId)
-                    .ToListAsync();
+                var links = await testDbContext.UserTrademarks.
+                    AsNoTracking().
+                    Where(ut => ut.ApplicationUserId == userId && 
+                    ut.TrademarkEntityId == entityId).
+                    ToListAsync();
 
-                links.Count.Should().Be(1);
-                links[0].IsDeleted.Should().BeFalse();
+                links.Count.Should().
+                    Be(1);
+
+                links[0].IsDeleted.Should().
+                    BeFalse();
             }
         }
     }

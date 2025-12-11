@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using FluentAssertions;
-using IPNoticeHub.Data;
-using IPNoticeHub.Data.Entities.Identity;
+using IPNoticeHub.Domain.Entities.Identity;
+using IPNoticeHub.Infrastructure.Persistence;
 using IPNoticeHub.Tests.IntegrationTests.TestUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,8 +23,12 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
         public async Task Get_CreatePage_ReturnsHttpStatus200()
         {
             var client = appFactory.CreateClientAs("u1");
-            var response = await client.GetAsync("/Copyrights/Create");
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var response = await client.
+                GetAsync("/Copyrights/Create");
+
+            response.StatusCode.Should().
+                Be(HttpStatusCode.OK);
         }
 
         [Test]
@@ -33,13 +37,20 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
             var userId = "u1";
             var client = appFactory.CreateClientAs(userId);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
+
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
             }
 
-            var entityForm = new Dictionary<string, string?>
+            var entityForm = 
+                new Dictionary<string, string?>
             {
                 ["RegistrationNumber"] = "TX-9-123-456",
                 ["WorkType"] = "Literary",
@@ -50,42 +61,61 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                 ["DateOfPublication"] = "2024-12-31",
                 ["NationOfFirstPublication"] = "US"
             };
-            var content = new FormUrlEncodedContent(entityForm!);
+            var content = 
+                new FormUrlEncodedContent(entityForm!);
 
-            var response = await client.PostAsync("/Copyrights/Create", content);
+            var response = await client.PostAsync(
+                "/Copyrights/Create", 
+                content);
 
-            // Assert HTTP redirect
-            response.StatusCode.Should().Be(HttpStatusCode.Found);
-            response.Headers.Location.Should().NotBeNull();
+            response.StatusCode.Should().
+                Be(HttpStatusCode.Found);
 
-            // Handle relative Location header safely
+            response.Headers.Location.Should().
+                NotBeNull();
+
             var location = response.Headers.Location!;
-            var resolvedUri = location.IsAbsoluteUri ? location : new Uri(client.BaseAddress!, location);
 
-            resolvedUri.AbsolutePath.Should().StartWith("/Copyrights/Details");
+            var resolvedUri = location.IsAbsoluteUri ? 
+                location : new Uri(client.BaseAddress!, location);
 
-            // Extracting the GUID Id
+            resolvedUri.AbsolutePath.Should().
+                StartWith("/Copyrights/Details");
+
             var idSegment = resolvedUri.Segments[^1].TrimEnd('/');
-            Guid.TryParse(idSegment, out var publicId).Should().BeTrue("Details redirect must include a Guid id");
 
-            // Assert DB: entity + user link
+            Guid.TryParse(idSegment, out var publicId).Should().
+                BeTrue("Details redirect must include a Guid id");
+
             using (var scope = appFactory.Services.CreateScope())
             {
-                var testDbContext = scope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    scope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
 
-                var entity = await testDbContext.CopyrightRegistrations.AsNoTracking()
-                                     .FirstOrDefaultAsync(c => c.PublicId == publicId);
+                var entity = 
+                    await testDbContext.CopyrightRegistrations.
+                    AsNoTracking().
+                    FirstOrDefaultAsync(c => c.PublicId == publicId);
 
-                entity.Should().NotBeNull();
-                entity!.RegistrationNumber.Should().Be("TX-9-123-456");
-                entity.Title.Should().Be("Test Title");
-                entity.Owner.Should().Be("Test Owner");
+                entity.Should().
+                    NotBeNull();
 
-                bool anyExistingLinks = await testDbContext.Set<UserCopyright>().AnyAsync(uc => uc.ApplicationUserId == userId
-                                                      && uc.CopyrightRegistrationId == entity.Id
-                                                      && !uc.IsDeleted);
+                entity!.RegistrationNumber.Should().
+                    Be("TX-9-123-456");
 
-                anyExistingLinks.Should().BeTrue();
+                entity.Title.Should().
+                    Be("Test Title");
+
+                entity.Owner.Should().
+                    Be("Test Owner");
+
+                bool anyExistingLinks = await testDbContext.
+                    Set<UserCopyright>().
+                    AnyAsync(uc => uc.ApplicationUserId == userId && 
+                    uc.CopyrightEntityId == entity.Id && !uc.IsDeleted);
+
+                anyExistingLinks.Should().
+                    BeTrue();
             }
         }
 
@@ -97,7 +127,10 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
 
             using (var serviceScope = appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
+
                 await TestDbSeeder.SeedUserAsync(testDbContext, userId);
             }
 
@@ -107,7 +140,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                 ["RegistrationNumber"] = regNumber,
                 ["WorkType"] = "Literary",
                 ["OtherWorkType"] = "",
-                ["Title"] = "",                // invalid
+                ["Title"] = "",
                 ["Owner"] = "Test Owner",
                 ["YearOfCreation"] = "2024",
                 ["DateOfPublication"] = "2024-12-31",
@@ -115,21 +148,33 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
             };
             var content = new FormUrlEncodedContent(form!);
 
-            var response = await client.PostAsync("/Copyrights/Create", content);
+            var response = await client.PostAsync(
+                "/Copyrights/Create", 
+                content);
 
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.OK);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                bool anyWithReg = await testDbContext.CopyrightRegistrations.AsNoTracking().AnyAsync(c => c.RegistrationNumber == regNumber);
+                bool anyWithReg = await testDbContext.CopyrightRegistrations.
+                    AsNoTracking().
+                    AnyAsync(c => c.RegistrationNumber == regNumber);
 
-                anyWithReg.Should().BeFalse("invalid model must not create a registration");
+                anyWithReg.Should().
+                    BeFalse("invalid model must not create a registration");
 
-                bool anyExistingLinks = await testDbContext.Set<UserCopyright>().AnyAsync(uc => uc.ApplicationUserId == userId);
+                bool anyExistingLinks = await testDbContext.
+                    Set<UserCopyright>(). 
+                    AnyAsync(uc => uc.ApplicationUserId == userId);
 
-                anyExistingLinks.Should().BeFalse("Invalid model must not create a user–copyright link");
+                anyExistingLinks.Should().
+                    BeFalse("Invalid model must not create a user–copyright link");
             }
         }
 
@@ -141,7 +186,10 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
 
             using (var serviceScope = appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
+
                 await TestDbSeeder.SeedUserAsync(testDbContext, userId);
             }
 
@@ -160,38 +208,62 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                 ["NationOfFirstPublication"] = "US"
             };
 
-            var response = await client.PostAsync("/Copyrights/Create", new FormUrlEncodedContent(entityForm!));
+            var response = await client.PostAsync(
+                "/Copyrights/Create", 
+                new FormUrlEncodedContent(entityForm!));
 
-            response.StatusCode.Should().Be(HttpStatusCode.Found);
-            response.Headers.Location.Should().NotBeNull();
+            response.StatusCode.Should().
+                Be(HttpStatusCode.Found);
+
+            response.Headers.Location.Should().
+                NotBeNull();
 
             var uriLocation = response.Headers.Location!;
-            var resolvedUri = uriLocation.IsAbsoluteUri ? uriLocation : new Uri(client.BaseAddress!, uriLocation);
-            resolvedUri.AbsolutePath.Should().StartWith("/Copyrights/Details");
 
-            var idSegment = resolvedUri.Segments[^1].TrimEnd('/');
-            Guid.TryParse(idSegment, out var publicId).Should().BeTrue();
+            var resolvedUri = uriLocation.IsAbsoluteUri ? 
+                uriLocation : new Uri(client.BaseAddress!, uriLocation);
+
+            resolvedUri.AbsolutePath.Should().
+                StartWith("/Copyrights/Details");
+
+            var idSegment = 
+                resolvedUri.Segments[^1].TrimEnd('/');
+
+            Guid.TryParse(idSegment, out var publicId).Should().
+                BeTrue();
 
             using (var scope = appFactory.Services.CreateScope())
             {
-                var db = scope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var db = scope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                var entity = await db.CopyrightRegistrations.AsNoTracking()
-                                     .FirstOrDefaultAsync(c => c.PublicId == publicId);
+                var entity = 
+                    await db.CopyrightRegistrations.
+                    AsNoTracking().
+                    FirstOrDefaultAsync(
+                        c => c.PublicId == publicId);
 
-                entity.Should().NotBeNull();
-                entity!.RegistrationNumber.Should().Be(regNumber);
-                entity.Title.Should().Be("Other Work Title");
-                entity.Owner.Should().Be("Other Owner");
+                entity.Should().
+                    NotBeNull();
 
-                // Verifying TypeOfWork is the raw OtherWorkType text (NormalizeWorkType logic)
-                entity.TypeOfWork.Should().Be(customType);
+                entity!.RegistrationNumber.Should().
+                    Be(regNumber);
 
-                var linkExists = await db.Set<UserCopyright>().AnyAsync(uc => uc.ApplicationUserId == userId
-                                                      && uc.CopyrightRegistrationId == entity.Id
-                                                      && !uc.IsDeleted);
+                entity.Title.Should().
+                    Be("Other Work Title");
 
-                linkExists.Should().BeTrue();
+                entity.Owner.Should().
+                    Be("Other Owner");
+
+                entity.TypeOfWork.Should().
+                    Be(customType);
+
+                var linkExists = await db.Set<UserCopyright>().
+                    AnyAsync(uc => uc.ApplicationUserId == userId && 
+                    uc.CopyrightEntityId == entity.Id && !uc.IsDeleted);
+
+                linkExists.Should().
+                    BeTrue();
             }
         }
 
@@ -203,12 +275,18 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
 
             using (var serviceScope = appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
+
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
             }
 
             const string regNo = "TX-9-RET-123";
-            const string returnUrl = "/Copyrights/MyCollection?page=1&sortBy=DateAdded";
+            const string returnUrl = 
+                "/Copyrights/MyCollection?page=1&sortBy=DateAdded";
 
             var form = new Dictionary<string, string?>
             {
@@ -223,31 +301,53 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                 ["returnUrl"] = returnUrl
             };
 
-            var response = await client.PostAsync("/Copyrights/Create", new FormUrlEncodedContent(form!));
+            var response = await client.PostAsync(
+                "/Copyrights/Create", 
+                new FormUrlEncodedContent(form!));
 
-            response.StatusCode.Should().Be(HttpStatusCode.Found);
-            response.Headers.Location.Should().NotBeNull();
+            response.StatusCode.Should().
+                Be(HttpStatusCode.Found);
+
+            response.Headers.Location.Should().
+                NotBeNull();
 
             var uriLocation = response.Headers.Location!;
-            var resolvedUri = uriLocation.IsAbsoluteUri ? uriLocation : new Uri(client.BaseAddress!, uriLocation);
-            resolvedUri.PathAndQuery.Should().Be(returnUrl);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            var resolvedUri = uriLocation.IsAbsoluteUri ? 
+                uriLocation : new Uri(client.BaseAddress!, uriLocation);
+
+            resolvedUri.PathAndQuery.Should().
+                Be(returnUrl);
+
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                var entity = await testDbContext.CopyrightRegistrations.AsNoTracking().
-                                     FirstOrDefaultAsync(c => c.RegistrationNumber == regNo);
+                var entity = 
+                    await testDbContext.CopyrightRegistrations.
+                    AsNoTracking().
+                    FirstOrDefaultAsync(
+                        c => c.RegistrationNumber == regNo);
 
-                entity.Should().NotBeNull();
-                entity!.Title.Should().Be("ReturnUrl Title");
-                entity.Owner.Should().Be("ReturnUrl Owner");
+                entity.Should().
+                    NotBeNull();
 
-                var linkExists = await testDbContext.Set<UserCopyright>().AnyAsync(uc => uc.ApplicationUserId == userId
-                                                      && uc.CopyrightRegistrationId == entity.Id
-                                                      && !uc.IsDeleted);
+                entity!.Title.Should().
+                    Be("ReturnUrl Title");
 
-                linkExists.Should().BeTrue();
+                entity.Owner.Should().
+                    Be("ReturnUrl Owner");
+
+                var linkExists = 
+                    await testDbContext.Set<UserCopyright>().
+                    AnyAsync(uc => uc.ApplicationUserId == userId && 
+                        uc.CopyrightEntityId == entity.Id && !uc.IsDeleted);
+
+                linkExists.Should().
+                    BeTrue();
             }
         }
 
@@ -259,8 +359,13 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
 
             using (var serviceScope = appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
+
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
             }
 
             const string regNumber = "TX-9-RET-EXT-001";
@@ -279,45 +384,65 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                 ["returnUrl"] = externalReturnUrl
             };
 
-            var response = await client.PostAsync("/Copyrights/Create", new FormUrlEncodedContent(entityForm!));
+            var response = await client.PostAsync(
+                "/Copyrights/Create", 
+                new FormUrlEncodedContent(entityForm!));
 
-            // Assert: should redirect to Details (not to the external URL)
-            response.StatusCode.Should().Be(HttpStatusCode.Found);
-            response.Headers.Location.Should().NotBeNull();
+            response.StatusCode.Should().
+                Be(HttpStatusCode.Found);
+
+            response.Headers.Location.Should().
+                NotBeNull();
 
             var uriLocation = response.Headers.Location!;
-            var resolvedUri = uriLocation.IsAbsoluteUri ? uriLocation : new Uri(client.BaseAddress!, uriLocation);
-            resolvedUri.AbsolutePath.Should().StartWith("/Copyrights/Details");
 
-            var idSegment = resolvedUri.Segments[^1].TrimEnd('/');
-            Guid.TryParse(idSegment, out var publicId).Should().BeTrue();
+            var resolvedUri = uriLocation.IsAbsoluteUri ? 
+                uriLocation : new Uri(client.BaseAddress!, uriLocation);
+
+            resolvedUri.AbsolutePath.Should().
+                StartWith("/Copyrights/Details");
+
+            var idSegment = 
+                resolvedUri.Segments[^1].TrimEnd('/');
+
+            Guid.TryParse(idSegment, out var publicId).Should().
+                BeTrue();
 
             using (var scope = appFactory.Services.CreateScope())
             {
-                var db = scope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var db = 
+                    scope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                var entity = await db.CopyrightRegistrations
-                                     .AsNoTracking()
-                                     .FirstOrDefaultAsync(c => c.PublicId == publicId);
+                var entity = await db.CopyrightRegistrations.
+                    AsNoTracking().
+                    FirstOrDefaultAsync(
+                    c => c.PublicId == publicId);
 
-                entity.Should().NotBeNull();
-                entity!.RegistrationNumber.Should().Be(regNumber);
+                entity.Should().
+                    NotBeNull();
 
-                entity.Title.Should().Be("External ReturnUrl Title");
-                entity.Owner.Should().Be("External ReturnUrl Owner");
+                entity!.RegistrationNumber.Should().
+                    Be(regNumber);
 
-                var linkExists = await db.Set<UserCopyright>().AnyAsync(uc => uc.ApplicationUserId == userId
-                                                      && uc.CopyrightRegistrationId == entity.Id
-                                                      && !uc.IsDeleted);
+                entity.Title.Should().
+                    Be("External ReturnUrl Title");
 
-                linkExists.Should().BeTrue();
+                entity.Owner.Should().
+                    Be("External ReturnUrl Owner");
+
+                var linkExists = await db.Set<UserCopyright>().
+                    AnyAsync(uc => uc.ApplicationUserId == userId && 
+                    uc.CopyrightEntityId == entity.Id && !uc.IsDeleted);
+
+                linkExists.Should().
+                    BeTrue();
             }
         }
 
         [Test]
         public async Task Post_Create_WithUnauthenticatedUser_ReturnsUnauthorizedStatus_AndDoesNotPersistEntity()
         {
-            // No user is authenticated, so do not call CreateClientAs(...) to simulate an unauthenticated request.
             var client = appFactory.CreateClient();
 
             const string regNumber = "TX-9-UNAUTH-001";
@@ -333,19 +458,28 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                 ["NationOfFirstPublication"] = "US"
             };
 
-            var response = await client.PostAsync("/Copyrights/Create", new FormUrlEncodedContent(entityForm!));
+            var response = await client.PostAsync(
+                "/Copyrights/Create", 
+                new FormUrlEncodedContent(entityForm!));
 
-            // TestAuth only authenticates when a user ID is explicitly set; without it, the HasUserId policy denies access with a 401 status.
-            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.Unauthorized);
 
-            // Assert nothing persisted
-            using var serviceScope = appFactory.Services.CreateScope();
-            var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+            using var serviceScope = 
+                appFactory.Services.CreateScope();
 
-            bool entityExists = await testDbContext.CopyrightRegistrations.AsNoTracking()
-                .AnyAsync(c => c.RegistrationNumber == regNumber);
+            var testDbContext = 
+                serviceScope.ServiceProvider.
+                GetRequiredService<IPNoticeHubDbContext>();
 
-            entityExists.Should().BeFalse("Unauthenticated users are not allowed not create registrations");
+            bool entityExists = 
+                await testDbContext.CopyrightRegistrations.
+                AsNoTracking().
+                AnyAsync(c => c.RegistrationNumber == regNumber);
+
+            entityExists.Should().
+                BeFalse(
+                "Unauthenticated users are not allowed not create registrations");
         }
 
         [Test]
@@ -354,18 +488,24 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
             var userId = "u1";
             var client = appFactory.CreateClientAs(userId);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
+
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
             }
 
             const string regNumber = "TX-9-CRT-OTHER-MISSING";
             var form = new Dictionary<string, string?>
             {
                 ["RegistrationNumber"] = regNumber,
-                ["WorkType"] = "Other",         // triggers conditional validation
-                ["OtherWorkType"] = "",         // string value missing; should cause ModelState error
+                ["WorkType"] = "Other",
+                ["OtherWorkType"] = "",
                 ["Title"] = "Should Not Insert",
                 ["Owner"] = "Should Not Insert",
                 ["YearOfCreation"] = "2024",
@@ -373,22 +513,36 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                 ["NationOfFirstPublication"] = "US"
             };
 
-            var response = await client.PostAsync("/Copyrights/Create", new FormUrlEncodedContent(form));
+            var response = await client.PostAsync(
+                "/Copyrights/Create", 
+                new FormUrlEncodedContent(form));
 
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.OK);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                var entityExists = await testDbContext.CopyrightRegistrations.AsNoTracking()
-                    .AnyAsync(c => c.RegistrationNumber == regNumber);
+                var entityExists = 
+                    await testDbContext.CopyrightRegistrations.
+                    AsNoTracking().
+                    AnyAsync(c => c.RegistrationNumber == regNumber);
 
-                entityExists.Should().BeFalse("Missing OtherWorkType must block the creation of the copyright entity");
+                entityExists.Should().
+                    BeFalse(
+                    "Missing OtherWorkType must block " +
+                    "the creation of the copyright entity");
 
-                var anyLinksExist = await testDbContext.Set<UserCopyright>().AnyAsync(uc => uc.ApplicationUserId == userId);
+                var anyLinksExist = 
+                    await testDbContext.Set<UserCopyright>().
+                    AnyAsync(uc => uc.ApplicationUserId == userId);
 
-                anyLinksExist.Should().BeFalse();
+                anyLinksExist.Should().
+                    BeFalse();
             }
         }
 
@@ -400,12 +554,17 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
 
             const string existingRegNumber = "TX-9-CRT-DUPLICATE-EXIST";
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope =
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                // Seed an existing registration with the conflicting number
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
+
                 var existing = await TestDbSeeder.SeedCopyrightAsync(
                     testDbContext,
                     regNumber: existingRegNumber,
@@ -428,21 +587,35 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                 ["NationOfFirstPublication"] = "US"
             };
 
-            var response = await client.PostAsync("/Copyrights/Create", new FormUrlEncodedContent(form));
+            var response = await client.PostAsync(
+                "/Copyrights/Create", 
+                new FormUrlEncodedContent(form));
 
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.OK);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                int entitiesCount = await testDbContext.CopyrightRegistrations.AsNoTracking()
-                    .CountAsync(c => c.RegistrationNumber == existingRegNumber);
+                int entitiesCount = 
+                    await testDbContext.CopyrightRegistrations.
+                    AsNoTracking().
+                    CountAsync(c => c.RegistrationNumber == existingRegNumber);
 
-                entitiesCount.Should().Be(1, "duplicate create must not insert a second record");
+                entitiesCount.Should().
+                    Be(1);
 
-                var anyLinksExist = await testDbContext.Set<UserCopyright>().AnyAsync(uc => uc.ApplicationUserId == userId);
-                anyLinksExist.Should().BeFalse("no user–copyright link should be created on failed create");
+                var anyLinksExist = 
+                    await testDbContext.
+                    Set<UserCopyright>().
+                    AnyAsync(uc => uc.ApplicationUserId == userId);
+
+                anyLinksExist.Should().
+                    BeFalse();
             }
         }
     }

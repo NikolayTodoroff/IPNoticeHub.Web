@@ -1,10 +1,11 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Shared.Enums;
-using IPNoticeHub.Application.Watchlist.Abstractions;
-using IPNoticeHub.Application.DocumentLibrary.Abstractions;
-using IPNoticeHub.Application.PdfGeneration.Abstractions;
+using IPNoticeHub.Application.Services.WatchlistService.Abstractions;
+using IPNoticeHub.Application.Services.DocumentLibraryService.Abstractions;
+using IPNoticeHub.Application.Services.PdfGenerationService.Abstractions;
 using IPNoticeHub.Application.Trademarks.Abstractions;
-using IPNoticeHub.Application.Trademarks.DTOs;
+using IPNoticeHub.Application.Services.TrademarkService.Abstractions;
+using IPNoticeHub.Application.DTOs.TrademarkDTOs;
 using IPNoticeHub.Tests.UnitTests.TestUtilities;
 using IPNoticeHub.Tests.UnitTests.UnitTestUtilities;
 using IPNoticeHub.Web.Controllers;
@@ -42,7 +43,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
                 new Mock<ITrademarkCollectionService>();
 
             var tmWatchlistService = 
-                new Mock<ITrademarkWatchlistService>();
+                new Mock<IWatchlistService>();
 
             var pdfService = 
                 new Mock<IPdfService>();
@@ -72,8 +73,10 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
                 letterTemplate.Object, 
                 documentLibraryService.Object);
 
-            var user = new ClaimsPrincipal(new ClaimsIdentity(
-                new[] { new Claim(ClaimTypes.NameIdentifier, "user-123") }, 
+            var user = new ClaimsPrincipal(
+                new ClaimsIdentity(new[] { 
+                    new Claim(ClaimTypes.NameIdentifier, 
+                    "user-123") }, 
                 "TestAuth"));
 
             controller.ControllerContext = new ControllerContext
@@ -94,24 +97,25 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
             viewResult!.Model.Should().
                 BeOfType<TrademarkDetailsViewModel>();
 
-            var vm = (TrademarkDetailsViewModel)viewResult.Model!;
+            var viewModel = 
+                (TrademarkDetailsViewModel)viewResult.Model!;
 
-            vm.PublicId.Should().
+            viewModel.PublicId.Should().
                 Be(entityId);
 
-            vm.Wordmark.Should().
+            viewModel.Wordmark.Should().
                 Be("Target");
 
-            vm.Id.Should().
+            viewModel.Id.Should().
                 Be(42);
 
-            vm.Owner.Should().
+            viewModel.Owner.Should().
                 Be("Owner A");
 
-            vm.Classes.Should().
+            viewModel.Classes.Should().
                 BeEquivalentTo(new[] { 9, 25 });
 
-            vm.IsInWatchlist.Should().
+            viewModel.IsInWatchlist.Should().
                 BeFalse();
 
             tmSearchService.Verify(s => s.GetDetailsAsync(
@@ -138,7 +142,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
                 new Mock<ITrademarkCollectionService>();
 
             var tmWatchlistService = 
-                new Mock<ITrademarkWatchlistService>();
+                new Mock<IWatchlistService>();
 
             var pdfService = 
                 new Mock<IPdfService>();
@@ -204,7 +208,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
             var documentLibraryService = 
                 new Mock<IDocumentLibraryService>();
 
-            var controller = TestTrademarkControllerFactory.CreateTrademarksController(
+            var controller = 
+                TestTrademarkControllerFactory.CreateTrademarksController(
                 collectionService: collectionService.Object,
                 out _,
                 searchService: tmSearchService.Object,
@@ -213,7 +218,9 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
                 documentLibraryService: documentLibraryService.Object
             );
 
-            controller.ConfigureUrlHelper(returnUrl: safeReturnUrl, isLocal: true);
+            controller.ConfigureUrlHelper(
+                returnUrl: safeReturnUrl, 
+                isLocal: true);
 
             var actionResult = await controller.Details(
                 entityId, 
@@ -269,7 +276,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
             var documentLibraryService = 
                 new Mock<IDocumentLibraryService>();
 
-            var controller = TestTrademarkControllerFactory.CreateTrademarksController(
+            var controller = 
+                TestTrademarkControllerFactory.CreateTrademarksController(
                 collectionService: collectionService.Object,
                 out _,
                 searchService: tmSearchService.Object,

@@ -1,4 +1,4 @@
-﻿using IPNoticeHub.Data.Entities.Identity;
+﻿using IPNoticeHub.Infrastructure.Identity;
 
 namespace IPNoticeHub.Web.Models.AdminDashboard
 {
@@ -6,15 +6,11 @@ namespace IPNoticeHub.Web.Models.AdminDashboard
     {
         public int TotalUsers { get; set; }
 
-
         public int TrademarksAdded { get; set; }
-
 
         public int CopyrightsAdded { get; set; }
 
-
         public int WatchlistedItems { get; set; }
-
 
         public ICollection<ApplicationUser> RecentRegistrations { get; set; } = 
             new List<ApplicationUser>();

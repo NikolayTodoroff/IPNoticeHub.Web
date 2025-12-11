@@ -1,12 +1,12 @@
 ﻿using FluentAssertions;
-using IPNoticeHub.Data;
-using IPNoticeHub.Data.Entities.Identity;
-using IPNoticeHub.Data.Entities.CopyrightRegistration;
+using IPNoticeHub.Domain.Entities.Identity;
+using IPNoticeHub.Domain.Entities.Copyrights;
 using IPNoticeHub.Tests.IntegrationTests.TestUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net;
+using IPNoticeHub.Infrastructure.Persistence;
 
 namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
 {
@@ -31,10 +31,16 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
 
             using (var serviceScope = appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                var entity = await TestDbSeeder.SeedCopyrightAsync(
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
+
+                var entity = 
+                    await TestDbSeeder.SeedCopyrightAsync(
                     testDbContext,
                     regNumber: "TX-9-REM-302",
                     typeOfWork: "Literary",
@@ -44,7 +50,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                 testDbContext.Set<UserCopyright>().Add(new UserCopyright
                 {
                     ApplicationUserId = userId,
-                    CopyrightRegistrationId = entity.Id,
+                    CopyrightEntityId = entity.Id,
                     IsDeleted = false
                 });
 
@@ -54,24 +60,42 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                 copyrightEntityId = entity.Id;
             }
 
-            var response = await client.PostAsync($"/Copyrights/Remove/{copyrightEntityPublicId}",
-                new FormUrlEncodedContent(new Dictionary<string, string?>()));
+            var response = await client.PostAsync(
+                $"/Copyrights/Remove/{copyrightEntityPublicId}",
+                new FormUrlEncodedContent(
+                    new Dictionary<string, string?>()));
 
-            response.StatusCode.Should().Be(HttpStatusCode.Found);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.Found);
+
             var uriLocation = response.Headers.Location!;
-            var resolvedUri = uriLocation.IsAbsoluteUri ? uriLocation : new Uri(client.BaseAddress!, uriLocation);
 
-            resolvedUri.AbsolutePath.Should().Be("/Copyrights/MyCollection");
+            var resolvedUri = uriLocation.IsAbsoluteUri ? 
+                uriLocation : new Uri(client.BaseAddress!, uriLocation);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            resolvedUri.AbsolutePath.Should().
+                Be("/Copyrights/MyCollection");
+
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                var link = await testDbContext.Set<UserCopyright>().AsNoTracking().
-                    FirstOrDefaultAsync(uc => uc.ApplicationUserId == userId && uc.CopyrightRegistrationId == copyrightEntityId);
+                var link = 
+                    await testDbContext.
+                    Set<UserCopyright>().
+                    AsNoTracking().
+                    FirstOrDefaultAsync(
+                        uc => uc.ApplicationUserId == userId && 
+                        uc.CopyrightEntityId == copyrightEntityId);
 
-                link.Should().NotBeNull();
-                link!.IsDeleted.Should().BeTrue();
+                link.Should().
+                    NotBeNull();
+
+                link!.IsDeleted.Should().
+                    BeTrue();
             }
         }
 
@@ -83,24 +107,33 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
 
             Guid copyrightEntityPublicId;
             int copyrightEntityId;
-            const string returnUrl = "/Copyrights/MyCollection?page=3&sortBy=DateAdded";
+            const string returnUrl = 
+                "/Copyrights/MyCollection?page=3&sortBy=DateAdded";
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                var entity = await TestDbSeeder.SeedCopyrightAsync(
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
+
+                var entity = 
+                    await TestDbSeeder.SeedCopyrightAsync(
                     testDbContext,
                     regNumber: "TX-9-REM-RET",
                     typeOfWork: "Literary",
                     title: "Remove With ReturnUrl"
                 );
 
-                testDbContext.Set<UserCopyright>().Add(new UserCopyright
+                testDbContext.Set<UserCopyright>().Add(
+                    new UserCopyright
                 {
                     ApplicationUserId = userId,
-                    CopyrightRegistrationId = entity.Id,
+                    CopyrightEntityId = entity.Id,
                     IsDeleted = false
                 });
                 await testDbContext.SaveChangesAsync();
@@ -109,29 +142,47 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                 copyrightEntityId = entity.Id;
             }
 
-            var entityForm = new Dictionary<string, string?>
+            var entityForm = 
+                new Dictionary<string, string?>
             {
                 ["returnUrl"] = returnUrl
             };
 
-            var response = await client.PostAsync($"/Copyrights/Remove/{copyrightEntityPublicId}", new FormUrlEncodedContent(entityForm));
+            var response = await client.PostAsync(
+                $"/Copyrights/Remove/{copyrightEntityPublicId}", 
+                new FormUrlEncodedContent(entityForm));
 
-            response.StatusCode.Should().Be(HttpStatusCode.Found);
-            response.Headers.Location.Should().NotBeNull();
+            response.StatusCode.Should().
+                Be(HttpStatusCode.Found);
+
+            response.Headers.Location.Should().
+                NotBeNull();
 
             var uriLocation = response.Headers.Location!;
-            var resolvedUri = uriLocation.IsAbsoluteUri ? uriLocation : new Uri(client.BaseAddress!, uriLocation);
-            resolvedUri.PathAndQuery.Should().Be(returnUrl);
+            var resolvedUri = uriLocation.IsAbsoluteUri ? 
+                uriLocation : new Uri(client.BaseAddress!, uriLocation);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            resolvedUri.PathAndQuery.Should().
+                Be(returnUrl);
+
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                var link = await testDbContext.Set<UserCopyright>()
-                    .AsNoTracking()
-                    .FirstOrDefaultAsync(uc => uc.ApplicationUserId == userId && uc.CopyrightRegistrationId == copyrightEntityId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
+
+                var link = await testDbContext.
+                    Set<UserCopyright>().
+                    AsNoTracking().
+                    FirstOrDefaultAsync(
+                    uc => uc.ApplicationUserId == userId && 
+                    uc.CopyrightEntityId == copyrightEntityId);
 
                 link.Should().NotBeNull();
-                link!.IsDeleted.Should().BeTrue();
+
+                link!.IsDeleted.Should().
+                    BeTrue();
             }
         }
 
@@ -146,20 +197,25 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
 
             using (var serviceScope = appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
+
                 await TestDbSeeder.SeedUserAsync(testDbContext, userId);
 
-                var entity = await TestDbSeeder.SeedCopyrightAsync(
+                var entity = 
+                    await TestDbSeeder.SeedCopyrightAsync(
                     testDbContext,
                     regNumber: "TX-9-REM-EXT",
                     typeOfWork: "Literary",
                     title: "Remove With External ReturnUrl"
                 );
 
-                testDbContext.Set<UserCopyright>().Add(new UserCopyright
+                testDbContext.Set<UserCopyright>().
+                    Add(new UserCopyright
                 {
                     ApplicationUserId = userId,
-                    CopyrightRegistrationId = entity.Id,
+                    CopyrightEntityId = entity.Id,
                     IsDeleted = false
                 });
 
@@ -169,37 +225,56 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                 copyrightEntityId = entity.Id;
             }
 
-            var entityForm = new Dictionary<string, string?>
+            var entityForm = 
+                new Dictionary<string, string?>
             {
-                ["returnUrl"] = "https://example.com/redirect-away" // should be ignored
+                ["returnUrl"] = "https://example.com/redirect-away"
             };
 
-            var response = await client.PostAsync($"/Copyrights/Remove/{copyrightEntityPublicId}", new FormUrlEncodedContent(entityForm));
+            var response = await client.PostAsync(
+                $"/Copyrights/Remove/{copyrightEntityPublicId}", 
+                new FormUrlEncodedContent(entityForm));
 
-            response.StatusCode.Should().Be(HttpStatusCode.Found);
-            response.Headers.Location.Should().NotBeNull();
+            response.StatusCode.Should().
+                Be(HttpStatusCode.Found);
+
+            response.Headers.Location.Should().
+                NotBeNull();
 
             var uriLocation = response.Headers.Location!;
-            var resolvedUri = uriLocation.IsAbsoluteUri ? uriLocation : new Uri(client.BaseAddress!, uriLocation);
+            var resolvedUri = uriLocation.IsAbsoluteUri ? 
+                uriLocation : new Uri(client.BaseAddress!, uriLocation);
 
-            resolvedUri.AbsolutePath.Should().Be("/Copyrights/MyCollection");
+            resolvedUri.AbsolutePath.Should().
+                Be("/Copyrights/MyCollection");
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                var link = await testDbContext.Set<UserCopyright>().AsNoTracking()
-                    .FirstOrDefaultAsync(uc => uc.ApplicationUserId == userId && uc.CopyrightRegistrationId == copyrightEntityId);
+                var link = await testDbContext.
+                    Set<UserCopyright>().
+                    AsNoTracking().
+                    FirstOrDefaultAsync(
+                    uc => uc.ApplicationUserId == userId && 
+                    uc.CopyrightEntityId == copyrightEntityId);
 
-                link.Should().NotBeNull();
-                link!.IsDeleted.Should().BeTrue();
+                link.Should().
+                    NotBeNull();
+
+                link!.IsDeleted.Should().
+                    BeTrue();
             }
         }
 
         [Test]
         public async Task Post_RemoveCopyright_WithUnauthenticatedUser_Returns401_AndNoChanges()
         {
-            var client = appFactory.CreateClient(new()
+            var client = appFactory.
+                CreateClient(new()
             {
                 AllowAutoRedirect = false
             });
@@ -207,11 +282,15 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
             Guid copyrightEntityPublicId;
             int copyrightEntityId;
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                var entity = await TestDbSeeder.SeedCopyrightAsync(
+                var entity = 
+                    await TestDbSeeder.SeedCopyrightAsync(
                     testDbContext,
                     regNumber: "TX-9-REM-401",
                     typeOfWork: "Literary",
@@ -221,19 +300,28 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                 copyrightEntityId = entity.Id;
             }
 
-            var response = await client.PostAsync($"/Copyrights/Remove/{copyrightEntityPublicId}",
-                new FormUrlEncodedContent(new Dictionary<string, string?>()));
+            var response = await client.PostAsync(
+                $"/Copyrights/Remove/{copyrightEntityPublicId}",
+                new FormUrlEncodedContent(
+                    new Dictionary<string, string?>()));
 
-            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.Unauthorized);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                bool entityStillExists = await testDbContext.CopyrightRegistrations.AsNoTracking()
+                bool entityStillExists = 
+                    await testDbContext.CopyrightRegistrations.
+                    AsNoTracking()
                     .AnyAsync(c => c.Id == copyrightEntityId);
 
-                entityStillExists.Should().BeTrue();
+                entityStillExists.Should().
+                    BeTrue();
             }
         }
 
@@ -247,24 +335,34 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
             Guid copyrightEntityPublicId;
             int copyrightEntityId;
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                await TestDbSeeder.SeedUserAsync(testDbContext, targetUserId);
-                await TestDbSeeder.SeedUserAsync(testDbContext, randomUserId);
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    targetUserId);
 
-                var entity = await TestDbSeeder.SeedCopyrightAsync(
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    randomUserId);
+
+                var entity = 
+                    await TestDbSeeder.SeedCopyrightAsync(
                     testDbContext,
                     regNumber: "TX-9-REM-NOTLINK",
                     typeOfWork: "Literary",
                     title: "Remove Not Linked"
                 );
 
-                testDbContext.Set<UserCopyright>().Add(new UserCopyright
+                testDbContext.Set<UserCopyright>().
+                    Add(new UserCopyright
                 {
                     ApplicationUserId = randomUserId,
-                    CopyrightRegistrationId = entity.Id,
+                    CopyrightEntityId = entity.Id,
                     IsDeleted = false
                 });
 
@@ -274,28 +372,49 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                 copyrightEntityId = entity.Id;
             }
 
-            var response = await client.PostAsync($"/Copyrights/Remove/{copyrightEntityPublicId}",
-                new FormUrlEncodedContent(new Dictionary<string, string?>()));
+            var response = await client.PostAsync(
+                $"/Copyrights/Remove/{copyrightEntityPublicId}",
+                new FormUrlEncodedContent(
+                    new Dictionary<string, string?>()));
 
-            response.StatusCode.Should().Be(HttpStatusCode.Found);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.Found);
+
             var uriLocation = response.Headers.Location!;
-            var resolvedUri = uriLocation.IsAbsoluteUri ? uriLocation : new Uri(client.BaseAddress!, uriLocation);
-            resolvedUri.AbsolutePath.Should().Be("/Copyrights/MyCollection");
+            var resolvedUri = uriLocation.IsAbsoluteUri ? 
+                uriLocation : new Uri(client.BaseAddress!, uriLocation);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            resolvedUri.AbsolutePath.Should().
+                Be("/Copyrights/MyCollection");
+
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
 
-                var targetUserLink = await testDbContext.Set<UserCopyright>().AsNoTracking()
-                    .FirstOrDefaultAsync(uc => uc.ApplicationUserId == targetUserId && uc.CopyrightRegistrationId == copyrightEntityId);
+                var targetUserLink = await testDbContext.
+                    Set<UserCopyright>().
+                    AsNoTracking().
+                    FirstOrDefaultAsync(
+                    uc => uc.ApplicationUserId == targetUserId && 
+                    uc.CopyrightEntityId == copyrightEntityId);
 
-                targetUserLink.Should().BeNull("The target entity was never linked; nothing to delete");
+                targetUserLink.Should().
+                    BeNull("The target entity was never linked; nothing to delete");
 
-                var randomUserLink = await testDbContext.Set<UserCopyright>().AsNoTracking()
-                    .FirstOrDefaultAsync(uc => uc.ApplicationUserId == randomUserId && uc.CopyrightRegistrationId == copyrightEntityId);
+                var randomUserLink = await testDbContext.
+                    Set<UserCopyright>().
+                    AsNoTracking().
+                    FirstOrDefaultAsync(
+                    uc => uc.ApplicationUserId == randomUserId && 
+                    uc.CopyrightEntityId == copyrightEntityId);
 
-                randomUserLink.Should().NotBeNull();
-                randomUserLink!.IsDeleted.Should().BeFalse("The unrelated user's link must not be altered");
+                randomUserLink.Should().
+                    NotBeNull();
+
+                randomUserLink!.IsDeleted.Should().
+                    BeFalse("The unrelated user's link must not be altered");
             }
         }
 
@@ -307,10 +426,15 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
 
             int copyrightId;
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                var testDbContext = serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
+
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
 
                 var entity = new CopyrightEntity
                 {
@@ -329,10 +453,11 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                 await testDbContext.SaveChangesAsync();
                 copyrightId = entity.Id;
 
-                testDbContext.Set<UserCopyright>().Add(new UserCopyright
+                testDbContext.Set<UserCopyright>().
+                    Add(new UserCopyright
                 {
                     ApplicationUserId = userId,
-                    CopyrightRegistrationId = copyrightId,
+                    CopyrightEntityId = copyrightId,
                     IsDeleted = false,
                     DateAdded = DateTime.UtcNow
                 });
@@ -340,40 +465,65 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                 await testDbContext.SaveChangesAsync();
             }
 
-            var response = await client.PostAsync("/Copyrights/Remove",
-                new FormUrlEncodedContent(new Dictionary<string, string?>()));
+            var response = await client.PostAsync(
+                "/Copyrights/Remove",
+                new FormUrlEncodedContent(
+                    new Dictionary<string, string?>()));
 
-            response.StatusCode.Should().Be(HttpStatusCode.Found);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.Found);
 
             var resolvedUri = response.Headers.Location!.IsAbsoluteUri ?
-               response.Headers.Location! : new Uri(client.BaseAddress!, response.Headers.Location!);
+               response.Headers.Location! : 
+               new Uri(client.BaseAddress!, response.Headers.Location!);
 
-            resolvedUri.AbsolutePath.Should().Be("/Copyrights/MyCollection");
+            resolvedUri.AbsolutePath.Should().
+                Be("/Copyrights/MyCollection");
 
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                var link = await testDbContext.UserCopyrights.AsNoTracking()
-                    .FirstAsync(uc => uc.ApplicationUserId == userId && uc.CopyrightRegistrationId == copyrightId);
+                var link = 
+                    await testDbContext.UserCopyrights.
+                    AsNoTracking().
+                    FirstAsync(
+                        uc => uc.ApplicationUserId == userId && 
+                        uc.CopyrightEntityId == copyrightId);
 
-                link.IsDeleted.Should().BeFalse();
+                link.IsDeleted.Should().
+                    BeFalse();
             }
         }
 
-        [TestCase("abc", TestName = "Post_Remove_NonNumericId_Redirects_NoChange")]
-        [TestCase("-1", TestName = "Post_Remove_NegativeId_Redirects_NoChange")]
+        [TestCase("abc", 
+            TestName = "Post_Remove_NonNumericId_Redirects_NoChange")]
+
+        [TestCase("-1", 
+            TestName = "Post_Remove_NegativeId_Redirects_NoChange")]
         public async Task Post_Remove_WithInvalidId_RedirectsToMyCollection_NoChange(string invalidId)
         {
             var userId = "u1";
-            var client = appFactory.CreateClientAs(userId);
+
+            var client = appFactory.
+                CreateClientAs(userId);
+
             int entityId;
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
+
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
 
                 var entity = new CopyrightEntity
                 {
@@ -393,33 +543,46 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                 testDbContext.UserCopyrights.Add(new UserCopyright
                 {
                     ApplicationUserId = userId,
-                    CopyrightRegistrationId = entityId,
+                    CopyrightEntityId = entityId,
                     IsDeleted = false,
                     DateAdded = DateTime.UtcNow
                 });
                 await testDbContext.SaveChangesAsync();
             }
 
-            var form = new Dictionary<string, string?> { ["copyrightId"] = invalidId };
+            var form = 
+                new Dictionary<string, string?> { ["copyrightId"] = invalidId };
 
-            var response = await client.PostAsync("/Copyrights/Remove", new FormUrlEncodedContent(form));
+            var response = await client.PostAsync(
+                "/Copyrights/Remove", 
+                new FormUrlEncodedContent(form));
 
-            response.StatusCode.Should().Be(HttpStatusCode.Found);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.Found);
 
             var resolvedUri = response.Headers.Location!.IsAbsoluteUri ?
-                response.Headers.Location! : new Uri(client.BaseAddress!, response.Headers.Location!);
+                response.Headers.Location! : 
+                new Uri(client.BaseAddress!, response.Headers.Location!);
 
-                resolvedUri.AbsolutePath.Should().Be("/Copyrights/MyCollection");
+                resolvedUri.AbsolutePath.Should().
+                Be("/Copyrights/MyCollection");
 
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                var link = await testDbContext.UserCopyrights.AsNoTracking()
-                    .FirstAsync(uc => uc.ApplicationUserId == userId && uc.CopyrightRegistrationId == entityId);
+                var link = await testDbContext.UserCopyrights.
+                    AsNoTracking().
+                    FirstAsync(
+                    uc => uc.ApplicationUserId == userId && 
+                    uc.CopyrightEntityId == entityId);
 
-                link.IsDeleted.Should().BeFalse();
+                link.IsDeleted.Should().
+                    BeFalse();
             }
         }
 
@@ -430,10 +593,16 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
             var client = appFactory.CreateClientAs(userId);
             int entityId;
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
+
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
 
                 var entity = new CopyrightEntity
                 {
@@ -445,13 +614,14 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                     Owner = "ASD LTD"
                 };
                 testDbContext.CopyrightRegistrations.Add(entity);
+
                 await testDbContext.SaveChangesAsync();
                 entityId = entity.Id;
 
                 testDbContext.UserCopyrights.Add(new UserCopyright
                 {
                     ApplicationUserId = userId,
-                    CopyrightRegistrationId = entityId,
+                    CopyrightEntityId = entityId,
                     IsDeleted = true,
                     DateAdded = DateTime.UtcNow
                 });
@@ -459,27 +629,44 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                 await testDbContext.SaveChangesAsync();
             }
 
-            var form = new Dictionary<string, string?> { ["copyrightId"] = entityId.ToString() };
+            var form = 
+                new Dictionary<string, string?> { [
+                    "copyrightId"] = entityId.ToString() };
 
-            var response = await client.PostAsync("/Copyrights/Remove", new FormUrlEncodedContent(form));
+            var response = await client.PostAsync(
+                "/Copyrights/Remove", 
+                new FormUrlEncodedContent(form));
 
-            response.StatusCode.Should().Be(HttpStatusCode.Found);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.Found);
 
             var resolvedUri = response.Headers.Location!.IsAbsoluteUri ?
-               response.Headers.Location! : new Uri(client.BaseAddress!, response.Headers.Location!);
+               response.Headers.Location! : 
+               new Uri(client.BaseAddress!, response.Headers.Location!);
 
-            resolvedUri.AbsolutePath.Should().Be("/Copyrights/MyCollection");
+            resolvedUri.AbsolutePath.Should().
+                Be("/Copyrights/MyCollection");
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                var links = await testDbContext.UserCopyrights.AsNoTracking()
-                    .Where(uc => uc.ApplicationUserId == userId && uc.CopyrightRegistrationId == entityId)
-                    .ToListAsync();
+                var links = 
+                    await testDbContext.UserCopyrights.
+                    AsNoTracking().
+                    Where(
+                        uc => uc.ApplicationUserId == userId && 
+                        uc.CopyrightEntityId == entityId).
+                        ToListAsync();
 
-                links.Count.Should().Be(1);
-                links[0].IsDeleted.Should().BeTrue();
+                links.Count.Should().
+                    Be(1);
+
+                links[0].IsDeleted.Should().
+                    BeTrue();
             }
         }
 
@@ -487,14 +674,21 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
         public async Task Post_Remove_WithNonExistingNumericId_RedirectsToMyCollection_NoChange()
         {
             var userId = "u1";
-            var client = appFactory.CreateClientAs(userId);
+            var client = 
+                appFactory.CreateClientAs(userId);
 
             int entityId;
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
+
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
 
                 var entity = new CopyrightEntity
                 {
@@ -513,7 +707,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                 testDbContext.UserCopyrights.Add(new UserCopyright
                 {
                     ApplicationUserId = userId,
-                    CopyrightRegistrationId = entityId,
+                    CopyrightEntityId = entityId,
                     IsDeleted = false,
                     DateAdded = DateTime.UtcNow
                 });
@@ -521,30 +715,48 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                 await testDbContext.SaveChangesAsync();
             }
 
-            var form = new Dictionary<string, string?> { ["copyrightId"] = "999999" };
-            var response = await client.PostAsync("/Copyrights/Remove", new FormUrlEncodedContent(form));
+            var form = 
+                new Dictionary<string, string?> { ["copyrightId"] = "999999" };
 
-            response.StatusCode.Should().Be(HttpStatusCode.Found);
+            var response = await client.PostAsync(
+                "/Copyrights/Remove", 
+                new FormUrlEncodedContent(form));
+
+            response.StatusCode.Should().
+                Be(HttpStatusCode.Found);
 
             var resolvedUri = response.Headers.Location!.IsAbsoluteUri ?
-                response.Headers.Location! : new Uri(client.BaseAddress!, response.Headers.Location!);
+                response.Headers.Location! : 
+                new Uri(client.BaseAddress!, response.Headers.Location!);
 
-            resolvedUri.AbsolutePath.Should().Be("/Copyrights/MyCollection");
+            resolvedUri.AbsolutePath.Should().
+                Be("/Copyrights/MyCollection");
 
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                var totalLinks = await testDbContext.UserCopyrights.AsNoTracking()
-                    .CountAsync(uc => uc.ApplicationUserId == userId);
+                var totalLinks = 
+                    await testDbContext.UserCopyrights.
+                    AsNoTracking().
+                    CountAsync(
+                        uc => uc.ApplicationUserId == userId);
 
                 totalLinks.Should().Be(1);
 
-                var link = await testDbContext.UserCopyrights.AsNoTracking()
-                    .FirstAsync(uc => uc.ApplicationUserId == userId && uc.CopyrightRegistrationId == entityId);
+                var link = 
+                    await testDbContext.UserCopyrights.
+                    AsNoTracking().
+                    FirstAsync(
+                        uc => uc.ApplicationUserId == userId && 
+                        uc.CopyrightEntityId == entityId);
 
-                link.IsDeleted.Should().BeFalse();
+                link.IsDeleted.Should().
+                    BeFalse();
             }
         }
     }

@@ -1,13 +1,13 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Shared.Enums;
-using IPNoticeHub.Data;
-using IPNoticeHub.Application.TrademarkSearch.DTOs;
-using IPNoticeHub.Application.TrademarkSearch.Implementations;
 using IPNoticeHub.Tests.TestUtilities;
 using NUnit.Framework;
 using static IPNoticeHub.Shared.Constants.PagingConstants.DefaultPagingConstants;
 using IPNoticeHub.Tests.UnitTests.TestUtilities;
-using IPNoticeHub.Data.Repositories.TrademarkSearch.Abstractions;
+using IPNoticeHub.Application.Services.TrademarkSearchService.Implementations;
+using IPNoticeHub.Application.DTOs.TrademarkDTOs;
+using IPNoticeHub.Application.Repositories.TrademarkRepository;
+using IPNoticeHub.Infrastructure.Persistence;
 
 namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.TrademarkSearchQueryServiceTests
 {
@@ -17,9 +17,11 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
         [Test]
         public async Task SearchAsync_WithOfficeUSPTO_FiltersOnlyUSPTO()
         {
-            using IPNoticeHubDbContext testDbContext = InMemoryDbContextFactory.CreateTestDbContext();
+            using IPNoticeHubDbContext testDbContext = 
+                InMemoryDbContextFactory.CreateTestDbContext();
 
-            var (anubisTm, _) = InMemoryDbContextFactory.CreateTrademark(
+            var (anubisTm, _) = 
+                InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "Anubis",
                 owner: "Underworld Inc.",
                 goodsAndServices: "testGoodsAndSerices",
@@ -30,7 +32,8 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
                 source: DataProvider.USPTO,
                 classNumbers: new[] { 25 });
 
-            var (horusTm, _) = InMemoryDbContextFactory.CreateTrademark(
+            var (horusTm, _) = 
+                InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "Horus",
                 owner: "Falcon LLC",
                 goodsAndServices: "testGoodsAndSerices",
@@ -41,7 +44,8 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
                 source: DataProvider.WIPO,
                 classNumbers: new[] { 25 });
 
-            var (osirisTm, _) = InMemoryDbContextFactory.CreateTrademark(
+            var (osirisTm, _) = 
+                InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "Osiris",
                 owner: "Afterlife Inc.",
                 goodsAndServices: "testGoodsAndSerices",
@@ -52,13 +56,21 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
                 source: DataProvider.EUIPO,
                 classNumbers: new[] { 25 });
 
-            testDbContext.TrademarkRegistrations.AddRange(anubisTm, horusTm, osirisTm);
+            testDbContext.TrademarkRegistrations.AddRange(
+                anubisTm, 
+                horusTm, 
+                osirisTm);
+
             await testDbContext.SaveChangesAsync();
 
-            ITrademarkReadRepository readRepo = new TestReadRepository(testDbContext);
-            var queryService = new TrademarkSearchQueryService(readRepo);
+            ITrademarkReadRepository readRepo = 
+                new TestReadRepository(testDbContext);
 
-            var query = new TrademarkSearchQueryDto
+            var queryService = 
+                new TrademarkSearchQueryService(readRepo);
+
+            var query = 
+                new TrademarkSearchQueryDto
             {
                 Query = "",
                 SearchBy = TrademarkSearchBy.Wordmark,

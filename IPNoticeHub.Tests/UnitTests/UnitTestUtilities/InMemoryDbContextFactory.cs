@@ -1,9 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using IPNoticeHub.Data;
-using IPNoticeHub.Data.Entities.TrademarkRegistration;
-using IPNoticeHub.Data.Entities.CopyrightRegistration;
-using IPNoticeHub.Data.Entities.Identity;
+using IPNoticeHub.Domain.Entities.Trademarks;
+using IPNoticeHub.Domain.Entities.Copyrights;
+using IPNoticeHub.Domain.Entities.Identity;
 using IPNoticeHub.Shared.Enums;
+using IPNoticeHub.Infrastructure.Persistence;
+using IPNoticeHub.Infrastructure.Identity;
 
 namespace IPNoticeHub.Tests.TestUtilities
 {

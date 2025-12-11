@@ -1,17 +1,16 @@
-﻿using IPNoticeHub.Data.Repositories.Application.Implementations;
-using IPNoticeHub.Data.Repositories.Trademarks.Abstractions;
-using IPNoticeHub.Data.Repositories.Trademarks.Implementations;
-using IPNoticeHub.Application.TrademarkSearch.Abstractions;
-using IPNoticeHub.Application.TrademarkSearch.Implementations;
-using IPNoticeHub.Application.PdfGeneration.Abstractions;
-using IPNoticeHub.Application.PdfGeneration.Implementations;
+﻿using IPNoticeHub.Application.Repositories.TrademarkRepository;
 using IPNoticeHub.Application.Trademarks.Abstractions;
-using IPNoticeHub.Application.Trademarks.Implementations;
-using IPNoticeHub.Application.Watchlist.Abstractions;
-using IPNoticeHub.Application.Watchlist.Implementations;
-using IPNoticeHub.Data.Repositories.Watchlist.Abstractions;
-using IPNoticeHub.Data.Repositories.Watchlist.Implementations;
-using IPNoticeHub.Data.Repositories.TrademarkSearch.Abstractions;
+using IPNoticeHub.Infrastructure.Persistence.Repositories.TrademarkRepository;
+using IPNoticeHub.Infrastructure.Persistence.Repositories.WatchlistRepository;
+using IPNoticeHub.Application.Repositories.WatchlistRepository;
+using IPNoticeHub.Application.Services.PdfGenerationService.Abstractions;
+using IPNoticeHub.Application.Services.PdfGenerationService.Implementations;
+using IPNoticeHub.Application.Services.TrademarkService.Abstractions;
+using IPNoticeHub.Application.Services.TrademarkService.Implementations;
+using IPNoticeHub.Application.Services.TrademarkSearchService.Abstractions;
+using IPNoticeHub.Application.Services.TrademarkSearchService.Implementations;
+using IPNoticeHub.Application.Services.WatchlistService.Abstractions;
+using IPNoticeHub.Application.Services.WatchlistService.Implementations;
 
 namespace IPNoticeHub.Web.Extensions
 {
@@ -26,12 +25,12 @@ namespace IPNoticeHub.Web.Extensions
             services.AddScoped<ITrademarkReadRepository, TrademarkReadRepository>();
             services.AddScoped<ITrademarkStatusSnapshotRepository, TrademarkStatusSnapshotRepository>();
             services.AddScoped<IUserTrademarkRepository, UserTrademarkRepository>();
-            services.AddScoped<IUserTrademarkWatchlistRepository, UserTrademarkWatchlistRepository>();
+            services.AddScoped<IWatchlistRepository, WatchlistRepository>();
 
             services.AddScoped<ITrademarkCollectionService, TrademarkCollectionService>();
             services.AddScoped<ITrademarkSearchQueryService, TrademarkSearchQueryService>();
             services.AddScoped<ITrademarkSearchService, TrademarkSearchService>();
-            services.AddScoped<ITrademarkWatchlistService, TrademarkWatchlistService>();
+            services.AddScoped<IWatchlistService, WatchlistService>();
 
             return services;
         }

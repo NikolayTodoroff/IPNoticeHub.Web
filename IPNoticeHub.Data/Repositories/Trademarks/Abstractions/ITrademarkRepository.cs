@@ -1,4 +1,4 @@
-﻿using IPNoticeHub.Data.Entities.TrademarkRegistration;
+﻿using IPNoticeHub.Domain.Entities.TrademarkRegistration;
 
 namespace IPNoticeHub.Data.Repositories.Trademarks.Abstractions
 {

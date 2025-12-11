@@ -1,4 +1,4 @@
-﻿using IPNoticeHub.Data.Seed;
+﻿using IPNoticeHub.Infrastructure.Identity;
 
 namespace IPNoticeHub.Web.Extensions
 {

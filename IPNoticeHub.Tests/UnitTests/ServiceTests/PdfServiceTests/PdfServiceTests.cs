@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
-using IPNoticeHub.Application.PdfGeneration.Abstractions;
-using IPNoticeHub.Application.PdfGeneration.Implementations;
+using IPNoticeHub.Application.Services.PdfGenerationService.Abstractions;
+using IPNoticeHub.Application.Services.PdfGenerationService.Implementations;
 using NUnit.Framework;
 using QuestPDF.Infrastructure;
 
@@ -31,10 +31,14 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.PdfServiceTests
                 BodyTemplate: "Hello {{RecipientName}}, {{WorkTitle}} {{RegistrationNumber}}. Regards, {{SenderName}}"
             );
 
-            var pdf = pdfService.GenerateTrademarkCeaseDesistAsync(ceaseDesistInput).Result;
+            var pdf = 
+                pdfService.GenerateTrademarkCeaseDesistAsync(ceaseDesistInput).Result;
 
-            pdf.Should().NotBeNull();
-            pdf.Length.Should().BeGreaterThan(1000);
+            pdf.Should().
+                NotBeNull();
+
+            pdf.Length.Should().
+                BeGreaterThan(1000);
         }
 
         [Test]
@@ -62,9 +66,14 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.PdfServiceTests
                 "The infringing URL is {{InfringingUrl}}.\n\n{{GoodFaithStatement}}\n\n{{SenderAddress}}"
                 );
 
-            var pdf = pdfService.GenerateCopyrightDMCAAsync(dmcaInput).Result;
-            pdf.Should().NotBeNull();
-            pdf.Length.Should().BeGreaterThan(1000);
+            var pdf = 
+                pdfService.GenerateCopyrightDMCAAsync(dmcaInput).Result;
+
+            pdf.Should().
+                NotBeNull();
+
+            pdf.Length.Should().
+                BeGreaterThan(1000);
         }
 
         [Test]
@@ -86,8 +95,12 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.PdfServiceTests
                 );
 
             var pdf = pdfService.GenerateCopyrightCeaseDesistAsync(ceaseDesistInput).Result;
-            pdf.Should().NotBeNull();
-            pdf.Length.Should().BeGreaterThan(1000);
+
+            pdf.Should().
+                NotBeNull();
+
+            pdf.Length.Should().
+                BeGreaterThan(1000);
         }
 
         [Test]
@@ -107,7 +120,8 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.PdfServiceTests
                 WorkTitle: "WorkTitle1",
                 RegistrationNumber: "TM-111",
                 AdditionalFacts: null,
-                BodyTemplate: "Single paragraph with {{WorkTitle}} and {{RegistrationNumber}}. {{SenderName}}"
+                BodyTemplate: "Single paragraph with {{WorkTitle}} and " +
+                "{{RegistrationNumber}}. {{SenderName}}"
             );
 
             var multiParagraphs = new CeaseDesistInput(
@@ -122,11 +136,17 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.PdfServiceTests
                 BodyTemplate: baseTemplate
             );
 
-            var pdf1 = pdfService.GenerateTrademarkCeaseDesistAsync(oneParagraph).Result;
-            var pdf2 = pdfService.GenerateTrademarkCeaseDesistAsync(multiParagraphs).Result;
+            var pdf1 = 
+                pdfService.GenerateTrademarkCeaseDesistAsync(oneParagraph).Result;
 
-            pdf1.Length.Should().BeGreaterThan(900);
-            pdf2.Length.Should().BeGreaterThan(pdf1.Length);
+            var pdf2 = 
+                pdfService.GenerateTrademarkCeaseDesistAsync(multiParagraphs).Result;
+
+            pdf1.Length.Should().
+                BeGreaterThan(900);
+
+            pdf2.Length.Should().
+                BeGreaterThan(pdf1.Length);
         }
 
         [Test]
@@ -144,13 +164,17 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.PdfServiceTests
                 RegistrationNumber: "REG-č-ñ-©-™",
                 AdditionalFacts: "Δοκιμή · Тест · اختبار",
                 BodyTemplate:
-                    "Hello {{RecipientName}},\n\n«{{WorkTitle}}» ({{RegistrationNumber}})\n— Sender: {{SenderName}}\n— Address: {{SenderAddress}}\n\nRegards."
+                    "Hello {{RecipientName}},\n\n«{{WorkTitle}}» ({{RegistrationNumber}})\n— " +
+                    "Sender: {{SenderName}}\n— Address: {{SenderAddress}}\n\nRegards."
             );
 
             var pdf = pdfService.GenerateTrademarkCeaseDesistAsync(input).Result;
 
-            pdf.Should().NotBeNull();
-            pdf.Length.Should().BeGreaterThan(1000);
+            pdf.Should().
+                NotBeNull();
+
+            pdf.Length.Should().
+                BeGreaterThan(1000);
         }
 
         [Test]
@@ -173,8 +197,11 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.PdfServiceTests
 
             var pdf = pdfService.GenerateTrademarkCeaseDesistAsync(input).Result;
 
-            pdf.Should().NotBeNull();
-            pdf.Length.Should().BeGreaterThan(1000);
+            pdf.Should().
+                NotBeNull();
+
+            pdf.Length.Should().
+                BeGreaterThan(1000);
         }
     }
 }

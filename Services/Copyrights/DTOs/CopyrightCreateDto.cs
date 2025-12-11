@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using static IPNoticeHub.Shared.Constants.ValidationConstants.CopyrightRegistrationConstants;
 
-namespace IPNoticeHub.Services.Copyrights.DTOs
+namespace IPNoticeHub.Application.Copyrights.DTOs
 {
     public class CopyrightCreateDto
     {

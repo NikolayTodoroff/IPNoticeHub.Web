@@ -1,9 +1,8 @@
 ﻿using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Web.Extensions;
-using IPNoticeHub.Application.DocumentLibrary.Abstractions;
-using IPNoticeHub.Web.Infrastructure.Mappings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using IPNoticeHub.Application.Services.DocumentLibraryService.Abstractions;
 namespace IPNoticeHub.Web.Controllers
 {
     public class DocumentLibraryController : Controller
@@ -24,7 +23,8 @@ namespace IPNoticeHub.Web.Controllers
         {
             if (!User.TryGetUserId(out var userId)) return Forbid();
 
-            var documents = await documentService.GetUserDocumentsAsync(
+            var documents = 
+                await documentService.GetUserDocumentsAsync(
                 userId,
                 sourceType,
                 templateType,
@@ -41,7 +41,8 @@ namespace IPNoticeHub.Web.Controllers
         {
             if (!User.TryGetUserId(out var userId)) return Forbid();
 
-            var document = await documentService.GetSingleDocumentByIdAsync(
+            var document = 
+                await documentService.GetSingleDocumentByIdAsync(
                 id, 
                 userId, 
                 cancellationToken);
@@ -53,7 +54,7 @@ namespace IPNoticeHub.Web.Controllers
                 return RedirectToAction(
                     actionName: "RecoverCeaseDesist",
                     controllerName: "TrademarkCad",
-                    routeValues: new { documentId = document.Id });
+                    routeValues: new { documentId = document.LegalDocumentId });
             }
 
             if (document.SourceType == DocumentSourceType.Copyright &&
@@ -62,7 +63,7 @@ namespace IPNoticeHub.Web.Controllers
                 return RedirectToAction(
                     actionName: "RecoverCeaseDesist",
                     controllerName: "CopyrightCad",
-                    routeValues: new { documentId = document.Id });
+                    routeValues: new { documentId = document.LegalDocumentId });
             }
 
             if (document.SourceType == DocumentSourceType.Copyright &&
@@ -71,7 +72,7 @@ namespace IPNoticeHub.Web.Controllers
                 return RedirectToAction(
                     actionName: "RecoverDmca",
                     controllerName: "CopyrightDmca",
-                    routeValues: new { documentId = document.Id });
+                    routeValues: new { documentId = document.LegalDocumentId });
             }
 
             return BadRequest("Unsupported document type.");
@@ -91,7 +92,11 @@ namespace IPNoticeHub.Web.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            await documentService.RenameDocumentAsync(id, userId, newTitle, cancellationToken);
+            await documentService.RenameDocumentAsync(
+                id, 
+                userId, 
+                newTitle, 
+                cancellationToken);
 
             return RedirectToAction(nameof(Index));
         }
@@ -119,7 +124,8 @@ namespace IPNoticeHub.Web.Controllers
         {
             if (!User.TryGetUserId(out var userId)) return Forbid();
 
-            var restoredFile = await documentService.RestoreDocumentSnapshotAsync(
+            var restoredFile = 
+                await documentService.RestoreDocumentSnapshotAsync(
                 id, 
                 userId, 
                 cancellationToken);

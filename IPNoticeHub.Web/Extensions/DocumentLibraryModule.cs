@@ -1,7 +1,7 @@
-﻿using IPNoticeHub.Data.Repositories.DocumentLibrary.Abstractions;
-using IPNoticeHub.Data.Repositories.DocumentLibrary.Implementations;
-using IPNoticeHub.Application.DocumentLibrary.Abstractions;
-using IPNoticeHub.Application.DocumentLibrary.Implementations;
+﻿using IPNoticeHub.Infrastructure.Persistence.Repositories.DocumentLibraryRepository;
+using IPNoticeHub.Application.Repositories.DocumentLibraryRepository;
+using IPNoticeHub.Application.Services.DocumentLibraryService.Abstractions;
+using IPNoticeHub.Application.Services.DocumentLibraryService.Implementations;
 
 namespace IPNoticeHub.Web.Extensions
 {

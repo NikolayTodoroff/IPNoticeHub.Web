@@ -1,13 +1,13 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Shared.Enums;
-using IPNoticeHub.Data;
-using IPNoticeHub.Application.TrademarkSearch.DTOs;
-using IPNoticeHub.Application.TrademarkSearch.Implementations;
+using IPNoticeHub.Application.DTOs.TrademarkDTOs;
 using IPNoticeHub.Tests.TestUtilities;
 using NUnit.Framework;
 using static IPNoticeHub.Shared.Constants.PagingConstants.DefaultPagingConstants;
 using IPNoticeHub.Tests.UnitTests.TestUtilities;
-using IPNoticeHub.Data.Repositories.TrademarkSearch.Abstractions;
+using IPNoticeHub.Application.Repositories.TrademarkRepository;
+using IPNoticeHub.Infrastructure.Persistence;
+using IPNoticeHub.Application.Services.TrademarkSearchService.Implementations;
 
 namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.TrademarkSearchQueryServiceTests
 {

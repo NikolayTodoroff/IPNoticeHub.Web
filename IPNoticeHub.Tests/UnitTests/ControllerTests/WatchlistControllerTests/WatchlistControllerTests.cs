@@ -1,8 +1,7 @@
 ﻿using FluentAssertions;
-using IPNoticeHub.Application.Watchlist.DTOs;
+using IPNoticeHub.Application.DTOs.WatchlistDTOs;
 using IPNoticeHub.Tests.UnitTests.UnitTestUtilities;
 using IPNoticeHub.Web.Controllers;
-using IPNoticeHub.Web.Models.TrademarkSearch;
 using IPNoticeHub.Web.Models.Watchlist;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -16,12 +15,14 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.WatchlistControllerTests
         [Test]
         public async Task Index_WhenUserIsPresent_ReturnsViewWithModel()
         {
-            var (controller, watchlistService, _) =
-                TestWatchlistControllerFactory.CreateWatchlistController(userExists: true);
+            var (controller,
+                watchlistService, _) =
+                TestWatchlistControllerFactory.
+                CreateWatchlistController(userExists: true);
 
-            var items = new List<TrademarkWatchlistItemDto>
+            var items = new List<WatchlistItemDto>
             {
-                new TrademarkWatchlistItemDto
+                new WatchlistItemDto
                 {
                     Id = 101,
                     RegistrationNumber = "RN-101",
@@ -36,7 +37,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.WatchlistControllerTests
                 It.IsAny<CancellationToken>())).
                 ReturnsAsync(items);
 
-            var actionResult = await controller.Index(CancellationToken.None);
+            var actionResult = 
+                await controller.Index(CancellationToken.None);
 
             var resultView = actionResult as ViewResult;
 
@@ -49,7 +51,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.WatchlistControllerTests
             resultView.Model.Should().
                 BeOfType<WatchlistIndexViewModel>();
 
-            var indexViewModel = (WatchlistIndexViewModel)resultView.Model!;
+            var indexViewModel = 
+                (WatchlistIndexViewModel)resultView.Model!;
 
             indexViewModel.Items.Should().
                 HaveCount(1);
@@ -68,8 +71,11 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.WatchlistControllerTests
         [Test]
         public async Task Index_WithoutUser_ReturnsUnauthorized()
         {
-            var (controller, watchlistService, httpContext) =
-                TestWatchlistControllerFactory.CreateWatchlistController(userExists: false);
+            var (controller, 
+                watchlistService, 
+                httpContext) =
+                TestWatchlistControllerFactory.
+                CreateWatchlistController(userExists: false);
 
             var actionResult = await controller.Index(CancellationToken.None);
 
@@ -97,7 +103,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.WatchlistControllerTests
                 "user-1", 
                 trademarkId, 
                 It.IsAny<CancellationToken>())).
-                Returns(Task.CompletedTask);
+                ReturnsAsync(Task.CompletedTask);
 
             var actionResult = await controller.Add(
                 trademarkId, 
@@ -133,8 +139,10 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.WatchlistControllerTests
         [Test]
         public async Task Add_WhenAlreadyExists_SetsInfoTempData_AndDoesNotCallAdd_RedirectsToIndex()
         {
-            var (controller, watchlistService, _) = 
-                TestWatchlistControllerFactory.CreateWatchlistController(userExists: true);
+            var (controller,
+                watchlistService, _) = 
+                TestWatchlistControllerFactory.
+                CreateWatchlistController(userExists: true);
 
             const int trademarkId = 456;
 
@@ -151,7 +159,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.WatchlistControllerTests
 
             actionResult.Should().
                 BeOfType<RedirectToActionResult>().
-                Which.ActionName.Should().Be(nameof(WatchlistController.Index));
+                Which.ActionName.Should().
+                Be(nameof(WatchlistController.Index));
 
             controller.TempData["InfoMessage"].Should().
                 NotBeNull();
@@ -174,8 +183,10 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.WatchlistControllerTests
         [Test]
         public async Task Remove_SetsSuccessTempData_AndRedirects()
         {
-            var (controller, watchlistService, _) =
-                TestWatchlistControllerFactory.CreateWatchlistController(userExists: true);
+            var (controller, 
+                watchlistService, _) =
+                TestWatchlistControllerFactory.
+                CreateWatchlistController(userExists: true);
 
             const int trademarkId = 222;
             var returnUrl = "/Watchlist/Index?page=4";
@@ -184,7 +195,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.WatchlistControllerTests
                 "user-1", 
                 trademarkId, 
                 It.IsAny<CancellationToken>())).
-                Returns(Task.CompletedTask);
+                ReturnsAsync(Task.CompletedTask);
 
             var actionResult = await controller.Remove(
                 trademarkId, 
@@ -193,7 +204,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.WatchlistControllerTests
 
             actionResult.Should().
                 BeOfType<LocalRedirectResult>().
-                Which.Url.Should().Be(returnUrl);
+                Which.Url.Should().
+                Be(returnUrl);
 
             controller.TempData["SuccessMessage"]!.ToString().Should().
                 Contain("removed from your watchlist");
@@ -210,8 +222,10 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.WatchlistControllerTests
         [Test]
         public async Task ToggleNotifications_Enable_SetsEnabledMessage_AndRedirects()
         {
-            var (controller, watchlistService, _) =
-                TestWatchlistControllerFactory.CreateWatchlistController(userExists: true);
+            var (controller, 
+                watchlistService, _) =
+                TestWatchlistControllerFactory.
+                CreateWatchlistController(userExists: true);
 
             const int trademarkId = 333;
             var returnUrl = "/Watchlist/Index?page=3";
@@ -221,9 +235,10 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.WatchlistControllerTests
                 trademarkId, 
                 true, 
                 It.IsAny<CancellationToken>())).
-                Returns(Task.CompletedTask);
+                ReturnsAsync(Task.CompletedTask);
 
-            var actionResult = await controller.ToggleNotifications(
+            var actionResult = 
+                await controller.ToggleNotifications(
                 trademarkId, 
                 true, returnUrl, 
                 CancellationToken.None);
@@ -248,8 +263,10 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.WatchlistControllerTests
         [Test]
         public async Task ToggleNotifications_Disable_SetsDisabledMessage_AndRedirects()
         {
-            var (controller, watchlistService, _) =
-                TestWatchlistControllerFactory.CreateWatchlistController(userExists: true);
+            var (controller, 
+                watchlistService, _) =
+                TestWatchlistControllerFactory.
+                CreateWatchlistController(userExists: true);
 
             const int trademarkId = 444;
             var returnUrl = "/Watchlist/Index?page=1";
@@ -259,7 +276,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.WatchlistControllerTests
                 trademarkId, 
                 false, 
                 It.IsAny<CancellationToken>())).
-                Returns(Task.CompletedTask);
+                ReturnsAsync(Task.CompletedTask);
 
             var actionResult = await controller.ToggleNotifications(
                 trademarkId, 
@@ -267,7 +284,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.WatchlistControllerTests
                 returnUrl,
                 CancellationToken.None);
 
-            actionResult.Should().BeOfType<LocalRedirectResult>().Which.Url.Should().
+            actionResult.Should().
+                BeOfType<LocalRedirectResult>().Which.Url.Should().
                 Be(returnUrl);
 
             controller.TempData["SuccessMessage"]!.ToString().Should().
@@ -286,8 +304,10 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.WatchlistControllerTests
         [Test]
         public async Task ToggleNotifications_OnFailure_SetsError_AndRedirects()
         {
-            var (controller, watchlistService, _) =
-                TestWatchlistControllerFactory.CreateWatchlistController(userExists: true);
+            var (controller, 
+                watchlistService, _) =
+                TestWatchlistControllerFactory.
+                CreateWatchlistController(userExists: true);
 
             const int trademarkId = 555;
             var returnUrl = "/Watchlist/Index?page=2";
@@ -299,13 +319,15 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.WatchlistControllerTests
                 It.IsAny<CancellationToken>())).
                 ThrowsAsync(new Exception("boom"));
 
-            var result = await controller.ToggleNotifications(
+            var result = 
+                await controller.ToggleNotifications(
                 trademarkId, 
                 enabled: true, 
                 returnUrl: returnUrl, 
                 CancellationToken.None);
 
-            result.Should().BeOfType<LocalRedirectResult>().Which.Url.Should().
+            result.Should().BeOfType<LocalRedirectResult>().
+                Which.Url.Should().
                 Be(returnUrl);
 
             controller.TempData["ErrorMessage"]!.ToString().Should().
@@ -324,8 +346,10 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.WatchlistControllerTests
         [Test]
         public async Task Add_OnFailure_SetsErrorTempData_AndRedirects()
         {
-            var (controller, watchlistService, _) =
-                TestWatchlistControllerFactory.CreateWatchlistController(userExists: true);
+            var (controller, 
+                watchlistService, _) =
+                TestWatchlistControllerFactory.
+                CreateWatchlistController(userExists: true);
 
             const int trademarkId = 123;
 
@@ -341,7 +365,10 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.WatchlistControllerTests
                 It.IsAny<CancellationToken>())).
                 ThrowsAsync(new InvalidOperationException("boom"));
 
-            var actionResult = await controller.Add(trademarkId, returnUrl: null, CancellationToken.None);
+            var actionResult = await controller.Add(
+                trademarkId, 
+                returnUrl: null, 
+                CancellationToken.None);
 
             var redirectResult = actionResult.Should().
                 BeOfType<RedirectToActionResult>().Subject;
@@ -374,12 +401,17 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.WatchlistControllerTests
         public async Task Add_WhenDuplicate_SetsInfoTempData_AndRedirectsBackToReturnUrl()
         {
             const int trademarkId = 456;
-            const string returnUrl = "/Trademarks/Details/00000000-0000-0000-0000-000000000001";
+            const string returnUrl = 
+                "/Trademarks/Details/00000000-0000-0000-0000-000000000001";
 
-            var (controller, watchListService, _) =
-                TestWatchlistControllerFactory.CreateWatchlistController(userExists: true);
+            var (controller, 
+                watchListService, _) =
+                TestWatchlistControllerFactory.
+                CreateWatchlistController(userExists: true);
 
-            controller.ConfigureUrlHelper(returnUrl: returnUrl, isLocal: true);
+            controller.ConfigureUrlHelper(
+                returnUrl: returnUrl, 
+                isLocal: true);
 
             watchListService.Setup(s => s.ExistsAsync(
                 "user-1", 

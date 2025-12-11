@@ -2,17 +2,11 @@
 using NUnit.Framework;
 using IPNoticeHub.Tests.TestUtilities;
 using IPNoticeHub.Shared.Enums;
-using IPNoticeHub.Data.Repositories.Trademarks.Implementations;
+using IPNoticeHub.Infrastructure.Persistence.Repositories.TrademarkRepository;
 
 namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.UserTrademarkRepositoryTests
 {
-    /// <summary>
-    /// Section: IsLinkedAsync checks (active vs soft-deleted vs missing)
-    /// Validate membership queries respecting soft-delete:
-    /// - Returns false when no link exists
-    /// - Returns true when an active link exists
-    /// - Returns false by default when link is soft-deleted, and true when includeSoftDeleted=true
-    /// </summary>
+
     [TestFixture]
     public class UserTmRepoIsLinkedTests
     {

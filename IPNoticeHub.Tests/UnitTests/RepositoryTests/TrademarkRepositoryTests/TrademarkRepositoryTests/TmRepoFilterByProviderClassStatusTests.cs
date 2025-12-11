@@ -1,29 +1,25 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Shared.Enums;
-using IPNoticeHub.Data;
-using IPNoticeHub.Data.Entities.TrademarkRegistration;
-using IPNoticeHub.Data.Repositories.Trademarks.Abstractions;
-using IPNoticeHub.Data.Repositories.Trademarks.Implementations;
+using IPNoticeHub.Domain.Entities.Trademarks;
 using IPNoticeHub.Tests.TestUtilities;
 using NUnit.Framework;
+using IPNoticeHub.Infrastructure.Persistence;
+using IPNoticeHub.Application.DTOs.TrademarkDTOs;
+using IPNoticeHub.Infrastructure.Persistence.Repositories.TrademarkRepository;
 
 namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkRepositoryTests
 {
     [TestFixture]
     public class TmRepoFilterByProviderClassStatusTests
     {
-        /// <summary>
-        /// Section: Provider, Class, and Status filtering with navigation properties
-        /// Validates that the repository correctly filters trademarks based on the specified provider, status, and class numbers.
-        /// Ensures that navigation properties are included when requested.
-        /// Verifies that only trademarks matching all criteria are returned, and navigation properties are populated.
-        /// </summary>
         [Test]
         public void QueryRepository_FilterByProvider_Class_Status_And_Includes_Nav()
         {
-            using IPNoticeHubDbContext? testDbContext = InMemoryDbContextFactory.CreateTestDbContext();
+            using IPNoticeHubDbContext? testDbContext = 
+                InMemoryDbContextFactory.CreateTestDbContext();
 
-            var (matchingTrademark, _) = InMemoryDbContextFactory.CreateTrademark(
+            var (matchingTrademark, _) = 
+                InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "ALPHA",
                 owner: "OwnerA",
                 goodsAndServices: "testGoodsAndSerices",
@@ -34,7 +30,8 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
                 source: DataProvider.USPTO,
                 classNumbers: new[] { 9, 25 });
 
-            var (wrongProviderTrademark, _) = InMemoryDbContextFactory.CreateTrademark(
+            var (wrongProviderTrademark, _) = 
+                InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "BETA",
                 owner: "OwnerB",
                 goodsAndServices: "testGoodsAndSerices",
@@ -45,7 +42,8 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
                 source: DataProvider.EUIPO,
                 classNumbers: new[] { 25 });
 
-            var (wrongStatusTrademark, _) = InMemoryDbContextFactory.CreateTrademark(
+            var (wrongStatusTrademark, _) = 
+                InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "GAMMA",
                 owner: "OwnerC",
                 goodsAndServices: "testGoodsAndSerices",
@@ -56,7 +54,8 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
                 source: DataProvider.USPTO,
                 classNumbers: new[] { 25 });
 
-            var (wrongClassTrademark, _) = InMemoryDbContextFactory.CreateTrademark(
+            var (wrongClassTrademark, _) = 
+                InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "DELTA",
                 owner: "OwnerD",
                 goodsAndServices: "testGoodsAndSerices",
@@ -67,22 +66,34 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
                 source: DataProvider.USPTO,
                 classNumbers: new[] { 30 });
 
-            testDbContext.TrademarkRegistrations.AddRange(matchingTrademark, wrongProviderTrademark, wrongStatusTrademark, wrongClassTrademark);
+            testDbContext.TrademarkRegistrations.AddRange(
+                matchingTrademark, 
+                wrongProviderTrademark, 
+                wrongStatusTrademark, 
+                wrongClassTrademark);
+
             testDbContext.SaveChanges();
 
-            var trademarkRepository = new TrademarkRepository(testDbContext);
+            var trademarkRepository = 
+                new TrademarkRepository(testDbContext);
 
-            TrademarkEntity[]? queryResult = trademarkRepository.Query(new TrademarkSearchFilter()
+            TrademarkEntity[]? queryResult = 
+                trademarkRepository.Query(new TrademarkSearchFilter()
             {
                 Provider = DataProvider.USPTO,
                 Status = TrademarkStatusCategory.Registered,
                 ClassNumbers = new[] { 25 }
-            }, includeNav: true).ToArray();
+            }, includeNav: true).
+            ToArray();
 
-            queryResult.Select(r => r.Wordmark).Should().Equal("ALPHA");
+            queryResult.Select(r => r.Wordmark).Should().
+                Equal("ALPHA");
 
-            queryResult.Single().Classes.Should().NotBeNull();
-            queryResult.Single().Classes.Should().Contain(c => c.ClassNumber == 25);
+            queryResult.Single().Classes.Should().
+                NotBeNull();
+
+            queryResult.Single().Classes.Should().
+                Contain(c => c.ClassNumber == 25);
         }
     }
 }
