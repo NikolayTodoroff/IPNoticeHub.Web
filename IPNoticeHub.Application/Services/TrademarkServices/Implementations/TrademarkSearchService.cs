@@ -45,8 +45,8 @@ namespace IPNoticeHub.Application.Services.TrademarkService.Implementations
                     ToList(),
                 Events = entity.Events.
                     OrderByDescending(e => e.EventDate).
-                        Select(e => (e.EventDate, e.Code, e.Description)).
-                        ToList()
+                    Select(e => (e.EventDate, e.Code, e.Description)).
+                    ToList()
             };
         }
 
@@ -56,6 +56,8 @@ namespace IPNoticeHub.Application.Services.TrademarkService.Implementations
             int resultsPerPage, 
             CancellationToken cancellationToken = default)
         {
+
+
             var (normalizedPage, normalizedPageSize) = 
                 PagingConfiguration.NormalizePaging(
                     currentPage, 

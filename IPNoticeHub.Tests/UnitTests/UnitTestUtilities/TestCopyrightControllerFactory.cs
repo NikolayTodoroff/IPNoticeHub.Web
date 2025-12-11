@@ -12,9 +12,6 @@ namespace IPNoticeHub.Tests.UnitTests.TestUtilities
 {
     public static class TestCopyrightControllerFactory
     {
-        /// <summary>
-        /// Creates a CopyrightsController with optional user, TempData, and UrlHelper.
-        /// </summary>
         public static CopyrightsController CreateController(
             ICopyrightService? service = null,
             string? userId = "u1",

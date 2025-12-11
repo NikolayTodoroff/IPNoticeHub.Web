@@ -143,54 +143,23 @@ namespace IPNoticeHub.Application.Services.CopyrightService.Implementations
             };
         }
 
-        public async Task<PagedResult<CopyrightSingleItemDto>>GetUserCollectionAsync(
-            string userId, 
-            CollectionSortBy sortBy, 
-            int page, int resultsPerPage, 
+        public async Task<PagedResult<CopyrightSingleItemDto>> GetUserCollectionAsync(
+            string userId,
+            CollectionSortBy sortBy,
+            int page,
+            int resultsPerPage,
             CancellationToken cancellationToken = default)
         {
-            var (normalizedPage, normalizedPageSize) = PagingConfiguration.
-                NormalizePaging(page, resultsPerPage);
+            var pageResult = 
+                await userCopyrightRepository.GetUserCollectionPageAsync(
+                userId,
+                sortBy,
+                page,
+                resultsPerPage,
+                cancellationToken);
 
-            IQueryable<UserCopyright>? links = userCopyrightRepository.
-                QueryUserLinks(userId);
-
-            if (sortBy == CollectionSortBy.DateAddedAsc)
-            {
-                links = links.
-                    OrderBy(l => l.DateAdded).
-                    ThenBy(l => l.CopyrightEntityId);
-            }
-
-            else if (sortBy == CollectionSortBy.TitleAsc)
-            {
-                links = links.
-                    OrderBy(l => l.CopyrightEntity.Title).
-                    ThenBy(l => l.CopyrightEntityId);
-            }
-
-            else if (sortBy == CollectionSortBy.TitleDesc)
-            {
-                links = links.
-                    OrderByDescending(l => l.CopyrightEntity.Title).
-                    ThenBy(l => l.CopyrightEntityId);
-            }
-
-            else
-            {
-                links = links.
-                    OrderByDescending(l => l.DateAdded).
-                    ThenBy(l => l.CopyrightEntityId);
-            }
-
-            int resultsCount = await links.
-                AsNoTracking().
-                CountAsync(cancellationToken);
-
-            List<CopyrightSingleItemDto>? results = await links.
-                Skip((normalizedPage - 1) * normalizedPageSize).
-                Take(normalizedPageSize).
-                Select(uc=> new CopyrightSingleItemDto()
+            var mappedResults = pageResult.Results
+                .Select(uc => new CopyrightSingleItemDto
                 {
                     Id = uc.CopyrightEntityId,
                     PublicId = uc.CopyrightEntity.PublicId,
@@ -202,16 +171,17 @@ namespace IPNoticeHub.Application.Services.CopyrightService.Implementations
                     Owner = uc.CopyrightEntity.Owner,
                     DateAdded = uc.DateAdded
                 }).
-                ToListAsync(cancellationToken);
+                ToList();
 
-            return new PagedResult<CopyrightSingleItemDto>()
+            return new PagedResult<CopyrightSingleItemDto>
             {
-                Results = results,
-                ResultsCount = resultsCount,
-                CurrentPage = normalizedPage,
-                ResultsCountPerPage = normalizedPageSize
+                Results = mappedResults,
+                ResultsCount = pageResult.ResultsCount,
+                CurrentPage = pageResult.CurrentPage,
+                ResultsCountPerPage = pageResult.ResultsCountPerPage
             };
         }
+
 
         public async Task<bool>RemoveAsync(
             string userId, 

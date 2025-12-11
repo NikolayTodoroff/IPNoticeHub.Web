@@ -1,5 +1,6 @@
 ﻿using IPNoticeHub.Domain.Entities.Identity;
-using IPNoticeHub.Domain.Entities.Copyrights;
+using IPNoticeHub.Shared.Enums;
+using IPNoticeHub.Shared.Support;
 
 namespace IPNoticeHub.Application.Repositories.CopyrightRepository
 {
@@ -21,10 +22,11 @@ namespace IPNoticeHub.Application.Repositories.CopyrightRepository
             int copyrightId, 
             CancellationToken cancellationToken = default);
 
-        IQueryable<CopyrightEntity> QueryUserCollection(
-            string userId);
-
-        IQueryable<UserCopyright> QueryUserLinks(
-            string userId);
+        Task<PagedResult<UserCopyright>> GetUserCollectionPageAsync(
+            string userId,
+            CollectionSortBy sortBy,
+            int page,
+            int resultsPerPage,
+            CancellationToken cancellationToken = default);
     }
 }

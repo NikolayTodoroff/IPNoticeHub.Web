@@ -1,6 +1,10 @@
-﻿using IPNoticeHub.Domain.Entities.Identity;
-using IPNoticeHub.Domain.Entities.Copyrights;
+﻿using Azure;
+using IPNoticeHub.Application.DTOs.CopyrightDTOs;
 using IPNoticeHub.Application.Repositories.CopyrightRepository;
+using IPNoticeHub.Domain.Entities.Copyrights;
+using IPNoticeHub.Domain.Entities.Identity;
+using IPNoticeHub.Shared.Enums;
+using IPNoticeHub.Shared.Support;
 using Microsoft.EntityFrameworkCore;
 
 namespace IPNoticeHub.Infrastructure.Persistence.Repositories.CopyrightRepository
@@ -68,12 +72,62 @@ namespace IPNoticeHub.Infrastructure.Persistence.Repositories.CopyrightRepositor
                 AnyAsync(cancellationToken);
         }
 
-        public IQueryable<CopyrightEntity> QueryUserCollection(string userId)
+        public async Task<PagedResult<UserCopyright>> GetUserCollectionPageAsync(
+            string userId,
+            CollectionSortBy sortBy,
+            int currentPage,
+            int resultsPerPage,
+            CancellationToken cancellationToken = default)
         {
-            return dbContext.UserCopyrights.Where(
-                uc => uc.ApplicationUserId == userId && !uc.IsDeleted).
-                Select(uc => uc.CopyrightEntity).
+            var (normalizedPage, normalizedPageSize) = 
+                PagingConfiguration.NormalizePaging(currentPage, resultsPerPage);
+
+            IQueryable<UserCopyright> links = dbContext.UserCopyrights.
+                Where(uc => uc.ApplicationUserId == userId && !uc.IsDeleted).
+                Include(uc => uc.CopyrightEntity).
                 AsNoTracking();
+
+            if (sortBy == CollectionSortBy.DateAddedAsc)
+            {
+                links = links.
+                    OrderBy(l => l.DateAdded).
+                    ThenBy(l => l.CopyrightEntityId);
+            }
+
+            else if (sortBy == CollectionSortBy.TitleAsc)
+            {
+                links = links.
+                    OrderBy(l => l.CopyrightEntity.Title).
+                    ThenBy(l => l.CopyrightEntityId);
+            }
+
+            else if (sortBy == CollectionSortBy.TitleDesc)
+            {
+                links = links.
+                    OrderByDescending(l => l.CopyrightEntity.Title).
+                    ThenBy(l => l.CopyrightEntityId);
+            }
+
+            else
+            {
+                links = links.
+                    OrderByDescending(l => l.DateAdded).
+                    ThenBy(l => l.CopyrightEntityId);
+            }
+
+            int resultsCount = await links.CountAsync(cancellationToken);
+
+            List<UserCopyright> pageItems = await links.
+                Skip((normalizedPage - 1) * normalizedPageSize).
+                ToListAsync(cancellationToken);
+
+            return new PagedResult<UserCopyright>
+            {
+                Results = pageItems,
+                ResultsCount = resultsCount,
+                CurrentPage = normalizedPage,
+                ResultsCountPerPage = normalizedPageSize
+            };
         }       
 
         public IQueryable<UserCopyright> QueryUserLinks(string userId)

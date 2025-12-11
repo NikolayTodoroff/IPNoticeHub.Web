@@ -1,8 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using IPNoticeHub.Data;
 using IPNoticeHub.Domain.Entities.Trademarks;
 using IPNoticeHub.Domain.Entities.Copyrights;
-using IPNoticeHub.Domain.Entities.Identity;
 using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Infrastructure.Persistence;
 using IPNoticeHub.Infrastructure.Identity;
@@ -13,7 +11,8 @@ namespace IPNoticeHub.Tests.TestUtilities
     {
         public static IPNoticeHubDbContext CreateTestDbContext(string? dbContextName = null)
         {
-            DbContextOptions<IPNoticeHubDbContext>? options = new DbContextOptionsBuilder<IPNoticeHubDbContext>()
+            DbContextOptions<IPNoticeHubDbContext>? options = 
+                new DbContextOptionsBuilder<IPNoticeHubDbContext>()
                 .UseInMemoryDatabase(dbContextName ?? Guid.NewGuid().ToString())
                 .EnableSensitiveDataLogging()
                 .Options;
@@ -24,10 +23,18 @@ namespace IPNoticeHub.Tests.TestUtilities
             return testDbContext;
         }
 
-        public static (TrademarkEntity trademarkEntity, List<TrademarkClassAssignment> trademarkClasses) CreateTrademark(
-            string wordmark, string owner, string goodsAndServices,string sourceId, string statusDetail, 
-            string? regNumber,TrademarkStatusCategory status = TrademarkStatusCategory.Pending,
-            DataProvider source = DataProvider.USPTO, DateTime? filingDate = null, params int[] classNumbers)
+        public static (TrademarkEntity trademarkEntity, List<TrademarkClassAssignment> trademarkClasses) 
+            CreateTrademark(
+            string wordmark, 
+            string owner, 
+            string goodsAndServices,
+            string sourceId, 
+            string statusDetail, 
+            string? regNumber,
+            TrademarkStatusCategory status = TrademarkStatusCategory.Pending,
+            DataProvider source = DataProvider.USPTO, 
+            DateTime? filingDate = null, 
+            params int[] classNumbers)
         {
             TrademarkEntity? trademarkEntity = new TrademarkEntity
             {               
@@ -43,7 +50,8 @@ namespace IPNoticeHub.Tests.TestUtilities
                 FilingDate = filingDate ?? DateTime.UtcNow.Date
             };
 
-            List<TrademarkClassAssignment>? trademarkClassesList = new List<TrademarkClassAssignment>();
+            List<TrademarkClassAssignment>? trademarkClassesList = 
+                new List<TrademarkClassAssignment>();
 
             foreach (int classNumber in classNumbers ?? Array.Empty<int>())
             {
@@ -79,9 +87,6 @@ namespace IPNoticeHub.Tests.TestUtilities
             };
         }
 
-        /// <summary>
-        /// Creates and returns a test ApplicationUser instance with default test data.
-        /// </summary>
         public static ApplicationUser CreateApplicationUser(string id = "user-1")
         {
             return new ApplicationUser

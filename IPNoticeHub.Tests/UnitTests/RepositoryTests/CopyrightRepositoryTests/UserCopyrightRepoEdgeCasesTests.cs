@@ -1,10 +1,11 @@
 ﻿using FluentAssertions;
-using IPNoticeHub.Infrastructure.Persistence.Repositories.CopyrightRepository;
 using IPNoticeHub.Application.Repositories.CopyrightRepository;
+using IPNoticeHub.Infrastructure.Identity;
+using IPNoticeHub.Infrastructure.Persistence.Repositories.CopyrightRepository;
+using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Tests.TestUtilities;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
-using IPNoticeHub.Infrastructure.Identity;
 
 namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.CopyrightRepositoryTests
 {
@@ -159,17 +160,19 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.CopyrightRepositoryTests
             IUserCopyrightRepository copyrightRepo = 
                 new UserCopyrightRepository(testDbContext);
 
-            (await copyrightRepo.QueryUserCollection("emptyUserId").
-                ToListAsync()).Should().
-                BeEmpty();
+            var pagedResult = await copyrightRepo.GetUserCollectionPageAsync(
+                userId: "emptyUserId",
+                sortBy: CollectionSortBy.DateAddedAsc,
+                page: 1,
+                resultsPerPage: 20,
+                cancellationToken: CancellationToken.None);
 
-            (await copyrightRepo.QueryUserLinks("emptyUserId").
-                ToListAsync()).Should().
-                BeEmpty();
+            pagedResult.Results.Should().BeEmpty();
+            pagedResult.ResultsCount.Should().Be(0);
         }
 
         [Test]
-        public async Task QueryUserCollectionAndLinks_AreIsolatedPerUser()
+        public async Task GetUserCollectionPageAsync_ReturnsOnlyItemsForGivenUser()
         {
             using var testDbContext = InMemoryDbContextFactory.CreateTestDbContext();
 
@@ -204,31 +207,47 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.CopyrightRepositoryTests
             IUserCopyrightRepository copyrightRepo = 
                 new UserCopyrightRepository(testDbContext);
 
-            await copyrightRepo.AddOrUndeleteAsync(
-                user1.Id, 
-                copyrightEntity1.Id);
-            
-            await copyrightRepo.AddOrUndeleteAsync(
-                user2.Id, 
-                copyrightEntity2.Id);
+            await copyrightRepo.AddOrUndeleteAsync(user1.Id, copyrightEntity1.Id); 
+            await copyrightRepo.AddOrUndeleteAsync(user2.Id, copyrightEntity2.Id);
 
-            var user1Copyrights = 
-                await copyrightRepo.QueryUserCollection(user1.Id).
-                Select(x => x.Title).
-                ToListAsync();
-            
-            var user2Copyrights = 
-                await copyrightRepo.QueryUserCollection(user2.Id).
-                Select(x => x.Title).
-                ToListAsync();
+            var user1PagedResult = await copyrightRepo.GetUserCollectionPageAsync(
+                userId: user1.Id,
+                sortBy: CollectionSortBy.DateAddedAsc,
+                page: 1,
+                resultsPerPage: 20,
+                cancellationToken: CancellationToken.None);
 
-            user1Copyrights.Should().
-                ContainSingle("firstCopyright").
-                And.NotContain("secondCopyright");
+            var user2PagedResult = await copyrightRepo.GetUserCollectionPageAsync(
+                userId: user2.Id,
+                sortBy: CollectionSortBy.DateAddedAsc,
+                page: 1,
+                resultsPerPage: 20,
+                cancellationToken: CancellationToken.None);
 
-            user2Copyrights.Should().
-                ContainSingle("secondCopyright").
-                And.NotContain("firstCopyright");
+            var user1Items = user1PagedResult.Results;
+            var user1Count = user1PagedResult.ResultsCount;
+
+            var user2Items = user2PagedResult.Results;
+            var user2Count = user2PagedResult.ResultsCount;
+
+            var user1Titles = user1Items.
+                Select(x => x.CopyrightEntity.Title).
+                ToList();
+
+            var user2Titles = user2Items.
+                Select(x => x.CopyrightEntity.Title).
+                ToList();
+
+            user1Count.Should().Be(1);
+            user2Count.Should().Be(1);
+
+            user1Titles.Should()
+                .ContainSingle("firstCopyright")
+                .And.NotContain("secondCopyright");
+
+            user2Titles.Should()
+                .ContainSingle("secondCopyright")
+                .And.NotContain("firstCopyright");
         }
     }
 }
