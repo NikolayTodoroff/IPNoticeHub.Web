@@ -1,12 +1,11 @@
 ﻿using IPNoticeHub.Domain.Entities.Trademarks;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using static IPNoticeHub.Shared.Constants.
-    ValidationConstants.TrademarkRegistrationConstants;
+using static IPNoticeHub.Shared.Constants.ValidationConstants.TrademarkRegistrationConstants;
 
-namespace IPNoticeHub.Domain.Entities.Identity
+namespace IPNoticeHub.Domain.Entities.Watchlist
 {
-    public sealed class UserTrademarkWatchlist
+    public sealed class Watchlist
     {
         [Key]
         public int Id { get; set; }

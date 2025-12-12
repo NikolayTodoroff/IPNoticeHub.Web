@@ -1,6 +1,5 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Shared.Enums;
-using IPNoticeHub.Domain.Entities.Identity;
 using IPNoticeHub.Tests.IntegrationTests.TestUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,6 +8,7 @@ using System.Net;
 using IPNoticeHub.Infrastructure.Persistence;
 using IPNoticeHub.Domain.Entities.Trademarks;
 using IPNoticeHub.Infrastructure.Identity;
+using IPNoticeHub.Domain.Entities.Watchlist;
 
 
 namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
@@ -120,7 +120,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
                 GetRequiredService<IPNoticeHubDbContext>();
 
             var link = 
-                dbContext.UserTrademarkWatchlists.SingleOrDefault(
+                dbContext.Watchlists.SingleOrDefault(
                     ut => ut.UserId == TestUserId && 
                     ut.TrademarkId == trademarkId);
 
@@ -174,8 +174,8 @@ namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
                 await testDbContext.SaveChangesAsync();
                 trademarkId = tm.Id;
 
-                testDbContext.UserTrademarkWatchlists.Add(
-                    new UserTrademarkWatchlist
+                testDbContext.Watchlists.Add(
+                    new Watchlist
                 {
                     UserId = TestUserId,
                     TrademarkId = trademarkId
@@ -216,7 +216,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
                 GetRequiredService<IPNoticeHubDbContext>();
 
             var links = 
-                dbContext.UserTrademarkWatchlists.Where(
+                dbContext.Watchlists.Where(
                     ut => ut.UserId == TestUserId && 
                     ut.TrademarkId == trademarkId).
                     ToList();
@@ -264,8 +264,8 @@ namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
                 await testDbContext.SaveChangesAsync();
                 trademarkId = entity.Id;
 
-                testDbContext.UserTrademarkWatchlists.Add(
-                    new UserTrademarkWatchlist
+                testDbContext.Watchlists.Add(
+                    new Watchlist
                 {
                     UserId = TestUserId,
                     TrademarkId = trademarkId,
@@ -298,7 +298,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
                     verifyScope.ServiceProvider.
                     GetRequiredService<IPNoticeHubDbContext>();
 
-                var link = await dbContext.UserTrademarkWatchlists.
+                var link = await dbContext.Watchlists.
                     IgnoreQueryFilters().
                     SingleOrDefaultAsync(
                     ut => ut.UserId == TestUserId && 
@@ -350,7 +350,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
                 trademarkId = entity.Id;
             }
 
-            async Task<UserTrademarkWatchlist?> ReadLinkAsync()
+            async Task<Watchlist?> ReadLinkAsync()
             {
                 using var scope = appFactory.Services.CreateScope();
 
@@ -358,7 +358,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
                     scope.ServiceProvider.
                     GetRequiredService<IPNoticeHubDbContext>();
 
-                return await dbContext.UserTrademarkWatchlists.
+                return await dbContext.Watchlists.
                     AsNoTracking().
                     FirstOrDefaultAsync(
                     ut => ut.UserId == userId && 

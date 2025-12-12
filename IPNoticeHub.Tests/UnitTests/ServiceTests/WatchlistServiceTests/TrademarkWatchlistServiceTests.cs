@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using IPNoticeHub.Domain.Entities.Identity;
 using IPNoticeHub.Domain.Entities.Trademarks;
 using IPNoticeHub.Application.Repositories.TrademarkRepository;
 using IPNoticeHub.Application.Repositories.WatchlistRepository;
@@ -7,6 +6,7 @@ using IPNoticeHub.Application.Services.WatchlistService.Implementations;
 using Moq;
 using NUnit.Framework;
 using IPNoticeHub.Application.Services.WatchlistService.Abstractions;
+using IPNoticeHub.Domain.Entities.Watchlist;
 
 namespace IPNoticeHub.Tests.UnitTests.ServiceTests.WatchlistServiceTests
 {
@@ -231,7 +231,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.WatchlistServiceTests
                     700)).
                     Returns("Registered");
 
-            var linkA = new UserTrademarkWatchlist
+            var linkA = new Watchlist
             {
                 UserId = userId,
                 TrademarkId = 101,
@@ -265,7 +265,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.WatchlistServiceTests
                 }
             };
 
-            var linkB = new UserTrademarkWatchlist
+            var linkB = new Watchlist
             {
                 UserId = userId,
                 TrademarkId = 202,
@@ -305,7 +305,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.WatchlistServiceTests
                     0, 
                     200, 
                     It.IsAny<CancellationToken>())).
-                ReturnsAsync(new List<UserTrademarkWatchlist> { linkA, linkB });
+                ReturnsAsync(new List<Watchlist> { linkA, linkB });
 
             var watchlistService = 
                 new WatchlistService(
@@ -401,7 +401,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.WatchlistServiceTests
             var statusLabels = 
                 new Mock<IStatusLabelProvider>(MockBehavior.Strict);
 
-            var linkA = new UserTrademarkWatchlist
+            var linkA = new Watchlist
             {
                 UserId = userId,
                 TrademarkId = 11,
@@ -419,7 +419,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.WatchlistServiceTests
                 }
             };
 
-            var linkB = new UserTrademarkWatchlist
+            var linkB = new Watchlist
             {
                 UserId = userId,
                 TrademarkId = 22,
@@ -443,7 +443,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.WatchlistServiceTests
                     0, 
                     200, 
                     It.IsAny<CancellationToken>())).
-                ReturnsAsync(new List<UserTrademarkWatchlist> { linkA, linkB });
+                ReturnsAsync(new List<Watchlist> { linkA, linkB });
 
             var watchlistService = 
                 new WatchlistService(

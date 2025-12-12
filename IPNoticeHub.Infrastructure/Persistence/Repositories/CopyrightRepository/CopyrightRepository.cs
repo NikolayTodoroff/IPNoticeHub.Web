@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using IPNoticeHub.Domain.Entities.Copyrights;
 using IPNoticeHub.Application.Repositories.CopyrightRepository;
-using IPNoticeHub.Data;
 
 namespace IPNoticeHub.Infrastructure.Persistence.Repositories.CopyrightRepository;
 

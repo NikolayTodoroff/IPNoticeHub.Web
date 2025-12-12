@@ -5,7 +5,8 @@ using IPNoticeHub.Domain.Entities.Copyrights;
 using IPNoticeHub.Domain.Entities.Identity;
 using IPNoticeHub.Domain.Entities.LegalDocuments;
 using IPNoticeHub.Domain.Entities.Trademarks;
-
+using IPNoticeHub.Infrastructure.Persistence.Seeding;
+using IPNoticeHub.Domain.Entities.Watchlist;
 
 namespace IPNoticeHub.Infrastructure.Persistence
 {
@@ -19,7 +20,7 @@ namespace IPNoticeHub.Infrastructure.Persistence
         public DbSet<CopyrightEntity> CopyrightRegistrations { get; set; }
         public DbSet<UserTrademark> UserTrademarks { get; set; }
         public DbSet<UserCopyright> UserCopyrights { get; set; }
-        public DbSet<UserTrademarkWatchlist> UserTrademarkWatchlists { get; set; }
+        public DbSet<Watchlist> Watchlists { get; set; }
         public DbSet<LegalDocument> LegalDocuments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -28,7 +29,7 @@ namespace IPNoticeHub.Infrastructure.Persistence
 
             builder.ApplyConfigurationsFromAssembly(typeof(IPNoticeHubDbContext).Assembly);
 
-            //Seed.FakeDataSeeder.Seed(builder);
+            //FakeDataSeeder.Seed(builder);
         }
     }
 }

@@ -1,12 +1,12 @@
-﻿using IPNoticeHub.Domain.Entities.Identity;
+﻿using IPNoticeHub.Domain.Entities.Watchlist;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace IPNoticeHub.Infrastructure.Persistence.Configurations
 {
-    public sealed class WatchlistConfig : IEntityTypeConfiguration<UserTrademarkWatchlist>
+    public sealed class WatchlistConfig : IEntityTypeConfiguration<Watchlist>
     {
-        public void Configure(EntityTypeBuilder<UserTrademarkWatchlist> builder)
+        public void Configure(EntityTypeBuilder<Watchlist> builder)
         {
             builder.Property(x => x.NotificationsEnabled).
                 HasDefaultValue(false);

@@ -1,6 +1,4 @@
-﻿using IPNoticeHub.Data;
-using IPNoticeHub.Domain.Entities.Identity;
-using IPNoticeHub.Domain.Entities.Copyrights;
+﻿using IPNoticeHub.Domain.Entities.Copyrights;
 using IPNoticeHub.Infrastructure.Persistence;
 using IPNoticeHub.Infrastructure.Identity;
 

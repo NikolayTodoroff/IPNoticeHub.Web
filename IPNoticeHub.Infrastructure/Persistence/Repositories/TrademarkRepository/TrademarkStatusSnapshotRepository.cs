@@ -1,5 +1,4 @@
 ﻿using IPNoticeHub.Application.Repositories.TrademarkRepository;
-using IPNoticeHub.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace IPNoticeHub.Infrastructure.Persistence.Repositories.TrademarkRepository

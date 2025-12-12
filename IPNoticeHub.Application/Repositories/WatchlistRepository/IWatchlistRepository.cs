@@ -1,4 +1,4 @@
-﻿using IPNoticeHub.Domain.Entities.Identity;
+﻿using IPNoticeHub.Domain.Entities.Watchlist;
 
 namespace IPNoticeHub.Application.Repositories.WatchlistRepository
 {
@@ -30,7 +30,7 @@ namespace IPNoticeHub.Application.Repositories.WatchlistRepository
             int trademarkId, 
             CancellationToken cancellationToken);
 
-        Task<IReadOnlyList<UserTrademarkWatchlist>> ListByUserAsync(
+        Task<IReadOnlyList<Watchlist>> ListByUserAsync(
             string userId, 
             int skip, 
             int take, 

@@ -1,6 +1,6 @@
-﻿using IPNoticeHub.Domain.Entities.Identity;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using IPNoticeHub.Application.Repositories.WatchlistRepository;
+using IPNoticeHub.Domain.Entities.Watchlist;
 
 namespace IPNoticeHub.Infrastructure.Persistence.Repositories.WatchlistRepository
 {
@@ -22,7 +22,7 @@ namespace IPNoticeHub.Infrastructure.Persistence.Repositories.WatchlistRepositor
             CancellationToken cancellationToken)
         {
             var link = await dbContext.
-                UserTrademarkWatchlists.IgnoreQueryFilters().
+                Watchlists.IgnoreQueryFilters().
                 FirstOrDefaultAsync(
                 ut => ut.UserId == userId && 
                 ut.TrademarkId == trademarkId, 
@@ -30,7 +30,7 @@ namespace IPNoticeHub.Infrastructure.Persistence.Repositories.WatchlistRepositor
 
             if (link is null)
             {
-                link = new UserTrademarkWatchlist
+                link = new Watchlist
                 {
                     UserId = userId,
                     TrademarkId = trademarkId,
@@ -42,7 +42,7 @@ namespace IPNoticeHub.Infrastructure.Persistence.Repositories.WatchlistRepositor
                     InitialStatusDateUtc = currentStatusDateUtc
                 };
 
-                await dbContext.UserTrademarkWatchlists.AddAsync(
+                await dbContext.Watchlists.AddAsync(
                     link, 
                     cancellationToken);
             }
@@ -71,7 +71,7 @@ namespace IPNoticeHub.Infrastructure.Persistence.Repositories.WatchlistRepositor
             string userId, 
             CancellationToken cancellationToken)
         {
-            return await dbContext.UserTrademarkWatchlists.
+            return await dbContext.Watchlists.
                   CountAsync(
                 ut => ut.UserId == userId && 
                 !ut.IsDeleted, cancellationToken);
@@ -82,20 +82,20 @@ namespace IPNoticeHub.Infrastructure.Persistence.Repositories.WatchlistRepositor
             int trademarkId, 
             CancellationToken cancellationToken)
         {
-            return await dbContext.UserTrademarkWatchlists.
+            return await dbContext.Watchlists.
                  AnyAsync(
                 ut => ut.UserId == userId && 
                 ut.TrademarkId == trademarkId && 
                 !ut.IsDeleted, cancellationToken);
         }
 
-        public async Task<IReadOnlyList<UserTrademarkWatchlist>> ListByUserAsync(
+        public async Task<IReadOnlyList<Watchlist>> ListByUserAsync(
             string userId, 
             int skip, 
             int take, 
             CancellationToken cancellationToken)
         {
-            return await dbContext.UserTrademarkWatchlists.
+            return await dbContext.Watchlists.
                 AsNoTracking().
                 Where(ut =>ut.UserId == userId).
                 Include(ut => ut.Trademark).
@@ -110,7 +110,7 @@ namespace IPNoticeHub.Infrastructure.Persistence.Repositories.WatchlistRepositor
             int trademarkId, 
             CancellationToken cancellationToken)
         {
-            var link = await dbContext.UserTrademarkWatchlists.
+            var link = await dbContext.Watchlists.
             FirstOrDefaultAsync(
                 ut => ut.UserId == userId && 
                 ut.TrademarkId == trademarkId, 
@@ -129,7 +129,7 @@ namespace IPNoticeHub.Infrastructure.Persistence.Repositories.WatchlistRepositor
             bool notificationsEnabled, 
             CancellationToken cancellationToken)
         {
-            var link = await dbContext.UserTrademarkWatchlists.
+            var link = await dbContext.Watchlists.
                 FirstOrDefaultAsync(
                 ut => ut.UserId == userId && 
                 ut.TrademarkId == trademarkId && 

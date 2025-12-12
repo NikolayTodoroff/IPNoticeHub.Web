@@ -2,7 +2,6 @@
 using IPNoticeHub.Domain.Entities.LegalDocuments;
 using IPNoticeHub.Application.Repositories.DocumentLibraryRepository;
 using Microsoft.EntityFrameworkCore;
-using IPNoticeHub.Data;
 
 namespace IPNoticeHub.Infrastructure.Persistence.Repositories.DocumentLibraryRepository
 {

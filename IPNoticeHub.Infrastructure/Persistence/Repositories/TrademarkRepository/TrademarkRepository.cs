@@ -1,6 +1,5 @@
 ﻿using IPNoticeHub.Application.DTOs.TrademarkDTOs;
 using IPNoticeHub.Application.Repositories.TrademarkRepository;
-using IPNoticeHub.Data;
 using IPNoticeHub.Domain.Entities.Trademarks;
 using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Shared.Support;
