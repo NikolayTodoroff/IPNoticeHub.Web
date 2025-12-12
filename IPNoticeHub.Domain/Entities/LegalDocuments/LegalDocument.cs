@@ -1,7 +1,5 @@
 ﻿using IPNoticeHub.Shared.Enums;
-using IPNoticeHub.Domain.Entities.Identity;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using static IPNoticeHub.Shared.Constants.ValidationConstants.LegalDocumentConstants;
 using static IPNoticeHub.Shared.Constants.ValidationConstants.InfringementPlaceholderConstants;
 
