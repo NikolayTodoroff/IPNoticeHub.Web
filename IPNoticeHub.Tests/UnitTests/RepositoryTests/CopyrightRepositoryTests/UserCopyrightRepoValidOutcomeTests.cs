@@ -1,11 +1,12 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Application.Repositories.CopyrightRepository;
+using IPNoticeHub.Infrastructure.Identity;
+using IPNoticeHub.Infrastructure.Persistence;
 using IPNoticeHub.Infrastructure.Persistence.Repositories.CopyrightRepository;
+using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Tests.TestUtilities;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
-using IPNoticeHub.Infrastructure.Identity;
-using IPNoticeHub.Infrastructure.Persistence;
 
 namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Copyrights
 {
@@ -167,102 +168,46 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Copyrights
         }
 
         [Test]
-        public async Task QueryUserCollection_ReturnsOnlyActiveEntities()
+        public async Task GetUserCollectionPageAsync_ReturnsActiveLinksWithIncludedRegistration()
         {
-            using var testDbContext = 
-                InMemoryDbContextFactory.CreateTestDbContext();
+            using var testDbContext = InMemoryDbContextFactory.CreateTestDbContext();
 
-            var user = new ApplicationUser { 
-                Id = "u4", 
-                UserName = "user4", 
-                Email = "u4@test" };
+            var user = new ApplicationUser
+            {
+                Id = "user5",
+                UserName = "user5",
+                Email = "u5@test"
+            };
 
-            var copyrightEntity1 = 
-                InMemoryDbContextFactory.CreateCopyright(
-                    "TX-4A", 
-                    "copyrightRegA");
-            
-            var copyrightEntity2 = 
-                InMemoryDbContextFactory.CreateCopyright(
-                    "TX-4B", 
-                    "copyrightRegB");
-
-            testDbContext.Users.Add(user);
-
-            testDbContext.CopyrightRegistrations.AddRange(
-                copyrightEntity1, 
-                copyrightEntity2);
-           
-            await testDbContext.SaveChangesAsync();
-
-            IUserCopyrightRepository copyrightRepo = 
-                new UserCopyrightRepository(testDbContext);
-
-            await copyrightRepo.AddOrUndeleteAsync(
-                user.Id, 
-                copyrightEntity1.Id);
-            
-            await copyrightRepo.AddOrUndeleteAsync(
-                user.Id, 
-                copyrightEntity2.Id);
-            
-            await copyrightRepo.SoftRemoveAsync(
-                user.Id, 
-                copyrightEntity2.Id);
-
-            var validEntities = 
-                await copyrightRepo.QueryUserCollection(user.Id).
-                Select(x => x.Title).
-                ToListAsync();
-
-            validEntities.Should().
-                ContainSingle("copyrightRegA");
-            
-            validEntities.Should().
-                NotContain("copyrightRegB");
-        }
-
-        [Test]
-        public async Task QueryUserLinks_ReturnsActiveLinksWithIncludedRegistration()
-        {
-            using var testDbContext = 
-                InMemoryDbContextFactory.CreateTestDbContext();
-
-            var user = new ApplicationUser { 
-                Id = "user5", 
-                UserName = "user5", 
-                Email = "u5@test" };
-            
-            var copyrightEntity = 
-                InMemoryDbContextFactory.CreateCopyright(
-                    "TX-54321", 
-                    "copyrightRegE");
+            var copyrightEntity = InMemoryDbContextFactory.CreateCopyright(
+                registrationNumber: "TX-54321",
+                title: "copyrightRegE");
 
             testDbContext.Users.Add(user);
             testDbContext.CopyrightRegistrations.Add(copyrightEntity);
             await testDbContext.SaveChangesAsync();
 
-            IUserCopyrightRepository copyrightRepo = 
+            IUserCopyrightRepository copyrightRepo =
                 new UserCopyrightRepository(testDbContext);
 
             await copyrightRepo.AddOrUndeleteAsync(
-                user.Id, 
+                user.Id,
                 copyrightEntity.Id);
 
-            var links = await copyrightRepo.
-                QueryUserLinks(user.Id).
-                ToListAsync();
+            var pageResult = await copyrightRepo.GetUserCollectionPageAsync(
+                user.Id,
+                CollectionSortBy.DateAddedDesc,
+                page: 1,
+                resultsPerPage: 10,
+                cancellationToken: default);
 
-            links.Should().
-                HaveCount(1);
-            
-            links[0].IsDeleted.Should().
-                BeFalse();
-            
-            links[0].CopyrightEntity.Should().
-                NotBeNull();
-            links[0].CopyrightEntity!.Title.Should().
-                Be("copyrightRegE");
+            var links = pageResult.Results;
+
+            links.Should().HaveCount(1);
+
+            links[0].IsDeleted.Should().BeFalse();
+            links[0].CopyrightEntity.Should().NotBeNull();
+            links[0].CopyrightEntity!.Title.Should().Be("copyrightRegE");
         }
 
         [Test]
