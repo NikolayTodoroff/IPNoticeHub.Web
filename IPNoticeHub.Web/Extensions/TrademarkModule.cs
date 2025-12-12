@@ -8,7 +8,6 @@ using IPNoticeHub.Application.Services.PdfGenerationService.Implementations;
 using IPNoticeHub.Application.Services.TrademarkService.Abstractions;
 using IPNoticeHub.Application.Services.TrademarkService.Implementations;
 using IPNoticeHub.Application.Services.TrademarkSearchService.Abstractions;
-using IPNoticeHub.Application.Services.TrademarkSearchService.Implementations;
 using IPNoticeHub.Application.Services.WatchlistService.Abstractions;
 using IPNoticeHub.Application.Services.WatchlistService.Implementations;
 

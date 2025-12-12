@@ -7,7 +7,6 @@ using static IPNoticeHub.Shared.Constants.PagingConstants.DefaultPagingConstants
 using IPNoticeHub.Tests.UnitTests.TestUtilities;
 using IPNoticeHub.Application.Repositories.TrademarkRepository;
 using IPNoticeHub.Infrastructure.Persistence;
-using IPNoticeHub.Application.Services.TrademarkSearchService.Implementations;
 
 namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.TrademarkSearchQueryServiceTests
 {

@@ -30,48 +30,20 @@ namespace IPNoticeHub.Application.Services.TrademarkService.Implementations
             await userTrademarkRepository.AddOrUndeleteAsync(userId, trademarkId, cancellationToken);
         }
 
-        public async Task<PagedResult<TrademarkSingleItemDto>>GetUserCollectionAsync(
-            string userId, 
-            int currentPage, 
-            int resultsPerPage, 
-            CancellationToken cancellationToken = default)
+        public Task<PagedResult<TrademarkSingleItemDto>> GetUserCollectionAsync(
+                string userId,
+                int currentPage,
+                int resultsPerPage,
+                CancellationToken cancellationToken = default)
         {
-            var (normalizedPage, normalizedPageSize) = 
-                PagingConfiguration.NormalizePaging(currentPage, resultsPerPage);
+            const CollectionSortBy sortBy = CollectionSortBy.DateAddedDesc;
 
-            var userTrademarksQuery = userTrademarkRepository.
-                QueryUserCollection(userId).
-                AsNoTracking().
-                OrderByDescending(t => t.RegistrationDate.HasValue).
-                ThenByDescending(t => t.RegistrationDate).
-                ThenBy(t => t.Wordmark);
-
-            int resultsCount = await userTrademarksQuery.CountAsync(cancellationToken);
-
-            List<TrademarkSingleItemDto>? userTrademarksList = await userTrademarksQuery
-                .Skip((normalizedPage - 1) * normalizedPageSize)
-                .Take(normalizedPageSize)
-                .Select(t => new TrademarkSingleItemDto
-                {
-                    Id = t.Id,
-                    PublicId = t.PublicId,
-                    Wordmark = t.Wordmark,
-                    Owner = t.Owner,
-                    SourceId = t.SourceId,
-                    Status = t.StatusCategory,
-                    Classes = t.Classes.
-                        Select(c => c.ClassNumber).ToArray(),
-                    Provider = t.Source
-                })
-                .ToListAsync(cancellationToken);
-
-            return new PagedResult<TrademarkSingleItemDto>
-            {
-                Results = userTrademarksList,
-                ResultsCount = resultsCount,
-                CurrentPage = normalizedPage,
-                ResultsCountPerPage = normalizedPageSize
-            };
+            return GetUserCollectionAsync(
+                userId,
+                sortBy,
+                currentPage,
+                resultsPerPage,
+                cancellationToken);
         }
 
         public async Task<PagedResult<TrademarkSingleItemDto>>GetUserCollectionAsync(
@@ -81,56 +53,35 @@ namespace IPNoticeHub.Application.Services.TrademarkService.Implementations
             int resultsPerPage, 
             CancellationToken cancellationToken = default)
         {
-            var (normalizedPage, normalizedPageSize) = 
-                PagingConfiguration.NormalizePaging(currentPage, resultsPerPage);
+            var pagedResult = 
+                await userTrademarkRepository.GetUserCollectionPageAsync(
+                userId,
+                sortBy,
+                currentPage,
+                resultsPerPage,
+                cancellationToken);
 
-            var collectionLinks = userTrademarkRepository.QueryUserLinks(userId);
-
-            if (sortBy == CollectionSortBy.DateAddedAsc)
-            {
-                collectionLinks = collectionLinks.OrderBy(l => l.DateAdded);
-            }
-
-            else if (sortBy == CollectionSortBy.WordmarkAsc)
-            {
-                collectionLinks = collectionLinks.OrderBy(l => l.TrademarkEntity.Wordmark);
-            }
-
-            else if (sortBy == CollectionSortBy.WordmarkDesc)
-            {
-                collectionLinks = collectionLinks.OrderByDescending(l => l.TrademarkEntity.Wordmark);
-            }
-
-            else
-            {
-                collectionLinks = collectionLinks.OrderByDescending(l => l.DateAdded);
-            }
-
-            int resultsCount = await collectionLinks.AsNoTracking().CountAsync(cancellationToken);
-
-            List<TrademarkSingleItemDto>? results = await collectionLinks.
-                AsNoTracking().
-                Skip((normalizedPage - 1) * normalizedPageSize).
-                Take(normalizedPageSize).
-                Select(l => new TrademarkSingleItemDto
+            var mappedResults = pagedResult.Results.
+                Select(ut => new TrademarkSingleItemDto
                 {
-                   Id = l.TrademarkId,
-                   PublicId = l.Trademark.PublicId,
-                   Wordmark = l.Trademark.Wordmark,
-                   Owner = l.Trademark.Owner,
-                   SourceId = l.Trademark.SourceId,
-                   Status = l.Trademark.StatusCategory,
-                   Classes = l.Trademark.Classes.Select(c => c.ClassNumber).ToArray(),
-                   Provider = l.Trademark.Source
+                    Id = ut.TrademarkEntityId,
+                    PublicId = ut.TrademarkEntity.PublicId,
+                    Wordmark = ut.TrademarkEntity.Wordmark,
+                    Owner = ut.TrademarkEntity.Owner,
+                    SourceId = ut.TrademarkEntity.SourceId,
+                    Status = ut.TrademarkEntity.StatusCategory,
+                    Classes = ut.TrademarkEntity.Classes.
+                    Select(c => c.ClassNumber).ToArray(),
+                    Provider = ut.TrademarkEntity.Source
                 }).
-                   ToListAsync(cancellationToken);
-
+                ToList();
+         
             return new PagedResult<TrademarkSingleItemDto>
             {
-                Results = results,
-                ResultsCount = resultsCount,
-                CurrentPage = normalizedPage,
-                ResultsCountPerPage = normalizedPageSize
+                Results = mappedResults,
+                ResultsCount = pagedResult.ResultsCount,
+                CurrentPage = pagedResult.CurrentPage,
+                ResultsCountPerPage = pagedResult.ResultsCountPerPage
             };
         }
 

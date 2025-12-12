@@ -4,7 +4,6 @@ using IPNoticeHub.Tests.TestUtilities;
 using NUnit.Framework;
 using static IPNoticeHub.Shared.Constants.PagingConstants.DefaultPagingConstants;
 using IPNoticeHub.Tests.UnitTests.TestUtilities;
-using IPNoticeHub.Application.Services.TrademarkSearchService.Implementations;
 using IPNoticeHub.Application.DTOs.TrademarkDTOs;
 using IPNoticeHub.Application.Repositories.TrademarkRepository;
 using IPNoticeHub.Infrastructure.Persistence;

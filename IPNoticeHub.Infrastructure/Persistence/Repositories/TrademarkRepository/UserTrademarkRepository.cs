@@ -1,6 +1,9 @@
-﻿using IPNoticeHub.Domain.Entities.Identity;
-using IPNoticeHub.Domain.Entities.Trademarks;
+﻿using IPNoticeHub.Application.DTOs.TrademarkDTOs;
 using IPNoticeHub.Application.Repositories.TrademarkRepository;
+using IPNoticeHub.Domain.Entities.Identity;
+using IPNoticeHub.Domain.Entities.Trademarks;
+using IPNoticeHub.Shared.Enums;
+using IPNoticeHub.Shared.Support;
 using Microsoft.EntityFrameworkCore;
 
 namespace IPNoticeHub.Infrastructure.Persistence.Repositories.TrademarkRepository
@@ -58,14 +61,55 @@ namespace IPNoticeHub.Infrastructure.Persistence.Repositories.TrademarkRepositor
                 cancellationToken);
         }
 
-        public IQueryable<TrademarkEntity> QueryUserCollection(string userId)
+        public async Task<PagedResult<UserTrademark>> GetUserCollectionPageAsync(
+            string userId,
+            CollectionSortBy sortBy,
+            int currentPage,
+            int resultsPerPage,
+            CancellationToken cancellationToken = default)
         {
-            return dbContext.UserTrademarks.Where(
-                ut => ut.ApplicationUserId == userId && !ut.IsDeleted).
-                Include(ut=>ut.TrademarkEntity.Classes).
-                Select(ut => ut.TrademarkEntity).
-                AsSplitQuery().
+            var (normalizedPage, normalizedPageSize) =
+                PagingConfiguration.NormalizePaging(currentPage, resultsPerPage);
+
+            IQueryable<UserTrademark> links = dbContext.UserTrademarks.
+                Where(ut => ut.ApplicationUserId == userId && !ut.IsDeleted).
+                Include(ut => ut.TrademarkEntity).
                 AsNoTracking();
+
+            if (sortBy == CollectionSortBy.DateAddedAsc)
+            {
+                links = links.OrderBy(l => l.DateAdded);
+            }
+
+            else if (sortBy == CollectionSortBy.WordmarkAsc)
+            {
+                links = links.OrderBy(l => l.TrademarkEntity.Wordmark);
+            }
+
+            else if (sortBy == CollectionSortBy.WordmarkDesc)
+            {
+                links = links.OrderByDescending(l => l.TrademarkEntity.Wordmark);
+            }
+
+            else
+            {
+                links = links.OrderByDescending(l => l.DateAdded);
+            }
+
+            int resultsCount = await links.CountAsync(cancellationToken);
+
+            List<UserTrademark> pagedItems = await links.
+                Skip((normalizedPage - 1) * normalizedPageSize).
+                Take(normalizedPageSize).
+                ToListAsync(cancellationToken);
+
+            return new PagedResult<UserTrademark>
+            {
+                Results = pagedItems,
+                ResultsCount = resultsCount,
+                CurrentPage = normalizedPage,
+                ResultsCountPerPage = normalizedPageSize
+            };
         }
 
         public IQueryable<UserTrademark> QueryUserLinks(string userId)

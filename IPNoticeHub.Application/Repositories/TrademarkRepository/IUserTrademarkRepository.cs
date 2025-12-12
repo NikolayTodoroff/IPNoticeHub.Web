@@ -1,5 +1,7 @@
 ﻿using IPNoticeHub.Domain.Entities.Identity;
 using IPNoticeHub.Domain.Entities.Trademarks;
+using IPNoticeHub.Shared.Enums;
+using IPNoticeHub.Shared.Support;
 
 namespace IPNoticeHub.Application.Repositories.TrademarkRepository
 {
@@ -21,8 +23,12 @@ namespace IPNoticeHub.Application.Repositories.TrademarkRepository
             int trademarkId, 
             CancellationToken cancellationToken = default);
 
-        IQueryable<TrademarkEntity> QueryUserCollection(
-            string userId);
+        Task<PagedResult<UserTrademark>> GetUserCollectionPageAsync(
+            string userId,
+            CollectionSortBy sortBy,
+            int currentPage,
+            int resultsPerPage,
+            CancellationToken cancellationToken = default);
 
         IQueryable<UserTrademark> QueryUserLinks(
             string userId);
