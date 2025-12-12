@@ -30,7 +30,7 @@ namespace IPNoticeHub.Application.Repositories.TrademarkRepository
             int resultsPerPage,
             CancellationToken cancellationToken = default);
 
-        IQueryable<UserTrademark> QueryUserLinks(
+        IQueryable<UserTrademark> GetUserLinks(
             string userId);
     }
 }

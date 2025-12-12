@@ -130,7 +130,7 @@ namespace IPNoticeHub.Infrastructure.Persistence.Repositories.CopyrightRepositor
             };
         }       
 
-        public IQueryable<UserCopyright> QueryUserLinks(string userId)
+        public IQueryable<UserCopyright> GetUserLinks(string userId)
         {
             return dbContext.UserCopyrights.Where(
                 uc => uc.ApplicationUserId == userId && !uc.IsDeleted).

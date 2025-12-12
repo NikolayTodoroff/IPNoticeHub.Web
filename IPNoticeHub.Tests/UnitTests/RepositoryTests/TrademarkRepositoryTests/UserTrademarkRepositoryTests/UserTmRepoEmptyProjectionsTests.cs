@@ -49,7 +49,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.UserTrademarkRe
                 new UserTrademarkRepository(testDbContext);
 
             var queryLinksResult = 
-                userTmRepository.QueryUserLinks(user.Id).
+                userTmRepository.GetUserLinks(user.Id).
                 ToArray();
 
             queryLinksResult.Should().

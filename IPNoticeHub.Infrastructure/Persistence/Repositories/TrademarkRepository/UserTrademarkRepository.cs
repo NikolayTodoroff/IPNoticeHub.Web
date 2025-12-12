@@ -114,7 +114,7 @@ namespace IPNoticeHub.Infrastructure.Persistence.Repositories.TrademarkRepositor
             };
         }
 
-        public IQueryable<UserTrademark> QueryUserLinks(string userId)
+        public IQueryable<UserTrademark> GetUserLinks(string userId)
         {
             return dbContext.UserTrademarks.Where(
                 ut => ut.ApplicationUserId == userId && !ut.IsDeleted).

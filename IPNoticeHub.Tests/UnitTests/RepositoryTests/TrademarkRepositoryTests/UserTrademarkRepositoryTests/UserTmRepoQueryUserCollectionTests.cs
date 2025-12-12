@@ -174,7 +174,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.UserTrademarkRe
 
             var queryLinksResult = 
                 userTmRepository.
-                QueryUserLinks(user1.Id).
+                GetUserLinks(user1.Id).
                 ToList();
 
             queryLinksResult.Should().
