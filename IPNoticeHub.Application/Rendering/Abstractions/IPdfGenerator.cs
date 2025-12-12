@@ -2,7 +2,7 @@
 
 namespace IPNoticeHub.Application.Rendering.Abstractions
 {
-    public class IPdfGenerator
+    public interface IPdfGenerator
     {
         byte[] GenerateDocument(PdfLetterDto dto);
     }

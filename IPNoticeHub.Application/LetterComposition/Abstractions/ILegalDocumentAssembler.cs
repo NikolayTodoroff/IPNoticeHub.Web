@@ -5,6 +5,6 @@ namespace IPNoticeHub.Application.LetterComposition.Abstractions
 {
     public interface ILegalDocumentAssembler
     {
-        PdfLetterDto RebuildDocumentSnapshot(LegalDocument doc);
+        PdfLetterDto RebuildDocumentFromSnapshot(LegalDocument doc);
     }
 }

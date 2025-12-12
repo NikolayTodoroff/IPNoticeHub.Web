@@ -17,7 +17,7 @@ namespace IPNoticeHub.Application.LetterComposition.Implementations
             this.templateProvider = templateProvider;
         }
 
-        public PdfLetterDto RebuildDocumentSnapshot(LegalDocument document)
+        public PdfLetterDto RebuildDocumentFromSnapshot(LegalDocument document)
         {
             var templateKey = LetterTemplateKeys.GenerateLetterKey(
                 document.SourceType,
