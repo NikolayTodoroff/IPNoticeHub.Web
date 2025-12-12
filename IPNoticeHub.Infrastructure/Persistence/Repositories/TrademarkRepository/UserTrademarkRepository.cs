@@ -74,6 +74,8 @@ namespace IPNoticeHub.Infrastructure.Persistence.Repositories.TrademarkRepositor
             IQueryable<UserTrademark> links = dbContext.UserTrademarks.
                 Where(ut => ut.ApplicationUserId == userId && !ut.IsDeleted).
                 Include(ut => ut.TrademarkEntity).
+                ThenInclude(t => t.Classes).
+                AsSplitQuery().
                 AsNoTracking();
 
             if (sortBy == CollectionSortBy.DateAddedAsc)

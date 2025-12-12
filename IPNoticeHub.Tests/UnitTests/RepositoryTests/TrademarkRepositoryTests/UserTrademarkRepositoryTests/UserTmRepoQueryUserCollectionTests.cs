@@ -62,12 +62,10 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.UserTrademarkRe
 
             var userTmRepository = new UserTrademarkRepository(testDbContext);
 
-            // user1 -> two links, second is soft-removed
             await userTmRepository.AddOrUndeleteAsync(user1.Id, user1TmEntity1.Id);
             await userTmRepository.AddOrUndeleteAsync(user1.Id, user1TmEntity2.Id);
             await userTmRepository.SoftRemoveAsync(user1.Id, user1TmEntity2.Id);
 
-            // user2 -> one link (should not appear for user1)
             await userTmRepository.AddOrUndeleteAsync(user2.Id, user2TmEntity.Id);
 
             var pagedResult = await userTmRepository.GetUserCollectionPageAsync(
@@ -79,7 +77,6 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.UserTrademarkRe
 
             var queryResult = pagedResult.Results;
 
-            // still only one active link for user1
             queryResult.Should().HaveCount(1);
 
             var link = queryResult.Single();
@@ -92,7 +89,6 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.UserTrademarkRe
                 .Select(c => c.ClassNumber)
                 .Should().BeEquivalentTo(new[] { 9, 25 });
 
-            // AsNoTracking – link + entity are detached
             testDbContext.Entry(link).State.Should().Be(EntityState.Detached);
             testDbContext.Entry(link.TrademarkEntity!).State.Should().Be(EntityState.Detached);
         }
