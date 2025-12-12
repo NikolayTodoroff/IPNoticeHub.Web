@@ -50,18 +50,14 @@ namespace IPNoticeHub.Application.Services.TrademarkService.Implementations
             };
         }
 
-        public async Task<PagedResult<TrademarkSingleItemDto>>SearchAsync(
-            TrademarkFilterDto dto, 
-            int currentPage, 
-            int resultsPerPage, 
-            CancellationToken cancellationToken = default)
+        public Task<PagedResult<TrademarkSingleItemDto>> SearchAsync(
+           TrademarkFilterDto dto,
+           int currentPage,
+           int resultsPerPage,
+           CancellationToken cancellationToken = default)
         {
-
-
-            var (normalizedPage, normalizedPageSize) = 
-                PagingConfiguration.NormalizePaging(
-                    currentPage, 
-                    resultsPerPage);
+            var (normalizedPage, normalizedPageSize) =
+                PagingConfiguration.NormalizePaging(currentPage, resultsPerPage);
 
             var searchFilter = new TrademarkSearchFilter
             {
@@ -73,38 +69,11 @@ namespace IPNoticeHub.Application.Services.TrademarkService.Implementations
                 ExactMatch = dto.ExactMatch
             };
 
-            IOrderedQueryable<TrademarkEntity>? query = trademarkRepository.
-                Query(searchFilter, includeNav: false).
-                OrderBy(t => t.Wordmark).
-                ThenBy(t => t.Id);
-
-            int resultsCount = await query.CountAsync(cancellationToken);
-
-            List<TrademarkSingleItemDto>? searchResults = await query.
-                Skip((normalizedPage - 1) * normalizedPageSize).
-                Take(normalizedPageSize).
-                Select(t => new TrademarkSingleItemDto
-                {
-                    Id = t.Id,
-                    PublicId = t.PublicId,
-                    Wordmark = t.Wordmark,
-                    Owner = t.Owner,
-                    SourceId = t.SourceId,
-                    Status = t.StatusCategory,
-                    Classes = t.Classes.
-                        Select(c => c.ClassNumber).
-                        ToArray(),
-                    Provider = t.Source
-                })
-                .ToListAsync(cancellationToken);
-
-            return new PagedResult<TrademarkSingleItemDto>
-            {
-                Results = searchResults,
-                ResultsCount = resultsCount,
-                CurrentPage = normalizedPage,
-                ResultsCountPerPage = normalizedPageSize
-            };
+            return trademarkRepository.GetSearchPageAsync(
+                searchFilter,
+                normalizedPage,
+                normalizedPageSize,
+                cancellationToken);
         }
     }
 }

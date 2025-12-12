@@ -1,10 +1,11 @@
-﻿using IPNoticeHub.Shared.Enums;
-using IPNoticeHub.Domain.Entities.Trademarks;
+﻿using IPNoticeHub.Application.DTOs.TrademarkDTOs;
 using IPNoticeHub.Application.Repositories.TrademarkRepository;
+using IPNoticeHub.Data;
+using IPNoticeHub.Domain.Entities.Trademarks;
+using IPNoticeHub.Shared.Enums;
+using IPNoticeHub.Shared.Support;
 using Microsoft.EntityFrameworkCore;
 using static IPNoticeHub.Shared.Support.SearchNumberNormalizer;
-using IPNoticeHub.Data;
-using IPNoticeHub.Application.DTOs.TrademarkDTOs;
 
 
 namespace IPNoticeHub.Infrastructure.Persistence.Repositories.TrademarkRepository
@@ -141,6 +142,45 @@ namespace IPNoticeHub.Infrastructure.Persistence.Repositories.TrademarkRepositor
             }
 
             return trademarksQuery.AsNoTracking();
+        }
+
+        public async Task<PagedResult<TrademarkSingleItemDto>> GetSearchPageAsync(
+            TrademarkSearchFilter filter,
+            int page,
+            int pageSize,
+            CancellationToken cancellationToken = default)
+        {
+            IQueryable<TrademarkEntity> query = Query(filter, includeNav: false).
+                OrderBy(t => t.Wordmark).
+                ThenBy(t => t.Id);
+
+            int resultsCount = await query.CountAsync(cancellationToken);
+
+            List<TrademarkSingleItemDto> searchResults = await query.
+                Skip((page - 1) * pageSize).
+                Take(pageSize).
+                Select(t => new TrademarkSingleItemDto
+                {
+                    Id = t.Id,
+                    PublicId = t.PublicId,
+                    Wordmark = t.Wordmark,
+                    Owner = t.Owner,
+                    SourceId = t.SourceId,
+                    Status = t.StatusCategory,
+                    Classes = t.Classes.
+                    Select(c => c.ClassNumber).
+                    ToArray(),
+                    Provider = t.Source
+                })
+                .ToListAsync(cancellationToken);
+
+            return new PagedResult<TrademarkSingleItemDto>
+            {
+                Results = searchResults,
+                ResultsCount = resultsCount,
+                CurrentPage = page,
+                ResultsCountPerPage = pageSize
+            };
         }
 
         private static IQueryable<TrademarkEntity> ApplyNormalizedSearchFilter(

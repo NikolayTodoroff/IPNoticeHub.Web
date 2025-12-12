@@ -1,5 +1,6 @@
 ﻿using IPNoticeHub.Application.DTOs.TrademarkDTOs;
 using IPNoticeHub.Domain.Entities.Trademarks;
+using IPNoticeHub.Shared.Support;
 
 namespace IPNoticeHub.Application.Repositories.TrademarkRepository
 {
@@ -8,6 +9,12 @@ namespace IPNoticeHub.Application.Repositories.TrademarkRepository
         IQueryable<TrademarkEntity> Query(
             TrademarkSearchFilter filter, 
             bool includeNav = false);
+
+        Task<PagedResult<TrademarkSingleItemDto>> GetSearchPageAsync(
+            TrademarkSearchFilter filter,
+            int page,
+            int pageSize,
+            CancellationToken cancellationToken = default);
 
         Task<TrademarkEntity?> GetByPublicIdAsync(
             Guid publicId, 
