@@ -1,7 +1,6 @@
 ﻿using IPNoticeHub.Application.Rendering.Abstractions;
 using IPNoticeHub.Application.Services.CopyrightServices.Abstractions;
 using IPNoticeHub.Application.Services.DocumentLibraryService.Abstractions;
-using IPNoticeHub.Application.Services.PdfGenerationService.Abstractions;
 using IPNoticeHub.Application.Templates.Abstractions;
 using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Web.Extensions;
@@ -10,6 +9,7 @@ using IPNoticeHub.Web.WebHelpers.Mappings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static IPNoticeHub.Web.WebHelpers.ApplyEntityDetails;
+using IPNoticeHub.Application.Services.PdfGenerationServices.Abstractions;
 
 namespace IPNoticeHub.Web.Controllers
 {
@@ -17,14 +17,14 @@ namespace IPNoticeHub.Web.Controllers
     public class CopyrightCadController : Controller
     {
         private readonly ICopyrightService copyrightService;
-        private readonly IPdfService pdfService;
+        private readonly IPdfLetterService pdfService;
         private readonly ILetterTemplateProvider letterTemplateProvider;
         private readonly IDocumentLibraryService documentLibraryService;
         private readonly ITemplateTokenReplacer templateReplacer;
 
         public CopyrightCadController(
             ICopyrightService copyrightService,
-            IPdfService pdfService,
+            IPdfLetterService pdfService,
             ILetterTemplateProvider letterTemplateProvider,
             IDocumentLibraryService documentLibraryService, 
             ITemplateTokenReplacer templateReplacer)
@@ -76,9 +76,7 @@ namespace IPNoticeHub.Web.Controllers
             var input =
                 CopyrightsMapping.MapCeaseDesistViewModelToInput(viewModel);
 
-            var pdf = await pdfService.GenerateCopyrightCeaseDesistAsync(
-                input,
-                cancellationToken);
+            var pdf = await pdfService.GenerateFromInputAsync(input, cancellationToken);
 
             return File(pdf, "application/pdf",
                 $"CeaseDesist-{viewModel.WorkTitle}-{DateTime.UtcNow:DateTimeFormat}.pdf");

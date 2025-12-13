@@ -15,8 +15,8 @@ namespace IPNoticeHub.Application.LetterComposition.Implementations
 
         public PdfLetterDto RebuildLetterInput(LetterInputDto input)
         {
-            var letterTemplate = templateProvider.GetTemplateByKey(input.DocumentType);
-            var letterBody = letterTemplate?.BodyTemplate ?? string.Empty;
+            var letterBody = input.BodyTemplate ??
+                templateProvider.GetTemplateByKey(input.DocumentType)?.BodyTemplate;
 
             return new PdfLetterDto
             {

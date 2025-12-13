@@ -2,6 +2,8 @@
 using IPNoticeHub.Application.Services.CopyrightServices.Abstractions;
 using IPNoticeHub.Application.Services.DocumentLibraryService.Abstractions;
 using IPNoticeHub.Application.Services.PdfGenerationService.Abstractions;
+using IPNoticeHub.Application.Services.PdfGenerationServices.Abstractions;
+using IPNoticeHub.Application.Services.PdfGenerationServices.Implementations;
 using IPNoticeHub.Application.Templates.Abstractions;
 using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Web.Extensions;
@@ -17,14 +19,14 @@ namespace IPNoticeHub.Web.Controllers
     public class CopyrightDmcaController : Controller
     {
         private readonly ICopyrightService copyrightService;
-        private readonly IPdfService pdfService;
+        private readonly IPdfLetterService pdfService;
         private readonly ILetterTemplateProvider letterTemplateProvider;
         private readonly IDocumentLibraryService documentLibraryService;
         private readonly ITemplateTokenReplacer templateReplacer;
 
         public CopyrightDmcaController(
             ICopyrightService copyrightService,
-            IPdfService pdfService,
+            IPdfLetterService pdfService,
             ILetterTemplateProvider letterTemplateProvider,
             IDocumentLibraryService documentLibraryService,
             ITemplateTokenReplacer templateReplacer)
@@ -84,9 +86,7 @@ namespace IPNoticeHub.Web.Controllers
             var input = 
                 CopyrightsMapping.MapDmcaViewModelToInput(viewModel);
 
-            var pdf = await pdfService.GenerateCopyrightDMCAAsync(
-                input,
-                cancellationToken);
+            var pdf = await pdfService.GenerateFromInputAsync(input, cancellationToken);
 
             return File(pdf, "application/pdf",
                 $"DMCA-{dto.Title}-{DateTime.UtcNow:DateTimeFormat}.pdf");

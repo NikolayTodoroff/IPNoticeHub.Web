@@ -3,10 +3,10 @@ using IPNoticeHub.Web.Models.Copyrights;
 using IPNoticeHub.Web.Models.PdfGeneration;
 using System.Globalization;
 using static IPNoticeHub.Shared.Constants.DateTimeFormats.DefaultDateTimeFormat;
-using IPNoticeHub.Application.Services.PdfGenerationService.Abstractions;
 using IPNoticeHub.Shared.Support;
 using IPNoticeHub.Application.DTOs.CopyrightDTOs;
 using IPNoticeHub.Application.DTOs.DocumentLibraryDTOs;
+using IPNoticeHub.Application.DTOs.PdfDTOs;
 
 namespace IPNoticeHub.Web.WebHelpers.Mappings
 {
@@ -98,7 +98,9 @@ namespace IPNoticeHub.Web.WebHelpers.Mappings
             };
         }
 
-        public static DMCAViewModel MapDetailsDtoToDmcaViewModel(CopyrightDetailsDto dto, Guid publicId)
+        public static DMCAViewModel MapDetailsDtoToDmcaViewModel(
+            CopyrightDetailsDto dto, 
+            Guid publicId)
         {
             return new DMCAViewModel()
             {
@@ -111,24 +113,28 @@ namespace IPNoticeHub.Web.WebHelpers.Mappings
             };
         }
 
-        public static DMCAInput MapDmcaViewModelToInput(DMCAViewModel viewModel, DateTime? now = null)
+        public static LetterInputDto MapDmcaViewModelToInput(
+            DMCAViewModel viewModel, 
+            DateTime? now = null)
         {
-            return new DMCAInput(
-                SenderName: viewModel.SenderName,
-                SenderEmail: viewModel.SenderEmail,
-                SenderAddress: viewModel.SenderAddress,
-                RecipientName: viewModel.RecipientName,
-                RecipientEmail: viewModel.RecipientEmail ?? string.Empty,
-                RecipientAddress: viewModel.RecipientAddress ?? string.Empty,
-                Date: now ?? DateTime.UtcNow,
-                WorkTitle: viewModel.WorkTitle,
-                RegistrationNumber: viewModel.RegistrationNumber ?? string.Empty,
-                YearOfCreation: viewModel.YearOfCreation,
-                DateOfPublication: viewModel.DateOfPublication,
-                NationOfFirstPublication: viewModel.NationOfFirstPublication,
-                InfringingUrl: viewModel.InfringingUrl!,
-                GoodFaithStatement: viewModel.GoodFaithStatement,
-                BodyTemplate: viewModel.BodyTemplate);
+            return new LetterInputDto
+            {
+                WorkTitle = viewModel.WorkTitle,
+                RegistrationNumber = viewModel.RegistrationNumber ?? string.Empty,
+                SenderName = viewModel.SenderName,
+                SenderAddress = viewModel.SenderAddress,
+                SenderEmail = viewModel.SenderEmail,
+                RecipientName = viewModel.RecipientName,
+                RecipientAddress = viewModel.RecipientAddress ?? string.Empty,
+                RecipientEmail = viewModel.RecipientEmail ?? string.Empty,
+                DateOfPublication = viewModel.DateOfPublication,
+                YearOfCreation = viewModel.YearOfCreation,
+                NationOfFirstPublication = viewModel.NationOfFirstPublication,
+                InfringingUrl = viewModel.InfringingUrl!,
+                GoodFaithStatement = viewModel.GoodFaithStatement,
+                BodyTemplate = viewModel.BodyTemplate,
+                LetterDateUtc = now ?? DateTime.UtcNow
+            };
         }
 
         public static Dictionary<string, string> MapDmcaViewModelToPlaceholders(DMCAViewModel viewModel)
@@ -195,19 +201,20 @@ namespace IPNoticeHub.Web.WebHelpers.Mappings
             };
         }
 
-        public static CeaseDesistInput MapCeaseDesistViewModelToInput(CeaseDesistViewModel viewModel)
+        public static LetterInputDto MapCeaseDesistViewModelToInput(CeaseDesistViewModel viewModel)
         {
-            return new CeaseDesistInput(
-
-                SenderName: viewModel.SenderName,
-                SenderAddress: viewModel.SenderAddress,
-                RecipientName: viewModel.RecipientName,
-                RecipientAddress: viewModel.RecipientAddress,
-                Date: DateTime.UtcNow,
-                WorkTitle: viewModel.WorkTitle,
-                RegistrationNumber: viewModel.RegistrationNumber ?? string.Empty,
-                AdditionalFacts: viewModel.AdditionalFacts,
-                BodyTemplate: viewModel.BodyTemplate);
+            return new LetterInputDto
+            {
+                SenderName = viewModel.SenderName,
+                SenderAddress = viewModel.SenderAddress,
+                RecipientName = viewModel.RecipientName,
+                RecipientAddress = viewModel.RecipientAddress,
+                LetterDateUtc = DateTime.UtcNow,
+                WorkTitle = viewModel.WorkTitle,
+                RegistrationNumber = viewModel.RegistrationNumber ?? string.Empty,
+                AdditionalFacts = viewModel.AdditionalFacts,
+                BodyTemplate = viewModel.BodyTemplate
+            };
         }
 
         public static DocumentCreateDto MapCdViewModelToDocCreateDto(

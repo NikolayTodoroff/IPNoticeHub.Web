@@ -16,6 +16,7 @@ using Moq;
 using NUnit.Framework;
 using System.Security.Claims;
 using IPNoticeHub.Application.Templates.Abstractions;
+using IPNoticeHub.Application.Services.PdfGenerationServices.Abstractions;
 
 namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
 {
@@ -47,7 +48,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
                 new Mock<IWatchlistService>();
 
             var pdfService = 
-                new Mock<IPdfService>();
+                new Mock<IPdfLetterService>();
 
             var letterTemplate = 
                 new Mock<ILetterTemplateProvider>();
@@ -146,7 +147,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
                 new Mock<IWatchlistService>();
 
             var pdfService = 
-                new Mock<IPdfService>();
+                new Mock<IPdfLetterService>();
 
             var letterTemplate = 
                 new Mock<ILetterTemplateProvider>();

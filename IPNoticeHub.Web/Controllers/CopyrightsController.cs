@@ -1,16 +1,16 @@
-﻿using IPNoticeHub.Shared.Enums;
+﻿using IPNoticeHub.Application.Services.CopyrightServices.Abstractions;
+using IPNoticeHub.Application.Services.DocumentLibraryService.Abstractions;
+using IPNoticeHub.Application.Services.PdfGenerationServices.Abstractions;
+using IPNoticeHub.Application.Templates.Abstractions;
+using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Web.Extensions;
 using IPNoticeHub.Web.Models.Copyrights;
+using IPNoticeHub.Web.WebHelpers;
+using IPNoticeHub.Web.WebHelpers.Mappings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using static IPNoticeHub.Shared.Constants.StatusMessages.CopyrightStatusMessages;
 using static IPNoticeHub.Shared.Constants.PagingConstants.DefaultPagingConstants;
-using IPNoticeHub.Application.Services.DocumentLibraryService.Abstractions;
-using IPNoticeHub.Application.Services.PdfGenerationService.Abstractions;
-using IPNoticeHub.Application.Services.CopyrightServices.Abstractions;
-using IPNoticeHub.Web.WebHelpers.Mappings;
-using IPNoticeHub.Web.WebHelpers;
-using IPNoticeHub.Application.Templates.Abstractions;
+using static IPNoticeHub.Shared.Constants.StatusMessages.CopyrightStatusMessages;
 
 namespace IPNoticeHub.Web.Controllers
 {
@@ -18,13 +18,13 @@ namespace IPNoticeHub.Web.Controllers
     public sealed class CopyrightsController : Controller
     {
         private readonly ICopyrightService copyrightService;
-        private readonly IPdfService pdfService;
+        private readonly IPdfLetterService pdfService;
         private readonly ILetterTemplateProvider letterTemplateProvider;
         private readonly IDocumentLibraryService documentLibraryService;
 
         public CopyrightsController(
             ICopyrightService service,
-            IPdfService pdfService,
+            IPdfLetterService pdfService,
             ILetterTemplateProvider letterTemplateProvider, 
             IDocumentLibraryService documentLibraryService)
         {

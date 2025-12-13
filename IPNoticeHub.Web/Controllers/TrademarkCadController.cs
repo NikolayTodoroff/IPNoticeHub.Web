@@ -1,6 +1,5 @@
 ﻿using IPNoticeHub.Application.Rendering.Abstractions;
 using IPNoticeHub.Application.Services.DocumentLibraryService.Abstractions;
-using IPNoticeHub.Application.Services.PdfGenerationService.Abstractions;
 using IPNoticeHub.Application.Services.TrademarkService.Abstractions;
 using IPNoticeHub.Application.Templates.Abstractions;
 using IPNoticeHub.Application.Trademarks.Abstractions;
@@ -11,6 +10,7 @@ using IPNoticeHub.Web.WebHelpers.Mappings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static IPNoticeHub.Web.WebHelpers.ApplyEntityDetails;
+using IPNoticeHub.Application.Services.PdfGenerationServices.Abstractions;
 
 namespace IPNoticeHub.Web.Controllers
 {
@@ -19,7 +19,7 @@ namespace IPNoticeHub.Web.Controllers
     {
         private readonly ITrademarkSearchService trademarkSearchService;
         private readonly ITrademarkCollectionService trademarkCollectionService;
-        private readonly IPdfService pdfService;
+        private readonly IPdfLetterService pdfService;
         private readonly ILetterTemplateProvider letterTemplateProvider;
         private readonly IDocumentLibraryService documentLibraryService;
         private readonly ITemplateTokenReplacer templateReplacer;
@@ -27,7 +27,7 @@ namespace IPNoticeHub.Web.Controllers
         public TrademarkCadController(
             ITrademarkSearchService trademarkSearchService,
             ITrademarkCollectionService trademarkCollectionService,
-            IPdfService pdfService,
+            IPdfLetterService pdfService,
             ILetterTemplateProvider letterTemplateProvider,
             IDocumentLibraryService documentLibraryService,
             ITemplateTokenReplacer templateReplacer)
@@ -86,12 +86,10 @@ namespace IPNoticeHub.Web.Controllers
         {
             if (!ModelState.IsValid) return View(viewModel);
 
-            var input = TrademarksMapping.
-                MapCeaseDesistViewModelToInput(viewModel);
+            var input = 
+                TrademarksMapping.MapCeaseDesistViewModelInput(viewModel);
 
-            var pdf = await pdfService.GenerateTrademarkCeaseDesistAsync(
-                input,
-                cancellationToken);
+            var pdf = await pdfService.GenerateFromInputAsync(input, cancellationToken);
 
             return File(pdf, "application/pdf",
                 $"CeaseDesist-{viewModel.WorkTitle}-{DateTime.UtcNow:DateTimeFormat}.pdf");
@@ -175,10 +173,7 @@ namespace IPNoticeHub.Web.Controllers
                 var dto =
                     TrademarksMapping.MapCdViewModelToDocCreateDto(viewModel);
 
-                await documentLibraryService.SaveDocumentAsync(
-                    userId,
-                    dto,
-                    cancellationToken);
+                await documentLibraryService.SaveDocumentAsync(userId,dto,cancellationToken);
 
                 TempData["SuccessMessage"] =
                     "Your Cease & Desist letter was successfully saved to your library.";

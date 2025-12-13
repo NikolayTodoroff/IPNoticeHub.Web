@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 using IPNoticeHub.Application.Services.DocumentLibraryService.Abstractions;
-using IPNoticeHub.Application.Services.PdfGenerationService.Abstractions;
+using IPNoticeHub.Application.Services.PdfGenerationServices.Abstractions;
 using IPNoticeHub.Application.Services.TrademarkService.Abstractions;
 using IPNoticeHub.Application.Services.WatchlistService.Abstractions;
 using IPNoticeHub.Application.Templates.Abstractions;
@@ -63,7 +63,7 @@ namespace IPNoticeHub.Tests.UnitTests.TestUtilities
             IDocumentLibraryService? documentLibraryService = null)
         {
             var httpContext = new DefaultHttpContext();
-            var pdfService = new Mock<IPdfService>();
+            var pdfService = new Mock<IPdfLetterService>();
             var letterTemplate = new Mock<ILetterTemplateProvider>();
             var docLibraryService = documentLibraryService ?? Mock.Of<IDocumentLibraryService>();
 

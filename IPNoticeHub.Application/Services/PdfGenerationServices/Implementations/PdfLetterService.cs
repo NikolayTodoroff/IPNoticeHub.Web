@@ -30,7 +30,7 @@ namespace IPNoticeHub.Application.Services.PdfGenerationServices.Implementations
 
         public Task<byte[]> GenerateFromSavedDocumentAsync(LegalDocument document, CancellationToken cancellationToken = default)
         {
-            var dto = legalDocumentAssembler.RebuildDocumentFromSnapshot(document);
+            var dto = legalDocumentAssembler.RebuildFromSavedDocument(document);
             return Task.FromResult(pdfGenerator.GenerateDocument(dto));
         }
     }

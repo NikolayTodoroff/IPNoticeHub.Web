@@ -1,21 +1,24 @@
-﻿using IPNoticeHub.Shared.Enums;
-using IPNoticeHub.Domain.Entities.LegalDocuments;
+﻿using IPNoticeHub.Application.DTOs.DocumentLibraryDTOs;
 using IPNoticeHub.Application.Repositories.DocumentLibraryRepository;
-using System.Globalization;
-using static IPNoticeHub.Shared.Constants.DateTimeFormats.DefaultDateTimeFormat;
 using IPNoticeHub.Application.Services.DocumentLibraryService.Abstractions;
 using IPNoticeHub.Application.Services.PdfGenerationService.Abstractions;
-using IPNoticeHub.Application.DTOs.DocumentLibraryDTOs;
+using IPNoticeHub.Application.Services.PdfGenerationServices.Abstractions;
+using IPNoticeHub.Application.Services.PdfGenerationServices.Implementations;
+using IPNoticeHub.Domain.Entities.LegalDocuments;
+using IPNoticeHub.Shared.Enums;
+using System.Globalization;
+using static IPNoticeHub.Shared.Constants.DateTimeFormats.DefaultDateTimeFormat;
+
 namespace IPNoticeHub.Application.Services.DocumentLibraryService.Implementations
 {
     public class DocumentLibraryService : IDocumentLibraryService
     {
         private readonly IDocumentLibraryRepository documentRepository;
-        private readonly IPdfService pdfService;
+        private readonly IPdfLetterService pdfService;
 
         public DocumentLibraryService(
             IDocumentLibraryRepository repository,
-            IPdfService pdfService)
+            IPdfLetterService pdfService)
         {
             documentRepository = repository;
             this.pdfService = pdfService;
@@ -185,61 +188,18 @@ namespace IPNoticeHub.Application.Services.DocumentLibraryService.Implementation
 
             byte[] pdfBytes;
 
-            if (document.TemplateType == LetterTemplateType.CeaseAndDesist)
+            try
             {
-                var input = new CeaseDesistInput(
-                    SenderName: document.SenderName,
-                    SenderAddress: document.SenderAddress,
-                    RecipientName: document.RecipientName,
-                    RecipientAddress: document.RecipientAddress,
-                    Date: document.LetterDate,
-                    WorkTitle: document.IpTitle ?? string.Empty,
-                    RegistrationNumber: document.RegistrationNumber ?? string.Empty,
-                    AdditionalFacts: document.AdditionalFacts,
-                    BodyTemplate: document.BodyTemplate
-                );
-
-                if (document.SourceType == DocumentSourceType.Trademark)
-                {
-                    pdfBytes = await pdfService.GenerateTrademarkCeaseDesistAsync(
-                        input, cancellationToken);
-                }
-
-                else
-                {
-                    pdfBytes = await pdfService.GenerateCopyrightCeaseDesistAsync(
-                        input,  cancellationToken);
-                }
+                pdfBytes = await pdfService.GenerateFromSavedDocumentAsync(
+                    document, 
+                    cancellationToken);
             }
 
-            else if (document.TemplateType == LetterTemplateType.Dmca)
-            {
-                var input = new DMCAInput(
-                    SenderName: document.SenderName,
-                    SenderEmail: document.SenderEmail ?? string.Empty,
-                    SenderAddress: document.SenderAddress,
-                    RecipientName: document.RecipientName,
-                    RecipientEmail: document.RecipientEmail ?? string.Empty,
-                    RecipientAddress: document.RecipientAddress,
-                    Date: document.LetterDate,
-                    WorkTitle: document.IpTitle ?? string.Empty,
-                    RegistrationNumber: document.RegistrationNumber ?? string.Empty,
-                    YearOfCreation: document.YearOfCreation,
-                    DateOfPublication: document.DateOfPublication,
-                    NationOfFirstPublication: document.NationOfFirstPublication,
-                    InfringingUrl: document.InfringingUrl ?? string.Empty,
-                    GoodFaithStatement: document.GoodFaithStatement ?? string.Empty,
-                    BodyTemplate: document.BodyTemplate
-                );
-
-                pdfBytes = await pdfService.GenerateCopyrightDMCAAsync(input, cancellationToken);
-            }
-
-            else
+            catch (NotSupportedException ex)
             {
                 throw new InvalidOperationException(
                     $"Unsupported document combination: " +
-                    $"{document.SourceType} / {document.TemplateType}");
+                    $"{document.SourceType}/{document.TemplateType}", ex);
             }
 
             string documentTitle = string.Join(

@@ -1,6 +1,7 @@
 ﻿using IPNoticeHub.Application.Services.CopyrightServices.Abstractions;
 using IPNoticeHub.Application.Services.DocumentLibraryService.Abstractions;
 using IPNoticeHub.Application.Services.PdfGenerationService.Abstractions;
+using IPNoticeHub.Application.Services.PdfGenerationServices.Abstractions;
 using IPNoticeHub.Application.Templates.Abstractions;
 using IPNoticeHub.Web.Controllers;
 using Microsoft.AspNetCore.Http;
@@ -20,7 +21,7 @@ namespace IPNoticeHub.Tests.UnitTests.TestUtilities
             bool includeUrlHelper = true)
         {
             var httpContext = new DefaultHttpContext();
-            var pdfService = new Mock<IPdfService>();
+            var pdfService = new Mock<IPdfLetterService>();
             var letterTemplate = new Mock<ILetterTemplateProvider>();
             var documentLibraryService = new Mock<IDocumentLibraryService>();
 

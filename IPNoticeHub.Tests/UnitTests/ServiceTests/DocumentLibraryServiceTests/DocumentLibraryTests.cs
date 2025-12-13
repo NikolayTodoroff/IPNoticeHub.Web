@@ -1,13 +1,14 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Domain.Entities.LegalDocuments;
-using IPNoticeHub.Application.Services.CopyrightService;
 using IPNoticeHub.Application.DTOs.DocumentLibraryDTOs;
 using IPNoticeHub.Application.Repositories.DocumentLibraryRepository;
 using IPNoticeHub.Application.Services.DocumentLibraryService.Implementations;
 using IPNoticeHub.Application.Services.PdfGenerationService.Abstractions;
 using Moq;
 using NUnit.Framework;
+using IPNoticeHub.Application.Services.PdfGenerationServices.Abstractions;
+using IPNoticeHub.Application.DTOs.PdfDTOs;
 
 namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
 {
@@ -55,7 +56,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
                     ld, _) => entity = ld)
                 .ReturnsAsync(42);
 
-            var pdfService = new Mock<IPdfService>(MockBehavior.Loose);
+            var pdfService = new Mock<IPdfLetterService>(MockBehavior.Loose);
 
             var logger = 
                 new Mock<DocumentLibraryService>(MockBehavior.Loose);
@@ -153,11 +154,11 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
 
             CeaseDesistInput? capturedInput = null;
 
-            var pdfService = new Mock<IPdfService>(MockBehavior.Strict);
+            var pdfService = new Mock<IPdfLetterService>(MockBehavior.Strict);
 
             pdfService
-                .Setup(p => p.GenerateTrademarkCeaseDesistAsync(
-                    It.IsAny<CeaseDesistInput>(),
+                .Setup(p => p.GenerateFromInputAsync(
+                    It.IsAny<LetterInputDto>(),
                     It.IsAny<CancellationToken>()))
                 .Callback<
                     CeaseDesistInput, 
@@ -228,8 +229,8 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
                 It.IsAny<CancellationToken>()), 
                 Times.Once);
 
-            pdfService.Verify(p => p.GenerateTrademarkCeaseDesistAsync(
-                    It.IsAny<CeaseDesistInput>(),
+            pdfService.Verify(p => p.GenerateFromInputAsync(
+                    It.IsAny<LetterInputDto>(),
                     It.IsAny<CancellationToken>()),
                 Times.Once);
         }
@@ -249,7 +250,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
                 It.IsAny<CancellationToken>()))
                 .ReturnsAsync((LegalDocument?)null);
 
-            var pdfService = new Mock<IPdfService>(MockBehavior.Loose);
+            var pdfService = new Mock<IPdfLetterService>(MockBehavior.Loose);
 
             var documentService = 
                 new Mock<DocumentLibraryService>(MockBehavior.Loose);
@@ -265,13 +266,13 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
 
             result.Should().BeNull();
 
-            pdfService.Verify(p => p.GenerateTrademarkCeaseDesistAsync(
-                    It.IsAny<CeaseDesistInput>(),
+            pdfService.Verify(p => p.GenerateFromInputAsync(
+                    It.IsAny<LetterInputDto>(),
                     It.IsAny<CancellationToken>()),
                 Times.Never);
 
-            pdfService.Verify(p => p.GenerateCopyrightDMCAAsync(
-                    It.IsAny<DMCAInput>(),
+            pdfService.Verify(p => p.GenerateFromInputAsync(
+                    It.IsAny<LetterInputDto>(),
                     It.IsAny<CancellationToken>()),
                 Times.Never);
         }

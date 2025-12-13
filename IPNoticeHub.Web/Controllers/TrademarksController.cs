@@ -9,6 +9,7 @@ using IPNoticeHub.Application.Services.DocumentLibraryService.Abstractions;
 using IPNoticeHub.Application.Services.PdfGenerationService.Abstractions;
 using IPNoticeHub.Application.Services.TrademarkService.Abstractions;
 using IPNoticeHub.Application.Services.WatchlistService.Abstractions;
+using IPNoticeHub.Application.Services.PdfGenerationServices.Abstractions;
 using IPNoticeHub.Web.WebHelpers.Mappings;
 using IPNoticeHub.Web.WebHelpers;
 using IPNoticeHub.Application.Templates.Abstractions;
@@ -20,15 +21,15 @@ namespace IPNoticeHub.Web.Controllers
         private readonly ITrademarkCollectionService tmCollectionService;
         private readonly ITrademarkSearchService tmSearchService;
         private readonly IWatchlistService tmWatchlistService;
-        private readonly IPdfService pdfService;
+        private readonly IPdfLetterService pdfService;
         private readonly ILetterTemplateProvider letterTemplateProvider;
         private readonly IDocumentLibraryService documentLibraryService;
 
         public TrademarksController(
             ITrademarkSearchService searchService, 
             ITrademarkCollectionService collectionService, 
-            IWatchlistService tmWatchlistService, 
-            IPdfService pdfService, 
+            IWatchlistService tmWatchlistService,
+            IPdfLetterService pdfService, 
             ILetterTemplateProvider letterTemplateProvider, 
             IDocumentLibraryService documentLibraryService)
         {
