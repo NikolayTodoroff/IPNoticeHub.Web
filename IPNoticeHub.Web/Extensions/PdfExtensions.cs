@@ -1,8 +1,9 @@
 ﻿using IPNoticeHub.Application.LetterComposition.Abstractions;
 using IPNoticeHub.Application.LetterComposition.Implementations;
 using IPNoticeHub.Application.Rendering.Abstractions;
-using IPNoticeHub.Application.Services.PdfGenerationService.Abstractions;
 using IPNoticeHub.Application.Services.PdfGenerationService.Implementations;
+using IPNoticeHub.Application.Services.PdfGenerationServices.Abstractions;
+using IPNoticeHub.Application.Services.PdfGenerationServices.Implementations;
 using IPNoticeHub.Application.Templates.Abstractions;
 using IPNoticeHub.Infrastructure.Rendering;
 using IPNoticeHub.Infrastructure.Rendering.Implementation;
@@ -17,7 +18,7 @@ namespace IPNoticeHub.Web.Extensions
             QuestPDF.Settings.License = LicenseType.Community;
 
             services.AddScoped<IPdfGenerator, QuestPdfGenerator>();
-            services.AddScoped<IPdfService, PdfService>();
+            services.AddScoped<IPdfLetterService, PdfLetterService>();
             services.AddScoped<ILetterTemplateProvider, LetterTemplateProvider>();
             services.AddScoped<ITemplateTokenReplacer, RegexTemplateTokenReplacer>();
             services.AddScoped<ILetterAssembler, LetterAssembler>();
