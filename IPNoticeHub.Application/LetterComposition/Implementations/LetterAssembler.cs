@@ -57,7 +57,7 @@ namespace IPNoticeHub.Application.LetterComposition.Implementations
                 NationOfFirstPublication = input.NationOfFirstPublication,
                 GoodFaithStatement = input.GoodFaithStatement,
 
-                Tokens = new Dictionary<string, string>()
+                Tokens = tokens
             };
         }
     }
