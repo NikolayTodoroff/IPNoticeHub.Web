@@ -17,21 +17,9 @@ namespace IPNoticeHub.Application.LetterComposition.Implementations
         public PdfLetterDto RebuildLetterInput(LetterInputDto input)
         {
             var letterBody = input.BodyTemplate ?? 
-                templateProvider.GetTemplateByKey(input.DocumentType)?.BodyTemplate;
+                templateProvider.GetTemplateByKey(input.DocumentType)?.BodyTemplate ?? string.Empty;
 
-            var dateUtc = input.LetterDateUtc ?? DateTime.UtcNow;
-
-            var tokens = 
-                TokenBuilder.TokenBuilder.BuildTokens(
-                new TokenSource(
-                dateUtc, input.WorkTitle, input.RegistrationNumber, 
-                input.SenderName, input.SenderAddress, input.SenderEmail, 
-                input.RecipientName, input.RecipientAddress, input.RecipientEmail,
-                input.InfringingUrl, input.AdditionalFacts,
-                input.YearOfCreation, input.DateOfPublication,
-                input.NationOfFirstPublication, input.GoodFaithStatement));
-
-            return new PdfLetterDto
+            var dto = new PdfLetterDto
             {
                 DocumentType = input.DocumentType,
                 DocumentTitle = input.DocumentTitle,
@@ -46,19 +34,24 @@ namespace IPNoticeHub.Application.LetterComposition.Implementations
                 RecipientName = input.RecipientName,
                 RecipientEmail = input.RecipientEmail,
                 RecipientAddress = input.RecipientAddress,
-                
+
                 InfringingUrl = input.InfringingUrl,
                 AdditionalFacts = input.AdditionalFacts,
 
-                BodyTemplate = letterBody!,
-                DateUtc = DateTime.UtcNow,
+                BodyTemplate = letterBody,
+                DateUtc = input.LetterDateUtc ?? DateTime.UtcNow,
+
                 YearOfCreation = input.YearOfCreation,
                 DateOfPublication = input.DateOfPublication,
                 NationOfFirstPublication = input.NationOfFirstPublication,
                 GoodFaithStatement = input.GoodFaithStatement,
-
-                Tokens = tokens
             };
+
+            var tokens = 
+                LetterTokenBuilder.BuildTokens(dto);
+
+            return dto with { Tokens = tokens };
         }
     }
 }
+

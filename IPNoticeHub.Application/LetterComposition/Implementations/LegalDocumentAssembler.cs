@@ -1,5 +1,6 @@
 ﻿using IPNoticeHub.Application.DTOs.PdfDTOs;
 using IPNoticeHub.Application.LetterComposition.Abstractions;
+using IPNoticeHub.Application.LetterComposition.TokenBuilder;
 using IPNoticeHub.Application.Templates.Abstractions;
 using IPNoticeHub.Domain.Entities.LegalDocuments;
 using IPNoticeHub.Shared.Enums;
@@ -28,23 +29,12 @@ namespace IPNoticeHub.Application.LetterComposition.Implementations
             var letterBody = 
                 document.BodyTemplate ?? letterTemplate?.BodyTemplate ?? string.Empty;
 
-            var dateUtc = document.LetterDate;
-
-            var tokens =
-                TokenBuilder.TokenBuilder.BuildTokens(
-                new TokenSource(
-                dateUtc, document.SenderName, document.SenderEmail, document.SenderAddress,
-                document.RecipientName, document.RecipientEmail, document.RecipientAddress,
-                document.IpTitle, document.RegistrationNumber, document.InfringingUrl,
-                document.AdditionalFacts, document.YearOfCreation, document.DateOfPublication,
-                document.NationOfFirstPublication, document.GoodFaithStatement));
-
-            return new PdfLetterDto
+            var dto = new PdfLetterDto
             {
                 DocumentType = EnumDisplay.GetDisplayName(document.SourceType),
                 DocumentTitle = document.DocumentTitle,
 
-                WorkTitle = document.IpTitle ?? "Intellectual Property",
+                WorkTitle = document.IpTitle ?? "",
                 RegistrationNumber = document.RegistrationNumber,
 
                 SenderName = document.SenderName,
@@ -58,15 +48,19 @@ namespace IPNoticeHub.Application.LetterComposition.Implementations
                 InfringingUrl = document.InfringingUrl,
                 AdditionalFacts = document.AdditionalFacts,
 
-                BodyTemplate = letterBody!,
-                DateUtc = DateTime.UtcNow,
+                BodyTemplate = letterBody,
+                DateUtc = document.LetterDate,
+
                 YearOfCreation = document.YearOfCreation,
                 DateOfPublication = document.DateOfPublication,
                 NationOfFirstPublication = document.NationOfFirstPublication,
                 GoodFaithStatement = document.GoodFaithStatement,
-
-                Tokens = new Dictionary<string, string>()
             };
+
+            var tokens =
+                LetterTokenBuilder.BuildTokens(dto);
+
+            return dto with { Tokens = tokens };
         }
 
         private static class LetterTemplateKeys

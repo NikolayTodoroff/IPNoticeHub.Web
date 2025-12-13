@@ -1,6 +1,6 @@
 ﻿namespace IPNoticeHub.Application.DTOs.PdfDTOs
 {
-    public sealed class PdfLetterDto
+    public sealed record PdfLetterDto
     {
         public string DocumentType { get; init; } = string.Empty;
         public string DocumentTitle { get; init; } = string.Empty;

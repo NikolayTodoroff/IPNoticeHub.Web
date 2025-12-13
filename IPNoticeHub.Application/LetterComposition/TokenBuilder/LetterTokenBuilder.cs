@@ -4,7 +4,7 @@ using static IPNoticeHub.Shared.Constants.DateTimeFormats.DefaultDateTimeFormat;
 
 namespace IPNoticeHub.Application.LetterComposition.TokenBuilder
 {
-    public class TokenBuilder
+    public class LetterTokenBuilder
     {
         public static Dictionary<string, string> BuildTokens(PdfLetterDto dto)
         {
