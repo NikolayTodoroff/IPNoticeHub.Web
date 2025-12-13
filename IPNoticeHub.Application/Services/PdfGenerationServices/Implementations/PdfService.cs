@@ -65,8 +65,8 @@ namespace IPNoticeHub.Application.Services.PdfGenerationService.Implementations
         };
 
         private static byte[] BuildLetter(
-    string template,
-    Dictionary<string, string> vars)
+            string template,
+            Dictionary<string, string> vars)
         {
             string resolved = ReplaceTemplate(template, vars);
 

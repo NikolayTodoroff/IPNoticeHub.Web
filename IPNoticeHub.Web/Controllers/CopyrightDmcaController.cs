@@ -1,14 +1,14 @@
-﻿using IPNoticeHub.Shared.Enums;
+﻿using IPNoticeHub.Application.Rendering.Abstractions;
+using IPNoticeHub.Application.Services.CopyrightServices.Abstractions;
+using IPNoticeHub.Application.Services.DocumentLibraryService.Abstractions;
+using IPNoticeHub.Application.Services.PdfGenerationService.Abstractions;
+using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Web.Extensions;
-using IPNoticeHub.Web.WebHelpers.Mappings;
 using IPNoticeHub.Web.Models.PdfGeneration;
+using IPNoticeHub.Web.WebHelpers.Mappings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static IPNoticeHub.Web.WebHelpers.ApplyEntityDetails;
-using static IPNoticeHub.Web.WebHelpers.TemplateReplacer;
-using IPNoticeHub.Application.Services.DocumentLibraryService.Abstractions;
-using IPNoticeHub.Application.Services.PdfGenerationService.Abstractions;
-using IPNoticeHub.Application.Services.CopyrightServices.Abstractions;
 
 namespace IPNoticeHub.Web.Controllers
 {
@@ -19,17 +19,20 @@ namespace IPNoticeHub.Web.Controllers
         private readonly IPdfService pdfService;
         private readonly ILetterTemplateProvider letterTemplateProvider;
         private readonly IDocumentLibraryService documentLibraryService;
+        private readonly ITemplateTokenReplacer templateReplacer;
 
         public CopyrightDmcaController(
             ICopyrightService copyrightService,
             IPdfService pdfService,
             ILetterTemplateProvider letterTemplateProvider,
-            IDocumentLibraryService documentLibraryService)
+            IDocumentLibraryService documentLibraryService,
+            ITemplateTokenReplacer templateReplacer)
         {
             this.copyrightService = copyrightService;
             this.pdfService = pdfService;
             this.letterTemplateProvider = letterTemplateProvider;
             this.documentLibraryService = documentLibraryService;
+            this.templateReplacer = templateReplacer;
         }
 
         [HttpGet, Authorize(Policy = "HasUserId")]
@@ -102,7 +105,8 @@ namespace IPNoticeHub.Web.Controllers
                 var placeholders =
                     CopyrightsMapping.MapDmcaViewModelToPlaceholders(viewModel);
 
-                viewModel.BodyTemplate = ReplaceTemplate(template, placeholders!);
+                viewModel.BodyTemplate = 
+                    templateReplacer.ReplaceTemplate(template, placeholders);
             }
 
             return View("DmcaPreview", viewModel);
@@ -137,7 +141,8 @@ namespace IPNoticeHub.Web.Controllers
                 var placeholders =
                     CopyrightsMapping.MapDmcaViewModelToPlaceholders(viewModel);
 
-                viewModel.BodyTemplate = ReplaceTemplate(template, placeholders);
+                viewModel.BodyTemplate = 
+                    templateReplacer.ReplaceTemplate(template, placeholders);
             }
 
             return RedirectToAction(nameof(DmcaPreview), viewModel);

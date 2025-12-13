@@ -1,149 +1,60 @@
-﻿using System.Text.RegularExpressions;
+﻿using IPNoticeHub.Application.DTOs.PdfDTOs;
 using IPNoticeHub.Application.Rendering.Abstractions;
-using IPNoticeHub.Application.DTOs.PdfDTOs;
 using QuestPDF.Fluent;
-using QuestPDF.Helpers;
-using QuestPDF.Infrastructure;
+using static IPNoticeHub.Shared.Constants.DateTimeFormats.DefaultDateTimeFormat;
 
-namespace IPNoticeHub.Infrastructure.Rendering
+namespace IPNoticeHub.Infrastructure.Rendering;
+
+public sealed class QuestPdfGenerator : IPdfGenerator
 {
-    public sealed class QuestPdfGenerator : IPdfGenerator
+    private readonly ITemplateTokenReplacer tokenReplacer;
+
+    public QuestPdfGenerator(ITemplateTokenReplacer tokenReplacer)
     {
-        public byte[] GenerateDocument(PdfLetterDto dto)
+        this.tokenReplacer = tokenReplacer;
+    }
+
+    public byte[] GenerateDocument(PdfLetterDto dto)
+    {
+        string letterTemplate = tokenReplacer.ReplaceTemplate(dto.BodyTemplate, dto.Tokens);
+        letterTemplate = letterTemplate.Replace("\r\n", "\n");
+
+        var bytes = QuestPDF.Fluent.Document.Create(container =>
         {
-            if (dto is null) throw new ArgumentNullException(nameof(dto));
-
-            QuestPDF.Settings.License = LicenseType.Community;
-
-            var resolvedBody = ApplyTokens(
-                dto.BodyTemplate ?? string.Empty, 
-                dto.Tokens);
-
-            var document = new LetterDocument(dto, resolvedBody);
-
-            return document.GeneratePdf();
-        }
-
-        private static string ApplyTokens(string template, IReadOnlyDictionary<string, string>? tokens)
-        {
-            if (string.IsNullOrWhiteSpace(template)) return string.Empty;
-            if (tokens is null || tokens.Count == 0) return template;
-
-            return Regex.Replace(
-                template,
-                @"\{\{\s*(?<key>[\w\.\-]+)\s*\}\}",
-                m =>
-                {
-                    var key = m.Groups["key"].Value;
-                    return tokens.TryGetValue(key, out var value) ? value : m.Value;
-                },
-                RegexOptions.Compiled);
-        }
-
-        private sealed class LetterDocument : IDocument
-        {
-            private readonly PdfLetterDto dto;
-            private readonly string resolvedBody;
-
-            public LetterDocument(PdfLetterDto dto, string resolvedBody)
+            container.Page(page =>
             {
-                this.dto = dto;
-                this.resolvedBody = resolvedBody;
-            }
+                page.Size(QuestPDF.Helpers.PageSizes.A4);
+                page.Margin(36);
+                page.DefaultTextStyle(x => x.FontSize(11));
 
-            public DocumentMetadata GetMetadata()
-                => DocumentMetadata.Default;
-
-            public void Compose(IDocumentContainer container)
-            {
-                container.Page(page =>
+                page.Header().Column(col =>
                 {
-                    page.Size(PageSizes.A4);
-                    page.Margin(40);
-                    page.DefaultTextStyle(x => x.FontSize(11));
+                    col.Item().Text(dto.SenderName).SemiBold();
 
-                    page.Header().Element(ComposeHeader);
-                    page.Content().Element(ComposeContent);
-                    page.Footer().AlignCenter().Text(x =>
+                    if (!string.IsNullOrWhiteSpace(dto.SenderAddress))
+                        col.Item().Text(dto.SenderAddress);
+
+                    col.Item().Text(dto.DateUtc.ToString(DateTimeFormat)).FontSize(10);
+                });
+
+                page.Content().Column(col =>
+                {
+                    if (!string.IsNullOrWhiteSpace(dto.RecipientName) ||
+                        !string.IsNullOrWhiteSpace(dto.RecipientAddress))
                     {
-                        x.Span("Page ");
-                        x.CurrentPageNumber();
-                        x.Span(" of ");
-                        x.TotalPages();
-                    });
+                        col.Item()
+                            .PaddingBottom(8)
+                            .Text($"{dto.RecipientName}\n{dto.RecipientAddress}".Trim());
+                    }
+
+                    col.Item().Text(letterTemplate).AlignLeft().LineHeight(1.4f);
                 });
-            }
 
-            private void ComposeHeader(IContainer container)
-            {
-                container.Column(col =>
-                {
-                    col.Spacing(6);
+                page.Footer().AlignRight().Text("Generated with IPNoticeHub").
+                FontSize(9);
+            });
+        }).GeneratePdf();
 
-                    col.Item().Text(dto.DocumentTitle ?? string.Empty).FontSize(16).SemiBold();
-
-                    col.Item().Text($"{dto.DocumentType} • {dto.DateUtc:yyyy-MM-dd}")
-                        .FontSize(10)
-                        .FontColor(Colors.Grey.Darken2);
-
-                    col.Item().LineHorizontal(1).LineColor(Colors.Grey.Lighten2);
-                });
-            }
-
-            private void ComposeContent(IContainer container)
-            {
-                container.Column(col =>
-                {
-                    col.Spacing(12);
-
-                    // “From / To” block (optional – remove if you don’t want it)
-                    col.Item().Element(ComposeParties);
-
-                    // Work / registration info
-                    col.Item().Element(ComposeWorkInfo);
-
-                    // Body
-                    col.Item().Text(resolvedBody).LineHeight(1.35f);
-                });
-            }
-
-            private void ComposeParties(IContainer container)
-            {
-                container.Row(row =>
-                {
-                    row.RelativeItem().Column(c =>
-                    {
-                        c.Item().Text("Sender").SemiBold();
-                        c.Item().Text(dto.SenderName ?? string.Empty);
-                        c.Item().Text(dto.SenderEmail ?? string.Empty);
-                        c.Item().Text(dto.SenderAddress ?? string.Empty);
-                    });
-
-                    row.RelativeItem().Column(c =>
-                    {
-                        c.Item().Text("Recipient").SemiBold();
-                        c.Item().Text(dto.RecipientName ?? string.Empty);
-                        c.Item().Text(dto.RecipientEmail ?? string.Empty);
-                        c.Item().Text(dto.RecipientAddress ?? string.Empty);
-                    });
-                });
-            }
-
-            private void ComposeWorkInfo(IContainer container)
-            {
-                container.Column(c =>
-                {
-                    c.Spacing(4);
-                    if (!string.IsNullOrWhiteSpace(dto.WorkTitle))
-                        c.Item().Text($"Work: {dto.WorkTitle}");
-
-                    if (!string.IsNullOrWhiteSpace(dto.RegistrationNumber))
-                        c.Item().Text($"Registration #: {dto.RegistrationNumber}");
-
-                    if (!string.IsNullOrWhiteSpace(dto.InfringingUrl))
-                        c.Item().Text($"Infringing URL: {dto.InfringingUrl}");
-                });
-            }
-        }
+        return bytes;
     }
 }
