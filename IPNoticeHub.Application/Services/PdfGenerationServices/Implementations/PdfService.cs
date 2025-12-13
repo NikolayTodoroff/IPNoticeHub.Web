@@ -1,19 +1,26 @@
 ﻿using static IPNoticeHub.Shared.Constants.DateTimeFormats.DefaultDateTimeFormat;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
-using System.Text.RegularExpressions;
 using IPNoticeHub.Application.Services.PdfGenerationService.Abstractions;
+using IPNoticeHub.Application.Rendering.Abstractions;
 
 namespace IPNoticeHub.Application.Services.PdfGenerationService.Implementations
 {
     public sealed class PdfService : IPdfService
     {
-        public Task<byte[]> GenerateCopyrightCeaseDesistAsync(
+        private readonly ITemplateTokenReplacer templateReplacer;
+
+        public PdfService(ITemplateTokenReplacer templateReplacer)
+        {
+            this.templateReplacer = templateReplacer;
+        }
+
+            public Task<byte[]> GenerateCopyrightCeaseDesistAsync(
             CeaseDesistInput data, 
             CancellationToken cancellation = default)
         {
             return Task.FromResult(
-                BuildLetter(data.BodyTemplate, BuildCnDTemplateVars(data)));
+                BuildLetter(data.BodyTemplate, CeaseDesistTemplateVars(data)));
         }
 
         public Task<byte[]> GenerateCopyrightDMCAAsync(
@@ -21,7 +28,7 @@ namespace IPNoticeHub.Application.Services.PdfGenerationService.Implementations
             CancellationToken cancellation = default)
         {
             return Task.FromResult(
-                BuildLetter(data.BodyTemplate, BuildDMCATemplateVars(data)));
+                BuildLetter(data.BodyTemplate, DmcaTemplateVars(data)));
         }
 
         public Task<byte[]> GenerateTrademarkCeaseDesistAsync(
@@ -29,10 +36,10 @@ namespace IPNoticeHub.Application.Services.PdfGenerationService.Implementations
             CancellationToken cancellation = default)
         {
             return Task.FromResult(
-                BuildLetter(data.BodyTemplate, BuildCnDTemplateVars(data)));
+                BuildLetter(data.BodyTemplate, CeaseDesistTemplateVars(data)));
         }
 
-        private static Dictionary<string, string> BuildCnDTemplateVars(
+        private static Dictionary<string, string> CeaseDesistTemplateVars(
             CeaseDesistInput input) => new()
         {
             ["SenderName"] = input.SenderName,
@@ -45,7 +52,7 @@ namespace IPNoticeHub.Application.Services.PdfGenerationService.Implementations
             ["AdditionalFacts"] = input.AdditionalFacts ?? string.Empty
         };
 
-        private static Dictionary<string, string> BuildDMCATemplateVars(
+        private static Dictionary<string, string> DmcaTemplateVars(
             DMCAInput input) => new()
         {
             ["SenderName"] = input.SenderName,
@@ -64,11 +71,9 @@ namespace IPNoticeHub.Application.Services.PdfGenerationService.Implementations
             ["GoodFaithStatement"] = input.GoodFaithStatement
         };
 
-        private static byte[] BuildLetter(
-            string template,
-            Dictionary<string, string> vars)
+        private byte[] BuildLetter(string template, Dictionary<string, string> vars)
         {
-            string resolved = ReplaceTemplate(template, vars);
+            string resolved = templateReplacer.ReplaceTemplate(template, vars);
 
             resolved = resolved.Replace("\r\n", "\n");
 
@@ -134,20 +139,6 @@ namespace IPNoticeHub.Application.Services.PdfGenerationService.Implementations
             .GeneratePdf();
 
             return bytes;
-        }
-
-        private static string ReplaceTemplate(string template, Dictionary<string, string> vars)
-        {
-            if (string.IsNullOrEmpty(template)) return string.Empty;
-
-            return Regex.Replace(template, @"{{\s*(\w+)\s*}}", match =>
-            {
-                string key = match.Groups[1].Value;
-
-                if (vars.TryGetValue(key, out string? value)) return value ?? string.Empty;
-
-                return match.Value; 
-            });
         }
     }
 }
