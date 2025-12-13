@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using static IPNoticeHub.Common.ValidationConstants.TrademarkRegistrationConstants;
+using static IPNoticeHub.Shared.Constants.ValidationConstants.TrademarkRegistrationConstants;
 
-namespace IPNoticeHub.Services.Watchlist.DTOs
+namespace IPNoticeHub.Application.Watchlist.DTOs
 {
     public sealed class TrademarkWatchlistItemDto
     {

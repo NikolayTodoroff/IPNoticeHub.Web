@@ -1,8 +1,8 @@
-﻿using IPNoticeHub.Services.Copyrights.DTOs;
-using IPNoticeHub.Common.EnumConstants;
-using IPNoticeHub.Common.Infrastructure.Paging;
+﻿using IPNoticeHub.Application.Copyrights.DTOs;
+using IPNoticeHub.Shared.Enums;
+using IPNoticeHub.Shared.Infrastructure.Paging;
 
-namespace IPNoticeHub.Services.Copyrights.Abstractions
+namespace IPNoticeHub.Application.Copyrights.Abstractions
 {
     public interface ICopyrightService
     {

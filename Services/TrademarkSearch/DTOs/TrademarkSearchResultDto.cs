@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using static IPNoticeHub.Common.ValidationConstants.TrademarkRegistrationConstants;
+using static IPNoticeHub.Shared.Constants.ValidationConstants.TrademarkRegistrationConstants;
 
-namespace IPNoticeHub.Services.TrademarkSearch.DTOs
+namespace IPNoticeHub.Application.TrademarkSearch.DTOs
 {
     public sealed class TrademarkSearchResultDto
     {

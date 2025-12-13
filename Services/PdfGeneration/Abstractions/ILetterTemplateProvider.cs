@@ -1,6 +1,6 @@
-﻿using IPNoticeHub.Common.EnumConstants;
+﻿using IPNoticeHub.Shared.Enums;
 
-namespace IPNoticeHub.Services.PdfGeneration.Abstractions
+namespace IPNoticeHub.Application.PdfGeneration.Abstractions
 {
     public interface ILetterTemplateProvider
     {

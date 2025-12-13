@@ -1,50 +1,59 @@
 ﻿using FluentAssertions;
-using IPNoticeHub.Data.Repositories.Trademarks.Implementations;
+using IPNoticeHub.Infrastructure.Persistence.Repositories.TrademarkRepository;
+using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Tests.TestUtilities;
 using NUnit.Framework;
 
 namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.UserTrademarkRepositoryTests
 {
-    /// <summary>
-    /// Section: Validates repository stability with no active user links.
-    /// Verifies that QueryUserCollection(userId) returns an empty sequence without exceptions.
-    /// Ensures that QueryUserLinks(userId) returns an empty sequence without exceptions.
-    /// </summary>
     [TestFixture]
     public class UserTmRepoEmptyProjectionsTests
     {
         [Test]
-        public void QueryUserCollection_Empty_ReturnsEmpty_NoExceptions()
+        public async Task GetUserCollection_Empty_ReturnsEmpty_NoExceptions()
         {
             using var testDbContext = InMemoryDbContextFactory.CreateTestDbContext();
 
-            var user = InMemoryDbContextFactory.CreateApplicationUser("user1");
+            var user = InMemoryDbContextFactory.CreateApplicationUser(id: "user1");
             testDbContext.Users.Add(user);
-        
-            testDbContext.SaveChangesAsync();
+            await testDbContext.SaveChangesAsync();
 
             var userTmRepository = new UserTrademarkRepository(testDbContext);
 
-            var queryLinksResult = userTmRepository.QueryUserCollection(user.Id).ToArray();
+            var pageResult = await userTmRepository.GetUserCollectionPageAsync(
+                user.Id,
+                CollectionSortBy.DateAddedDesc,
+                currentPage: 1,
+                resultsPerPage: 10,
+                cancellationToken: default);
 
-            queryLinksResult.Should().BeEmpty();
+            pageResult.Results.Should().BeEmpty();
+            pageResult.ResultsCount.Should().Be(0);
+            pageResult.CurrentPage.Should().Be(1);
+            pageResult.ResultsCountPerPage.Should().Be(10);
         }
 
         [Test]
         public void QueryUserLinks_Empty_ReturnsEmpty_NoExceptions()
         {
-            using var testDbContext = InMemoryDbContextFactory.CreateTestDbContext();
+            using var testDbContext = 
+                InMemoryDbContextFactory.CreateTestDbContext();
 
-            var user = InMemoryDbContextFactory.CreateApplicationUser("user1");
+            var user = 
+                InMemoryDbContextFactory.CreateApplicationUser("user1");
+
             testDbContext.Users.Add(user);
-
             testDbContext.SaveChangesAsync();
 
-            var userTmRepository = new UserTrademarkRepository(testDbContext);
+            var userTmRepository = 
+                new UserTrademarkRepository(testDbContext);
 
-            var queryLinksResult = userTmRepository.QueryUserLinks(user.Id).ToArray();
+            var queryLinksResult = 
+                userTmRepository.GetUserLinks(user.Id).
+                ToArray();
 
-            queryLinksResult.Should().BeEmpty();
+            queryLinksResult.Should().
+                BeEmpty();
         }
     }
 }

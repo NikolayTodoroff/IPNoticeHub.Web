@@ -17,11 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\IPNoticeHub.Common\IPNoticeHub.Common.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Migrations\" />
+    <ProjectReference Include="..\IPNoticeHub.Shared\IPNoticeHub.Shared.csproj" />
   </ItemGroup>
 
 </Project>

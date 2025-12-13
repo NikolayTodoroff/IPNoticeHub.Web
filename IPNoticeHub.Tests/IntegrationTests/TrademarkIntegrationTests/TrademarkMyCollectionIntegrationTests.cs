@@ -1,8 +1,6 @@
 ﻿using FluentAssertions;
-using IPNoticeHub.Common.EnumConstants;
-using IPNoticeHub.Data;
-using IPNoticeHub.Data.Entities.Identity;
-using IPNoticeHub.Data.Entities.TrademarkRegistration;
+using IPNoticeHub.Shared.Enums;
+using IPNoticeHub.Domain.Entities.Identity;
 using IPNoticeHub.Tests.IntegrationTests.TestUtilities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.TestHost;
@@ -13,6 +11,8 @@ using System.Net;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using Microsoft.Extensions.Logging;
+using IPNoticeHub.Domain.Entities.Trademarks;
+using IPNoticeHub.Infrastructure.Persistence;
 
 namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
 {
@@ -40,15 +40,18 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                 AllowAutoRedirect = false
             });
 
-            var response = await client.GetAsync("/Trademarks/MyCollection");
+            var response = await client.GetAsync(
+                "/Trademarks/MyCollection");
 
-            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.Unauthorized);
         }
 
         [Test]
         public async Task Get_MyCollection_AuthenticatedWithoutNameIdentifier_Returns403()
         {
-            var layeredFactory = appFactory.WithWebHostBuilder(builder =>
+            var layeredFactory = 
+                appFactory.WithWebHostBuilder(builder =>
             {
                 builder.ConfigureTestServices(services =>
                 {
@@ -58,35 +61,52 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                             authOptions.DefaultAuthenticateScheme = "NoId";
                             authOptions.DefaultChallengeScheme = "NoId";
                         })
-                        .AddScheme<AuthenticationSchemeOptions, NoIdAuthHandler>("NoId", _ => { });
+                        .AddScheme<
+                            AuthenticationSchemeOptions, 
+                            NoIdAuthHandler>("NoId", 
+                            _ => { });
                 });
             });
 
             await using (layeredFactory)
             {
-                var client = layeredFactory.CreateClient(new() { AllowAutoRedirect = false });
-                var response = await client.GetAsync("/Trademarks/MyCollection");
+                var client = layeredFactory.CreateClient(
+                    new() 
+                    { AllowAutoRedirect = false });
 
-                response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+                var response = await client.GetAsync(
+                    "/Trademarks/MyCollection");
+
+                response.StatusCode.Should().
+                    Be(HttpStatusCode.Forbidden);
             }
         }
 
         private sealed class NoIdAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
         {
-            public NoIdAuthHandler(IOptionsMonitor<AuthenticationSchemeOptions> options,
-                                   ILoggerFactory logger, UrlEncoder encoder) : base(options, logger, encoder) { }
+            public NoIdAuthHandler(
+                IOptionsMonitor<AuthenticationSchemeOptions> options,
+                ILoggerFactory logger, 
+                UrlEncoder encoder) : base(options, logger, encoder) { }
 
             protected override Task<AuthenticateResult> HandleAuthenticateAsync()
             {
                 var identity = new ClaimsIdentity(new[]
                 {
-                    new Claim(ClaimTypes.Name, "AuthNoId"),
-                    new Claim(ClaimTypes.Email, "authnoid@test.local")
-                    // intentionally no ClaimTypes.NameIdentifier
+                    new Claim(
+                        ClaimTypes.Name, 
+                        "AuthNoId"),
+
+                    new Claim(
+                        ClaimTypes.Email, 
+                        "authnoid@test.local")
                 }, "NoId");
 
                 var claimsPrincipal = new ClaimsPrincipal(identity);
-                var authTicket = new AuthenticationTicket(claimsPrincipal, "NoId");
+
+                var authTicket = new AuthenticationTicket(
+                    claimsPrincipal, 
+                    "NoId");
 
                 return Task.FromResult(AuthenticateResult.Success(authTicket));
             }
@@ -98,11 +118,16 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
             var userId = "u1";
             var client = appFactory.CreateClientAs(userId);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
 
                 var entity1 = new TrademarkEntity
                 {
@@ -140,21 +165,38 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                     Source = DataProvider.USPTO
                 };
 
-                testDbContext.TrademarkRegistrations.AddRange(entity1, entity2, entity3);
+                testDbContext.TrademarkRegistrations.AddRange(
+                    entity1, 
+                    entity2, 
+                    entity3);
+
                 await testDbContext.SaveChangesAsync();
 
                 testDbContext.UserTrademarks.AddRange(
-                    new UserTrademark { UserId = userId, TrademarkId = entity1.Id, IsDeleted = false },
-                    new UserTrademark { UserId = userId, TrademarkId = entity2.Id, IsDeleted = false },
-                    new UserTrademark { UserId = userId, TrademarkId = entity3.Id, IsDeleted = false }
+                    new UserTrademark { 
+                        ApplicationUserId = userId, 
+                        TrademarkEntityId = entity1.Id, 
+                        IsDeleted = false },
+
+                    new UserTrademark { 
+                        ApplicationUserId = userId, 
+                        TrademarkEntityId = entity2.Id, 
+                        IsDeleted = false },
+
+                    new UserTrademark { 
+                        ApplicationUserId = userId, 
+                        TrademarkEntityId = entity3.Id, 
+                        IsDeleted = false }
                 );
 
                 await testDbContext.SaveChangesAsync();
             }
 
-            var response = await client.GetAsync("/Trademarks/MyCollection?sortBy=WordmarkAsc&currentPage=2&resultsPerPage=1");
+            var response = await client.GetAsync(
+                "/Trademarks/MyCollection?sortBy=WordmarkAsc&currentPage=2&resultsPerPage=1");
 
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.OK);
         }
 
         [Test]
@@ -164,10 +206,16 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
 
             var client = appFactory.CreateClientAs(userId);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
+
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
 
                 var entity1 = new TrademarkEntity
                 {
@@ -192,20 +240,32 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                     Source = DataProvider.USPTO
                 };
 
-                testDbContext.TrademarkRegistrations.AddRange(entity1, entity2);
+                testDbContext.TrademarkRegistrations.AddRange(
+                    entity1, 
+                    entity2);
+
                 await testDbContext.SaveChangesAsync();
 
                 testDbContext.UserTrademarks.AddRange(
-                    new UserTrademark { UserId = userId, TrademarkId = entity1.Id, IsDeleted = false },
-                    new UserTrademark { UserId = userId, TrademarkId = entity2.Id, IsDeleted = false }
+                    new UserTrademark { 
+                        ApplicationUserId = userId, 
+                        TrademarkEntityId = entity1.Id, 
+                        IsDeleted = false },
+
+                    new UserTrademark { 
+                        ApplicationUserId = userId, 
+                        TrademarkEntityId = entity2.Id, 
+                        IsDeleted = false }
                 );
 
                 await testDbContext.SaveChangesAsync();
             }
 
-            var response = await client.GetAsync("/Trademarks/MyCollection?sortBy=WordmarkAsc&currentPage=9999&resultsPerPage=9999");
+            var response = await client.GetAsync(
+                "/Trademarks/MyCollection?sortBy=WordmarkAsc&currentPage=9999&resultsPerPage=9999");
 
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.OK);
         }
 
         [Test]
@@ -215,10 +275,16 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
 
             var client = appFactory.CreateClientAs(userId);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
+
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
 
                 var entity1 = new TrademarkEntity
                 {
@@ -244,19 +310,31 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                     Source = DataProvider.USPTO
                 };
 
-                testDbContext.TrademarkRegistrations.AddRange(entity1, entity2);
+                testDbContext.TrademarkRegistrations.AddRange(
+                    entity1, 
+                    entity2);
+
                 await testDbContext.SaveChangesAsync();
 
                 testDbContext.UserTrademarks.AddRange(
-                    new UserTrademark { UserId = userId, TrademarkId = entity1.Id, IsDeleted = false },
-                    new UserTrademark { UserId = userId, TrademarkId = entity2.Id, IsDeleted = false }
+                    new UserTrademark { 
+                        ApplicationUserId = userId, 
+                        TrademarkEntityId = entity1.Id, 
+                        IsDeleted = false },
+
+                    new UserTrademark { 
+                        ApplicationUserId = userId, 
+                        TrademarkEntityId = entity2.Id, 
+                        IsDeleted = false }
                 );
                 await testDbContext.SaveChangesAsync();
             }
 
-            var response = await client.GetAsync("/Trademarks/MyCollection?sortBy=TotallyNotAValue&currentPage=1&resultsPerPage=10");
+            var response = await client.GetAsync(
+                "/Trademarks/MyCollection?sortBy=TotallyNotAValue&currentPage=1&resultsPerPage=10");
 
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.OK);
         }
 
         [Test]
@@ -265,10 +343,16 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
             var userId = "u1";
             var client = appFactory.CreateClientAs(userId);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
+
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
 
                 var activeEntity = new TrademarkEntity
                 {
@@ -294,19 +378,31 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                     Source = DataProvider.USPTO
                 };
 
-                testDbContext.TrademarkRegistrations.AddRange(activeEntity, deletedEntity);
+                testDbContext.TrademarkRegistrations.AddRange(
+                    activeEntity, 
+                    deletedEntity);
+
                 await testDbContext.SaveChangesAsync();
 
                 testDbContext.UserTrademarks.AddRange(
-                    new UserTrademark { UserId = userId, TrademarkId = activeEntity.Id, IsDeleted = false },
-                    new UserTrademark { UserId = userId, TrademarkId = deletedEntity.Id, IsDeleted = true }
+                    new UserTrademark { 
+                        ApplicationUserId = userId, 
+                        TrademarkEntityId = activeEntity.Id, 
+                        IsDeleted = false },
+
+                    new UserTrademark { 
+                        ApplicationUserId = userId, 
+                        TrademarkEntityId = deletedEntity.Id, 
+                        IsDeleted = true }
                 );
                 await testDbContext.SaveChangesAsync();
             }
 
-            var response = await client.GetAsync("/Trademarks/MyCollection?sortBy=WordmarkAsc&currentPage=1&resultsPerPage=10");
+            var response = await client.GetAsync(
+                "/Trademarks/MyCollection?sortBy=WordmarkAsc&currentPage=1&resultsPerPage=10");
 
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.OK);
         }
 
         [Test]
@@ -315,15 +411,23 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
             var userId = "u1";
             var client = appFactory.CreateClientAs(userId);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
+
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
             }
 
-            var response = await client.GetAsync("/Trademarks/MyCollection");
+            var response = await client.GetAsync(
+                "/Trademarks/MyCollection");
 
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.OK);
         }
 
         [TestCase(0)]
@@ -333,10 +437,16 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
             var userId = "u1";
             var client = appFactory.CreateClientAs(userId);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
+
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
 
                 var entity1 = new TrademarkEntity
                 {
@@ -360,19 +470,32 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                     StatusDetail = "Registered",
                     Source = DataProvider.USPTO };
 
-                testDbContext.TrademarkRegistrations.AddRange(entity1, entity2);
+                testDbContext.TrademarkRegistrations.AddRange(
+                    entity1, 
+                    entity2);
+
                 await testDbContext.SaveChangesAsync();
 
                 testDbContext.UserTrademarks.AddRange(
-                    new UserTrademark { UserId = userId, TrademarkId = entity1.Id, IsDeleted = false },
-                    new UserTrademark { UserId = userId, TrademarkId = entity2.Id, IsDeleted = false }
+                    new UserTrademark { 
+                        ApplicationUserId = userId, 
+                        TrademarkEntityId = entity1.Id, 
+                        IsDeleted = false },
+
+                    new UserTrademark { 
+                        ApplicationUserId = userId, 
+                        TrademarkEntityId = entity2.Id, 
+                        IsDeleted = false }
                 );
                 await testDbContext.SaveChangesAsync();
             }
 
-            var response = await client.GetAsync($"/Trademarks/MyCollection?sortBy=WordmarkAsc&currentPage=1&resultsPerPage={resultsPerPage}");
+            var response = await client.GetAsync(
+                $"/Trademarks/MyCollection?sortBy=WordmarkAsc&currentPage=1&resultsPerPage=" +
+                $"{resultsPerPage}");
 
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.OK);
         }
 
         [TestCase(5000)]
@@ -382,10 +505,16 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
             var userId = "u1";
             var client = appFactory.CreateClientAs(userId);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
+
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
 
                 var entity1 = new TrademarkEntity
                 { 
@@ -420,21 +549,39 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                     StatusDetail = "Registered",
                     Source = DataProvider.USPTO };
 
-                testDbContext.TrademarkRegistrations.AddRange(entity1, entity2, entity3);
+                testDbContext.TrademarkRegistrations.AddRange(
+                    entity1, 
+                    entity2, 
+                    entity3);
+
                 await testDbContext.SaveChangesAsync();
 
                 testDbContext.UserTrademarks.AddRange(
-                    new UserTrademark { UserId = userId, TrademarkId = entity1.Id, IsDeleted = false },
-                    new UserTrademark { UserId = userId, TrademarkId = entity2.Id, IsDeleted = false },
-                    new UserTrademark { UserId = userId, TrademarkId = entity3.Id, IsDeleted = false }
+                    new UserTrademark { 
+                        ApplicationUserId = userId, 
+                        TrademarkEntityId = entity1.Id, 
+                        IsDeleted = false },
+
+                    new UserTrademark { 
+                        ApplicationUserId = userId, 
+                        TrademarkEntityId = entity2.Id, 
+                        IsDeleted = false },
+
+                    new UserTrademark { 
+                        ApplicationUserId = userId, 
+                        TrademarkEntityId = entity3.Id, 
+                        IsDeleted = false }
                 );
 
                 await testDbContext.SaveChangesAsync();
             }
 
-            var response = await client.GetAsync($"/Trademarks/MyCollection?sortBy=WordmarkAsc&currentPage=1&resultsPerPage={resultsPerPage}");
+            var response = await client.GetAsync(
+                $"/Trademarks/MyCollection?sortBy=WordmarkAsc&currentPage=1&resultsPerPage=" +
+                $"{resultsPerPage}");
 
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.OK);
         }
 
         [TestCase(0)]
@@ -444,10 +591,16 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
             var userId = "u1";
             var client = appFactory.CreateClientAs(userId);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
+
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
 
                 var entity1 = new TrademarkEntity
                 {
@@ -473,19 +626,32 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                     Source = DataProvider.USPTO
                 };
 
-                testDbContext.TrademarkRegistrations.AddRange(entity1, entity2);
+                testDbContext.TrademarkRegistrations.AddRange(
+                    entity1, 
+                    entity2);
+
                 await testDbContext.SaveChangesAsync();
 
                 testDbContext.UserTrademarks.AddRange(
-                    new UserTrademark { UserId = userId, TrademarkId = entity1.Id, IsDeleted = false },
-                    new UserTrademark { UserId = userId, TrademarkId = entity2.Id, IsDeleted = false }
+                    new UserTrademark { 
+                        ApplicationUserId = userId, 
+                        TrademarkEntityId = entity1.Id, 
+                        IsDeleted = false },
+
+                    new UserTrademark { 
+                        ApplicationUserId = userId, 
+                        TrademarkEntityId = entity2.Id, 
+                        IsDeleted = false }
                 );
                 await testDbContext.SaveChangesAsync();
             }
 
-            var response = await client.GetAsync($"/Trademarks/MyCollection?sortBy=WordmarkAsc&currentPage={currentPage}&resultsPerPage=10");
+            var response = await client.GetAsync(
+                $"/Trademarks/MyCollection?sortBy=WordmarkAsc&currentPage=" +
+                $"{currentPage}&resultsPerPage=10");
 
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.OK);
         }
 
         [Test]
@@ -521,29 +687,45 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                     StatusDetail = "Registered",
                     Source = DataProvider.USPTO };
 
-                testDbContext.TrademarkRegistrations.AddRange(entity1, entity2);
+                testDbContext.TrademarkRegistrations.AddRange(
+                    entity1, 
+                    entity2);
+
                 await testDbContext.SaveChangesAsync();
 
                 testDbContext.UserTrademarks.AddRange(
-                    new UserTrademark { UserId = userId, TrademarkId = entity1.Id, IsDeleted = false },
-                    new UserTrademark { UserId = userId, TrademarkId = entity2.Id, IsDeleted = false }
+                    new UserTrademark { 
+                        ApplicationUserId = userId, 
+                        TrademarkEntityId = entity1.Id, 
+                        IsDeleted = false },
+
+                    new UserTrademark { 
+                        ApplicationUserId = userId, 
+                        TrademarkEntityId = entity2.Id, 
+                        IsDeleted = false }
                 );
                 await testDbContext.SaveChangesAsync();
             }
 
-            var response = await client.GetAsync("/Trademarks/MyCollection?sortBy=WordmarkAsc&currentPage=abc&resultsPerPage=10");
+            var response = await client.GetAsync(
+                "/Trademarks/MyCollection?sortBy=WordmarkAsc&currentPage=abc&resultsPerPage=10");
 
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.OK);
         }
 
         [Test]
         public async Task Get_TrademarksSearch_Path_Returns404()
         {
-            var client = appFactory.CreateClient(new() { AllowAutoRedirect = false });
+            var client = appFactory.CreateClient(
+                new() 
+                { AllowAutoRedirect = false });
 
-            var response = await client.GetAsync("/Trademarks/Search");
+            var response = await client.GetAsync(
+                "/Trademarks/Search");
 
-            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.NotFound);
         }
 
         [TestCase("RegistrationDateAsc")]
@@ -553,10 +735,16 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
             var userId = "u1";
             var client = appFactory.CreateClientAs(userId);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
+
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
 
                 var initialEntity = new TrademarkEntity
                 {
@@ -597,20 +785,38 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                     Source = DataProvider.USPTO
                 };
 
-                testDbContext.TrademarkRegistrations.AddRange(initialEntity, newEntity, noRegDateEntity);
+                testDbContext.TrademarkRegistrations.AddRange(
+                    initialEntity, 
+                    newEntity, 
+                    noRegDateEntity);
+
                 await testDbContext.SaveChangesAsync();
 
                 testDbContext.UserTrademarks.AddRange(
-                    new UserTrademark { UserId = userId, TrademarkId = initialEntity.Id, IsDeleted = false },
-                    new UserTrademark { UserId = userId, TrademarkId = newEntity.Id, IsDeleted = false },
-                    new UserTrademark { UserId = userId, TrademarkId = noRegDateEntity.Id, IsDeleted = false }
+                    new UserTrademark { 
+                        ApplicationUserId = userId, 
+                        TrademarkEntityId = initialEntity.Id, 
+                        IsDeleted = false },
+
+                    new UserTrademark { 
+                        ApplicationUserId = userId, 
+                        TrademarkEntityId = newEntity.Id, 
+                        IsDeleted = false },
+
+                    new UserTrademark { 
+                        ApplicationUserId = userId, 
+                        TrademarkEntityId = noRegDateEntity.Id, 
+                        IsDeleted = false }
                 );
                 await testDbContext.SaveChangesAsync();
             }
 
-            var response = await client.GetAsync($"/Trademarks/MyCollection?sortBy={sortBy}&currentPage=1&resultsPerPage=10");
+            var response = await client.GetAsync(
+                $"/Trademarks/MyCollection?sortBy=" +
+                $"{sortBy}&currentPage=1&resultsPerPage=10");
 
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.OK);
         }
 
         [Test]
@@ -619,13 +825,19 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
             var userId = "u1";
             var client = appFactory.CreateClientAs(userId);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                // Seeding ~120 trademarks + links
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
+
                 var list = new List<TrademarkEntity>(120);
+
                 for (int i = 0; i < 120; i++)
                 {
                     list.Add(new TrademarkEntity
@@ -645,19 +857,22 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                 await testDbContext.SaveChangesAsync();
 
                 testDbContext.UserTrademarks.AddRange(
-                    list.Select(t => new UserTrademark
+                    list.Select(
+                        t => new UserTrademark
                     {
-                        UserId = userId,
-                        TrademarkId = t.Id,
+                        ApplicationUserId = userId,
+                        TrademarkEntityId = t.Id,
                         IsDeleted = false
                     })
                 );
                 await testDbContext.SaveChangesAsync();
             }
 
-            var response = await client.GetAsync("/Trademarks/MyCollection?sortBy=WordmarkAsc&currentPage=2&resultsPerPage=50");
+            var response = await client.GetAsync(
+                "/Trademarks/MyCollection?sortBy=WordmarkAsc&currentPage=2&resultsPerPage=50");
 
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.OK);
         }
     }
 }

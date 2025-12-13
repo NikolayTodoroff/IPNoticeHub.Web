@@ -1,8 +1,7 @@
 ﻿using FluentAssertions;
-using IPNoticeHub.Common.EnumConstants;
-using IPNoticeHub.Data;
-using IPNoticeHub.Data.Entities.Identity;
-using IPNoticeHub.Data.Entities.TrademarkRegistration;
+using IPNoticeHub.Shared.Enums;
+using IPNoticeHub.Domain.Entities.Identity;
+using IPNoticeHub.Domain.Entities.Trademarks;
 using IPNoticeHub.Tests.IntegrationTests.TestUtilities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.TestHost;
@@ -14,6 +13,7 @@ using System.Net;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using Microsoft.Extensions.Logging;
+using IPNoticeHub.Infrastructure.Persistence;
 
 namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
 {
@@ -41,9 +41,12 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
 
             int entityId;
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+
                 await TestDbSeeder.SeedUserAsync(testDbContext, userId);
 
                 var entity = new TrademarkEntity
@@ -63,34 +66,53 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
 
                 entityId = entity.Id;
 
-                testDbContext.Set<UserTrademark>().Add(new UserTrademark
+                testDbContext.
+                    Set<UserTrademark>().
+                    Add(new UserTrademark
                 {
-                    UserId = userId,
-                    TrademarkId = entityId,
+                    ApplicationUserId = userId,
+                    TrademarkEntityId = entityId,
                     IsDeleted = false
                 });
 
                 await testDbContext.SaveChangesAsync();
             }
 
-            var response = await client.PostAsync("/Trademarks/Remove",
-                new FormUrlEncodedContent(new Dictionary<string, string?> { ["trademarkId"] = entityId.ToString() }));
+            var response = await client.PostAsync(
+                "/Trademarks/Remove",
+                new FormUrlEncodedContent(
+                    new Dictionary<string, string?> 
+                    { ["trademarkId"] = entityId.ToString() }));
 
-            response.StatusCode.Should().Be(HttpStatusCode.Found);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.Found);
 
             var uriLocation = response.Headers.Location!;
-            var resolvedUri = uriLocation.IsAbsoluteUri ? uriLocation : new Uri(client.BaseAddress!, uriLocation);
 
-            resolvedUri.AbsolutePath.Should().Be("/Trademarks/MyCollection");
+            var resolvedUri = uriLocation.IsAbsoluteUri ? 
+                uriLocation : new Uri(client.BaseAddress!, uriLocation);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            resolvedUri.AbsolutePath.Should().
+                Be("/Trademarks/MyCollection");
+
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                var link = await testDbContext.UserTrademarks.AsNoTracking()
-                    .FirstOrDefaultAsync(ut => ut.UserId == userId && ut.TrademarkId == entityId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                link.Should().NotBeNull();
-                link!.IsDeleted.Should().BeTrue();
+                var link = await testDbContext.UserTrademarks.
+                    AsNoTracking().
+                    FirstOrDefaultAsync(
+                    ut => ut.ApplicationUserId == userId && 
+                    ut.TrademarkEntityId == entityId);
+
+                link.Should().
+                    NotBeNull();
+
+                link!.IsDeleted.Should().
+                    BeTrue();
             }
         }
 
@@ -101,12 +123,19 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
             var client = appFactory.CreateClientAs(userId);
 
             int entityId;
-            const string returnUrl = "/Trademarks/MyCollection?page=2&sortBy=WordmarkDesc";
+            const string returnUrl = 
+                "/Trademarks/MyCollection?page=2&sortBy=WordmarkDesc";
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
+
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
 
                 var entity = new TrademarkEntity
                 {
@@ -125,10 +154,12 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
 
                 entityId = entity.Id;
 
-                testDbContext.Set<UserTrademark>().Add(new UserTrademark
+                testDbContext.
+                    Set<UserTrademark>().
+                    Add(new UserTrademark
                 {
-                    UserId = userId,
-                    TrademarkId = entityId,
+                    ApplicationUserId = userId,
+                    TrademarkEntityId = entityId,
                     IsDeleted = false
                 });
                 await testDbContext.SaveChangesAsync();
@@ -140,23 +171,41 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                 ["returnUrl"] = returnUrl
             };
 
-            var response = await client.PostAsync("/Trademarks/Remove", new FormUrlEncodedContent(form));
+            var response = await client.PostAsync(
+                "/Trademarks/Remove", 
+                new FormUrlEncodedContent(form));
 
-            response.StatusCode.Should().Be(HttpStatusCode.Found);
-            response.Headers.Location.Should().NotBeNull();
+            response.StatusCode.Should().
+                Be(HttpStatusCode.Found);
+
+            response.Headers.Location.Should().
+                NotBeNull();
 
             var uriLocation = response.Headers.Location!;
-            var resolvedUri = uriLocation.IsAbsoluteUri ? uriLocation : new Uri(client.BaseAddress!, uriLocation);
-            resolvedUri.PathAndQuery.Should().Be(returnUrl);
+
+            var resolvedUri = uriLocation.IsAbsoluteUri ? 
+                uriLocation : new Uri(client.BaseAddress!, uriLocation);
+
+            resolvedUri.PathAndQuery.Should().
+                Be(returnUrl);
 
             using (var serviceScope = appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                var link = await testDbContext.UserTrademarks.AsNoTracking()
-                    .FirstOrDefaultAsync(ut => ut.UserId == userId && ut.TrademarkId == entityId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                link.Should().NotBeNull();
-                link!.IsDeleted.Should().BeTrue();
+                var userTrademark = await testDbContext.UserTrademarks.
+                    AsNoTracking().
+                    FirstOrDefaultAsync(
+                    ut => ut.ApplicationUserId == userId && 
+                    ut.TrademarkEntityId == entityId);
+
+                userTrademark.Should().
+                    NotBeNull();
+
+                userTrademark!.IsDeleted.Should().
+                    BeTrue();
             }
         }
 
@@ -168,11 +217,16 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
 
             int entityId;
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
 
                 var entity = new TrademarkEntity
                 {
@@ -191,10 +245,12 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
 
                 entityId = entity.Id;
 
-                testDbContext.Set<UserTrademark>().Add(new UserTrademark
+                testDbContext.
+                    Set<UserTrademark>().
+                    Add(new UserTrademark
                 {
-                    UserId = userId,
-                    TrademarkId = entityId,
+                    ApplicationUserId = userId,
+                    TrademarkEntityId = entityId,
                     IsDeleted = false
                 });
                 await testDbContext.SaveChangesAsync();
@@ -206,38 +262,60 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                 ["returnUrl"] = "https://evil.example/away"
             };
 
-            var response = await client.PostAsync("/Trademarks/Remove", new FormUrlEncodedContent(form));
+            var response = await client.PostAsync(
+                "/Trademarks/Remove", 
+                new FormUrlEncodedContent(form));
 
-            response.StatusCode.Should().Be(HttpStatusCode.Found);
-            response.Headers.Location.Should().NotBeNull();
+            response.StatusCode.Should().
+                Be(HttpStatusCode.Found);
+
+            response.Headers.Location.Should().
+                NotBeNull();
 
             var uriLocation = response.Headers.Location!;
-            var resolvedUri = uriLocation.IsAbsoluteUri ? uriLocation : new Uri(client.BaseAddress!, uriLocation);
 
-            resolvedUri.AbsolutePath.Should().Be("/Trademarks/MyCollection");
+            var resolvedUri = uriLocation.IsAbsoluteUri ? 
+                uriLocation : new Uri(client.BaseAddress!, uriLocation);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            resolvedUri.AbsolutePath.Should().
+                Be("/Trademarks/MyCollection");
+
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                var link = await testDbContext.UserTrademarks.AsNoTracking()
-                    .FirstOrDefaultAsync(ut => ut.UserId == userId && ut.TrademarkId == entityId);
+                var link = await testDbContext.UserTrademarks.
+                    AsNoTracking().
+                    FirstOrDefaultAsync(
+                    ut => ut.ApplicationUserId == userId && 
+                    ut.TrademarkEntityId == entityId);
 
-                link.Should().NotBeNull();
-                link!.IsDeleted.Should().BeTrue();
+                link.Should().
+                    NotBeNull();
+
+                link!.IsDeleted.Should().
+                    BeTrue();
             }
         }
 
         [Test]
         public async Task Post_Remove_Unauthenticated_Returns401_AndNoChanges()
         {
-            var client = appFactory.CreateClient(new() { AllowAutoRedirect = false });
+            var client = appFactory.CreateClient(
+                new() 
+                { AllowAutoRedirect = false });
 
             int entityId;
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
                 var entity = new TrademarkEntity
                 {
@@ -257,19 +335,31 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                 entityId = entity.Id;
             }
 
-            var form = new Dictionary<string, string?> { ["trademarkId"] = entityId.ToString() };
+            var form = 
+                new Dictionary<string, string?> 
+                { ["trademarkId"] = entityId.ToString() };
 
-            var response = await client.PostAsync("/Trademarks/Remove", new FormUrlEncodedContent(form));
+            var response = await client.PostAsync(
+                "/Trademarks/Remove", 
+                new FormUrlEncodedContent(form));
 
-            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.Unauthorized);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                var linkCount = await testDbContext.UserTrademarks.AsNoTracking()
-                    .CountAsync(ut => ut.TrademarkId == entityId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                linkCount.Should().Be(0);
+                var linkCount = await testDbContext.UserTrademarks.
+                    AsNoTracking().
+                    CountAsync(
+                    ut => ut.TrademarkEntityId == entityId);
+
+                linkCount.Should().
+                    Be(0);
             }
         }
 
@@ -282,11 +372,20 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
 
             int entityId;
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                await TestDbSeeder.SeedUserAsync(testDbContext, targetUserId);
-                await TestDbSeeder.SeedUserAsync(testDbContext, randomUserId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
+
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    targetUserId);
+
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    randomUserId);
 
                 var entity = new TrademarkEntity
                 {
@@ -305,10 +404,12 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
 
                 entityId = entity.Id;
 
-                testDbContext.Set<UserTrademark>().Add(new UserTrademark
+                testDbContext.
+                    Set<UserTrademark>().
+                    Add(new UserTrademark
                 {
-                    UserId = randomUserId,
-                    TrademarkId = entityId,
+                    ApplicationUserId = randomUserId,
+                    TrademarkEntityId = entityId,
                     IsDeleted = false
                 });
 
@@ -320,29 +421,48 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                 ["trademarkId"] = entityId.ToString()
             };
 
-            var response = await client.PostAsync("/Trademarks/Remove", new FormUrlEncodedContent(form));
+            var response = await client.PostAsync(
+                "/Trademarks/Remove", 
+                new FormUrlEncodedContent(form));
 
-            response.StatusCode.Should().Be(HttpStatusCode.Found);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.Found);
 
             var uriLocation = response.Headers.Location!;
-            var resolvedUri = uriLocation.IsAbsoluteUri ? uriLocation : new Uri(client.BaseAddress!, uriLocation);
 
-           resolvedUri.AbsolutePath.Should().Be("/Trademarks/MyCollection");
+            var resolvedUri = uriLocation.IsAbsoluteUri ? 
+                uriLocation : new Uri(client.BaseAddress!, uriLocation);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+           resolvedUri.AbsolutePath.Should().
+                Be("/Trademarks/MyCollection");
+
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                var callerLink = await testDbContext.UserTrademarks.AsNoTracking()
-                    .FirstOrDefaultAsync(ut => ut.UserId == targetUserId && ut.TrademarkId == entityId);
+                var userTrademark = await testDbContext.UserTrademarks.
+                    AsNoTracking().
+                    FirstOrDefaultAsync(
+                    ut => ut.ApplicationUserId == targetUserId && 
+                    ut.TrademarkEntityId == entityId);
 
-                callerLink.Should().BeNull("caller wasn't linked; nothing to delete");
+                userTrademark.Should().
+                    BeNull();
 
-                var otherLink = await testDbContext.UserTrademarks.AsNoTracking()
-                    .FirstOrDefaultAsync(ut => ut.UserId == randomUserId && ut.TrademarkId == entityId);
+                var otherLink = await testDbContext.UserTrademarks.
+                    AsNoTracking().
+                    FirstOrDefaultAsync(
+                    ut => ut.ApplicationUserId == randomUserId && 
+                    ut.TrademarkEntityId == entityId);
 
-                otherLink.Should().NotBeNull();
-                otherLink!.IsDeleted.Should().BeFalse();
+                otherLink.Should().
+                    NotBeNull();
+
+                otherLink!.IsDeleted.Should().
+                    BeFalse();
             }
         }
 
@@ -350,13 +470,22 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
         public async Task Post_Remove_WithNonExistingTrademark_RedirectsToMyCollection_NoChange()
         {
             var userId = "u1";
-            var client = appFactory.CreateClientAs(userId);
+
+            var client = 
+                appFactory.CreateClientAs(userId);
+
             int existingTmId;
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
+
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
 
                 var entity = new TrademarkEntity
                 {
@@ -374,38 +503,58 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                 await testDbContext.SaveChangesAsync();
                 existingTmId = entity.Id;
 
-                testDbContext.Set<UserTrademark>().Add(new UserTrademark
+                testDbContext.
+                    Set<UserTrademark>().
+                    Add(new UserTrademark
                 {
-                    UserId = userId,
-                    TrademarkId = existingTmId,
+                    ApplicationUserId = userId,
+                    TrademarkEntityId = existingTmId,
                     IsDeleted = false
                 });
                 await testDbContext.SaveChangesAsync();
             }
 
-            var form = new Dictionary<string, string?> { ["trademarkId"] = "999999" };
-            var response = await client.PostAsync("/Trademarks/Remove", new FormUrlEncodedContent(form));
+            var form = 
+                new Dictionary<string, string?> 
+                { ["trademarkId"] = "999999" };
 
-            response.StatusCode.Should().Be(HttpStatusCode.Found);
+            var response = await client.PostAsync(
+                "/Trademarks/Remove", 
+                new FormUrlEncodedContent(form));
+
+            response.StatusCode.Should().
+                Be(HttpStatusCode.Found);
 
             var uriLocation = response.Headers.Location!;
-            var resolvedUri = uriLocation.IsAbsoluteUri ? uriLocation : new Uri(client.BaseAddress!, uriLocation);
 
-            resolvedUri.AbsolutePath.Should().Be("/Trademarks/MyCollection");
+            var resolvedUri = uriLocation.IsAbsoluteUri ? 
+                uriLocation : new Uri(client.BaseAddress!, uriLocation);
+
+            resolvedUri.AbsolutePath.Should().
+                Be("/Trademarks/MyCollection");
 
             using (var serviceScope = appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                var linksCount = await testDbContext.UserTrademarks.AsNoTracking()
-                    .CountAsync(ut => ut.UserId == userId);
+                var linksCount = await testDbContext.UserTrademarks.
+                    AsNoTracking().
+                    CountAsync(
+                    ut => ut.ApplicationUserId == userId);
 
-                linksCount.Should().Be(1);
+                linksCount.Should().
+                    Be(1);
 
-                var link = await testDbContext.UserTrademarks.AsNoTracking()
-                    .FirstAsync(ut => ut.UserId == userId && ut.TrademarkId == existingTmId);
+                var link = await testDbContext.UserTrademarks.
+                    AsNoTracking().
+                    FirstAsync(
+                    ut => ut.ApplicationUserId == userId && 
+                    ut.TrademarkEntityId == existingTmId);
 
-                link.IsDeleted.Should().BeFalse();
+                link.IsDeleted.Should().
+                    BeFalse();
             }
         }
 
@@ -417,10 +566,16 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
 
             int entityId;
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
+
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
 
                 var entity = new TrademarkEntity
                 {
@@ -440,46 +595,68 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
 
                 entityId = entity.Id;
 
-                testDbContext.Set<UserTrademark>().Add(new UserTrademark
+                testDbContext.
+                    Set<UserTrademark>().
+                    Add(new UserTrademark
                 {
-                    UserId = userId,
-                    TrademarkId = entityId,
+                    ApplicationUserId = userId,
+                    TrademarkEntityId = entityId,
                     IsDeleted = true
                 });
                 await testDbContext.SaveChangesAsync();
             }
 
-            var form = new Dictionary<string, string?> { ["trademarkId"] = entityId.ToString() };
+            var form = 
+                new Dictionary<string, string?> 
+                { ["trademarkId"] = entityId.ToString() };
 
-            var response = await client.PostAsync("/Trademarks/Remove", new FormUrlEncodedContent(form));
+            var response = await client.PostAsync(
+                "/Trademarks/Remove", 
+                new FormUrlEncodedContent(form));
 
-            response.StatusCode.Should().Be(HttpStatusCode.Found);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.Found);
 
             var uriLocation = response.Headers.Location!;
-            var resolvedUri = uriLocation.IsAbsoluteUri ? uriLocation : new Uri(client.BaseAddress!, uriLocation);
 
-            resolvedUri.AbsolutePath.Should().Be("/Trademarks/MyCollection");
+            var resolvedUri = uriLocation.IsAbsoluteUri ? 
+                uriLocation : new Uri(client.BaseAddress!, uriLocation);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            resolvedUri.AbsolutePath.Should().
+                Be("/Trademarks/MyCollection");
+
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                var linksCount = await testDbContext.UserTrademarks.AsNoTracking()
-                    .CountAsync(ut => ut.UserId == userId && ut.TrademarkId == entityId);
+                var linksCount = await testDbContext.UserTrademarks.
+                    AsNoTracking().
+                    CountAsync(
+                    ut => ut.ApplicationUserId == userId && 
+                    ut.TrademarkEntityId == entityId);
 
-                linksCount.Should().Be(1);
+                linksCount.Should().
+                    Be(1);
 
-                var link = await testDbContext.UserTrademarks.AsNoTracking()
-                    .FirstAsync(ut => ut.UserId == userId && ut.TrademarkId == entityId);
+                var link = await testDbContext.UserTrademarks.
+                    AsNoTracking().
+                    FirstAsync(
+                    ut => ut.ApplicationUserId == userId && 
+                    ut.TrademarkEntityId == entityId);
 
-                link.IsDeleted.Should().BeTrue();
+                link.IsDeleted.Should().
+                    BeTrue();
             }
         }
 
         [Test]
         public async Task Post_Remove_AuthenticatedMissingNameIdentifier_Returns403_AndNoChange()
         {
-            var layeredFactory = appFactory.WithWebHostBuilder(builder =>
+            var layeredFactory = 
+                appFactory.WithWebHostBuilder(builder =>
             {
                 builder.ConfigureTestServices(services =>
                 {
@@ -488,7 +665,10 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                         authOptions.DefaultAuthenticateScheme = "NoId";
                         authOptions.DefaultChallengeScheme = "NoId";
                     })
-                    .AddScheme<AuthenticationSchemeOptions, NoIdAuthHandler>("NoId", _ => { });
+                    .AddScheme<
+                        AuthenticationSchemeOptions, 
+                        NoIdAuthHandler>("NoId",
+                        _ => { });
                 });
             });
 
@@ -497,10 +677,16 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                 int entityId;
                 const string someUserId = "uExisting";
 
-                using (var serviceScope = layeredFactory.Services.CreateScope())
+                using (var serviceScope = 
+                    layeredFactory.Services.CreateScope())
                 {
-                    var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                    await TestDbSeeder.SeedUserAsync(testDbContext, someUserId);
+                    var testDbContext = 
+                        serviceScope.ServiceProvider.
+                        GetRequiredService<IPNoticeHubDbContext>();
+
+                    await TestDbSeeder.SeedUserAsync(
+                        testDbContext, 
+                        someUserId);
 
                     var entity = new TrademarkEntity
                     {
@@ -517,49 +703,79 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                     await testDbContext.SaveChangesAsync();
                     entityId = entity.Id;
 
-                    testDbContext.UserTrademarks.Add(new UserTrademark
+                    testDbContext.UserTrademarks.Add(
+                        new UserTrademark
                     {
-                        UserId = someUserId,
-                        TrademarkId = entityId,
+                        ApplicationUserId = someUserId,
+                        TrademarkEntityId = entityId,
                         IsDeleted = false
                     });
                     await testDbContext.SaveChangesAsync();
                 }
 
-                var client = layeredFactory.CreateClient(new() { AllowAutoRedirect = false });
+                var client = layeredFactory.CreateClient(
+                    new() 
+                    { AllowAutoRedirect = false });
 
-                var form = new Dictionary<string, string?> { ["trademarkId"] = entityId.ToString() };
-                var response = await client.PostAsync("/Trademarks/Remove", new FormUrlEncodedContent(form));
+                var form = 
+                    new Dictionary<string, string?> 
+                    { ["trademarkId"] = entityId.ToString() };
 
-                response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+                var response = await client.PostAsync(
+                    "/Trademarks/Remove", 
+                    new FormUrlEncodedContent(form));
 
-                using (var serviceScope = layeredFactory.Services.CreateScope())
+                response.StatusCode.Should().
+                    Be(HttpStatusCode.Forbidden);
+
+                using (var serviceScope = 
+                    layeredFactory.Services.CreateScope())
                 {
-                    var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                    var link = await testDbContext.UserTrademarks.AsNoTracking()
-                        .FirstOrDefaultAsync(ut => ut.UserId == someUserId && ut.TrademarkId == entityId);
+                    var testDbContext = 
+                        serviceScope.ServiceProvider.
+                        GetRequiredService<IPNoticeHubDbContext>();
 
-                    link.Should().NotBeNull();
-                    link!.IsDeleted.Should().BeFalse();
+                    var userTrademark = await testDbContext.UserTrademarks.
+                        AsNoTracking().
+                        FirstOrDefaultAsync(
+                        ut => ut.ApplicationUserId == someUserId && 
+                        ut.TrademarkEntityId == entityId);
+
+                    userTrademark.Should().
+                        NotBeNull();
+
+                    userTrademark!.IsDeleted.Should().
+                        BeFalse();
                 }
             }
         }
 
         private sealed class NoIdAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
         {
-            public NoIdAuthHandler(IOptionsMonitor<AuthenticationSchemeOptions> options,
-                                   ILoggerFactory logger,UrlEncoder encoder) : base(options, logger, encoder) { }
+            public NoIdAuthHandler(
+                IOptionsMonitor<AuthenticationSchemeOptions> options,
+                ILoggerFactory logger,
+                UrlEncoder encoder) : base(options, logger, encoder) { }
 
             protected override Task<AuthenticateResult> HandleAuthenticateAsync()
             {
                 var identity = new ClaimsIdentity(new[]
                 {
-                new Claim(ClaimTypes.Name, "AuthNoId"),
-                new Claim(ClaimTypes.Email, "authnoid@test.local")
+                new Claim(
+                    ClaimTypes.Name, 
+                    "AuthNoId"),
+
+                new Claim(
+                    ClaimTypes.Email, 
+                    "authnoid@test.local")
             }, "NoId");
 
                 var principal = new ClaimsPrincipal(identity);
-                var ticket = new AuthenticationTicket(principal, "NoId");
+
+                var ticket = new AuthenticationTicket(
+                    principal, 
+                    "NoId");
+
                 return Task.FromResult(AuthenticateResult.Success(ticket));
             }
         }
@@ -572,10 +788,16 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
 
             int entityId;
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
+
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
 
                 var entity = new TrademarkEntity
                 {
@@ -594,34 +816,47 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                 await testDbContext.SaveChangesAsync();
                 entityId = entity.Id;
 
-                testDbContext.UserTrademarks.Add(new UserTrademark
+                testDbContext.UserTrademarks.Add(
+                    new UserTrademark
                 {
-                    UserId = userId,
-                    TrademarkId = entityId,
+                    ApplicationUserId = userId,
+                    TrademarkEntityId = entityId,
                     IsDeleted = false
                 });
 
                 await testDbContext.SaveChangesAsync();
             }
 
-            var response = await client.PostAsync("/Trademarks/Remove",
-                new FormUrlEncodedContent(new Dictionary<string, string?>()));
+            var response = await client.PostAsync(
+                "/Trademarks/Remove",
+                new FormUrlEncodedContent(
+                    new Dictionary<string, string?>()));
 
-            response.StatusCode.Should().Be(HttpStatusCode.Found);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.Found);
 
             var resolvedUri = (response.Headers.Location!.IsAbsoluteUri) ?
-                 response.Headers.Location! : new Uri(client.BaseAddress!, response.Headers.Location!);
+                 response.Headers.Location! : 
+                 new Uri(client.BaseAddress!, response.Headers.Location!);
 
-                 resolvedUri.AbsolutePath.Should().Be("/Trademarks/MyCollection");
+                 resolvedUri.AbsolutePath.Should().
+                Be("/Trademarks/MyCollection");
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                var link = await testDbContext.UserTrademarks.AsNoTracking()
-                    .FirstAsync(ut => ut.UserId == userId && ut.TrademarkId == entityId);
+                var link = await testDbContext.UserTrademarks.
+                    AsNoTracking().
+                    FirstAsync(
+                    ut => ut.ApplicationUserId == userId && 
+                    ut.TrademarkEntityId == entityId);
 
-                link.IsDeleted.Should().BeFalse();
+                link.IsDeleted.Should().
+                    BeFalse();
             }
         }
 
@@ -634,10 +869,16 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
 
             int entityId;
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
+
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
 
                 var entity = new TrademarkEntity
                 {
@@ -655,35 +896,50 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                 await testDbContext.SaveChangesAsync();
                 entityId = entity.Id;
 
-                testDbContext.UserTrademarks.Add(new UserTrademark
+                testDbContext.UserTrademarks.Add(
+                    new UserTrademark
                 {
-                    UserId = userId,
-                    TrademarkId = entityId,
+                    ApplicationUserId = userId,
+                    TrademarkEntityId = entityId,
                     IsDeleted = false
                 });
                 await testDbContext.SaveChangesAsync();
             }
 
-            var form = new Dictionary<string, string?> { ["trademarkId"] = badId };
+            var form = 
+                new Dictionary<string, string?> 
+                { ["trademarkId"] = badId };
 
-            var response = await client.PostAsync("/Trademarks/Remove", new FormUrlEncodedContent(form));
+            var response = await client.PostAsync(
+                "/Trademarks/Remove", 
+                new FormUrlEncodedContent(form));
 
-            response.StatusCode.Should().Be(HttpStatusCode.Found);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.Found);
 
             var resolvedUri = (response.Headers.Location!.IsAbsoluteUri) ?
-                response.Headers.Location! : new Uri(client.BaseAddress!, response.Headers.Location!);
+                response.Headers.Location! : 
+                new Uri(client.BaseAddress!, response.Headers.Location!);
 
-            resolvedUri.AbsolutePath.Should().Be("/Trademarks/MyCollection");
+            resolvedUri.AbsolutePath.Should().
+                Be("/Trademarks/MyCollection");
 
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                var link = await testDbContext.UserTrademarks.AsNoTracking()
-                    .FirstAsync(ut => ut.UserId == userId && ut.TrademarkId == entityId);
+                var userTrademark = await testDbContext.UserTrademarks.
+                    AsNoTracking().
+                    FirstAsync(
+                    ut => ut.ApplicationUserId == userId && 
+                    ut.TrademarkEntityId == entityId);
 
-                link.IsDeleted.Should().BeFalse();
+                userTrademark.IsDeleted.Should().
+                    BeFalse();
             }
         }
     }

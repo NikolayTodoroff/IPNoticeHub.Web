@@ -1,8 +1,8 @@
-﻿using IPNoticeHub.Common.EnumConstants;
+﻿using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Data.Entities.LegalDocuments;
-using IPNoticeHub.Services.DocumentLibrary.DTOs;
+using IPNoticeHub.Application.DocumentLibrary.DTOs;
 
-namespace IPNoticeHub.Services.DocumentLibrary.Abstractions
+namespace IPNoticeHub.Application.DocumentLibrary.Abstractions
 {
     public interface IDocumentLibraryService
     {

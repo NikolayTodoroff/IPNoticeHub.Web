@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using FluentAssertions;
-using IPNoticeHub.Data;
-using IPNoticeHub.Data.Entities.Identity;
+using IPNoticeHub.Domain.Entities.Identity;
+using IPNoticeHub.Infrastructure.Persistence;
 using IPNoticeHub.Tests.IntegrationTests.TestUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,22 +27,28 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
 
             Guid publicId;
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
                 await TestDbSeeder.SeedUserAsync(testDbContext, userId);
 
-                var entity = await TestDbSeeder.SeedCopyrightAsync(
+                var entity = 
+                    await TestDbSeeder.SeedCopyrightAsync(
                     testDbContext,
                     regNumber: "TX-9-EDIT-200",
                     typeOfWork: "Literary",
                     title: "Edit Title");
 
-                testDbContext.Set<UserCopyright>().Add(new UserCopyright
+                testDbContext.
+                    Set<UserCopyright>().
+                    Add(new UserCopyright
                 {
                     ApplicationUserId = userId,
-                    CopyrightRegistrationId = entity.Id,
+                    CopyrightEntityId = entity.Id,
                     IsDeleted = false
                 });
 
@@ -50,9 +56,11 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                 publicId = entity.PublicId;
             }
 
-            var response = await client.GetAsync($"/Copyrights/Edit/{publicId}");
+            var response = await client.GetAsync(
+                $"/Copyrights/Edit/{publicId}");
 
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.OK);
         }
 
         [Test]
@@ -64,21 +72,28 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
             Guid publicId;
             string regNumber;
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
+
                 await TestDbSeeder.SeedUserAsync(testDbContext, userId);
 
-                var entity = await TestDbSeeder.SeedCopyrightAsync(
+                var entity = 
+                    await TestDbSeeder.SeedCopyrightAsync(
                     testDbContext,
                     regNumber: "TX-9-EDIT-302",
                     typeOfWork: "VisualArts",
                     title: "Initial Title");
 
-                testDbContext.Set<UserCopyright>().Add(new UserCopyright
+                testDbContext.
+                    Set<UserCopyright>().
+                    Add(new UserCopyright
                 {
                     ApplicationUserId = userId,
-                    CopyrightRegistrationId = entity.Id,
+                    CopyrightEntityId = entity.Id,
                     IsDeleted = false
                 });
 
@@ -88,7 +103,8 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                 regNumber = entity.RegistrationNumber;
             }
 
-            var entityForm = new Dictionary<string, string?>
+            var entityForm = 
+                new Dictionary<string, string?>
             {
                 ["PublicId"] = publicId.ToString(),
                 ["RegistrationNumber"] = regNumber,
@@ -101,27 +117,51 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                 ["NationOfFirstPublication"] = "US"
             };
 
-            var response = await client.PostAsync($"/Copyrights/Edit/{publicId}", new FormUrlEncodedContent(entityForm));
+            var response = await client.PostAsync(
+                $"/Copyrights/Edit/{publicId}", 
+                new FormUrlEncodedContent(entityForm));
 
-            response.StatusCode.Should().Be(HttpStatusCode.Found);
-            response.Headers.Location.Should().NotBeNull();
+            response.StatusCode.Should().
+                Be(HttpStatusCode.Found);
+
+            response.Headers.Location.Should().
+                NotBeNull();
 
             var uriLocation = response.Headers.Location!;
-            var resolvedUri = uriLocation.IsAbsoluteUri ? uriLocation : new Uri(client.BaseAddress!, uriLocation);
-            resolvedUri.AbsolutePath.Should().Be($"/Copyrights/Details/{publicId}");
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            var resolvedUri = uriLocation.IsAbsoluteUri ? 
+                uriLocation : new Uri(client.BaseAddress!, uriLocation);
+
+            resolvedUri.AbsolutePath.Should().
+                Be($"/Copyrights/Details/{publicId}");
+
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                var updatedEntity = await testDbContext.CopyrightRegistrations.AsNoTracking()
-                                      .FirstOrDefaultAsync(c => c.PublicId == publicId);
+                var updatedEntity = 
+                    await testDbContext.CopyrightRegistrations.
+                    AsNoTracking().
+                    FirstOrDefaultAsync(
+                        c => c.PublicId == publicId);
 
-                updatedEntity.Should().NotBeNull();
-                updatedEntity!.RegistrationNumber.Should().Be(regNumber);
-                updatedEntity.Title.Should().Be("New Title");
-                updatedEntity.Owner.Should().Be("New Owner");
-                updatedEntity.TypeOfWork.Should().Be("Literary");
+                updatedEntity.Should().
+                    NotBeNull();
+
+                updatedEntity!.RegistrationNumber.Should().
+                    Be(regNumber);
+
+                updatedEntity.Title.Should().
+                    Be("New Title");
+
+                updatedEntity.Owner.Should().
+                    Be("New Owner");
+
+                updatedEntity.TypeOfWork.Should().
+                    Be("Literary");
             }
         }
 
@@ -134,23 +174,29 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
             Guid publicId;
             string regNumber;
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
                 await TestDbSeeder.SeedUserAsync(testDbContext, userId);
 
-                var copyrightEntity = await TestDbSeeder.SeedCopyrightAsync(
+                var copyrightEntity = 
+                    await TestDbSeeder.SeedCopyrightAsync(
                     testDbContext,
                     regNumber: "TX-9-EDIT-OTHER-302",
                     typeOfWork: "VisualArts",
                     title: "Old Title (Other)"
                 );
 
-                testDbContext.Set<UserCopyright>().Add(new UserCopyright
+                testDbContext.
+                    Set<UserCopyright>().
+                    Add(new UserCopyright
                 {
                     ApplicationUserId = userId,
-                    CopyrightRegistrationId = copyrightEntity.Id,
+                    CopyrightEntityId = copyrightEntity.Id,
                     IsDeleted = false
                 });
 
@@ -162,7 +208,8 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
 
             const string customType = "RandomType";
 
-            var form = new Dictionary<string, string?>
+            var form = 
+                new Dictionary<string, string?>
             {
                 ["PublicId"] = publicId.ToString(),
                 ["RegistrationNumber"] = regNumber,
@@ -175,28 +222,50 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                 ["NationOfFirstPublication"] = "US"
             };
 
-            var response = await client.PostAsync($"/Copyrights/Edit/{publicId}", new FormUrlEncodedContent(form));
+            var response = await client.PostAsync(
+                $"/Copyrights/Edit/{publicId}", 
+                new FormUrlEncodedContent(form));
 
-            response.StatusCode.Should().Be(HttpStatusCode.Found);
-            response.Headers.Location.Should().NotBeNull();
+            response.StatusCode.Should().
+                Be(HttpStatusCode.Found);
+
+            response.Headers.Location.Should().
+                NotBeNull();
 
             var uriLocation = response.Headers.Location!;
-            var resolvedUri = uriLocation.IsAbsoluteUri ? uriLocation : new Uri(client.BaseAddress!, uriLocation);
-            resolvedUri.AbsolutePath.Should().Be($"/Copyrights/Details/{publicId}");
+
+            var resolvedUri = uriLocation.IsAbsoluteUri ? 
+                uriLocation : new Uri(client.BaseAddress!, uriLocation);
+
+            resolvedUri.AbsolutePath.Should().
+                Be($"/Copyrights/Details/{publicId}");
 
 
             using (var serviceScope = appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                var updatedEntity = await testDbContext.CopyrightRegistrations.AsNoTracking()
-                                                 .FirstOrDefaultAsync(c => c.PublicId == publicId);
+                var updatedEntity = 
+                    await testDbContext.CopyrightRegistrations.
+                    AsNoTracking().
+                    FirstOrDefaultAsync(c => c.PublicId == publicId);
 
-                updatedEntity.Should().NotBeNull();
-                updatedEntity!.RegistrationNumber.Should().Be(regNumber);
-                updatedEntity.Title.Should().Be("New Title (Other)");
-                updatedEntity.Owner.Should().Be("New Owner (Other)");
-                updatedEntity.TypeOfWork.Should().Be(customType);
+                updatedEntity.Should().
+                    NotBeNull();
+
+                updatedEntity!.RegistrationNumber.Should().
+                    Be(regNumber);
+
+                updatedEntity.Title.Should().
+                    Be("New Title (Other)");
+
+                updatedEntity.Owner.Should().
+                    Be("New Owner (Other)");
+
+                updatedEntity.TypeOfWork.Should().
+                    Be(customType);
             }
         }
 
@@ -209,22 +278,29 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
             Guid publicId;
             string regNumber;
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
+                
                 await TestDbSeeder.SeedUserAsync(testDbContext, userId);
 
-                var entity = await TestDbSeeder.SeedCopyrightAsync(
+                var entity = 
+                    await TestDbSeeder.SeedCopyrightAsync(
                     testDbContext,
                     regNumber: "TX-9-EDIT-INVALID-200",
                     typeOfWork: "VisualArts",
                     title: "Initial Title (Invalid Test)"
                 );
 
-                testDbContext.Set<UserCopyright>().Add(new UserCopyright
+                testDbContext.
+                    Set<UserCopyright>().
+                    Add(new UserCopyright
                 {
                     ApplicationUserId = userId,
-                    CopyrightRegistrationId = entity.Id,
+                    CopyrightEntityId = entity.Id,
                     IsDeleted = false
                 });
 
@@ -234,12 +310,13 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                 regNumber = entity.RegistrationNumber;
             }
 
-            var entityForm = new Dictionary<string, string?>
+            var entityForm = 
+                new Dictionary<string, string?>
             {
                 ["PublicId"] = publicId.ToString(),
                 ["RegistrationNumber"] = regNumber,
                 ["WorkType"] = "Other",
-                ["OtherWorkType"] = "",                 // <-- missing, triggers ModelState error
+                ["OtherWorkType"] = "",
                 ["Title"] = "New Title (SHOULD-NOT-SAVE)",
                 ["Owner"] = "New Owner (SHOULD-NOT-SAVE)",
                 ["YearOfCreation"] = "2025",
@@ -247,22 +324,38 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                 ["NationOfFirstPublication"] = "US"
             };
 
-            var response = await client.PostAsync($"/Copyrights/Edit/{publicId}", new FormUrlEncodedContent(entityForm));
+            var response = await client.PostAsync(
+                $"/Copyrights/Edit/{publicId}", 
+                new FormUrlEncodedContent(entityForm));
 
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.OK);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                var persisted = await testDbContext.CopyrightRegistrations.AsNoTracking()
-                                                   .FirstOrDefaultAsync(c => c.PublicId == publicId);
+                var persisted = await testDbContext.CopyrightRegistrations.
+                    AsNoTracking().
+                    FirstOrDefaultAsync(c => c.PublicId == publicId);
 
-                persisted.Should().NotBeNull();
-                persisted!.RegistrationNumber.Should().Be(regNumber);
-                persisted.Title.Should().Be("Initial Title (Invalid Test)");
-                persisted.Owner.Should().Be("Owner");
-                persisted.TypeOfWork.Should().Be("VisualArts");
+                persisted.Should().
+                    NotBeNull();
+
+                persisted!.RegistrationNumber.Should().
+                    Be(regNumber);
+
+                persisted.Title.Should().
+                    Be("Initial Title (Invalid Test)");
+
+                persisted.Owner.Should().
+                    Be("Owner");
+
+                persisted.TypeOfWork.Should().
+                    Be("VisualArts");
             }
         }
 
@@ -275,24 +368,34 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
 
             Guid publicId;
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                await TestDbSeeder.SeedUserAsync(testDbContext, targetUserId);
-                await TestDbSeeder.SeedUserAsync(testDbContext, randomUserId);
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    targetUserId);
 
-                var entity = await TestDbSeeder.SeedCopyrightAsync(
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    randomUserId);
+
+                var entity = 
+                    await TestDbSeeder.SeedCopyrightAsync(
                     testDbContext,
                     regNumber: "TX-9-EDIT-404",
                     typeOfWork: "Literary",
                     title: "Unlinked Edit Title");
 
-                // Link ONLY the random user
-                testDbContext.Set<UserCopyright>().Add(new UserCopyright
+                testDbContext.
+                    Set<UserCopyright>().
+                    Add(new UserCopyright
                 {
                     ApplicationUserId = randomUserId,
-                    CopyrightRegistrationId = entity.Id,
+                    CopyrightEntityId = entity.Id,
                     IsDeleted = false
                 });
 
@@ -301,9 +404,11 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                 publicId = entity.PublicId;
             }
 
-            var response = await client.GetAsync($"/Copyrights/Edit/{publicId}");
+            var response = await client.GetAsync(
+                $"/Copyrights/Edit/{publicId}");
 
-            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.NotFound);
         }
 
         [Test]
@@ -316,24 +421,35 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
             Guid publicId;
             string regNumber;
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                await TestDbSeeder.SeedUserAsync(testDbContext, targetUserId);
-                await TestDbSeeder.SeedUserAsync(testDbContext, randomUserId);
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    targetUserId);
 
-                var entity = await TestDbSeeder.SeedCopyrightAsync(
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    randomUserId);
+
+                var entity = 
+                    await TestDbSeeder.SeedCopyrightAsync(
                     testDbContext,
                     regNumber: "TX-9-EDIT-NOTLINK-200",
                     typeOfWork: "VisualArts",
                     title: "Original Title"
                 );
 
-                testDbContext.Set<UserCopyright>().Add(new UserCopyright
+                testDbContext.
+                    Set<UserCopyright>().
+                    Add(new UserCopyright
                 {
                     ApplicationUserId = randomUserId,
-                    CopyrightRegistrationId = entity.Id,
+                    CopyrightEntityId = entity.Id,
                     IsDeleted = false
                 });
 
@@ -343,7 +459,8 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                 regNumber = entity.RegistrationNumber;
             }
 
-            var entityForm = new Dictionary<string, string?>
+            var entityForm = 
+                new Dictionary<string, string?>
             {
                 ["PublicId"] = publicId.ToString(),
                 ["RegistrationNumber"] = regNumber,
@@ -356,48 +473,65 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                 ["NationOfFirstPublication"] = "US"
             };
 
-            var response = await client.PostAsync($"/Copyrights/Edit/{publicId}", new FormUrlEncodedContent(entityForm));
+            var response = await client.PostAsync(
+                $"/Copyrights/Edit/{publicId}", 
+                new FormUrlEncodedContent(entityForm));
 
-            // Assert: controller re-renders the view (200) instead of redirecting
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.OK);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                var persisted = await testDbContext.CopyrightRegistrations
-                                                   .AsNoTracking()
-                                                   .FirstOrDefaultAsync(c => c.PublicId == publicId);
+                var persisted = 
+                    await testDbContext.CopyrightRegistrations.
+                    AsNoTracking().
+                    FirstOrDefaultAsync(c => c.PublicId == publicId);
 
-                persisted.Should().NotBeNull();
-                persisted!.RegistrationNumber.Should().Be(regNumber);
-                persisted.Title.Should().Be("Original Title");
-                persisted.Owner.Should().Be("Owner");
-                persisted.TypeOfWork.Should().Be("VisualArts");
+                persisted.Should().
+                    NotBeNull();
+
+                persisted!.RegistrationNumber.Should().
+                    Be(regNumber);
+
+                persisted.Title.Should().
+                    Be("Original Title");
+
+                persisted.Owner.Should().
+                    Be("Owner");
+
+                persisted.TypeOfWork.Should().
+                    Be("VisualArts");
             }
         }
 
         [Test]
         public async Task Get_EditCopyright_WithUnauthenticatedUser_Returns401()
         {
-            // CreateClient() creates an anonymous client without authentication.
-            var client = appFactory.CreateClient(new()
+            var client = 
+                appFactory.CreateClient(new()
             {
                 AllowAutoRedirect = false
             });
 
             var randomId = Guid.NewGuid();
 
-            var response = await client.GetAsync($"/Copyrights/Edit/{randomId}");
+            var response = await client.GetAsync(
+                $"/Copyrights/Edit/{randomId}");
 
-            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.Unauthorized);
         }
 
         [Test]
         public async Task Post_EditCopyright_WithUnauthenticatedUser_Returns401_AndDoesNotUpdate()
         {
-            // CreateClient() creates an anonymous client without authentication.
-            var client = appFactory.CreateClient(new()
+            var client = 
+                appFactory.CreateClient(new()
             {
                 AllowAutoRedirect = false
             });
@@ -405,11 +539,15 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
             Guid publicId;
             string regNumber;
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                var entity = await TestDbSeeder.SeedCopyrightAsync(
+                var entity = 
+                    await TestDbSeeder.SeedCopyrightAsync(
                     testDbContext,
                     regNumber: "TX-9-EDIT-UNAUTH-401",
                     typeOfWork: "VisualArts",
@@ -420,7 +558,8 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                 regNumber = entity.RegistrationNumber;
             }
 
-            var entityForm = new Dictionary<string, string?>
+            var entityForm = 
+                new Dictionary<string, string?>
             {
                 ["PublicId"] = publicId.ToString(),
                 ["RegistrationNumber"] = regNumber,
@@ -433,23 +572,39 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                 ["NationOfFirstPublication"] = "US"
             };
 
-            var response = await client.PostAsync($"/Copyrights/Edit/{publicId}", new FormUrlEncodedContent(entityForm));
+            var response = await client.PostAsync(
+                $"/Copyrights/Edit/{publicId}", 
+                new FormUrlEncodedContent(entityForm));
 
-            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.Unauthorized);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                var persisted = await testDbContext.CopyrightRegistrations
-                                                   .AsNoTracking()
-                                                   .FirstOrDefaultAsync(c => c.PublicId == publicId);
+                var persisted = 
+                    await testDbContext.CopyrightRegistrations.
+                    AsNoTracking().
+                    FirstOrDefaultAsync(c => c.PublicId == publicId);
 
-                persisted.Should().NotBeNull();
-                persisted!.RegistrationNumber.Should().Be(regNumber);
-                persisted.Title.Should().Be("Original Title (401)");
-                persisted.Owner.Should().Be("Owner");          // from seeder
-                persisted.TypeOfWork.Should().Be("VisualArts");
+                persisted.Should().
+                    NotBeNull();
+
+                persisted!.RegistrationNumber.Should().
+                    Be(regNumber);
+
+                persisted.Title.Should().
+                    Be("Original Title (401)");
+
+                persisted.Owner.Should().
+                    Be("Owner");
+
+                persisted.TypeOfWork.Should().
+                    Be("VisualArts");
             }
         }
 
@@ -462,22 +617,31 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
             Guid publicId;
             string regNumber;
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                var entity = await TestDbSeeder.SeedCopyrightAsync(
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
+
+                var entity = 
+                    await TestDbSeeder.SeedCopyrightAsync(
                     testDbContext,
                     regNumber: "TX-9-EDIT-RET-302",
                     typeOfWork: "VisualArts",
                     title: "Old Title (ReturnUrl)"
                 );
 
-                testDbContext.Set<UserCopyright>().Add(new UserCopyright
+                testDbContext.
+                    Set<UserCopyright>().
+                    Add(new UserCopyright
                 {
                     ApplicationUserId = userId,
-                    CopyrightRegistrationId = entity.Id,
+                    CopyrightEntityId = entity.Id,
                     IsDeleted = false
                 });
 
@@ -487,9 +651,11 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                 regNumber = entity.RegistrationNumber;
             }
 
-            const string returnUrl = "/Copyrights/MyCollection?page=2&sortBy=DateAddedDesc";
+            const string returnUrl = 
+                "/Copyrights/MyCollection?page=2&sortBy=DateAddedDesc";
 
-            var entityForm = new Dictionary<string, string?>
+            var entityForm = 
+                new Dictionary<string, string?>
             {
                 ["PublicId"] = publicId.ToString(),
                 ["RegistrationNumber"] = regNumber,
@@ -503,27 +669,49 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                 ["returnUrl"] = returnUrl
             };
 
-            var response = await client.PostAsync($"/Copyrights/Edit/{publicId}", new FormUrlEncodedContent(entityForm));
+            var response = await client.PostAsync(
+                $"/Copyrights/Edit/{publicId}", 
+                new FormUrlEncodedContent(entityForm));
 
-            response.StatusCode.Should().Be(HttpStatusCode.Found);
-            response.Headers.Location.Should().NotBeNull();
+            response.StatusCode.Should().
+                Be(HttpStatusCode.Found);
+
+            response.Headers.Location.Should().
+                NotBeNull();
 
             var uriLocation = response.Headers.Location!;
-            var resolvedUri = uriLocation.IsAbsoluteUri ? uriLocation : new Uri(client.BaseAddress!, uriLocation);
-            resolvedUri.PathAndQuery.Should().Be(returnUrl);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            var resolvedUri = uriLocation.IsAbsoluteUri ? 
+                uriLocation : new Uri(client.BaseAddress!, uriLocation);
+
+            resolvedUri.PathAndQuery.Should().
+                Be(returnUrl);
+
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                var updated = await testDbContext.CopyrightRegistrations.AsNoTracking()
-                                                 .FirstOrDefaultAsync(c => c.PublicId == publicId);
+                var updated = await testDbContext.CopyrightRegistrations.
+                    AsNoTracking().
+                    FirstOrDefaultAsync(c => c.PublicId == publicId);
 
-                updated.Should().NotBeNull();
-                updated!.RegistrationNumber.Should().Be(regNumber);
-                updated.Title.Should().Be("New Title (ReturnUrl)");
-                updated.Owner.Should().Be("New Owner (ReturnUrl)");
-                updated.TypeOfWork.Should().Be("Literary");
+                updated.Should().
+                    NotBeNull();
+
+                updated!.RegistrationNumber.Should().
+                    Be(regNumber);
+
+                updated.Title.Should().
+                    Be("New Title (ReturnUrl)");
+
+                updated.Owner.Should().
+                    Be("New Owner (ReturnUrl)");
+
+                updated.TypeOfWork.Should().
+                    Be("Literary");
             }
         }
 
@@ -536,23 +724,29 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
             Guid publicId;
             string regNumber;
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
                 await TestDbSeeder.SeedUserAsync(testDbContext, userId);
 
-                var entity = await TestDbSeeder.SeedCopyrightAsync(
+                var entity = 
+                    await TestDbSeeder.SeedCopyrightAsync(
                     testDbContext,
                     regNumber: "TX-9-EDIT-RET-EXT",
                     typeOfWork: "VisualArts",
                     title: "Old Title (ExtRet)"
                 );
 
-                testDbContext.Set<UserCopyright>().Add(new UserCopyright
+                testDbContext.
+                    Set<UserCopyright>().
+                    Add(new UserCopyright
                 {
                     ApplicationUserId = userId,
-                    CopyrightRegistrationId = entity.Id,
+                    CopyrightEntityId = entity.Id,
                     IsDeleted = false
                 });
                 await testDbContext.SaveChangesAsync();
@@ -563,7 +757,8 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
 
             const string externalReturnUrl = "https://example.com/phish";
 
-            var entityForm = new Dictionary<string, string?>
+            var entityForm = 
+                new Dictionary<string, string?>
             {
                 ["PublicId"] = publicId.ToString(),
                 ["RegistrationNumber"] = regNumber,
@@ -577,27 +772,49 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                 ["returnUrl"] = externalReturnUrl
             };
 
-            var response = await client.PostAsync($"/Copyrights/Edit/{publicId}", new FormUrlEncodedContent(entityForm));
+            var response = await client.PostAsync(
+                $"/Copyrights/Edit/{publicId}", 
+                new FormUrlEncodedContent(entityForm));
 
-            response.StatusCode.Should().Be(HttpStatusCode.Found);
-            response.Headers.Location.Should().NotBeNull();
+            response.StatusCode.Should().
+                Be(HttpStatusCode.Found);
+
+            response.Headers.Location.Should().
+                NotBeNull();
 
             var uriLocation = response.Headers.Location!;
-            var resolvedUri = uriLocation.IsAbsoluteUri ? uriLocation : new Uri(client.BaseAddress!, uriLocation);
-            resolvedUri.AbsolutePath.Should().Be($"/Copyrights/Details/{publicId}");
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            var resolvedUri = uriLocation.IsAbsoluteUri ? 
+                uriLocation : new Uri(client.BaseAddress!, uriLocation);
+
+            resolvedUri.AbsolutePath.Should().
+                Be($"/Copyrights/Details/{publicId}");
+
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                var updated = await testDbContext.CopyrightRegistrations.AsNoTracking()
-                                                 .FirstOrDefaultAsync(c => c.PublicId == publicId);
+                var updated = 
+                    await testDbContext.CopyrightRegistrations.
+                    AsNoTracking().
+                    FirstOrDefaultAsync(c => c.PublicId == publicId);
 
                 updated.Should().NotBeNull();
-                updated!.RegistrationNumber.Should().Be(regNumber);
-                updated.Title.Should().Be("New Title (ExtReturnUrl)");
-                updated.Owner.Should().Be("New Owner (ExtReturnUrl)");
-                updated.TypeOfWork.Should().Be("Literary");
+
+                updated!.RegistrationNumber.Should().
+                    Be(regNumber);
+
+                updated.Title.Should().
+                    Be("New Title (ExtReturnUrl)");
+
+                updated.Owner.Should().
+                    Be("New Owner (ExtReturnUrl)");
+
+                updated.TypeOfWork.Should().
+                    Be("Literary");
             }
         }
 
@@ -612,26 +829,36 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
             string originalRegNumber;
             string duplicateRegNumber;
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                var originalEntity = await TestDbSeeder.SeedCopyrightAsync(
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
+
+                var originalEntity = 
+                    await TestDbSeeder.SeedCopyrightAsync(
                     testDbContext,
                     regNumber: "TX-9-EDIT-DUP-A",
                     typeOfWork: "VisualArts",
                     title: "Original Title (A)"
                 );
 
-                testDbContext.Set<UserCopyright>().Add(new UserCopyright
+                testDbContext.
+                    Set<UserCopyright>().
+                    Add(new UserCopyright
                 {
                     ApplicationUserId = userId,
-                    CopyrightRegistrationId = originalEntity.Id,
+                    CopyrightEntityId = originalEntity.Id,
                     IsDeleted = false
                 });
 
-                var duplicateEntity = await TestDbSeeder.SeedCopyrightAsync(
+                var duplicateEntity = 
+                    await TestDbSeeder.SeedCopyrightAsync(
                     testDbContext,
                     regNumber: "TX-9-EDIT-DUP-B",
                     typeOfWork: "Literary",
@@ -646,12 +873,11 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                 duplicateRegNumber = duplicateEntity.RegistrationNumber;
             }
 
-            // Post a form that tries to set the original entity's RegistrationNumber
-            // to the duplicate entity's Registration number value
-            var entityForm = new Dictionary<string, string?>
+            var entityForm = 
+                new Dictionary<string, string?>
             {
                 ["PublicId"] = publicIdToEdit.ToString(),
-                ["RegistrationNumber"] = duplicateRegNumber,   // <-- attempt duplicate
+                ["RegistrationNumber"] = duplicateRegNumber,
                 ["WorkType"] = "Literary",
                 ["OtherWorkType"] = "",
                 ["Title"] = "New Title (SHOULD NOT APPLY)",
@@ -661,24 +887,38 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                 ["NationOfFirstPublication"] = "US"
             };
 
-            var response = await client.PostAsync($"/Copyrights/Edit/{publicIdToEdit}", new FormUrlEncodedContent(entityForm));
+            var response = await client.PostAsync(
+                $"/Copyrights/Edit/{publicIdToEdit}", 
+                new FormUrlEncodedContent(entityForm));
 
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.OK);
 
-            // Assert DB: entity A unchanged
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                var entityAAfter = await testDbContext.CopyrightRegistrations
-                    .AsNoTracking()
-                    .FirstOrDefaultAsync(c => c.Id == dbIdToEdit);
+                var entityAAfter = 
+                    await testDbContext.CopyrightRegistrations.
+                    AsNoTracking().
+                    FirstOrDefaultAsync(c => c.Id == dbIdToEdit);
 
                 entityAAfter.Should().NotBeNull();
-                entityAAfter!.RegistrationNumber.Should().Be(originalRegNumber);
-                entityAAfter.Title.Should().Be("Original Title (A)");
-                entityAAfter.Owner.Should().Be("Owner");
-                entityAAfter.TypeOfWork.Should().Be("VisualArts");
+
+                entityAAfter!.RegistrationNumber.Should().
+                    Be(originalRegNumber);
+
+                entityAAfter.Title.Should().
+                    Be("Original Title (A)");
+
+                entityAAfter.Owner.Should().
+                    Be("Owner");
+
+                entityAAfter.TypeOfWork.Should().
+                    Be("VisualArts");
             }
         }
     }

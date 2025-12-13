@@ -1,4 +1,4 @@
-﻿namespace IPNoticeHub.Services.Watchlist.Abstractions
+﻿namespace IPNoticeHub.Application.Watchlist.Abstractions
 {
     public interface IStatusLabelProvider
     {

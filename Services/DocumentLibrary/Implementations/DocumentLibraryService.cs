@@ -1,12 +1,12 @@
-﻿using IPNoticeHub.Common.EnumConstants;
+﻿using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Data.Entities.LegalDocuments;
 using IPNoticeHub.Data.Repositories.DocumentLibrary.Abstractions;
-using IPNoticeHub.Services.DocumentLibrary.Abstractions;
-using IPNoticeHub.Services.DocumentLibrary.DTOs;
-using IPNoticeHub.Services.PdfGeneration.Abstractions;
+using IPNoticeHub.Application.DocumentLibrary.Abstractions;
+using IPNoticeHub.Application.DocumentLibrary.DTOs;
+using IPNoticeHub.Application.PdfGeneration.Abstractions;
 using System.Globalization;
-using static IPNoticeHub.Common.ValidationConstants.FormattingConstants;
-namespace IPNoticeHub.Services.DocumentLibrary.Implementations
+using static IPNoticeHub.Shared.Constants.DateTimeFormats.DefaultDateTimeFormat;
+namespace IPNoticeHub.Application.DocumentLibrary.Implementations
 {
     public class DocumentLibraryService : IDocumentLibraryService
     {

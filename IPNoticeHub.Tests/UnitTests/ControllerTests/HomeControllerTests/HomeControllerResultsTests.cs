@@ -1,13 +1,13 @@
 ﻿using FluentAssertions;
-using IPNoticeHub.Common.EnumConstants;
-using IPNoticeHub.Services.TrademarkSearch.Abstractions;
-using IPNoticeHub.Services.TrademarkSearch.DTOs;
+using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Tests.UnitTests.TestUtilities;
 using IPNoticeHub.Web.Models.TrademarkSearch;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
+using static IPNoticeHub.Shared.Constants.PagingConstants.DefaultPagingConstants;
+using IPNoticeHub.Application.DTOs.TrademarkDTOs;
+using IPNoticeHub.Application.Services.TrademarkSearchService.Abstractions;
 
 namespace IPNoticeHub.Tests.UnitTests.ControllerTests.HomeControllerTests
 {

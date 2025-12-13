@@ -1,4 +1,4 @@
-﻿using IPNoticeHub.Data;
+﻿using IPNoticeHub.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace IPNoticeHub.Web.Extensions
@@ -9,8 +9,10 @@ namespace IPNoticeHub.Web.Extensions
         this IServiceCollection services,
         IConfiguration configuration)
         {
-            var connectionString = configuration.GetConnectionString("DefaultConnection")
-                ?? throw new InvalidOperationException("Connection string 'DefaultConnection' missing");
+            var connectionString = 
+                configuration.GetConnectionString("DefaultConnection") ?? 
+                throw new InvalidOperationException(
+                    "Connection string 'DefaultConnection' missing");
 
             services.AddDbContext<IPNoticeHubDbContext>(options =>
                 options.UseSqlServer(connectionString));

@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System.Text.Json;
 using Microsoft.Extensions.Hosting;
-using IPNoticeHub.Services.Watchlist.Abstractions;
+using IPNoticeHub.Application.Watchlist.Abstractions;
 
-namespace IPNoticeHub.Services.Watchlist.Implementations
+namespace IPNoticeHub.Application.Watchlist.Implementations
 {
     public sealed class StatusLabelProvider : IStatusLabelProvider
     {

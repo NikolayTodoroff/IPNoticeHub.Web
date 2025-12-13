@@ -1,11 +1,11 @@
 ﻿using FluentAssertions;
-using IPNoticeHub.Common.EnumConstants;
-using IPNoticeHub.Data.Entities.Identity;
-using IPNoticeHub.Data.Repositories.Trademarks.Abstractions;
-using IPNoticeHub.Data.Repositories.Trademarks.Implementations;
-using IPNoticeHub.Services.Trademarks.Implementations;
+using IPNoticeHub.Shared.Enums;
+using IPNoticeHub.Application.Repositories.TrademarkRepository;
+using IPNoticeHub.Infrastructure.Persistence.Repositories.TrademarkRepository;
 using IPNoticeHub.Tests.TestUtilities;
 using NUnit.Framework;
+using IPNoticeHub.Infrastructure.Identity;
+using IPNoticeHub.Application.Services.TrademarkService.Implementations;
 
 namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServiceTests
 {

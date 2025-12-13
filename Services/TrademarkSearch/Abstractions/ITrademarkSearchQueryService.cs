@@ -1,6 +1,6 @@
-﻿using IPNoticeHub.Services.TrademarkSearch.DTOs;
+﻿using IPNoticeHub.Application.TrademarkSearch.DTOs;
 
-namespace IPNoticeHub.Services.TrademarkSearch.Abstractions
+namespace IPNoticeHub.Application.TrademarkSearch.Abstractions
 {
     public interface ITrademarkSearchQueryService
     {

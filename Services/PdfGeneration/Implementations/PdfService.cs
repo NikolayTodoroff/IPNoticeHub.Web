@@ -1,10 +1,10 @@
-﻿using static IPNoticeHub.Common.ValidationConstants;
+﻿using static IPNoticeHub.Shared.Constants.DateTimeFormats.DefaultDateTimeFormat;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using System.Text.RegularExpressions;
-using IPNoticeHub.Services.PdfGeneration.Abstractions;
+using IPNoticeHub.Application.PdfGeneration.Abstractions;
 
-namespace IPNoticeHub.Services.PdfGeneration.Implementations
+namespace IPNoticeHub.Application.PdfGeneration.Implementations
 {
     public sealed class PdfService : IPdfService
     {
@@ -39,7 +39,7 @@ namespace IPNoticeHub.Services.PdfGeneration.Implementations
             ["SenderAddress"] = input.SenderAddress,
             ["RecipientName"] = input.RecipientName,
             ["RecipientAddress"] = input.RecipientAddress,
-            ["Date"] = input.Date.ToString(FormattingConstants.DateTimeFormat),
+            ["Date"] = input.Date.ToString(DateTimeFormat),
             ["WorkTitle"] = input.WorkTitle,
             ["RegistrationNumber"] = input.RegistrationNumber,
             ["AdditionalFacts"] = input.AdditionalFacts ?? string.Empty
@@ -54,11 +54,11 @@ namespace IPNoticeHub.Services.PdfGeneration.Implementations
             ["RecipientName"] = input.RecipientName,
             ["RecipientEmail"] = input.RecipientEmail ?? string.Empty,
             ["RecipientAddress"] = input.RecipientAddress ?? string.Empty,
-            ["Date"] = input.Date.ToString(FormattingConstants.DateTimeFormat),
+            ["Date"] = input.Date.ToString(DateTimeFormat),
             ["WorkTitle"] = input.WorkTitle,
             ["RegistrationNumber"] = input.RegistrationNumber,
             ["YearOfCreation"] = input.YearOfCreation?.ToString() ?? string.Empty,
-            ["DateOfPublication"] = input.DateOfPublication?.ToString(FormattingConstants.DateTimeFormat) ?? string.Empty,
+            ["DateOfPublication"] = input.DateOfPublication?.ToString(DateTimeFormat) ?? string.Empty,
             ["NationOfFirstPublication"] = input.NationOfFirstPublication ?? string.Empty,
             ["InfringingUrl"] = input.InfringingUrl,
             ["GoodFaithStatement"] = input.GoodFaithStatement

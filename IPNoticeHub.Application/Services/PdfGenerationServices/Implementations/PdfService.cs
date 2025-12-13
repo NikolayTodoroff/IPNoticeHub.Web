@@ -1,0 +1,144 @@
+﻿using static IPNoticeHub.Shared.Constants.DateTimeFormats.DefaultDateTimeFormat;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using IPNoticeHub.Application.Services.PdfGenerationService.Abstractions;
+using IPNoticeHub.Application.Rendering.Abstractions;
+
+namespace IPNoticeHub.Application.Services.PdfGenerationService.Implementations
+{
+    public sealed class PdfService : IPdfService
+    {
+        private readonly ITemplateTokenReplacer templateReplacer;
+
+        public PdfService(ITemplateTokenReplacer templateReplacer)
+        {
+            this.templateReplacer = templateReplacer;
+        }
+
+            public Task<byte[]> GenerateCopyrightCeaseDesistAsync(
+            CeaseDesistInput data, 
+            CancellationToken cancellation = default)
+        {
+            return Task.FromResult(
+                BuildLetter(data.BodyTemplate, CeaseDesistTemplateVars(data)));
+        }
+
+        public Task<byte[]> GenerateCopyrightDMCAAsync(
+            DMCAInput data, 
+            CancellationToken cancellation = default)
+        {
+            return Task.FromResult(
+                BuildLetter(data.BodyTemplate, DmcaTemplateVars(data)));
+        }
+
+        public Task<byte[]> GenerateTrademarkCeaseDesistAsync(
+            CeaseDesistInput data, 
+            CancellationToken cancellation = default)
+        {
+            return Task.FromResult(
+                BuildLetter(data.BodyTemplate, CeaseDesistTemplateVars(data)));
+        }
+
+        private static Dictionary<string, string> CeaseDesistTemplateVars(
+            CeaseDesistInput input) => new()
+        {
+            ["SenderName"] = input.SenderName,
+            ["SenderAddress"] = input.SenderAddress,
+            ["RecipientName"] = input.RecipientName,
+            ["RecipientAddress"] = input.RecipientAddress,
+            ["Date"] = input.Date.ToString(DateTimeFormat),
+            ["WorkTitle"] = input.WorkTitle,
+            ["RegistrationNumber"] = input.RegistrationNumber,
+            ["AdditionalFacts"] = input.AdditionalFacts ?? string.Empty
+        };
+
+        private static Dictionary<string, string> DmcaTemplateVars(
+            DMCAInput input) => new()
+        {
+            ["SenderName"] = input.SenderName,
+            ["SenderEmail"] = input.SenderEmail,
+            ["SenderAddress"] = input.SenderAddress,
+            ["RecipientName"] = input.RecipientName,
+            ["RecipientEmail"] = input.RecipientEmail ?? string.Empty,
+            ["RecipientAddress"] = input.RecipientAddress ?? string.Empty,
+            ["Date"] = input.Date.ToString(DateTimeFormat),
+            ["WorkTitle"] = input.WorkTitle,
+            ["RegistrationNumber"] = input.RegistrationNumber,
+            ["YearOfCreation"] = input.YearOfCreation?.ToString() ?? string.Empty,
+            ["DateOfPublication"] = input.DateOfPublication?.ToString(DateTimeFormat) ?? string.Empty,
+            ["NationOfFirstPublication"] = input.NationOfFirstPublication ?? string.Empty,
+            ["InfringingUrl"] = input.InfringingUrl,
+            ["GoodFaithStatement"] = input.GoodFaithStatement
+        };
+
+        private byte[] BuildLetter(string template, Dictionary<string, string> vars)
+        {
+            string resolved = templateReplacer.ReplaceTemplate(template, vars);
+
+            resolved = resolved.Replace("\r\n", "\n");
+
+            var bytes = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A4);
+                    page.Margin(36);
+                    page.DefaultTextStyle(x => x.FontSize(11));
+
+                    page.Header().Column(col =>
+                    {
+                        col.Item()
+                           .Text(vars.GetValueOrDefault("SenderName"))
+                           .SemiBold();
+
+                        var address = vars.GetValueOrDefault("SenderAddress");
+                        if (!string.IsNullOrWhiteSpace(address))
+                        {
+                            col.Item().Text(address);
+                        }
+
+                        var date = vars.GetValueOrDefault("Date");
+                        if (!string.IsNullOrWhiteSpace(date))
+                        {
+                            col.Item()
+                               .Text(date)
+                               .FontSize(10)
+                               .FontColor(Colors.Grey.Darken2);
+                        }
+                    });
+
+                    page.Content().Column(col =>
+                    {
+                        var recipientName = vars.GetValueOrDefault("RecipientName");
+                        var recipientAddress = vars.GetValueOrDefault("RecipientAddress");
+
+                        if (!string.IsNullOrWhiteSpace(recipientName) ||
+                            !string.IsNullOrWhiteSpace(recipientAddress))
+                        {
+                            col.Item()
+                               .PaddingBottom(8)
+                               .Text($"{recipientName}\n{recipientAddress}".Trim());
+                        }
+
+                        col.Item()
+                           .Text(resolved)
+                           .AlignLeft()
+                           .LineHeight(1.4f);
+                    });
+
+                    page.Footer()
+                        .AlignRight()
+                        .Text(txt =>
+                        {
+                            txt.Span("Generated with IPNoticeHub")
+                               .FontSize(9)
+                               .FontColor(Colors.Grey.Darken1);
+                        });
+                });
+            })
+            .GeneratePdf();
+
+            return bytes;
+        }
+    }
+}

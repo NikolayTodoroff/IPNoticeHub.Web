@@ -1,10 +1,11 @@
 ﻿using FluentAssertions;
-using IPNoticeHub.Common.EnumConstants;
-using IPNoticeHub.Data.Entities.LegalDocuments;
-using IPNoticeHub.Data.Repositories.DocumentLibrary.Abstractions;
-using IPNoticeHub.Services.DocumentLibrary.DTOs;
-using IPNoticeHub.Services.DocumentLibrary.Implementations;
-using IPNoticeHub.Services.PdfGeneration.Abstractions;
+using IPNoticeHub.Shared.Enums;
+using IPNoticeHub.Domain.Entities.LegalDocuments;
+using IPNoticeHub.Application.Services.CopyrightService;
+using IPNoticeHub.Application.DTOs.DocumentLibraryDTOs;
+using IPNoticeHub.Application.Repositories.DocumentLibraryRepository;
+using IPNoticeHub.Application.Services.DocumentLibraryService.Implementations;
+using IPNoticeHub.Application.Services.PdfGenerationService.Abstractions;
 using Moq;
 using NUnit.Framework;
 
@@ -75,7 +76,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
             entity.Should().
                 NotBeNull();
 
-            entity!.UserId.Should().
+            entity!.ApplicationUserId.Should().
                 Be(userId);
 
             entity.RelatedPublicId.Should().
@@ -113,8 +114,8 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
 
             var document = new LegalDocument
             {
-                Id = documentId,
-                UserId = userId,
+                LegalDocumentId = documentId,
+                ApplicationUserId = userId,
                 SourceType = DocumentSourceType.Trademark,
                 TemplateType = LetterTemplateType.CeaseAndDesist,
                 DocumentTitle = "Cease and Desist – Nike 54321",

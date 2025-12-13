@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\IPNoticeHub.Common\IPNoticeHub.Common.csproj" />
     <ProjectReference Include="..\IPNoticeHub.Data\IPNoticeHub.Data.csproj" />
+    <ProjectReference Include="..\IPNoticeHub.Shared\IPNoticeHub.Shared.csproj" />
   </ItemGroup>
 
 	<ItemGroup>

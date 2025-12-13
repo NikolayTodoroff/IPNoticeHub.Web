@@ -1,15 +1,17 @@
-﻿using IPNoticeHub.Common.EnumConstants;
+﻿using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Web.Extensions;
-using IPNoticeHub.Services.Trademarks.Abstractions;
-using IPNoticeHub.Web.Infrastructure;
+using IPNoticeHub.Application.Trademarks.Abstractions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
-using static IPNoticeHub.Common.ValidationConstants.StatusMessages;
-using IPNoticeHub.Web.Infrastructure.Mappings;
-using IPNoticeHub.Services.DocumentLibrary.Abstractions;
-using IPNoticeHub.Services.PdfGeneration.Abstractions;
-using IPNoticeHub.Services.Watchlist.Abstractions;
+using static IPNoticeHub.Shared.Constants.StatusMessages.TrademarkStatusMessages;
+using static IPNoticeHub.Shared.Constants.PagingConstants.DefaultPagingConstants;
+using IPNoticeHub.Application.Services.DocumentLibraryService.Abstractions;
+using IPNoticeHub.Application.Services.PdfGenerationService.Abstractions;
+using IPNoticeHub.Application.Services.TrademarkService.Abstractions;
+using IPNoticeHub.Application.Services.WatchlistService.Abstractions;
+using IPNoticeHub.Web.WebHelpers.Mappings;
+using IPNoticeHub.Web.WebHelpers;
+using IPNoticeHub.Application.Templates.Abstractions;
 
 namespace IPNoticeHub.Web.Controllers
 {
@@ -17,7 +19,7 @@ namespace IPNoticeHub.Web.Controllers
     {
         private readonly ITrademarkCollectionService tmCollectionService;
         private readonly ITrademarkSearchService tmSearchService;
-        private readonly ITrademarkWatchlistService tmWatchlistService;
+        private readonly IWatchlistService tmWatchlistService;
         private readonly IPdfService pdfService;
         private readonly ILetterTemplateProvider letterTemplateProvider;
         private readonly IDocumentLibraryService documentLibraryService;
@@ -25,7 +27,7 @@ namespace IPNoticeHub.Web.Controllers
         public TrademarksController(
             ITrademarkSearchService searchService, 
             ITrademarkCollectionService collectionService, 
-            ITrademarkWatchlistService tmWatchlistService, 
+            IWatchlistService tmWatchlistService, 
             IPdfService pdfService, 
             ILetterTemplateProvider letterTemplateProvider, 
             IDocumentLibraryService documentLibraryService)
@@ -49,7 +51,11 @@ namespace IPNoticeHub.Web.Controllers
             if (!User.TryGetUserId(out var userId)) return Forbid();
 
             var dto = await tmCollectionService.
-                GetUserCollectionAsync(userId, sortBy, currentPage, resultsPerPage, 
+                GetUserCollectionAsync(
+                userId, 
+                sortBy, 
+                currentPage, 
+                resultsPerPage, 
                 cancellationToken);
 
             var viewModel = 
@@ -68,7 +74,9 @@ namespace IPNoticeHub.Web.Controllers
             CancellationToken cancellationToken = default)
         {
             var dto = await tmSearchService.
-                GetDetailsAsync(id, cancellationToken);
+                GetDetailsAsync(
+                id, 
+                cancellationToken);
 
             if (dto is null) return NotFound();
 
@@ -79,11 +87,15 @@ namespace IPNoticeHub.Web.Controllers
             if (isAuthenticated && User.TryGetUserId(out var userId))
             {
                 isInCollection = await tmCollectionService.
-                    IsInCollectionAsync(userId, dto.Id,false,
+                    IsInCollectionAsync(
+                    userId, 
+                    dto.Id,
+                    false,
                     cancellationToken);
 
                 isInWatchlist = await tmWatchlistService.
-                    ExistsAsync(userId, dto.Id, 
+                    ExistsAsync(userId, 
+                    dto.Id, 
                     cancellationToken);
             }
 
@@ -115,10 +127,16 @@ namespace IPNoticeHub.Web.Controllers
             try
             {
                 if (await tmCollectionService.IsInCollectionAsync(
-                    userId, trademarkId, false, cancellationToken))
+                    userId, 
+                    trademarkId, 
+                    false, 
+                    cancellationToken))
                 {
                     TempData["InfoMessage"] = "Trademark is already in your collection.";
-                    return this.RedirectToLocalOrAction(returnUrl, nameof(MyCollection));
+
+                    return this.RedirectToLocalOrAction(
+                        returnUrl, 
+                        nameof(MyCollection));
                 }
 
                 await tmCollectionService.AddAsync(
@@ -127,13 +145,19 @@ namespace IPNoticeHub.Web.Controllers
                     cancellationToken);
 
                 TempData["SuccessMessage"] = TmAddedToCollectionMessage;
-                return this.RedirectToLocalOrAction(returnUrl, nameof(MyCollection));
+
+                return this.RedirectToLocalOrAction(
+                    returnUrl, 
+                    nameof(MyCollection));
             }
 
             catch
             {
                 TempData["ErrorMessage"] = TmAddToCollectionErrorMessage;
-                return this.RedirectToLocalOrAction(returnUrl, nameof(MyCollection));
+
+                return this.RedirectToLocalOrAction(
+                    returnUrl, 
+                    nameof(MyCollection));
             }
         }
 
@@ -153,7 +177,10 @@ namespace IPNoticeHub.Web.Controllers
                 cancellationToken);
 
             TempData["SuccessMessage"] = TmRemovedFromCollectionMessage;
-            return this.RedirectToLocalOrAction(returnUrl, nameof(MyCollection));
+
+            return this.RedirectToLocalOrAction(
+                returnUrl, 
+                nameof(MyCollection));
         }
     }
 }

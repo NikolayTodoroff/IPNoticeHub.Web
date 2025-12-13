@@ -1,4 +1,4 @@
-﻿namespace IPNoticeHub.Services.PdfGeneration.Abstractions
+﻿namespace IPNoticeHub.Application.PdfGeneration.Abstractions
 {
     public interface IPdfService
     {

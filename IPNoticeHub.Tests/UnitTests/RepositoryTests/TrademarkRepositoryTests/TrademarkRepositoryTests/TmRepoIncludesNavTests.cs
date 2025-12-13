@@ -1,11 +1,10 @@
 ﻿using FluentAssertions;
-using IPNoticeHub.Common.EnumConstants;
-using IPNoticeHub.Data;
-using IPNoticeHub.Data.Entities.TrademarkRegistration;
-using IPNoticeHub.Data.Repositories.Trademarks.Abstractions;
-using IPNoticeHub.Data.Repositories.Trademarks.Implementations;
+using IPNoticeHub.Shared.Enums;
+using IPNoticeHub.Infrastructure.Persistence.Repositories.TrademarkRepository;
 using IPNoticeHub.Tests.TestUtilities;
 using NUnit.Framework;
+using IPNoticeHub.Infrastructure.Persistence;
+using IPNoticeHub.Application.DTOs.TrademarkDTOs;
 
 namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkRepositoryTests
 {
@@ -15,9 +14,11 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
         [Test]
         public void QueryRepository_IncludeNav_False_DoesNotPopulateClasses()
         {
-            using IPNoticeHubDbContext? testDbContext = InMemoryDbContextFactory.CreateTestDbContext();
+            using IPNoticeHubDbContext? testDbContext = 
+                InMemoryDbContextFactory.CreateTestDbContext();
 
-            var (trademarkEntity, _) = InMemoryDbContextFactory.CreateTrademark(
+            var (trademarkEntity, _) = 
+                InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "ALPHA",
                 owner: "Owner",
                 goodsAndServices: "testGoodsAndSerices",
@@ -33,23 +34,26 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
 
             var trademarkRepository = new TrademarkRepository(testDbContext);
 
-            var result = trademarkRepository.Query(new TrademarkSearchFilter
+            var result = 
+                trademarkRepository.Query(new TrademarkSearchFilter
             {
                 SearchBy = TrademarkSearchBy.Wordmark,
                 SearchTerm = "ALPHA",
                 ExactMatch = true
             }, includeNav: false).Single();
 
-            (result.Classes == null || result.Classes.Count == 0).Should().BeTrue(
-                "includeNav:false should not populate navigation collections");
+            (result.Classes == null || result.Classes.Count == 0).Should().
+                BeTrue();
         }
 
         [Test]
         public void QueryRepository_IncludeNav_True_PopulatesClasses()
         {
-            using IPNoticeHubDbContext? testDbContext = InMemoryDbContextFactory.CreateTestDbContext();
+            using IPNoticeHubDbContext? testDbContext = 
+                InMemoryDbContextFactory.CreateTestDbContext();
 
-            var (firstTrademarkEntity, _) = InMemoryDbContextFactory.CreateTrademark(
+            var (firstTrademarkEntity, _) = 
+                InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "ALPHA",
                 owner: "Owner",
                 goodsAndServices: "testGoodsAndSerices",
@@ -60,7 +64,8 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
                 source: DataProvider.USPTO,
                 classNumbers: new[] { 9, 25 });
 
-            var (secondTrademarkEntity, _) = InMemoryDbContextFactory.CreateTrademark(
+            var (secondTrademarkEntity, _) = 
+                InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "BETA",
                 owner: "OwnerB",
                 goodsAndServices: "testGoodsAndSerices",
@@ -71,19 +76,31 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
                 source: DataProvider.USPTO,
                 classNumbers: new[] { 30 });
 
-            testDbContext.TrademarkRegistrations.AddRange(firstTrademarkEntity, secondTrademarkEntity);
+            testDbContext.TrademarkRegistrations.AddRange(
+                firstTrademarkEntity, 
+                secondTrademarkEntity);
+
             testDbContext.SaveChanges();
 
-            var trademarkRepository = new TrademarkRepository(testDbContext);
+            var trademarkRepository = 
+                new TrademarkRepository(testDbContext);
 
-            var queryResult = trademarkRepository.Query(new TrademarkSearchFilter
+            var queryResult = 
+                trademarkRepository.Query(new TrademarkSearchFilter
             {
                 ClassNumbers = new[] { 25 }
-            }, includeNav: true).ToArray();
+            }, includeNav: true).
+            ToArray();
 
-            queryResult.Select(r => r.Wordmark).Should().Equal("ALPHA");
-            queryResult.Single().Classes.Should().NotBeNull();
-            queryResult.Single().Classes!.Select(c => c.ClassNumber).Should().BeEquivalentTo(new[] { 9, 25 });
+            queryResult.Select(r => r.Wordmark).Should().
+                Equal("ALPHA");
+
+            queryResult.Single().Classes.Should().
+                NotBeNull();
+
+            queryResult.Single().Classes!.
+                Select(c => c.ClassNumber).Should().
+                BeEquivalentTo(new[] { 9, 25 });
         }
     }
 }

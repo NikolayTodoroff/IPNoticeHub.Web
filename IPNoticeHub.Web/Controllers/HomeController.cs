@@ -1,12 +1,13 @@
-using IPNoticeHub.Common.EnumConstants;
-using IPNoticeHub.Services.TrademarkSearch.Abstractions;
-using IPNoticeHub.Services.TrademarkSearch.DTOs;
+using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Web.Models;
 using IPNoticeHub.Web.Models.TrademarkSearch;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
-using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
+using static IPNoticeHub.Shared.Constants.PagingConstants.DefaultPagingConstants;
+using IPNoticeHub.Application.Services.TrademarkSearchService.Abstractions;
+using IPNoticeHub.Application.DTOs.TrademarkDTOs;
+using IPNoticeHub.Web.Models.Errors;
 
 namespace IPNoticeHub.Web.Controllers
 {
@@ -30,9 +31,16 @@ namespace IPNoticeHub.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Results(string? trademark, TrademarkClass? classNumber, TrademarkStatusCategory? status,
-        TrademarkSearchBy? searchByItem, DataProvider? office, SearchMode? mode,
-        int currentPage = DefaultPage, int pageSize = DefaultPageSize,CancellationToken cancellationToken = default)
+        public async Task<IActionResult> Results(
+            string? trademark, 
+            TrademarkClass? classNumber, 
+            TrademarkStatusCategory? status,
+            TrademarkSearchBy? searchByItem, 
+            DataProvider? office, 
+            SearchMode? mode,
+            int currentPage = DefaultPage, 
+            int pageSize = DefaultPageSize,
+            CancellationToken cancellationToken = default)
         {
             var dto = new TrademarkSearchQueryDto
             {
@@ -46,9 +54,13 @@ namespace IPNoticeHub.Web.Controllers
                 PageSize = pageSize
             };
 
-            var (searchResults,resultsCount) = await searchService.SearchAsync(dto,cancellationToken);
+            var (searchResults,resultsCount) = 
+                await searchService.SearchAsync(
+                    dto,
+                    cancellationToken);
 
-            var viewModel = new TrademarkSearchResultsViewModel
+            var viewModel = 
+                new TrademarkSearchResultsViewModel
             {
                 Query = trademark,
                 Class = classNumber,
@@ -56,7 +68,8 @@ namespace IPNoticeHub.Web.Controllers
                 SearchBy = searchByItem,
                 Office = office,
                 Mode = mode,
-                Results = searchResults.Select(s => new TreademarkSearchResultSingleItemViewModel
+                Results = searchResults.Select(
+                    s => new TreademarkSearchResultSingleItemViewModel
                 {
                     Id = s.Id,
                     PublicId = s.PublicId,

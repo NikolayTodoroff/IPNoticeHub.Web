@@ -1,12 +1,13 @@
 ﻿using FluentAssertions;
-using IPNoticeHub.Common.EnumConstants;
-using IPNoticeHub.Data;
-using IPNoticeHub.Data.Entities.Identity;
-using IPNoticeHub.Data.Entities.TrademarkRegistration;
+using IPNoticeHub.Shared.Enums;
+using IPNoticeHub.Domain.Entities.Identity;
 using IPNoticeHub.Tests.IntegrationTests.TestUtilities;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net;
+using IPNoticeHub.Infrastructure.Persistence;
+using IPNoticeHub.Domain.Entities.Trademarks;
+using IPNoticeHub.Infrastructure.Identity;
 
 namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
 {
@@ -34,10 +35,14 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
 
             using (var scope = appFactory.Services.CreateScope())
             {
-                var db = scope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var dbContext = 
+                    scope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
 
-                // optional but safe: seed the user
-                db.Users.Add(new ApplicationUser { Id = userId, UserName = "tester", Email = "tester@example.com" });
+                dbContext.Users.Add(
+                    new ApplicationUser { 
+                        Id = userId, 
+                        UserName = "tester", 
+                        Email = "tester@example.com" });
 
                 var entity = new TrademarkEntity
                 {
@@ -50,28 +55,33 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                     StatusDetail = "Pending examination",
                     Source = DataProvider.USPTO
                 };
-                db.TrademarkRegistrations.Add(entity);
-                await db.SaveChangesAsync();
+                dbContext.TrademarkRegistrations.Add(entity);
+                await dbContext.SaveChangesAsync();
 
                 publicId = entity.PublicId;
             }
 
             var client = appFactory.CreateClientAs(userId);
 
-            var response = await client.GetAsync($"/Trademarks/Details/{publicId}");
+            var response = await client.GetAsync(
+                $"/Trademarks/Details/{publicId}");
 
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.OK);
         }
 
         [Test]
         public async Task Get_Details_WithMissingEntityId_Returns404()
         {
             var missingId = Guid.NewGuid();
-            var client = appFactory.CreateClient(new() { AllowAutoRedirect = false });
+            var client = appFactory.CreateClient(
+                new() { AllowAutoRedirect = false });
 
-            var response = await client.GetAsync($"/Trademarks/Details/{missingId}");
+            var response = await client.GetAsync(
+                $"/Trademarks/Details/{missingId}");
 
-            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.NotFound);
         }
 
         [Test]
@@ -80,10 +90,16 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
             var userId = "u1";
             var client = appFactory.CreateClientAs(userId);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
+
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
 
                 var entity1 = new TrademarkEntity
                 {
@@ -115,30 +131,47 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                     Source = DataProvider.USPTO
                 };
 
-                testDbContext.TrademarkRegistrations.AddRange(entity1, entity2);
+                testDbContext.TrademarkRegistrations.AddRange(
+                    entity1, 
+                    entity2);
+
                 await testDbContext.SaveChangesAsync();
 
                 testDbContext.Set<UserTrademark>().AddRange(
-                    new UserTrademark { UserId = userId, TrademarkId = entity1.Id, IsDeleted = false },
-                    new UserTrademark { UserId = userId, TrademarkId = entity2.Id, IsDeleted = false }
+                    new UserTrademark { 
+                        ApplicationUserId = userId, 
+                        TrademarkEntityId = entity1.Id, 
+                        IsDeleted = false },
+
+                    new UserTrademark { 
+                        ApplicationUserId = userId, 
+                        TrademarkEntityId = entity2.Id, 
+                        IsDeleted = false }
                 );
 
                 await testDbContext.SaveChangesAsync();
             }
 
-            var response = await client.GetAsync("/Trademarks/MyCollection");
+            var response = await client.GetAsync(
+                "/Trademarks/MyCollection");
 
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.OK);
         }
 
         [Test]
         public async Task Get_Details_InvalidRouteToken_Returns404()
         {
-            var client = appFactory.CreateClient(new() { AllowAutoRedirect = false });
+            var client = 
+                appFactory.CreateClient(
+                    new() 
+                    { AllowAutoRedirect = false });
 
-            var response = await client.GetAsync("/Trademarks/Details/not-a-guid");
+            var response = await client.GetAsync(
+                "/Trademarks/Details/not-a-guid");
 
-            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.NotFound);
         }
     }
 }

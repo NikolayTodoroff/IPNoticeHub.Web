@@ -1,8 +1,8 @@
-﻿using IPNoticeHub.Common.EnumConstants;
+﻿using IPNoticeHub.Shared.Enums;
 using System.ComponentModel.DataAnnotations;
-using static IPNoticeHub.Common.ValidationConstants.CopyrightRegistrationConstants;
+using static IPNoticeHub.Shared.Constants.ValidationConstants.CopyrightRegistrationConstants;
 
-namespace IPNoticeHub.Services.Copyrights.DTOs
+namespace IPNoticeHub.Application.Copyrights.DTOs
 {
     public class CopyrightCreateDto
     {

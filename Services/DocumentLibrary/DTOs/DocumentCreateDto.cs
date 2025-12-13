@@ -1,9 +1,9 @@
-﻿using IPNoticeHub.Common.EnumConstants;
+﻿using IPNoticeHub.Shared.Enums;
 using System.ComponentModel.DataAnnotations;
-using static IPNoticeHub.Common.ValidationConstants.LegalDocumentConstants;
-using static IPNoticeHub.Common.ValidationConstants.InfringementPlaceholderConstants;
+using static IPNoticeHub.Shared.Constants.ValidationConstants.LegalDocumentConstants;
+using static IPNoticeHub.Shared.Constants.ValidationConstants.InfringementPlaceholderConstants;
 
-namespace IPNoticeHub.Services.DocumentLibrary.DTOs
+namespace IPNoticeHub.Application.DocumentLibrary.DTOs
 {
     public class DocumentCreateDto
     {

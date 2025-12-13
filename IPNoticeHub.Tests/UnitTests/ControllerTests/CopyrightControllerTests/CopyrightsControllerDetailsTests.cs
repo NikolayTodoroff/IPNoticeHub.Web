@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
-using IPNoticeHub.Services.Copyrights.Abstractions;
-using IPNoticeHub.Services.Copyrights.DTOs;
+using IPNoticeHub.Application.DTOs.CopyrightDTOs;
+using IPNoticeHub.Application.Services.CopyrightServices.Abstractions;
 using IPNoticeHub.Tests.UnitTests.TestUtilities;
 using IPNoticeHub.Web.Models.Copyrights;
 using Microsoft.AspNetCore.Mvc;
@@ -34,11 +34,13 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
                 It.IsAny<CancellationToken>())).
             ReturnsAsync(dto);
 
-            var controller = TestCopyrightControllerFactory.CreateController(
+            var controller = 
+                TestCopyrightControllerFactory.CreateController(
                 service.Object, 
                 userId: "u1");
 
-            var detailsActionResult = await controller.Details(id);
+            var detailsActionResult = 
+                await controller.Details(id);
 
             var viewModel = detailsActionResult.Should().
                 BeOfType<ViewResult>().Subject;
@@ -60,11 +62,13 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
             var copyrightService = 
                 new Mock<ICopyrightService>(MockBehavior.Strict);
 
-            var controller = TestCopyrightControllerFactory.CreateController(
+            var controller = 
+                TestCopyrightControllerFactory.CreateController(
                 copyrightService.Object, 
                 userId: null);
 
-            var detailsActionResult = await controller.Details(Guid.NewGuid());
+            var detailsActionResult = 
+                await controller.Details(Guid.NewGuid());
 
             detailsActionResult.Should().
                 BeOfType<ForbidResult>();
@@ -77,17 +81,20 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
         {
             var copyrightService = new Mock<ICopyrightService>();
 
-            copyrightService.Setup(s => s.GetDetailsAsync(
+            copyrightService.Setup(
+                s => s.GetDetailsAsync(
                 "u1", 
                 It.IsAny<Guid>(), 
                 It.IsAny<CancellationToken>())).
             ReturnsAsync((CopyrightDetailsDto?)null);
 
-            var controller = TestCopyrightControllerFactory.CreateController(
+            var controller = 
+                TestCopyrightControllerFactory.CreateController(
                 copyrightService.Object, 
                 userId: "u1");
 
-            var detailsActionResult = await controller.Details(Guid.NewGuid());
+            var detailsActionResult = 
+                await controller.Details(Guid.NewGuid());
 
             detailsActionResult.Should().
                 BeOfType<NotFoundResult>();

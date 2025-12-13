@@ -1,27 +1,22 @@
 ﻿using FluentAssertions;
-using IPNoticeHub.Common.EnumConstants;
-using IPNoticeHub.Data.Entities.Identity;
-using IPNoticeHub.Data.Repositories.Trademarks.Abstractions;
-using IPNoticeHub.Data.Repositories.Trademarks.Implementations;
-using IPNoticeHub.Services.Trademarks.Implementations;
+using IPNoticeHub.Shared.Enums;
+using IPNoticeHub.Application.Repositories.TrademarkRepository;
 using IPNoticeHub.Tests.TestUtilities;
 using NUnit.Framework;
+using IPNoticeHub.Infrastructure.Identity;
+using IPNoticeHub.Infrastructure.Persistence.Repositories.TrademarkRepository;
+using IPNoticeHub.Application.Services.TrademarkService.Implementations;
 
 namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServiceTests
 {
-    /// <summary>
-    /// Section: TrademarkCollectionService – AddAsync and RemoveAsync Edge Cases
-    /// - Ensures AddAsync does not create a link when the provided trademark entity Id is unknown.
-    /// - Verifies AddAsync prevents duplicate entries when the link already exists and is active.
-    /// - Confirms RemoveAsync performs no operation when the trademark is not part of the user's collection.
-    /// </summary>
     [TestFixture]
     public class TmCollectionServiceAddRemoveEdgeCaseTests
     {
         [Test]
         public async Task AddAsync_WhenTrademarkIdDoesNotExist_DoesNothing()
         {
-            using var testDbContext = InMemoryDbContextFactory.CreateTestDbContext();
+            using var testDbContext = 
+                InMemoryDbContextFactory.CreateTestDbContext();
 
             var user = new ApplicationUser
             {
@@ -34,20 +29,31 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServi
 
             await testDbContext.SaveChangesAsync();
 
-            ITrademarkRepository tmRepository = new TrademarkRepository(testDbContext);
-            IUserTrademarkRepository userTmRepository = new UserTrademarkRepository(testDbContext);
+            ITrademarkRepository tmRepository = 
+                new TrademarkRepository(testDbContext);
 
-            var service = new TrademarkCollectionService(tmRepository, userTmRepository);
+            IUserTrademarkRepository userTmRepository = 
+                new UserTrademarkRepository(testDbContext);
 
-            await service.AddAsync(user.Id, 1234567, default);
+            var service = new TrademarkCollectionService(
+                tmRepository, 
+                userTmRepository);
 
-            testDbContext.UserTrademarks.Where(x => x.UserId == user.Id).Should().BeEmpty();
+            await service.AddAsync(
+                user.Id, 
+                1234567, 
+                default);
+
+            testDbContext.UserTrademarks.
+                Where(x => x.ApplicationUserId == user.Id).Should().
+                BeEmpty();
         }
 
         [Test]
         public async Task AddAsync_WhenAlreadyLinkedInCollection_DoesNotCreateDuplicateRow()
         {
-            using var testDbContext = InMemoryDbContextFactory.CreateTestDbContext();
+            using var testDbContext = 
+                InMemoryDbContextFactory.CreateTestDbContext();
 
             var user = new ApplicationUser
             {
@@ -72,26 +78,41 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServi
 
             await testDbContext.SaveChangesAsync();
 
-            ITrademarkRepository tmRepository = new TrademarkRepository(testDbContext);
-            IUserTrademarkRepository userTmRepository = new UserTrademarkRepository(testDbContext);
+            ITrademarkRepository tmRepository = new 
+                TrademarkRepository(testDbContext);
+
+            IUserTrademarkRepository userTmRepository = 
+                new UserTrademarkRepository(testDbContext);
 
             var service = new TrademarkCollectionService(tmRepository, userTmRepository);
 
-            await service.AddAsync(user.Id, tmEntity.Id, default);
-            await service.AddAsync(user.Id, tmEntity.Id, default);
+            await service.AddAsync(
+                user.Id, 
+                tmEntity.Id, 
+                default);
 
-            var links = testDbContext.UserTrademarks
-                          .Where(x => x.UserId == user.Id && x.TrademarkId == tmEntity.Id)
-                          .ToList();
+            await service.AddAsync(
+                user.Id, 
+                tmEntity.Id, 
+                default);
 
-            links.Should().HaveCount(1);
-            links[0].IsDeleted.Should().BeFalse();
+            var links = testDbContext.UserTrademarks.
+                Where(x => x.ApplicationUserId == user.Id && 
+                x.TrademarkEntityId == tmEntity.Id).
+                ToList();
+
+            links.Should().
+                HaveCount(1);
+
+            links[0].IsDeleted.Should().
+                BeFalse();
         }
 
         [Test]
         public async Task RemoveAsync_WhenNotLinkedInCollection_NoOp()
         {
-            using var testDbContext = InMemoryDbContextFactory.CreateTestDbContext();
+            using var testDbContext = 
+                InMemoryDbContextFactory.CreateTestDbContext();
 
             var user = new ApplicationUser
             {
@@ -116,14 +137,24 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServi
 
             await testDbContext.SaveChangesAsync();
 
-            ITrademarkRepository tmRepository = new TrademarkRepository(testDbContext);
-            IUserTrademarkRepository userTmRepository = new UserTrademarkRepository(testDbContext);
+            ITrademarkRepository tmRepository = 
+                new TrademarkRepository(testDbContext);
 
-            var service = new TrademarkCollectionService(tmRepository, userTmRepository);
+            IUserTrademarkRepository userTmRepository = 
+                new UserTrademarkRepository(testDbContext);
 
-            await service.RemoveAsync(user.Id, tmEntity.Id, default);
+            var service = new TrademarkCollectionService(
+                tmRepository, 
+                userTmRepository);
 
-            testDbContext.UserTrademarks.Where(x => x.UserId == user.Id).Should().BeEmpty();
+            await service.RemoveAsync(
+                user.Id, 
+                tmEntity.Id, 
+                default);
+
+            testDbContext.UserTrademarks.Where(
+                x => x.ApplicationUserId == user.Id).Should().
+                BeEmpty();
         }
     }
 }

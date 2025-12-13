@@ -1,6 +1,6 @@
-﻿using IPNoticeHub.Services.Watchlist.DTOs;
+﻿using IPNoticeHub.Application.Watchlist.DTOs;
 
-namespace IPNoticeHub.Services.Watchlist.Abstractions
+namespace IPNoticeHub.Application.Watchlist.Abstractions
 {
     public interface ITrademarkWatchlistService
     {

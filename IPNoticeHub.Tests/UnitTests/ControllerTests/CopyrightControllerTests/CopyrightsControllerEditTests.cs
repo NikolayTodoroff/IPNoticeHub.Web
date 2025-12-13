@@ -1,14 +1,14 @@
 ﻿using FluentAssertions;
-using IPNoticeHub.Common.EnumConstants;
-using IPNoticeHub.Services.Copyrights.Abstractions;
-using IPNoticeHub.Services.Copyrights.DTOs;
+using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Tests.UnitTests.TestUtilities;
-using IPNoticeHub.Web.Controllers;
 using IPNoticeHub.Web.Models.Copyrights;
-using static IPNoticeHub.Common.ValidationConstants.StatusMessages;
+using static IPNoticeHub.Shared.Constants.StatusMessages.CopyrightStatusMessages;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
+using IPNoticeHub.Web.Controllers;
+using IPNoticeHub.Application.Services.CopyrightServices.Abstractions;
+using IPNoticeHub.Application.DTOs.CopyrightDTOs;
 
 namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
 {
@@ -18,7 +18,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
         [Test]
         public async Task Get_Edit_WhenDetailsNull_ReturnsNotFound()
         {
-            var copyrightService = new Mock<ICopyrightService>();
+            var copyrightService = 
+                new Mock<ICopyrightService>();
 
             copyrightService.Setup(s => s.GetDetailsAsync(
                 "u1", 
@@ -26,11 +27,13 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
                 It.IsAny<CancellationToken>())).
             ReturnsAsync((CopyrightDetailsDto?) null);
 
-            var controller = TestCopyrightControllerFactory.CreateController(
+            var controller = 
+                TestCopyrightControllerFactory.CreateController(
                 copyrightService.Object, 
                 userId: "u1");
 
-            var editActionResult = await controller.Edit(Guid.NewGuid());
+            var editActionResult = 
+                await controller.Edit(Guid.NewGuid());
 
             editActionResult.Should().
                 BeOfType<NotFoundResult>();
@@ -41,9 +44,11 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
         {
             var id = Guid.NewGuid();
 
-            var copyrightService = new Mock<ICopyrightService>();
+            var copyrightService = 
+                new Mock<ICopyrightService>();
 
-            copyrightService.Setup(s => s.GetDetailsAsync(
+            copyrightService.Setup(
+                s => s.GetDetailsAsync(
                 "u1", 
                 id, 
                 It.IsAny<CancellationToken>())).
@@ -57,7 +62,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
             });
 
 
-            var controller = TestCopyrightControllerFactory.CreateController(
+            var controller = 
+                TestCopyrightControllerFactory.CreateController(
                 copyrightService.Object, 
                 userId: "u1");
 
@@ -84,9 +90,11 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
         {
             var id = Guid.NewGuid();
 
-            var copyrightService = new Mock<ICopyrightService>();
+            var copyrightService = 
+                new Mock<ICopyrightService>();
 
-            var controller = TestCopyrightControllerFactory.CreateController(
+            var controller = 
+                TestCopyrightControllerFactory.CreateController(
                 copyrightService.Object, 
                 userId: "u1");
 
@@ -107,7 +115,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
             var editView = editActionResult.Should().
                 BeOfType<ViewResult>().Subject;
 
-            controller.ModelState.ContainsKey(nameof(CopyrightEditViewModel.OtherWorkType)).Should().
+            controller.ModelState.ContainsKey(
+                nameof(CopyrightEditViewModel.OtherWorkType)).Should().
                 BeTrue();
 
             editView.Model.Should().
@@ -127,7 +136,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
         {
             var id = Guid.NewGuid();
 
-            var copyrightService = new Mock<ICopyrightService>();
+            var copyrightService = 
+                new Mock<ICopyrightService>();
 
             copyrightService.Setup(s => s.EditAsync(
                 "u1", 
@@ -136,7 +146,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
                 It.IsAny<CancellationToken>())).
             ReturnsAsync(false);
 
-            var controller = TestCopyrightControllerFactory.CreateController(
+            var controller = 
+                TestCopyrightControllerFactory.CreateController(
                 copyrightService.Object, 
                 userId: "u1");
 
@@ -169,7 +180,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
         {
             var id = Guid.NewGuid();
 
-            var copyrightService = new Mock<ICopyrightService>();
+            var copyrightService = 
+                new Mock<ICopyrightService>();
 
             copyrightService.Setup(s => s.EditAsync(
                 "u1", 
@@ -178,7 +190,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
                 It.IsAny<CancellationToken>())).
             ReturnsAsync(true);
 
-            var controller = TestCopyrightControllerFactory.CreateController(
+            var controller = 
+                TestCopyrightControllerFactory.CreateController(
                 copyrightService.Object, 
                 userId: "u1");
 
@@ -211,7 +224,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
         {
             var id = Guid.NewGuid();
 
-            var copyrightService = new Mock<ICopyrightService>();
+            var copyrightService = 
+                new Mock<ICopyrightService>();
 
             copyrightService.Setup(s => s.EditAsync(
                 "u1", 
@@ -220,7 +234,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
                 It.IsAny<CancellationToken>())).
             ReturnsAsync(true);
 
-            var controller = TestCopyrightControllerFactory.CreateController(
+            var controller = 
+                TestCopyrightControllerFactory.CreateController(
                 copyrightService.Object, 
                 userId: "u1");
 
@@ -254,13 +269,15 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
             var copyrightService = 
                 new Mock<ICopyrightService>(MockBehavior.Strict);
 
-            var controller = TestCopyrightControllerFactory.CreateController(
+            var controller = 
+                TestCopyrightControllerFactory.CreateController(
                 service: copyrightService.Object,
                 userId: null,
                 includeTempData: false,
                 includeUrlHelper: false);
 
-            var editActionResult = await controller.Edit(Guid.NewGuid());
+            var editActionResult = 
+                await controller.Edit(Guid.NewGuid());
 
             editActionResult.Should().
                 BeOfType<ForbidResult>();
@@ -274,7 +291,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
             var copyrightService = 
                 new Mock<ICopyrightService>(MockBehavior.Strict);
 
-            var controller = TestCopyrightControllerFactory.CreateController(
+            var controller = 
+                TestCopyrightControllerFactory.CreateController(
                 service: copyrightService.Object,
                 userId: null,
                 includeTempData: true,
@@ -305,9 +323,11 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
         public async Task Get_Edit_MapsKnownEnumString_ToThatEnum_WithoutOtherText()
         {
             var id = Guid.NewGuid();
-            var copyrightService = new Mock<ICopyrightService>();
+            var copyrightService = 
+                new Mock<ICopyrightService>();
 
-            copyrightService.Setup(s => s.GetDetailsAsync(
+            copyrightService.Setup(
+                s => s.GetDetailsAsync(
                 "u1", 
                 id, 
                 It.IsAny<CancellationToken>())).
@@ -320,7 +340,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
                 Owner = "Owner"
             });
 
-            var controller = TestCopyrightControllerFactory.CreateController(
+            var controller = 
+                TestCopyrightControllerFactory.CreateController(
                 copyrightService.Object, 
                 userId: "u1");
 
@@ -344,9 +365,11 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
         {
             var id = Guid.NewGuid();
 
-            var copyrightService = new Mock<ICopyrightService>();
+            var copyrightService = 
+                new Mock<ICopyrightService>();
 
-            copyrightService.Setup(s => s.GetDetailsAsync(
+            copyrightService.Setup(
+                s => s.GetDetailsAsync(
                 "u1", 
                 id, 
                 It.IsAny<CancellationToken>())).
@@ -359,7 +382,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
                 Owner = "Owner"
             });
 
-            var controller = TestCopyrightControllerFactory.CreateController(
+            var controller = 
+                TestCopyrightControllerFactory.CreateController(
                 copyrightService.Object, 
                 userId: "u1");
 

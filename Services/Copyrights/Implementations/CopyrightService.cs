@@ -1,13 +1,13 @@
-﻿using IPNoticeHub.Common.EnumConstants;
+﻿using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Data.Entities.Identity;
 using IPNoticeHub.Data.Entities.CopyrightRegistration;
 using IPNoticeHub.Data.Repositories.Copyrights.Abstractions;
-using IPNoticeHub.Services.Copyrights.Abstractions;
-using IPNoticeHub.Services.Copyrights.DTOs;
+using IPNoticeHub.Application.Copyrights.Abstractions;
+using IPNoticeHub.Application.Copyrights.DTOs;
 using Microsoft.EntityFrameworkCore;
-using IPNoticeHub.Common.Infrastructure.Paging;
+using IPNoticeHub.Shared.Infrastructure.Paging;
 
-namespace IPNoticeHub.Services.Copyrights.Implementations
+namespace IPNoticeHub.Application.Copyrights.Implementations
 {
     public sealed class CopyrightService : ICopyrightService
     {

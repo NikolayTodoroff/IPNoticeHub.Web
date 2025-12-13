@@ -1,14 +1,15 @@
-﻿using IPNoticeHub.Common.EnumConstants;
-using IPNoticeHub.Services.Copyrights.Abstractions;
-using IPNoticeHub.Services.DocumentLibrary.Abstractions;
-using IPNoticeHub.Services.PdfGeneration.Abstractions;
+﻿using IPNoticeHub.Application.Rendering.Abstractions;
+using IPNoticeHub.Application.Services.CopyrightServices.Abstractions;
+using IPNoticeHub.Application.Services.DocumentLibraryService.Abstractions;
+using IPNoticeHub.Application.Services.PdfGenerationService.Abstractions;
+using IPNoticeHub.Application.Templates.Abstractions;
+using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Web.Extensions;
-using IPNoticeHub.Web.Infrastructure.Mappings;
 using IPNoticeHub.Web.Models.PdfGeneration;
+using IPNoticeHub.Web.WebHelpers.Mappings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using static IPNoticeHub.Web.Infrastructure.ApplyEntityDetails;
-using static IPNoticeHub.Web.Infrastructure.TemplateReplacer;
+using static IPNoticeHub.Web.WebHelpers.ApplyEntityDetails;
 
 namespace IPNoticeHub.Web.Controllers
 {
@@ -19,17 +20,20 @@ namespace IPNoticeHub.Web.Controllers
         private readonly IPdfService pdfService;
         private readonly ILetterTemplateProvider letterTemplateProvider;
         private readonly IDocumentLibraryService documentLibraryService;
+        private readonly ITemplateTokenReplacer templateReplacer;
 
         public CopyrightDmcaController(
             ICopyrightService copyrightService,
             IPdfService pdfService,
             ILetterTemplateProvider letterTemplateProvider,
-            IDocumentLibraryService documentLibraryService)
+            IDocumentLibraryService documentLibraryService,
+            ITemplateTokenReplacer templateReplacer)
         {
             this.copyrightService = copyrightService;
             this.pdfService = pdfService;
             this.letterTemplateProvider = letterTemplateProvider;
             this.documentLibraryService = documentLibraryService;
+            this.templateReplacer = templateReplacer;
         }
 
         [HttpGet, Authorize(Policy = "HasUserId")]
@@ -72,9 +76,13 @@ namespace IPNoticeHub.Web.Controllers
 
             if (dto is null) return NotFound();
 
-            ApplyCopyrightDMCADetails(viewModel, dto, MergeStrategy.OverwriteAll);
+            ApplyCopyrightDMCADetails(
+                viewModel, 
+                dto, 
+                MergeStrategy.OverwriteAll);
 
-            var input = CopyrightsMapping.MapDmcaViewModelToInput(viewModel);
+            var input = 
+                CopyrightsMapping.MapDmcaViewModelToInput(viewModel);
 
             var pdf = await pdfService.GenerateCopyrightDMCAAsync(
                 input,
@@ -98,7 +106,8 @@ namespace IPNoticeHub.Web.Controllers
                 var placeholders =
                     CopyrightsMapping.MapDmcaViewModelToPlaceholders(viewModel);
 
-                viewModel.BodyTemplate = ReplaceTemplate(template, placeholders!);
+                viewModel.BodyTemplate = 
+                    templateReplacer.ReplaceTemplate(template, placeholders);
             }
 
             return View("DmcaPreview", viewModel);
@@ -133,7 +142,8 @@ namespace IPNoticeHub.Web.Controllers
                 var placeholders =
                     CopyrightsMapping.MapDmcaViewModelToPlaceholders(viewModel);
 
-                viewModel.BodyTemplate = ReplaceTemplate(template, placeholders);
+                viewModel.BodyTemplate = 
+                    templateReplacer.ReplaceTemplate(template, placeholders);
             }
 
             return RedirectToAction(nameof(DmcaPreview), viewModel);
@@ -162,7 +172,10 @@ namespace IPNoticeHub.Web.Controllers
                 var dto =
                     CopyrightsMapping.MapDmcaViewModelToDocCreateDto(viewModel);
 
-                await documentLibraryService.SaveDocumentAsync(userId, dto, cancellationToken);
+                await documentLibraryService.SaveDocumentAsync(
+                    userId, 
+                    dto, 
+                    cancellationToken);
 
                 TempData["SuccessMessage"] =
                     "Your DMCA notice was successfully saved to your library.";
@@ -198,7 +211,8 @@ namespace IPNoticeHub.Web.Controllers
                 return NotFound();
             }
 
-            var viewModel = LegalDocumentMapping.MapDocumentToDmcaViewModel(document);
+            var viewModel = 
+                LegalDocumentMapping.MapDocumentToDmcaViewModel(document);
 
             return View("DmcaEdit", viewModel);
         }

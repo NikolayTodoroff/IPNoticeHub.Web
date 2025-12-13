@@ -1,7 +1,5 @@
 ﻿using FluentAssertions;
-using IPNoticeHub.Data;
-using IPNoticeHub.Data.Entities.Identity;
-using IPNoticeHub.Data.Entities.CopyrightRegistration;
+using IPNoticeHub.Domain.Entities.Identity;
 using IPNoticeHub.Tests.IntegrationTests.TestUtilities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.TestHost;
@@ -12,6 +10,8 @@ using NUnit.Framework;
 using System.Net;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
+using IPNoticeHub.Infrastructure.Persistence;
+using IPNoticeHub.Domain.Entities.Copyrights;
 
 namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
 {
@@ -31,44 +31,56 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
             var userId = "u1";
             var client = appFactory.CreateClientAs(userId);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
 
-                var copyrightEntity1 = await TestDbSeeder.SeedCopyrightAsync(
+                var copyrightEntity1 = 
+                    await TestDbSeeder.SeedCopyrightAsync(
                     testDbContext, 
                     regNumber: "TX-9-COLL-001",
                     typeOfWork: "Literary", 
                     title: "A Title");
 
-                var copyrightEntity2 = await TestDbSeeder.SeedCopyrightAsync(
+                var copyrightEntity2 = 
+                    await TestDbSeeder.SeedCopyrightAsync(
                     testDbContext, 
                     regNumber: "TX-9-COLL-002",
                     typeOfWork: "VisualArts", 
                     title: "B Title");
 
                 testDbContext.Set<UserCopyright>().AddRange(
-                    new UserCopyright { ApplicationUserId = userId, CopyrightRegistrationId = copyrightEntity1.Id, IsDeleted = false },
-                    new UserCopyright { ApplicationUserId = userId, CopyrightRegistrationId = copyrightEntity2.Id, IsDeleted = false }
+                    new UserCopyright { 
+                        ApplicationUserId = userId, 
+                        CopyrightEntityId = copyrightEntity1.Id, 
+                        IsDeleted = false },
+
+                    new UserCopyright { 
+                        ApplicationUserId = userId, 
+                        CopyrightEntityId = copyrightEntity2.Id, 
+                        IsDeleted = false }
                 );
 
                 await testDbContext.SaveChangesAsync();
             }
 
-            var response = await client.GetAsync("/Copyrights/MyCollection");
+            var response = await client.GetAsync(
+                "/Copyrights/MyCollection");
 
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.OK);
         }
 
         [Test]
         public async Task Get_MyCollection_AuthenticatedMissingNameIdentifier_Returns403()
         {
-            // Configure a custom authentication scheme that simulates an authenticated user without the NameIdentifier claim.
-            // This setup is layered on top of the existing TestWebAppFactory to override the default authentication behavior.
-            // The custom scheme is used to test scenarios where the application requires a unique identifier for the user,
-            // but the authenticated user lacks this claim, resulting in a 403 Forbidden response.
             var layeredAppFactory = appFactory.WithWebHostBuilder(builder =>
             {
                 builder.ConfigureTestServices(services =>
@@ -78,40 +90,57 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                         options.DefaultAuthenticateScheme = "NoId";
                         options.DefaultChallengeScheme = "NoId";
                     })
-                    .AddScheme<AuthenticationSchemeOptions, NoIdAuthHandler>("NoId", _ => { });
+                    .AddScheme<
+                        AuthenticationSchemeOptions, 
+                        NoIdAuthHandler>(
+                        "NoId",
+                        _ => { });
                 });
 
-                builder.UseSetting("Authentication:DefaultScheme", "NoId");
+                builder.UseSetting(
+                    "Authentication:DefaultScheme", 
+                    "NoId");
             });
 
             await using (layeredAppFactory) 
             {
-                var client = layeredAppFactory.CreateClient(new() { AllowAutoRedirect = false });
+                var client = layeredAppFactory.CreateClient(
+                    new() { AllowAutoRedirect = false });
 
-                var response = await client.GetAsync("/Copyrights/MyCollection");
-                response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+                var response = await client.GetAsync(
+                    "/Copyrights/MyCollection");
+
+                response.StatusCode.Should().
+                    Be(HttpStatusCode.Forbidden);
             }
         }
 
-        // Custom authentication handler that creates an authenticated principal without the NameIdentifier claim.
-        // This is used to simulate a scenario where the authenticated user lacks a unique identifier, which is required 
-        // for certain application features. The handler assigns a Name and Email claim to the principal for testing purposes.
         private sealed class NoIdAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
         {
-            public NoIdAuthHandler(IOptionsMonitor<AuthenticationSchemeOptions> options,
-                                   ILoggerFactory logger, UrlEncoder encoder) : base(options, logger, encoder) { }
+            public NoIdAuthHandler(
+                IOptionsMonitor<AuthenticationSchemeOptions> options,
+                ILoggerFactory logger, 
+                UrlEncoder encoder) : base(options, logger, encoder) { }
 
             protected override Task<AuthenticateResult> HandleAuthenticateAsync()
             {
                 var identity = new ClaimsIdentity(new[]
                 {
-                new Claim(ClaimTypes.Name, "AuthNoId"),
-                new Claim(ClaimTypes.Email, "authnoid@test")
+                new Claim(
+                    ClaimTypes.Name, 
+                    "AuthNoId"),
+
+                new Claim(
+                    ClaimTypes.Email, 
+                    "authnoid@test")
                 
             }, "NoId");
 
                 var principal = new ClaimsPrincipal(identity);
-                var ticket = new AuthenticationTicket(principal, "NoId");
+
+                var ticket = new AuthenticationTicket(
+                    principal, 
+                    "NoId");
 
                 return Task.FromResult(AuthenticateResult.Success(ticket));
             }
@@ -123,42 +152,61 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
             var userId = "u1";
             var client = appFactory.CreateClientAs(userId);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
                 await TestDbSeeder.SeedUserAsync(testDbContext, userId);
 
-                var entity1 = await TestDbSeeder.SeedCopyrightAsync(
+                var entity1 = 
+                    await TestDbSeeder.SeedCopyrightAsync(
                     testDbContext, 
                     regNumber: "TX-9-COLL-PAGE-A",
                     typeOfWork: "Literary", 
                     title: "Alpha");
 
-                var entity2 = await TestDbSeeder.SeedCopyrightAsync(
+                var entity2 = 
+                    await TestDbSeeder.SeedCopyrightAsync(
                     testDbContext, 
                     regNumber: "TX-9-COLL-PAGE-B",
                     typeOfWork: "Literary", 
                     title: "Bravo");
 
-                var entity3 = await TestDbSeeder.SeedCopyrightAsync(
+                var entity3 = 
+                    await TestDbSeeder.SeedCopyrightAsync(
                     testDbContext,
                     regNumber: "TX-9-COLL-PAGE-C",
                     typeOfWork: "Literary", 
                     title: "Charlie");
 
                 testDbContext.Set<UserCopyright>().AddRange(
-                    new UserCopyright { ApplicationUserId = userId, CopyrightRegistrationId = entity1.Id, IsDeleted = false },
-                    new UserCopyright { ApplicationUserId = userId, CopyrightRegistrationId = entity2.Id, IsDeleted = false },
-                    new UserCopyright { ApplicationUserId = userId, CopyrightRegistrationId = entity3.Id, IsDeleted = false }
+                    new UserCopyright { 
+                        ApplicationUserId = userId, 
+                        CopyrightEntityId = entity1.Id, 
+                        IsDeleted = false },
+
+                    new UserCopyright { 
+                        ApplicationUserId = userId, 
+                        CopyrightEntityId = entity2.Id, 
+                        IsDeleted = false },
+
+                    new UserCopyright { 
+                        ApplicationUserId = userId, 
+                        CopyrightEntityId = entity3.Id, 
+                        IsDeleted = false }
                 );
 
                 await testDbContext.SaveChangesAsync();
             }
 
-            var response = await client.GetAsync("/Copyrights/MyCollection?sortBy=TitleAsc&currentPage=2&resultsPerPage=1");
+            var response = await client.GetAsync(
+                "/Copyrights/MyCollection?sortBy=TitleAsc&currentPage=2&resultsPerPage=1");
 
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.OK);
         }
 
         [Test]
@@ -167,37 +215,51 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
             var userId = "u1";
             var client = appFactory.CreateClientAs(userId);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
 
-                var entity1 = await TestDbSeeder.SeedCopyrightAsync(
+                var entity1 = 
+                    await TestDbSeeder.SeedCopyrightAsync(
                     testDbContext, 
                     regNumber: "TX-9-COLL-ROBUST-A",
                     typeOfWork: "Literary", 
                     title: "Alpha");
 
-                var entity2 = await TestDbSeeder.SeedCopyrightAsync(
+                var entity2 = 
+                    await TestDbSeeder.SeedCopyrightAsync(
                     testDbContext, 
                     regNumber: "TX-9-COLL-ROBUST-B",
                     typeOfWork: "Literary", 
                     title: "Bravo");
 
                 testDbContext.Set<UserCopyright>().AddRange(
-                    new UserCopyright { ApplicationUserId = userId, CopyrightRegistrationId = entity1.Id, IsDeleted = false },
-                    new UserCopyright { ApplicationUserId = userId, CopyrightRegistrationId = entity2.Id, IsDeleted = false }
+                    new UserCopyright { 
+                        ApplicationUserId = userId, 
+                        CopyrightEntityId = entity1.Id, 
+                        IsDeleted = false },
+
+                    new UserCopyright { 
+                        ApplicationUserId = userId, 
+                        CopyrightEntityId = entity2.Id, 
+                        IsDeleted = false }
                 );
 
                 await testDbContext.SaveChangesAsync();
             }
 
-            // Act: Test with an excessively high page number and page size to ensure the controller properly clamps or sanitizes these values,
-            // preventing out-of-range errors or performance issues.
-            var response = await client.GetAsync("/Copyrights/MyCollection?sortBy=TitleAsc&currentPage=9999&resultsPerPage=9999");
+            var response = await client.GetAsync(
+                "/Copyrights/MyCollection?sortBy=TitleAsc&currentPage=9999&resultsPerPage=9999");
 
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.OK);
         }
 
         [Test]
@@ -206,35 +268,50 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
             var userId = "u1";
             var client = appFactory.CreateClientAs(userId);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
 
-                var entity1 = await TestDbSeeder.SeedCopyrightAsync(
+                var entity1 = 
+                    await TestDbSeeder.SeedCopyrightAsync(
                     testDbContext, 
                     regNumber: "TX-9-COLL-SORT-A",
                     typeOfWork: "Literary", 
                     title: "Alpha");
 
-                var entity2 = await TestDbSeeder.SeedCopyrightAsync(
+                var entity2 = 
+                    await TestDbSeeder.SeedCopyrightAsync(
                     testDbContext, 
                     regNumber: "TX-9-COLL-SORT-B",
                     typeOfWork: "VisualArts", 
                     title: "Bravo");
 
-                testDbContext.Set<UserCopyright>().AddRange(
-                    new UserCopyright { ApplicationUserId = userId, CopyrightRegistrationId = entity1.Id, IsDeleted = false },
-                    new UserCopyright { ApplicationUserId = userId, CopyrightRegistrationId = entity2.Id, IsDeleted = false }
+                testDbContext.
+                    Set<UserCopyright>().
+                    AddRange(
+                    new UserCopyright { 
+                        ApplicationUserId = userId, 
+                        CopyrightEntityId = entity1.Id, 
+                        IsDeleted = false },
+
+                    new UserCopyright { 
+                        ApplicationUserId = userId, 
+                        CopyrightEntityId = entity2.Id, 
+                        IsDeleted = false }
                 );
 
                 await testDbContext.SaveChangesAsync();
             }
 
-            // Test with an invalid 'sortBy' parameter value to ensure the controller handles unexpected or unsupported sorting options gracefully,
-            // returning a 200 OK response without breaking functionality or causing errors.
-            var response = await client.GetAsync("/Copyrights/MyCollection?sortBy=TotallyNotAValue&currentPage=1&resultsPerPage=10");
+            var response = await client.GetAsync(
+                "/Copyrights/MyCollection?sortBy=TotallyNotAValue&currentPage=1&resultsPerPage=10");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
@@ -245,35 +322,53 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
             var userId = "u1";
             var client = appFactory.CreateClientAs(userId);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
 
-                var activeEntity = await TestDbSeeder.SeedCopyrightAsync(
+                var activeEntity = 
+                    await TestDbSeeder.SeedCopyrightAsync(
                     testDbContext, 
                     regNumber: "TX-9-COLL-ACTIVE",
                     typeOfWork: "Literary", 
                     title: "Active");
 
-                var deletedEntity = await TestDbSeeder.SeedCopyrightAsync(
+                var deletedEntity = 
+                    await TestDbSeeder.SeedCopyrightAsync(
                     testDbContext, 
                     regNumber: "TX-9-COLL-DELETED",
                     typeOfWork: "VisualArts", 
                     title: "Deleted");
 
-                testDbContext.Set<UserCopyright>().AddRange(
-                    new UserCopyright { ApplicationUserId = userId, CopyrightRegistrationId = activeEntity.Id, IsDeleted = false },
-                    new UserCopyright { ApplicationUserId = userId, CopyrightRegistrationId = deletedEntity.Id, IsDeleted = true }
+                testDbContext.
+                    Set<UserCopyright>().
+                    AddRange(
+                    new UserCopyright { 
+                        ApplicationUserId = userId, 
+                        CopyrightEntityId = activeEntity.Id, 
+                        IsDeleted = false },
+
+                    new UserCopyright { 
+                        ApplicationUserId = userId, 
+                        CopyrightEntityId = deletedEntity.Id, 
+                        IsDeleted = true }
                 );
 
                 await testDbContext.SaveChangesAsync();
             }
 
-            var response = await client.GetAsync("/Copyrights/MyCollection?sortBy=TitleAsc&currentPage=1&resultsPerPage=10");
+            var response = await client.GetAsync(
+                "/Copyrights/MyCollection?sortBy=TitleAsc&currentPage=1&resultsPerPage=10");
 
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.OK);
         }
 
         [Test]
@@ -282,15 +377,23 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
             var userId = "u1";
             var client = appFactory.CreateClientAs(userId);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
+
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
             }
 
-            var response = await client.GetAsync("/Copyrights/MyCollection");
+            var response = await client.GetAsync(
+                "/Copyrights/MyCollection");
 
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.OK);
         }
 
         [TestCase(0)]
@@ -301,29 +404,56 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
             var userId = "u1";
             var client = appFactory.CreateClientAs(userId);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                var entity1 = await TestDbSeeder.SeedCopyrightAsync(
-                    testDbContext, regNumber: "TX-9-COLL-RPP-A", typeOfWork: "Literary", title: "Alpha");
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
 
-                var entity2 = await TestDbSeeder.SeedCopyrightAsync(
-                    testDbContext, regNumber: "TX-9-COLL-RPP-B", typeOfWork: "VisualArts", title: "Bravo");
+                var entity1 = 
+                    await TestDbSeeder.SeedCopyrightAsync(
+                    testDbContext, 
+                    regNumber: "TX-9-COLL-RPP-A", 
+                    typeOfWork: "Literary", 
+                    title: "Alpha");
 
-                testDbContext.Set<UserCopyright>().AddRange(
-                    new UserCopyright { ApplicationUserId = userId, CopyrightRegistrationId = entity1.Id, IsDeleted = false },
-                    new UserCopyright { ApplicationUserId = userId, CopyrightRegistrationId = entity2.Id, IsDeleted = false }
+                var entity2 = 
+                    await TestDbSeeder.SeedCopyrightAsync(
+                    testDbContext, 
+                    regNumber: "TX-9-COLL-RPP-B", 
+                    typeOfWork: "VisualArts", 
+                    title: "Bravo");
+
+                testDbContext.
+                    Set<UserCopyright>().
+                    AddRange(
+                    new UserCopyright { 
+                        ApplicationUserId = userId, 
+                        CopyrightEntityId = entity1.Id, 
+                        IsDeleted = false },
+
+                    new UserCopyright { 
+                        ApplicationUserId = userId, 
+                        CopyrightEntityId = entity2.Id, 
+                        IsDeleted = false }
                 );
 
                 await testDbContext.SaveChangesAsync();
             }
 
-            var url = $"/Copyrights/MyCollection?sortBy=TitleAsc&currentPage=1&resultsPerPage={resultsPerPage}";
+            var url = 
+                $"/Copyrights/MyCollection?sortBy=TitleAsc&currentPage=1&resultsPerPage=" +
+                $"{resultsPerPage}";
+
             var response = await client.GetAsync(url);
 
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.OK);
         }
 
         [TestCase(5000)]
@@ -333,42 +463,66 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
             var userId = "u1";
             var client = appFactory.CreateClientAs(userId);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                var entity1 = await TestDbSeeder.SeedCopyrightAsync(
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
+
+                var entity1 = 
+                    await TestDbSeeder.SeedCopyrightAsync(
                     testDbContext, 
                     regNumber: "TX-9-COLL-RPP-LARGE-A",
                     typeOfWork: "Literary", 
                     title: "Alpha");
 
-                var entity2 = await TestDbSeeder.SeedCopyrightAsync(
+                var entity2 = 
+                    await TestDbSeeder.SeedCopyrightAsync(
                     testDbContext, 
                     regNumber: "TX-9-COLL-RPP-LARGE-B",
                     typeOfWork: "VisualArts", 
                     title: "Bravo");
 
-                var entity3 = await TestDbSeeder.SeedCopyrightAsync(
+                var entity3 = 
+                    await TestDbSeeder.SeedCopyrightAsync(
                     testDbContext, 
                     regNumber: "TX-9-COLL-RPP-LARGE-C",
                     typeOfWork: "Literary", 
                     title: "Charlie");
 
                 testDbContext.Set<UserCopyright>().AddRange(
-                    new UserCopyright { ApplicationUserId = userId, CopyrightRegistrationId = entity1.Id, IsDeleted = false },
-                    new UserCopyright { ApplicationUserId = userId, CopyrightRegistrationId = entity2.Id, IsDeleted = false },
-                    new UserCopyright { ApplicationUserId = userId, CopyrightRegistrationId = entity3.Id, IsDeleted = false }
+                    new UserCopyright { 
+                        ApplicationUserId = userId, 
+                        CopyrightEntityId = entity1.Id, 
+                        IsDeleted = false },
+
+                    new UserCopyright { 
+                        ApplicationUserId = userId, 
+                        CopyrightEntityId = entity2.Id, 
+                        IsDeleted = false },
+
+                    new UserCopyright { 
+                        ApplicationUserId = userId, 
+                        CopyrightEntityId = entity3.Id, 
+                        IsDeleted = false }
                 );
 
                 await testDbContext.SaveChangesAsync();
             }
 
-            var url = $"/Copyrights/MyCollection?sortBy=TitleAsc&currentPage=1&resultsPerPage={resultsPerPage}";
+            var url = 
+                $"/Copyrights/MyCollection?sortBy=TitleAsc&currentPage=1&resultsPerPage=" +
+                $"{resultsPerPage}";
+
             var response = await client.GetAsync(url);
 
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.OK);
         }
 
         [TestCase(0)]
@@ -378,34 +532,54 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
             var userId = "u1";
             var client = appFactory.CreateClientAs(userId);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                var entity1 = await TestDbSeeder.SeedCopyrightAsync(
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
+
+                var entity1 = 
+                    await TestDbSeeder.SeedCopyrightAsync(
                     testDbContext,
                     regNumber: "TX-9-COLL-PAGE-NEG-A",
                     typeOfWork: "Literary", 
                     title: "Alpha");
 
-                var entity2 = await TestDbSeeder.SeedCopyrightAsync(
+                var entity2 = 
+                    await TestDbSeeder.SeedCopyrightAsync(
                     testDbContext, 
                     regNumber: "TX-9-COLL-PAGE-NEG-B",
                     typeOfWork: "VisualArts", 
                     title: "Bravo");
 
-                testDbContext.Set<UserCopyright>().AddRange(
-                    new UserCopyright { ApplicationUserId = userId, CopyrightRegistrationId = entity1.Id, IsDeleted = false },
-                    new UserCopyright { ApplicationUserId = userId, CopyrightRegistrationId = entity2.Id, IsDeleted = false }
+                testDbContext.
+                    Set<UserCopyright>().
+                    AddRange(
+                    new UserCopyright { 
+                        ApplicationUserId = userId, 
+                        CopyrightEntityId = entity1.Id, 
+                        IsDeleted = false },
+
+                    new UserCopyright { 
+                        ApplicationUserId = userId, 
+                        CopyrightEntityId = entity2.Id, 
+                        IsDeleted = false }
                 );
 
                 await testDbContext.SaveChangesAsync();
             }
 
-            var response = await client.GetAsync($"/Copyrights/MyCollection?sortBy=TitleAsc&currentPage={currentPage}&resultsPerPage=10");
+            var response = await client.GetAsync(
+                $"/Copyrights/MyCollection?sortBy=TitleAsc&currentPage=" +
+                $"{currentPage}&resultsPerPage=10");
 
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.OK);
         }
 
         [Test]
@@ -414,33 +588,50 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
             var userId = "u1";
             var client = appFactory.CreateClientAs(userId);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                var entity1 = await TestDbSeeder.SeedCopyrightAsync(
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
+
+                var entity1 = 
+                    await TestDbSeeder.SeedCopyrightAsync(
                     testDbContext,
                     regNumber: "TX-9-COLL-PAGE-A",
                     typeOfWork: "Literary", 
                     title: "Alpha");
 
-                var entity2 = await TestDbSeeder.SeedCopyrightAsync(
+                var entity2 = 
+                    await TestDbSeeder.SeedCopyrightAsync(
                     testDbContext, 
                     regNumber: "TX-9-COLL-PAGE-B",
                     typeOfWork: "VisualArts", 
                     title: "Bravo");
 
                 testDbContext.Set<UserCopyright>().AddRange(
-                    new UserCopyright { ApplicationUserId = userId, CopyrightRegistrationId = entity1.Id, IsDeleted = false },
-                    new UserCopyright { ApplicationUserId = userId, CopyrightRegistrationId = entity2.Id, IsDeleted = false }
+                    new UserCopyright { 
+                        ApplicationUserId = userId, 
+                        CopyrightEntityId = entity1.Id, 
+                        IsDeleted = false },
+
+                    new UserCopyright { 
+                        ApplicationUserId = userId, 
+                        CopyrightEntityId = entity2.Id, 
+                        IsDeleted = false }
                 );
                 await testDbContext.SaveChangesAsync();
             }
 
-            var response = await client.GetAsync("/Copyrights/MyCollection?sortBy=TitleAsc&currentPage=abc&resultsPerPage=10");
+            var response = await client.GetAsync(
+                "/Copyrights/MyCollection?sortBy=TitleAsc&currentPage=abc&resultsPerPage=10");
 
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.OK);
         }
 
         [TestCase("TitleAsc")]
@@ -450,10 +641,16 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
             var userId = "u1";
             var client = appFactory.CreateClientAs(userId);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
+
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
 
                 var entity1 = new CopyrightEntity
                 {
@@ -483,20 +680,41 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                     Owner = "AZ LLC"
                 };
 
-                testDbContext.CopyrightRegistrations.AddRange(entity1, entity2, entity3);
+                testDbContext.CopyrightRegistrations.AddRange(
+                    entity1, 
+                    entity2, 
+                    entity3);
+
                 await testDbContext.SaveChangesAsync();
 
                 testDbContext.UserCopyrights.AddRange(
-                    new UserCopyright { ApplicationUserId = userId, CopyrightRegistrationId = entity1.Id, IsDeleted = false, DateAdded = DateTime.UtcNow.AddDays(-2) },
-                    new UserCopyright { ApplicationUserId = userId, CopyrightRegistrationId = entity2.Id, IsDeleted = false, DateAdded = DateTime.UtcNow.AddDays(-1) },
-                    new UserCopyright { ApplicationUserId = userId, CopyrightRegistrationId = entity3.Id, IsDeleted = false, DateAdded = DateTime.UtcNow }
+                    new UserCopyright { 
+                        ApplicationUserId = userId, 
+                        CopyrightEntityId = entity1.Id, 
+                        IsDeleted = false, 
+                        DateAdded = DateTime.UtcNow.AddDays(-2) },
+
+                    new UserCopyright { 
+                        ApplicationUserId = userId, 
+                        CopyrightEntityId = entity2.Id, 
+                        IsDeleted = false, 
+                        DateAdded = DateTime.UtcNow.AddDays(-1) },
+
+                    new UserCopyright { 
+                        ApplicationUserId = userId, 
+                        CopyrightEntityId = entity3.Id, 
+                        IsDeleted = false, 
+                        DateAdded = DateTime.UtcNow }
                 );
                 await testDbContext.SaveChangesAsync();
             }
 
-            var response = await client.GetAsync($"/Copyrights/MyCollection?sortBy={sortBy}&currentPage=1&resultsPerPage=10");
+            var response = await client.GetAsync(
+                $"/Copyrights/MyCollection?sortBy=" +
+                $"{sortBy}&currentPage=1&resultsPerPage=10");
 
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.OK);
         }
 
         [Test]
@@ -505,10 +723,16 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
             var userId = "u1";
             var client = appFactory.CreateClientAs(userId);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
+
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
 
                 var entity1 = new CopyrightEntity
                 {
@@ -529,19 +753,33 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                     Owner = "AZ LLC"
                 };
 
-                testDbContext.CopyrightRegistrations.AddRange(entity1, entity2);
+                testDbContext.CopyrightRegistrations.AddRange(
+                    entity1, 
+                    entity2);
+
                 await testDbContext.SaveChangesAsync();
 
                 testDbContext.UserCopyrights.AddRange(
-                    new UserCopyright { ApplicationUserId = userId, CopyrightRegistrationId = entity1.Id, IsDeleted = false, DateAdded = DateTime.UtcNow.AddDays(-1) },
-                    new UserCopyright { ApplicationUserId = userId, CopyrightRegistrationId = entity2.Id, IsDeleted = false, DateAdded = DateTime.UtcNow }
+                    new UserCopyright { 
+                        ApplicationUserId = userId, 
+                        CopyrightEntityId = entity1.Id, 
+                        IsDeleted = false, 
+                        DateAdded = DateTime.UtcNow.AddDays(-1) },
+
+                    new UserCopyright { 
+                        ApplicationUserId = userId, 
+                        CopyrightEntityId = entity2.Id, 
+                        IsDeleted = false, 
+                        DateAdded = DateTime.UtcNow }
                 );
                 await testDbContext.SaveChangesAsync();
             }
 
-            var response = await client.GetAsync("/Copyrights/MyCollection?sortBy=TitleAsc&currentPage=abc&resultsPerPage=10");
+            var response = await client.GetAsync(
+                "/Copyrights/MyCollection?sortBy=TitleAsc&currentPage=abc&resultsPerPage=10");
 
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.OK);
         }
 
         [Test]
@@ -550,12 +788,20 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
             var userId = "u1";
             var client = appFactory.CreateClientAs(userId);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-                var list = new List<CopyrightEntity>(120);
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
+
+                var list = 
+                    new List<CopyrightEntity>(120);
+
                 for (int i = 0; i < 120; i++)
                 {
                     list.Add(new CopyrightEntity
@@ -573,20 +819,24 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                 await testDbContext.SaveChangesAsync();
 
                 testDbContext.UserCopyrights.AddRange(
-                    list.Select(uc => new UserCopyright
+                    list.Select(
+                        uc => new UserCopyright
                     {
                         ApplicationUserId = userId,
-                        CopyrightRegistrationId = uc.Id,
+                        CopyrightEntityId = uc.Id,
                         IsDeleted = false,
                         DateAdded = DateTime.UtcNow.AddMinutes(-uc.Id % 60)
                     })
                 );
+
                 await testDbContext.SaveChangesAsync();
             }
 
-            var response = await client.GetAsync("/Copyrights/MyCollection?sortBy=TitleAsc&currentPage=2&resultsPerPage=50");
+            var response = await client.GetAsync(
+                "/Copyrights/MyCollection?sortBy=TitleAsc&currentPage=2&resultsPerPage=50");
 
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.OK);
         }
 
         [Test]
@@ -595,15 +845,23 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
             var userId = "u1";
             var client = appFactory.CreateClientAs(userId);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
-                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
+                var testDbContext = 
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
+
+                await TestDbSeeder.SeedUserAsync(
+                    testDbContext, 
+                    userId);
             }
 
-            var response = await client.GetAsync("/Copyrights/Details/not-a-guid");
+            var response = await client.GetAsync(
+                "/Copyrights/Details/not-a-guid");
 
-            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            response.StatusCode.Should().
+                Be(HttpStatusCode.NotFound);
         }
     }
 }

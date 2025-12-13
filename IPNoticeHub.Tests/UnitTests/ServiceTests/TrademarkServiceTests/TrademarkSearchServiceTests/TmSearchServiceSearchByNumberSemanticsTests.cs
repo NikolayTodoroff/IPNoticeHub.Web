@@ -1,28 +1,25 @@
 ﻿using FluentAssertions;
-using IPNoticeHub.Common.EnumConstants;
-using IPNoticeHub.Data.Repositories.Trademarks.Abstractions;
-using IPNoticeHub.Data.Repositories.Trademarks.Implementations;
-using IPNoticeHub.Services.Trademarks.DTOs;
-using IPNoticeHub.Services.Trademarks.Implementations;
+using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Tests.TestUtilities;
 using NUnit.Framework;
+using IPNoticeHub.Application.DTOs.TrademarkDTOs;
+using IPNoticeHub.Infrastructure.Persistence.Repositories.TrademarkRepository;
+using IPNoticeHub.Application.Services.TrademarkService.Implementations;
+using IPNoticeHub.Application.Repositories.TrademarkRepository;
 
 namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchServiceTests
 {
-    /// <summary>
-    /// Section: TrademarkSearchService - Search by Owner Semantics
-    /// When ExactMatch is set to true, the search returns only the exact registri number or sourceId.
-    /// When ExactMatch is set to false, the search includes partial matches.
-    /// </summary>
     [TestFixture]
     public class TmSearchServiceSearchByNumberSemanticsTests
     {
         [Test]
         public async Task SearchAsync_WhenNumberExactMatchTrue_MatchesRegistrationNumber()
         {
-            using var testDbContext = InMemoryDbContextFactory.CreateTestDbContext();
+            using var testDbContext = 
+                InMemoryDbContextFactory.CreateTestDbContext();
 
-            var (tmEntity1, _) = InMemoryDbContextFactory.CreateTrademark(
+            var (tmEntity1, _) = 
+                InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "First WM",
                 owner: "Owner A",
                 goodsAndServices: "testGoodsAndSerices",
@@ -33,7 +30,8 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
                 source: DataProvider.USPTO,
                 classNumbers: new[] { 9, 35 });
 
-            var (tmEntity2, _) = InMemoryDbContextFactory.CreateTrademark(
+            var (tmEntity2, _) = 
+                InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "Second WM",
                 owner: "Owner B",
                 goodsAndServices: "testGoodsAndSerices",
@@ -44,12 +42,17 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
                 source: DataProvider.EUIPO,
                 classNumbers: new[] { 30 });
 
-            testDbContext.TrademarkRegistrations.AddRange(tmEntity1, tmEntity2);
+            testDbContext.TrademarkRegistrations.AddRange(
+                tmEntity1, 
+                tmEntity2);
 
             await testDbContext.SaveChangesAsync();
 
-            ITrademarkRepository trademarkRepository = new TrademarkRepository(testDbContext);
-            var service = new TrademarkSearchService(trademarkRepository);
+            ITrademarkRepository trademarkRepository = 
+                new TrademarkRepository(testDbContext);
+
+            var service = 
+                new TrademarkSearchService(trademarkRepository);
 
             var filterDTO = new TrademarkFilterDto
             {
@@ -58,26 +61,37 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
                 ExactMatch = true
             };
 
-            var pagedResult = await service.SearchAsync(
+            var pagedResult = 
+                await service.SearchAsync(
                 dto: filterDTO,
                 currentPage: 1,
                 resultsPerPage: 10,
                 cancellationToken: default);
 
-            pagedResult.ResultsCount.Should().Be(1);
-            pagedResult.Results.Should().ContainSingle();
+            pagedResult.ResultsCount.Should().
+                Be(1);
 
-            var singleTmSummaryDTO = pagedResult.Results.Single();
-            singleTmSummaryDTO.Id.Should().Be(tmEntity1.Id);
-            singleTmSummaryDTO.Wordmark.Should().Be("First WM");
+            pagedResult.Results.Should().
+                ContainSingle();
+
+            var singleTmSummaryDTO = 
+                pagedResult.Results.Single();
+
+            singleTmSummaryDTO.Id.Should().
+                Be(tmEntity1.Id);
+
+            singleTmSummaryDTO.Wordmark.Should().
+                Be("First WM");
         }
 
         [Test]
         public async Task SearchAsync_WhenNumberExactMatchTrue_MatchesSourceId()
         {
-            using var testDbContext = InMemoryDbContextFactory.CreateTestDbContext();
+            using var testDbContext = 
+                InMemoryDbContextFactory.CreateTestDbContext();
 
-            var (tmEntity1, _) = InMemoryDbContextFactory.CreateTrademark(
+            var (tmEntity1, _) = 
+                InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "First WM",
                 owner: "Owner A",
                 goodsAndServices: "testGoodsAndSerices",
@@ -89,7 +103,8 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
                 classNumbers: new[] { 9, 35 });
             tmEntity1.SourceId = "EU4546576454333";
 
-            var (tmEntity2, _) = InMemoryDbContextFactory.CreateTrademark(
+            var (tmEntity2, _) = 
+                InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "Second WM",
                 owner: "Owner B",
                 goodsAndServices: "testGoodsAndSerices",
@@ -100,12 +115,17 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
                 source: DataProvider.EUIPO,
                 classNumbers: new[] { 30 });
 
-            testDbContext.TrademarkRegistrations.AddRange(tmEntity1, tmEntity2);
+            testDbContext.TrademarkRegistrations.AddRange(
+                tmEntity1, 
+                tmEntity2);
 
             await testDbContext.SaveChangesAsync();
 
-            ITrademarkRepository trademarkRepository = new TrademarkRepository(testDbContext);
-            var service = new TrademarkSearchService(trademarkRepository);
+            ITrademarkRepository trademarkRepository = 
+                new TrademarkRepository(testDbContext);
+
+            var service = 
+                new TrademarkSearchService(trademarkRepository);
 
             var filterDTO = new TrademarkFilterDto
             {
@@ -114,18 +134,25 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
                 ExactMatch = true
             };
 
-            var pagedResult = await service.SearchAsync(
+            var pagedResult = 
+                await service.SearchAsync(
                 dto: filterDTO,
                 currentPage: 1,
                 resultsPerPage: 10,
                 cancellationToken: default);
 
-            pagedResult.ResultsCount.Should().Be(1);
-            pagedResult.Results.Should().ContainSingle();
+            pagedResult.ResultsCount.Should().
+                Be(1);
 
-            var singleTmSummaryDTO = pagedResult.Results.Single();
-            singleTmSummaryDTO.Id.Should().Be(tmEntity1.Id);
-            singleTmSummaryDTO.Wordmark.Should().Be("First WM");
+            pagedResult.Results.Should().
+                ContainSingle();
+
+            var dto = pagedResult.Results.Single();
+
+            dto.Id.Should().Be(tmEntity1.Id);
+
+            dto.Wordmark.Should().
+                Be("First WM");
         }
 
         [Test]
@@ -133,7 +160,8 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
         {
             using var testDbContext = InMemoryDbContextFactory.CreateTestDbContext();
 
-            var (tmEntity1, _) = InMemoryDbContextFactory.CreateTrademark(
+            var (tmEntity1, _) = 
+                InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "First WM",
                 owner: "Owner A",
                 goodsAndServices: "testGoodsAndSerices",
@@ -144,7 +172,8 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
                 source: DataProvider.USPTO,
                 classNumbers: new[] { 9, 35 });
 
-            var (tmEntity2, _) = InMemoryDbContextFactory.CreateTrademark(
+            var (tmEntity2, _) = 
+                InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "Second WM",
                 owner: "Owner B",
                 goodsAndServices: "testGoodsAndSerices",
@@ -174,7 +203,8 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
                 ExactMatch = false
             };
 
-            var pagedResult = await service.SearchAsync(
+            var pagedResult = 
+                await service.SearchAsync(
                 dto: filterDTO,
                 currentPage: 1,
                 resultsPerPage: 10,
@@ -186,12 +216,12 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
             pagedResult.Results.Should().
                 ContainSingle();
 
-            var singleTmSummaryDTO = pagedResult.Results.Single();
+            var dto = pagedResult.Results.Single();
 
-            singleTmSummaryDTO.Id.Should().
+            dto.Id.Should().
                 Be(tmEntity1.Id);
 
-            singleTmSummaryDTO.Wordmark.Should().
+            dto.Wordmark.Should().
                 Be("First WM");
         }
     }

@@ -1,11 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using IPNoticeHub.Common.EnumConstants;
+using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Data.Repositories.Trademarks.Abstractions;
-using IPNoticeHub.Services.Trademarks.Abstractions;
-using IPNoticeHub.Services.Trademarks.DTOs;
-using IPNoticeHub.Common.Infrastructure.Paging;
+using IPNoticeHub.Application.Trademarks.Abstractions;
+using IPNoticeHub.Application.Trademarks.DTOs;
+using IPNoticeHub.Shared.Infrastructure.Paging;
 
-namespace IPNoticeHub.Services.Trademarks.Implementations
+namespace IPNoticeHub.Application.Trademarks.Implementations
 {
     public class TrademarkCollectionService : ITrademarkCollectionService
     {

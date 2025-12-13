@@ -1,22 +1,17 @@
 ﻿using FluentAssertions;
-using IPNoticeHub.Common.EnumConstants;
-using IPNoticeHub.Common.Infrastructure.Paging;
-using IPNoticeHub.Services.Copyrights.Abstractions;
-using IPNoticeHub.Services.Copyrights.DTOs;
+using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Tests.UnitTests.TestUtilities;
-using static IPNoticeHub.Common.ValidationConstants.PagingConstants;
+using static IPNoticeHub.Shared.Constants.PagingConstants.DefaultPagingConstants;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using IPNoticeHub.Web.Models.Copyrights;
+using IPNoticeHub.Application.DTOs.CopyrightDTOs;
+using IPNoticeHub.Shared.Support;
+using IPNoticeHub.Application.Services.CopyrightServices.Abstractions;
 
 namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
 {
-    /// <summary>
-    /// Section: CopyrightsController – Index
-    ///  - When user present: calls service, sets ViewBag.SortBy, returns view with page.
-    ///  - When no user: returns Forbid.
-    /// </summary>
     [TestFixture]
     public class CopyrightsControllerIndexTests
     {
@@ -26,7 +21,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
             const string userId = "u1";
             const CollectionSortBy sortBy = CollectionSortBy.TitleAsc;
 
-            var dto = new PagedResult<CopyrightSingleItemDto>
+            var dto = 
+                new PagedResult<CopyrightSingleItemDto>
             {
                 ResultsCount = 0,
                 CurrentPage = 1,
@@ -34,9 +30,11 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
                 Results = new List<CopyrightSingleItemDto>()
             };
 
-            var copyrightService = new Mock<ICopyrightService>();
+            var copyrightService = 
+                new Mock<ICopyrightService>();
 
-            copyrightService.Setup(s => s.GetUserCollectionAsync(
+            copyrightService.Setup(
+                s => s.GetUserCollectionAsync(
                 userId, 
                 sortBy, 
                 1, 
@@ -44,11 +42,13 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
                 It.IsAny<CancellationToken>())).
             ReturnsAsync(dto);
 
-            var controller = TestCopyrightControllerFactory.CreateController(
+            var controller =
+                TestCopyrightControllerFactory.CreateController(
                 copyrightService.Object, 
                 userId);
 
-            var indexActionResult = await controller.MyCollection(
+            var indexActionResult = 
+                await controller.MyCollection(
                 sortBy, 
                 1, 
                 10);
@@ -62,7 +62,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
             ((CollectionSortBy)controller.ViewBag.SortBy).Should().
                 Be(sortBy);
 
-            copyrightService.Verify(s => s.GetUserCollectionAsync(
+            copyrightService.Verify(
+                s => s.GetUserCollectionAsync(
                 userId, 
                 sortBy, 
                 1, 
@@ -75,11 +76,14 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
         {
             var copyrightService = 
                 new Mock<ICopyrightService>(MockBehavior.Strict);
-            var controller = TestCopyrightControllerFactory.CreateController(
+
+            var controller = 
+                TestCopyrightControllerFactory.CreateController(
                 copyrightService.Object, 
                 userId: null);
 
-            var indexActionResult = await controller.MyCollection();
+            var indexActionResult = 
+                await controller.MyCollection();
 
             indexActionResult.Should().
                 BeOfType<ForbidResult>();
@@ -90,7 +94,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
         [Test]
         public async Task Index_UsesDefaultPaging_WhenNoArgumentsProvided()
         {
-            var pagedResult = new PagedResult<CopyrightSingleItemDto>
+            var pagedResult = 
+                new PagedResult<CopyrightSingleItemDto>
             {
                 ResultsCount = 0,
                 CurrentPage = 1,
@@ -98,8 +103,11 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
                 Results = new List<CopyrightSingleItemDto>()
             };
 
-            var copyrightService = new Mock<ICopyrightService>();
-            copyrightService.Setup(s => s.GetUserCollectionAsync(
+            var copyrightService = 
+                new Mock<ICopyrightService>();
+
+            copyrightService.Setup(
+                s => s.GetUserCollectionAsync(
                 "u1",
                 CollectionSortBy.DateAddedDesc,
                 DefaultPage,
@@ -107,11 +115,13 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
                 It.IsAny<CancellationToken>())).
             ReturnsAsync(pagedResult);
 
-            var controller = TestCopyrightControllerFactory.CreateController(
+            var controller = 
+                TestCopyrightControllerFactory.CreateController(
                 copyrightService.Object, 
                 userId: "u1");
 
-            var indexActionResult = await controller.MyCollection();
+            var indexActionResult = 
+                await controller.MyCollection();
 
             indexActionResult.Should().
                 BeOfType<ViewResult>();

@@ -1,14 +1,16 @@
-﻿using IPNoticeHub.Common.EnumConstants;
-using IPNoticeHub.Services.DocumentLibrary.Abstractions;
-using IPNoticeHub.Services.PdfGeneration.Abstractions;
-using IPNoticeHub.Services.Trademarks.Abstractions;
+﻿using IPNoticeHub.Application.Rendering.Abstractions;
+using IPNoticeHub.Application.Services.DocumentLibraryService.Abstractions;
+using IPNoticeHub.Application.Services.PdfGenerationService.Abstractions;
+using IPNoticeHub.Application.Services.TrademarkService.Abstractions;
+using IPNoticeHub.Application.Templates.Abstractions;
+using IPNoticeHub.Application.Trademarks.Abstractions;
+using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Web.Extensions;
-using IPNoticeHub.Web.Infrastructure.Mappings;
 using IPNoticeHub.Web.Models.PdfGeneration;
+using IPNoticeHub.Web.WebHelpers.Mappings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using static IPNoticeHub.Web.Infrastructure.TemplateReplacer;
-using static IPNoticeHub.Web.Infrastructure.ApplyEntityDetails;
+using static IPNoticeHub.Web.WebHelpers.ApplyEntityDetails;
 
 namespace IPNoticeHub.Web.Controllers
 {
@@ -20,19 +22,22 @@ namespace IPNoticeHub.Web.Controllers
         private readonly IPdfService pdfService;
         private readonly ILetterTemplateProvider letterTemplateProvider;
         private readonly IDocumentLibraryService documentLibraryService;
+        private readonly ITemplateTokenReplacer templateReplacer;
 
         public TrademarkCadController(
             ITrademarkSearchService trademarkSearchService,
             ITrademarkCollectionService trademarkCollectionService,
             IPdfService pdfService,
             ILetterTemplateProvider letterTemplateProvider,
-            IDocumentLibraryService documentLibraryService)
+            IDocumentLibraryService documentLibraryService,
+            ITemplateTokenReplacer templateReplacer)
         {
             this.trademarkSearchService = trademarkSearchService;
             this.trademarkCollectionService = trademarkCollectionService;
             this.pdfService = pdfService;
             this.letterTemplateProvider = letterTemplateProvider;
             this.documentLibraryService = documentLibraryService;
+            this.templateReplacer = templateReplacer;
         }
 
         [HttpGet, Authorize(Policy = "HasUserId")]
@@ -42,13 +47,15 @@ namespace IPNoticeHub.Web.Controllers
         {
             if (!User.TryGetUserId(out var userId)) return Forbid();
 
-            var dto = await trademarkSearchService.GetDetailsAsync(
+            var dto = 
+                await trademarkSearchService.GetDetailsAsync(
                 publicId,
                 cancellationToken);
 
             if (dto == null) return NotFound();
 
-            bool isInCollection = await trademarkCollectionService.IsInCollectionAsync(
+            bool isInCollection = 
+                await trademarkCollectionService.IsInCollectionAsync(
                 userId,
                 dto.Id,
                 includeSoftDeleted: false,
@@ -56,12 +63,14 @@ namespace IPNoticeHub.Web.Controllers
 
             if (!isInCollection) return NotFound();
 
-            var viewModel = TrademarksMapping.MapCeaseDesistViewModel(
+            var viewModel = 
+                TrademarksMapping.MapCeaseDesistViewModel(
                 publicId,
                 dto.Wordmark,
                 dto.RegistrationNumber!);
 
-            viewModel.BodyTemplate = letterTemplateProvider.GetTemplateByKey(
+            viewModel.BodyTemplate = 
+                letterTemplateProvider.GetTemplateByKey(
                 "CND-Trademark")?.BodyTemplate ?? string.Empty;
 
             ViewData["ShowAdditionalFacts"] = true;
@@ -102,9 +111,8 @@ namespace IPNoticeHub.Web.Controllers
                 var placeholders =
                     TrademarksMapping.MapCeaseDesistViewModellToPlaceholders(viewModel);
 
-                viewModel.BodyTemplate = ReplaceTemplate(
-                    template,
-                    placeholders!);
+                viewModel.BodyTemplate = 
+                    templateReplacer.ReplaceTemplate(template, placeholders);
             }
 
             return View("CeaseDesistPreview", viewModel);
@@ -116,6 +124,7 @@ namespace IPNoticeHub.Web.Controllers
             CancellationToken cancellationToken = default)
         {
             if (!ModelState.IsValid) return View("CeaseDesist", viewModel);
+
             if (!User.TryGetUserId(out var userId)) return Forbid();
 
             var dto = await trademarkSearchService.GetDetailsAsync(
@@ -136,9 +145,8 @@ namespace IPNoticeHub.Web.Controllers
                 var placeholders =
                     TrademarksMapping.MapCeaseDesistViewModellToPlaceholders(viewModel);
 
-                viewModel.BodyTemplate = ReplaceTemplate(
-                    template,
-                    placeholders);
+                viewModel.BodyTemplate =
+                    templateReplacer.ReplaceTemplate(template, placeholders);
             }
 
             return RedirectToAction(nameof(CeaseDesistPreview), viewModel);

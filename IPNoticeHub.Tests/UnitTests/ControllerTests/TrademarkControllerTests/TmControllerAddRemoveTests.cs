@@ -1,11 +1,11 @@
 ﻿using FluentAssertions;
-using IPNoticeHub.Services.Trademarks.Abstractions;
+using IPNoticeHub.Application.Services.TrademarkService.Abstractions;
 using IPNoticeHub.Tests.UnitTests.TestUtilities;
 using IPNoticeHub.Web.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using static IPNoticeHub.Common.ValidationConstants.StatusMessages;
+using static IPNoticeHub.Shared.Constants.StatusMessages.TrademarkStatusMessages;
 
 namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
 {
@@ -24,7 +24,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
                 It.IsAny<CancellationToken>())).
                 Returns(Task.CompletedTask);
 
-            var controller = TestTrademarkControllerFactory.CreateTrademarksController(
+            var controller = 
+                TestTrademarkControllerFactory.CreateTrademarksController(
                 tmCollectionService.Object, 
                 out var tempData, 
                 userId: "u1");
@@ -34,7 +35,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
                 "/local", 
                 CancellationToken.None);
 
-            tmCollectionService.Verify(s => s.AddAsync(
+            tmCollectionService.Verify(
+                s => s.AddAsync(
                 "u1", 
                 42, 
                 It.IsAny<CancellationToken>()), 
@@ -56,18 +58,21 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
             var tmCollectionService = 
                 new Mock<ITrademarkCollectionService>();
 
-            tmCollectionService.Setup(s => s.RemoveAsync(
+            tmCollectionService.Setup(
+                s => s.RemoveAsync(
                 "u1", 
                 42, 
                 It.IsAny<CancellationToken>())).
                 Returns(Task.CompletedTask);
 
-            var controller = TestTrademarkControllerFactory.CreateTrademarksController(
+            var controller = 
+                TestTrademarkControllerFactory.CreateTrademarksController(
                 tmCollectionService.Object, 
                 out var tempData, 
                 userId: "u1");
 
-            var removeActionResult = await controller.Remove(
+            var removeActionResult = 
+                await controller.Remove(
                 42, 
                 null, 
                 CancellationToken.None);
@@ -96,7 +101,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
             var tmCollectionService = 
                 new Mock<ITrademarkCollectionService>(MockBehavior.Strict);
 
-            var controller = TestTrademarkControllerFactory.CreateTrademarksController(
+            var controller = 
+                TestTrademarkControllerFactory.CreateTrademarksController(
                 tmCollectionService.Object, 
                 out var _, 
                 userId: null);
@@ -118,7 +124,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
             var tmCollectionService = 
                 new Mock<ITrademarkCollectionService>(MockBehavior.Strict);
 
-            var controller = TestTrademarkControllerFactory.CreateTrademarksController(
+            var controller = 
+                TestTrademarkControllerFactory.CreateTrademarksController(
                 tmCollectionService.Object, 
                 out var _, 
                 userId: null);
@@ -140,7 +147,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
             const string userId = "u1";
             const int trademarkId = 42;
 
-            var tmCollectionService = new Mock<ITrademarkCollectionService>();
+            var tmCollectionService = 
+                new Mock<ITrademarkCollectionService>();
 
             tmCollectionService.Setup(s => s.AddAsync(
                 userId, 
@@ -148,7 +156,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
                 It.IsAny<CancellationToken>())).
                 Returns(Task.CompletedTask);
 
-            var controller = TestTrademarkControllerFactory.CreateTrademarksController(
+            var controller = 
+                TestTrademarkControllerFactory.CreateTrademarksController(
                 tmCollectionService.Object,
                 userId: userId);
 

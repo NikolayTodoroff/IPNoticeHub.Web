@@ -1,11 +1,11 @@
 ﻿using FluentAssertions;
-using IPNoticeHub.Services.Copyrights.Abstractions;
+using IPNoticeHub.Application.Services.CopyrightServices.Abstractions;
 using IPNoticeHub.Tests.UnitTests.TestUtilities;
 using IPNoticeHub.Web.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using static IPNoticeHub.Common.ValidationConstants.StatusMessages;
+using static IPNoticeHub.Shared.Constants.StatusMessages.CopyrightStatusMessages;
 
 namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
 {
@@ -18,11 +18,13 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
             var copyrightService = 
                 new Mock<ICopyrightService>(MockBehavior.Strict);
 
-            var controller = TestCopyrightControllerFactory.CreateController(
+            var controller = 
+                TestCopyrightControllerFactory.CreateController(
                 copyrightService.Object, 
                 userId: null);
 
-            var removeActionResult = await controller.Remove(Guid.NewGuid());
+            var removeActionResult = 
+                await controller.Remove(Guid.NewGuid());
 
             removeActionResult.Should().
                 BeOfType<ForbidResult>();
@@ -33,15 +35,18 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
         [Test]
         public async Task Remove_LocalReturnUrl_RedirectsThere_AndSetsTempData()
         {
-            var copyrightService = new Mock<ICopyrightService>();
+            var copyrightService = 
+                new Mock<ICopyrightService>();
 
-            copyrightService.Setup(s => s.RemoveAsync(
+            copyrightService.Setup(
+                s => s.RemoveAsync(
                 "u1", 
                 It.IsAny<Guid>(), 
                 It.IsAny<CancellationToken>())).
             ReturnsAsync(true);
 
-            var controller = TestCopyrightControllerFactory.CreateController(
+            var controller = 
+                TestCopyrightControllerFactory.CreateController(
                 copyrightService.Object, 
                 userId: "u1");
 
@@ -68,15 +73,18 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
         [Test]
         public async Task Remove_NoReturnUrl_RedirectsToMyCollection_AndSetsTempData()
         {
-            var copyrightService = new Mock<ICopyrightService>();
+            var copyrightService = 
+                new Mock<ICopyrightService>();
 
-            copyrightService.Setup(s => s.RemoveAsync(
+            copyrightService.Setup(
+                s => s.RemoveAsync(
                 "u1", 
                 It.IsAny<Guid>(), 
                 It.IsAny<CancellationToken>())).
             ReturnsAsync(true);
 
-            var controller = TestCopyrightControllerFactory.CreateController(
+            var controller = 
+                TestCopyrightControllerFactory.CreateController(
                 copyrightService.Object, 
                 userId: "u1");
 
@@ -84,7 +92,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
                 Guid.NewGuid(), 
                 returnUrl: null);
 
-            var redirectToActionResult = removeActionResult.Should().
+            var redirectToActionResult = 
+                removeActionResult.Should().
                 BeOfType<RedirectToActionResult>().Subject;
 
             redirectToActionResult.ActionName.Should().
@@ -93,7 +102,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
            controller.TempData["SuccessMessage"].Should().
                 Be(CopyrightRemovedMessage);
 
-            copyrightService.Verify(s => s.RemoveAsync(
+            copyrightService.Verify(
+                s => s.RemoveAsync(
                 "u1", 
                 It.IsAny<Guid>(), 
                 It.IsAny<CancellationToken>()), 

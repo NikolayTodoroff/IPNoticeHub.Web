@@ -1,13 +1,9 @@
-﻿using IPNoticeHub.Data;
-using IPNoticeHub.Data.Entities.Identity;
+﻿using IPNoticeHub.Infrastructure.Identity;
+using IPNoticeHub.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace IPNoticeHub.Tests.UnitTests.UnitTestUtilities
 {
