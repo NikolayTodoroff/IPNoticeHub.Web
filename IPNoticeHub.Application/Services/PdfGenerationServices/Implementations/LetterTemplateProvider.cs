@@ -1,5 +1,5 @@
 ﻿using IPNoticeHub.Shared.Enums;
-using IPNoticeHub.Application.Services.PdfGenerationService.Abstractions;
+using IPNoticeHub.Application.Templates.Abstractions;
 
 namespace IPNoticeHub.Application.Services.PdfGenerationService.Implementations
 {

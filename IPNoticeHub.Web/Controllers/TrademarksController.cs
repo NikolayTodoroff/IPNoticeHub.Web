@@ -11,6 +11,7 @@ using IPNoticeHub.Application.Services.TrademarkService.Abstractions;
 using IPNoticeHub.Application.Services.WatchlistService.Abstractions;
 using IPNoticeHub.Web.WebHelpers.Mappings;
 using IPNoticeHub.Web.WebHelpers;
+using IPNoticeHub.Application.Templates.Abstractions;
 
 namespace IPNoticeHub.Web.Controllers
 {

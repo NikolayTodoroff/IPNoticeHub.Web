@@ -10,6 +10,7 @@ using IPNoticeHub.Application.Services.PdfGenerationService.Abstractions;
 using IPNoticeHub.Application.Services.CopyrightServices.Abstractions;
 using IPNoticeHub.Web.WebHelpers.Mappings;
 using IPNoticeHub.Web.WebHelpers;
+using IPNoticeHub.Application.Templates.Abstractions;
 
 namespace IPNoticeHub.Web.Controllers
 {

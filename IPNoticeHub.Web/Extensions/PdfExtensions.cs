@@ -3,6 +3,7 @@ using IPNoticeHub.Application.LetterComposition.Implementations;
 using IPNoticeHub.Application.Rendering.Abstractions;
 using IPNoticeHub.Application.Services.PdfGenerationService.Abstractions;
 using IPNoticeHub.Application.Services.PdfGenerationService.Implementations;
+using IPNoticeHub.Application.Templates.Abstractions;
 using IPNoticeHub.Infrastructure.Rendering;
 using IPNoticeHub.Infrastructure.Rendering.Implementation;
 using QuestPDF.Infrastructure;

@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using System.Security.Claims;
+using IPNoticeHub.Application.Templates.Abstractions;
 
 namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
 {
