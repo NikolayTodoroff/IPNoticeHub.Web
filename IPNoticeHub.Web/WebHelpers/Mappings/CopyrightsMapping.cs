@@ -205,13 +205,18 @@ namespace IPNoticeHub.Web.WebHelpers.Mappings
         {
             return new LetterInputDto
             {
-                SenderName = viewModel.SenderName,
-                SenderAddress = viewModel.SenderAddress,
-                RecipientName = viewModel.RecipientName,
-                RecipientAddress = viewModel.RecipientAddress,
-                LetterDateUtc = DateTime.UtcNow,
                 WorkTitle = viewModel.WorkTitle,
                 RegistrationNumber = viewModel.RegistrationNumber ?? string.Empty,
+                LetterDateUtc = DateTime.UtcNow,
+
+                SenderName = viewModel.SenderName,
+                SenderAddress = viewModel.SenderAddress,
+                SenderEmail = viewModel.SenderEmail,
+                RecipientName = viewModel.RecipientName,
+                RecipientAddress = viewModel.RecipientAddress,
+                RecipientEmail = viewModel.RecipientEmail,
+                
+                InfringingUrl = viewModel.InfringingUrl,
                 AdditionalFacts = viewModel.AdditionalFacts,
                 BodyTemplate = viewModel.BodyTemplate
             };

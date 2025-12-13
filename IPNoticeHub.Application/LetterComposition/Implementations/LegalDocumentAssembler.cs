@@ -28,9 +28,20 @@ namespace IPNoticeHub.Application.LetterComposition.Implementations
             var letterBody = 
                 document.BodyTemplate ?? letterTemplate?.BodyTemplate ?? string.Empty;
 
+            var dateUtc = document.LetterDate;
+
+            var tokens =
+                TokenBuilder.TokenBuilder.BuildTokens(
+                new TokenSource(
+                dateUtc, document.SenderName, document.SenderEmail, document.SenderAddress,
+                document.RecipientName, document.RecipientEmail, document.RecipientAddress,
+                document.IpTitle, document.RegistrationNumber, document.InfringingUrl,
+                document.AdditionalFacts, document.YearOfCreation, document.DateOfPublication,
+                document.NationOfFirstPublication, document.GoodFaithStatement));
+
             return new PdfLetterDto
             {
-                DocumentType = EnumDisplay.GetDisplayName(document.TemplateType),
+                DocumentType = EnumDisplay.GetDisplayName(document.SourceType),
                 DocumentTitle = document.DocumentTitle,
 
                 WorkTitle = document.IpTitle ?? "Intellectual Property",
@@ -44,12 +55,16 @@ namespace IPNoticeHub.Application.LetterComposition.Implementations
                 RecipientEmail = document.RecipientEmail,
                 RecipientAddress = document.RecipientAddress,
 
-
                 InfringingUrl = document.InfringingUrl,
                 AdditionalFacts = document.AdditionalFacts,
 
-                BodyTemplate = letterBody,
+                BodyTemplate = letterBody!,
                 DateUtc = DateTime.UtcNow,
+                YearOfCreation = document.YearOfCreation,
+                DateOfPublication = document.DateOfPublication,
+                NationOfFirstPublication = document.NationOfFirstPublication,
+                GoodFaithStatement = document.GoodFaithStatement,
+
                 Tokens = new Dictionary<string, string>()
             };
         }

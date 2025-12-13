@@ -17,7 +17,6 @@
         public string? RecipientAddress { get; init; } = string.Empty;
         public string? RecipientEmail { get; init; } = string.Empty;
 
-
         public string? InfringingUrl { get; init; }
         public string? GoodFaithStatement { get; init; }
         public string? AdditionalFacts { get; init; }

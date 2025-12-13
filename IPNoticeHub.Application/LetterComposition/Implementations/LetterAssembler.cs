@@ -1,5 +1,6 @@
 ﻿using IPNoticeHub.Application.DTOs.PdfDTOs;
 using IPNoticeHub.Application.LetterComposition.Abstractions;
+using IPNoticeHub.Application.LetterComposition.TokenBuilder;
 using IPNoticeHub.Application.Templates.Abstractions;
 
 namespace IPNoticeHub.Application.LetterComposition.Implementations
@@ -15,8 +16,20 @@ namespace IPNoticeHub.Application.LetterComposition.Implementations
 
         public PdfLetterDto RebuildLetterInput(LetterInputDto input)
         {
-            var letterBody = input.BodyTemplate ??
+            var letterBody = input.BodyTemplate ?? 
                 templateProvider.GetTemplateByKey(input.DocumentType)?.BodyTemplate;
+
+            var dateUtc = input.LetterDateUtc ?? DateTime.UtcNow;
+
+            var tokens = 
+                TokenBuilder.TokenBuilder.BuildTokens(
+                new TokenSource(
+                dateUtc, input.WorkTitle, input.RegistrationNumber, 
+                input.SenderName, input.SenderAddress, input.SenderEmail, 
+                input.RecipientName, input.RecipientAddress, input.RecipientEmail,
+                input.InfringingUrl, input.AdditionalFacts,
+                input.YearOfCreation, input.DateOfPublication,
+                input.NationOfFirstPublication, input.GoodFaithStatement));
 
             return new PdfLetterDto
             {
@@ -33,13 +46,17 @@ namespace IPNoticeHub.Application.LetterComposition.Implementations
                 RecipientName = input.RecipientName,
                 RecipientEmail = input.RecipientEmail,
                 RecipientAddress = input.RecipientAddress,
-
                 
                 InfringingUrl = input.InfringingUrl,
                 AdditionalFacts = input.AdditionalFacts,
 
-                BodyTemplate = letterBody,
+                BodyTemplate = letterBody!,
                 DateUtc = DateTime.UtcNow,
+                YearOfCreation = input.YearOfCreation,
+                DateOfPublication = input.DateOfPublication,
+                NationOfFirstPublication = input.NationOfFirstPublication,
+                GoodFaithStatement = input.GoodFaithStatement,
+
                 Tokens = new Dictionary<string, string>()
             };
         }

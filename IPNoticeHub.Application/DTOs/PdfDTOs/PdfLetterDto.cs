@@ -18,6 +18,10 @@
 
         public string? InfringingUrl { get; init; }
         public string? AdditionalFacts { get; init; }
+        public int? YearOfCreation { get; init; }
+        public DateTime? DateOfPublication { get; init; }
+        public string? NationOfFirstPublication { get; init; }
+        public string? GoodFaithStatement { get; init; }
 
         public string BodyTemplate { get; init; } = string.Empty;
         public DateTime DateUtc { get; init; } = DateTime.UtcNow;
