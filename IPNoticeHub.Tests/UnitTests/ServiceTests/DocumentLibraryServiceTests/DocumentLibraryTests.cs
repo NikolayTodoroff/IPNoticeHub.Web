@@ -483,5 +483,51 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
                     It.IsAny<CancellationToken>()), 
                 Times.Once);
         }
+
+        [Test]
+        public async Task GetSingleDocumentByIdAsync_ReturnsDocument_WhenFound()
+        {
+            var repository = 
+                new Mock<IDocumentLibraryRepository>(MockBehavior.Strict);
+
+            var pdfService = 
+                new Mock<IPdfLetterService>(MockBehavior.Strict);
+
+            var document = new LegalDocument
+            {
+                LegalDocumentId = 7,
+                DocumentTitle = "Cease & Desist",
+                SourceType = DocumentSourceType.Trademark,
+                TemplateType = LetterTemplateType.CeaseAndDesist,
+                SenderName = "Alice",
+                RecipientName = "Bob"
+            };
+
+            repository.Setup(
+                r => r.GetDocumentByIdAsync(
+                    7, 
+                    "user-1", 
+                    It.IsAny<CancellationToken>())).
+                    ReturnsAsync(document);
+
+            var sut = new DocumentLibraryService(
+                repository.Object, 
+                pdfService.Object);
+
+            var result = await sut.GetSingleDocumentByIdAsync(
+                7, 
+                "user-1", 
+                CancellationToken.None);
+
+            result.Should().NotBeNull();
+            result.Should().BeSameAs(document);
+
+            repository.Verify(
+                r => r.GetDocumentByIdAsync(
+                    7, 
+                    "user-1", 
+                    It.IsAny<CancellationToken>()), 
+                Times.Once);
+        }
     }
 }

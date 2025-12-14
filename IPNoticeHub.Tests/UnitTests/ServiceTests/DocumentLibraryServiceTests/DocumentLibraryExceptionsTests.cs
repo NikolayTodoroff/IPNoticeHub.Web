@@ -1,13 +1,14 @@
 ﻿using FluentAssertions;
-using IPNoticeHub.Shared.Enums;
-using IPNoticeHub.Domain.Entities.LegalDocuments;
 using IPNoticeHub.Application.DTOs.DocumentLibraryDTOs;
+using static IPNoticeHub.Shared.Constants.DateTimeFormats;
 using IPNoticeHub.Application.Repositories.DocumentLibraryRepository;
 using IPNoticeHub.Application.Services.DocumentLibraryService.Implementations;
+using IPNoticeHub.Application.Services.PdfGenerationServices.Abstractions;
+using IPNoticeHub.Domain.Entities.LegalDocuments;
+using IPNoticeHub.Shared.Enums;
 using Moq;
 using NUnit.Framework;
-using IPNoticeHub.Application.Services.PdfGenerationServices.Abstractions;
-using IPNoticeHub.Application.DTOs.PdfDTOs;
+using System.Globalization;
 
 namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
 {
@@ -516,5 +517,71 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
                     It.IsAny<CancellationToken>()),
                 Times.Once);
         }
+
+        [Test]
+        public async Task RestoreSavedDocumentAsync_UsesFallbackTitle_WhenSanitizedDocumentTitleIsWhitespace()
+        {
+            var repository = 
+                new Mock<IDocumentLibraryRepository>(MockBehavior.Strict);
+
+            var pdfService = 
+                new Mock<IPdfLetterService>(MockBehavior.Strict);
+
+            var created = new DateTime(
+                2025, 12, 14, 10, 30, 0, DateTimeKind.Utc);
+
+            var invalidTitle = new string(Path.GetInvalidFileNameChars());
+
+            var document = new LegalDocument
+            {
+                LegalDocumentId = 42,
+                DocumentTitle = invalidTitle,
+                SourceType = DocumentSourceType.Trademark,
+                TemplateType = LetterTemplateType.CeaseAndDesist,
+                CreatedOn = created
+            };
+
+            var pdfBytes = new byte[] { 1, 2, 3 };
+
+            repository.Setup(r => r.GetDocumentByIdAsync(42, "user-1", It.IsAny<CancellationToken>()))
+                .ReturnsAsync(document);
+
+            pdfService.Setup(
+                p => p.GenerateFromSavedDocumentAsync(
+                    document, 
+                    It.IsAny<CancellationToken>())).
+                    ReturnsAsync(pdfBytes);
+
+            var sut = new DocumentLibraryService(
+                repository.Object, 
+                pdfService.Object);
+
+            var result = await sut.RestoreSavedDocumentAsync(
+                42, 
+                "user-1", 
+                CancellationToken.None);
+
+            result.Should().NotBeNull();
+            result!.Value.Pdf.Should().Equal(pdfBytes);
+
+            result.Value.fileName.Should()
+                .Be($"IP Infringement Notice-" +
+                $"{created.ToString(DefaultDateTimeFormat.DateTimeFormat, 
+                CultureInfo.InvariantCulture)}.pdf");
+
+            repository.Verify(
+                r => r.GetDocumentByIdAsync(
+                    42, 
+                    "user-1", 
+                    It.IsAny<CancellationToken>()), 
+                Times.Once);
+
+            pdfService.Verify(
+                p => p.GenerateFromSavedDocumentAsync(
+                    document, 
+                    It.IsAny<CancellationToken>()), 
+                Times.Once);
+        }
     }
 }
+
