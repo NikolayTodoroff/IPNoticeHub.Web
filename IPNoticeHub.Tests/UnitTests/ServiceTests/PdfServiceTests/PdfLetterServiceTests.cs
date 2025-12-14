@@ -3,13 +3,14 @@ using IPNoticeHub.Application.DTOs.PdfDTOs;
 using IPNoticeHub.Application.LetterComposition.Abstractions;
 using IPNoticeHub.Application.Rendering.Abstractions;
 using IPNoticeHub.Application.Services.PdfGenerationServices.Implementations;
+using IPNoticeHub.Domain.Entities.LegalDocuments;
 using Moq;
 using NUnit.Framework;
 using QuestPDF.Infrastructure;
 
 namespace IPNoticeHub.Tests.UnitTests.ServiceTests.PdfServiceTests
 {
-    public class PdfServiceTests
+    public class PdfLetterServiceTests
     {
         [OneTimeSetUp]
         public void Setup()
@@ -149,6 +150,63 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.PdfServiceTests
 
             pdf.Should().NotBeNull();
             pdf.Length.Should().BeGreaterThan(1000);
+        }
+
+        [Test]
+        public async Task GenerateFromSavedDocumentAsync_ShouldRebuildDto_GeneratePdf_AndReturnBytes()
+        {
+            var assemblerMock =
+                new Mock<ILetterAssembler>(MockBehavior.Strict);
+
+            var legalAssemblerMock =
+                new Mock<ILegalDocumentAssembler>(MockBehavior.Strict);
+
+            var pdfGeneratorMock =
+                new Mock<IPdfGenerator>(MockBehavior.Strict);
+
+            var service = new PdfLetterService(
+                assemblerMock.Object,
+                legalAssemblerMock.Object,
+                pdfGeneratorMock.Object);
+
+            var document = new LegalDocument();
+
+            var rebuiltDto = new PdfLetterDto
+            {
+                DocumentType = "Any",
+                DocumentTitle = "Title",
+                WorkTitle = "Work",
+                BodyTemplate = "Body"
+            };
+
+            var expectedBytes = new byte[] { 1, 2, 3, 4 };
+
+            legalAssemblerMock
+                .Setup(x => x.RebuildFromSavedDocument(document))
+                .Returns(rebuiltDto);
+
+            pdfGeneratorMock
+                .Setup(x => x.GenerateDocument(rebuiltDto))
+                .Returns(expectedBytes);
+
+            var result = 
+                await service.GenerateFromSavedDocumentAsync(
+                    document, 
+                    CancellationToken.None);
+
+            result.Should().BeEquivalentTo(expectedBytes);
+
+            legalAssemblerMock.Verify(
+                x => x.RebuildFromSavedDocument(document), 
+                Times.Once);
+
+            pdfGeneratorMock.Verify(
+                x => x.GenerateDocument(rebuiltDto), 
+                Times.Once);
+
+            legalAssemblerMock.VerifyNoOtherCalls();
+            pdfGeneratorMock.VerifyNoOtherCalls();
+            assemblerMock.VerifyNoOtherCalls();
         }
     }
 }
