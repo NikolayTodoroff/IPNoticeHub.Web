@@ -3,7 +3,6 @@ using IPNoticeHub.Application.DTOs.PdfDTOs;
 using IPNoticeHub.Application.Rendering.Abstractions;
 using IPNoticeHub.Infrastructure.Rendering;
 using Moq;
-using NuGet.Packaging;
 using NUnit.Framework;
 
 namespace IPNoticeHub.Tests.UnitTests.RenderingTests
