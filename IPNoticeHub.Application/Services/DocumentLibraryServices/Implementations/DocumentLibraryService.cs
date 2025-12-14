@@ -209,7 +209,7 @@ namespace IPNoticeHub.Application.Services.DocumentLibraryService.Implementation
                 documentTitle = "IP Infringement Notice";
             } 
 
-            var fileName = $"{documentTitle}-{document.CreatedOn:DateTimeFormat}.pdf";
+            var fileName = $"{documentTitle}-{document.CreatedOn.ToString(DateTimeFormat, CultureInfo.InvariantCulture)}.pdf";
 
             return (fileName, pdfBytes);
         }
