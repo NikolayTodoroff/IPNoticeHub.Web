@@ -5,7 +5,6 @@ using IPNoticeHub.Web.Models.Trademarks;
 using IPNoticeHub.Web.ViewModels.Trademarks;
 using System.Globalization;
 using static IPNoticeHub.Shared.Constants.DateTimeFormats.DefaultDateTimeFormat;
-using IPNoticeHub.Application.Services.PdfGenerationService.Abstractions;
 using IPNoticeHub.Shared.Support;
 using IPNoticeHub.Application.DTOs.DocumentLibraryDTOs;
 using IPNoticeHub.Application.DTOs.TrademarkDTOs;

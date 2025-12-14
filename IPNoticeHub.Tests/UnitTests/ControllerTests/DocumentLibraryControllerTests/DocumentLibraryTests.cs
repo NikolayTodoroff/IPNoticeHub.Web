@@ -28,7 +28,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.DocumentLibraryControllerT
                 BeOfType<ForbidResult>();
 
             serviceMock.Verify(
-                s => s.RestoreDocumentSnapshotAsync(
+                s => s.RestoreSavedDocumentAsync(
                     It.IsAny<int>(),
                     It.IsAny<string>(),
                     It.IsAny<CancellationToken>()),
@@ -43,7 +43,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.DocumentLibraryControllerT
 
             serviceMock
                 .Setup(
-                s => s.RestoreDocumentSnapshotAsync(
+                s => s.RestoreSavedDocumentAsync(
                     It.IsAny<int>(),
                     It.IsAny<string>(),
                     It.IsAny<CancellationToken>())).
@@ -76,7 +76,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.DocumentLibraryControllerT
             const string expectedFileName = "my-letter.pdf";
 
             serviceMock
-                .Setup(s => s.RestoreDocumentSnapshotAsync(
+                .Setup(s => s.RestoreSavedDocumentAsync(
                     123,
                     "user-123",
                     It.IsAny<CancellationToken>()))
@@ -103,7 +103,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.DocumentLibraryControllerT
                 BeEquivalentTo(expectedBytes);
 
             serviceMock.Verify(
-                s => s.RestoreDocumentSnapshotAsync(
+                s => s.RestoreSavedDocumentAsync(
                     123,
                     "user-123",
                     It.IsAny<CancellationToken>()),

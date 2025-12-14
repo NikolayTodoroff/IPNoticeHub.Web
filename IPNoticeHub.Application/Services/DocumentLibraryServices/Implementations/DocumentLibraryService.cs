@@ -1,9 +1,7 @@
 ﻿using IPNoticeHub.Application.DTOs.DocumentLibraryDTOs;
 using IPNoticeHub.Application.Repositories.DocumentLibraryRepository;
 using IPNoticeHub.Application.Services.DocumentLibraryService.Abstractions;
-using IPNoticeHub.Application.Services.PdfGenerationService.Abstractions;
 using IPNoticeHub.Application.Services.PdfGenerationServices.Abstractions;
-using IPNoticeHub.Application.Services.PdfGenerationServices.Implementations;
 using IPNoticeHub.Domain.Entities.LegalDocuments;
 using IPNoticeHub.Shared.Enums;
 using System.Globalization;
@@ -170,7 +168,7 @@ namespace IPNoticeHub.Application.Services.DocumentLibraryService.Implementation
             return true;
         }
 
-        public async Task<(string fileName, byte[] Pdf)?> RestoreDocumentSnapshotAsync(
+        public async Task<(string fileName, byte[] Pdf)?> RestoreSavedDocumentAsync(
             int documentId, 
             string userId, 
             CancellationToken cancellationToken = default)

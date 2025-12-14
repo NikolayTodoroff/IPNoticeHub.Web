@@ -33,7 +33,7 @@ namespace IPNoticeHub.Application.Services.DocumentLibraryService.Abstractions
             string userId,
             CancellationToken cancellationToken = default);
 
-        Task<(string fileName, byte[] Pdf)?> RestoreDocumentSnapshotAsync(
+        Task<(string fileName, byte[] Pdf)?> RestoreSavedDocumentAsync(
             int documentId,
             string userId,
             CancellationToken cancellationToken = default);

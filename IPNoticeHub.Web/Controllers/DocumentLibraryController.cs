@@ -125,7 +125,7 @@ namespace IPNoticeHub.Web.Controllers
             if (!User.TryGetUserId(out var userId)) return Forbid();
 
             var restoredFile = 
-                await documentService.RestoreDocumentSnapshotAsync(
+                await documentService.RestoreSavedDocumentAsync(
                 id, 
                 userId, 
                 cancellationToken);

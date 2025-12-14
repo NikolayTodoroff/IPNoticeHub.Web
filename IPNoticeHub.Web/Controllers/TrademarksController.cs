@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using static IPNoticeHub.Shared.Constants.StatusMessages.TrademarkStatusMessages;
 using static IPNoticeHub.Shared.Constants.PagingConstants.DefaultPagingConstants;
 using IPNoticeHub.Application.Services.DocumentLibraryService.Abstractions;
-using IPNoticeHub.Application.Services.PdfGenerationService.Abstractions;
 using IPNoticeHub.Application.Services.TrademarkService.Abstractions;
 using IPNoticeHub.Application.Services.WatchlistService.Abstractions;
 using IPNoticeHub.Application.Services.PdfGenerationServices.Abstractions;

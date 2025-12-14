@@ -1,9 +1,7 @@
 ﻿using IPNoticeHub.Application.Rendering.Abstractions;
 using IPNoticeHub.Application.Services.CopyrightServices.Abstractions;
 using IPNoticeHub.Application.Services.DocumentLibraryService.Abstractions;
-using IPNoticeHub.Application.Services.PdfGenerationService.Abstractions;
 using IPNoticeHub.Application.Services.PdfGenerationServices.Abstractions;
-using IPNoticeHub.Application.Services.PdfGenerationServices.Implementations;
 using IPNoticeHub.Application.Templates.Abstractions;
 using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Web.Extensions;

@@ -2,7 +2,6 @@
 using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Application.Services.WatchlistService.Abstractions;
 using IPNoticeHub.Application.Services.DocumentLibraryService.Abstractions;
-using IPNoticeHub.Application.Services.PdfGenerationService.Abstractions;
 using IPNoticeHub.Application.Trademarks.Abstractions;
 using IPNoticeHub.Application.Services.TrademarkService.Abstractions;
 using IPNoticeHub.Application.DTOs.TrademarkDTOs;

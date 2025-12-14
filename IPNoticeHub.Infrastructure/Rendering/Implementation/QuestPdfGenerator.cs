@@ -19,7 +19,7 @@ public sealed class QuestPdfGenerator : IPdfGenerator
         string letterTemplate = tokenReplacer.ReplaceTemplate(dto.BodyTemplate, dto.Tokens);
         letterTemplate = letterTemplate.Replace("\r\n", "\n");
 
-        var bytes = QuestPDF.Fluent.Document.Create(container =>
+        var bytes = Document.Create(container =>
         {
             container.Page(page =>
             {

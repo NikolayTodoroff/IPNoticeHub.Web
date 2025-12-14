@@ -5,6 +5,7 @@
         public string DocumentType { get; init; } = string.Empty;
         public string DocumentTitle { get; init; } = string.Empty;
 
+        public DateTime DateUtc { get; init; } = DateTime.UtcNow;
         public string WorkTitle { get; init; } = string.Empty;
         public string? RegistrationNumber { get; init; } = string.Empty;
 
@@ -24,7 +25,6 @@
         public string? GoodFaithStatement { get; init; }
 
         public string BodyTemplate { get; init; } = string.Empty;
-        public DateTime DateUtc { get; init; } = DateTime.UtcNow;
 
         public IReadOnlyDictionary<string, string> Tokens { get; init; }
         = new Dictionary<string, string>();
