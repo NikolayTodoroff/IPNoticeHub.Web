@@ -682,5 +682,59 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.WatchlistServiceTests
 
             watchlistRepo.VerifyNoOtherCalls();
         }
+
+        [Test]
+        public async Task ComputeStatusChange_WhenBothTextsEmptyString_ReturnsFalse()
+        {
+            var userId = "user-1";
+            var watchlistRepo =
+                new Mock<IWatchlistRepository>(MockBehavior.Strict);
+
+            var snapshotRepo =
+                new Mock<ITrademarkStatusSnapshotRepository>(MockBehavior.Loose);
+
+            var statusLabels =
+                new Mock<IStatusLabelProvider>(MockBehavior.Loose);
+
+            var link = new Watchlist
+            {
+                UserId = userId,
+                TrademarkId = 1,
+                AddedOnUtc = DateTime.UtcNow,
+                InitialStatusCodeRaw = null,
+                InitialStatusText = "",
+                Trademark = new TrademarkEntity
+                {
+                    Id = 1,
+                    RegistrationNumber = "RN-1",
+                    Wordmark = "TEST",
+                    Owner = "Owner",
+                    StatusCodeRaw = null,
+                    StatusDetail = ""
+                }
+            };
+
+            watchlistRepo.Setup(
+                r => r.ListByUserAsync(
+                    userId,
+                    0,
+                    200,
+                    It.IsAny<CancellationToken>())).
+                ReturnsAsync(new List<Watchlist> { link });
+
+            var watchlistService =
+                new WatchlistService(
+                    watchlistRepo.Object,
+                    snapshotRepo.Object,
+                    statusLabels.Object);
+
+            var items =
+                await watchlistService.GetListByUserAsync(
+                    userId,
+                    CancellationToken.None);
+
+            items[0].HasStatusChange.Should().
+                BeFalse();
+        }
     }
 }
