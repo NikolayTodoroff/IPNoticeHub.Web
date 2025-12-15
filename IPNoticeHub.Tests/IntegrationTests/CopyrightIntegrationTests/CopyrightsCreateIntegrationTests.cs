@@ -9,6 +9,7 @@ using NUnit.Framework;
 
 namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
 {
+    [NonParallelizable]
     public class CopyrightsCreateIntegrationTests
     {
         private TestWebAppFactory appFactory = null!;
@@ -17,7 +18,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
         public void SetUp() => appFactory = new TestWebAppFactory();
 
         [TearDown]
-        public void TearDown() => appFactory.Dispose();
+        public void TearDown() => appFactory?.Dispose();
 
         [Test]
         public async Task Get_CreatePage_ReturnsHttpStatus200()

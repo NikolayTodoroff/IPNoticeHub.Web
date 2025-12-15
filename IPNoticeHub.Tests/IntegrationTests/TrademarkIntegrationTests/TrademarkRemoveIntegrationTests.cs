@@ -17,6 +17,7 @@ using IPNoticeHub.Infrastructure.Persistence;
 
 namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
 {
+    [NonParallelizable]
     public class TrademarkRemoveIntegrationTests
     {
         private TestWebAppFactory appFactory = null!;

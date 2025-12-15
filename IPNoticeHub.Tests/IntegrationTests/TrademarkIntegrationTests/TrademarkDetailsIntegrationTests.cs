@@ -11,6 +11,7 @@ using IPNoticeHub.Infrastructure.Identity;
 
 namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
 {
+    [NonParallelizable]
     public class TrademarkDetailsIntegrationTests
     {
         private TestWebAppFactory appFactory = null!;

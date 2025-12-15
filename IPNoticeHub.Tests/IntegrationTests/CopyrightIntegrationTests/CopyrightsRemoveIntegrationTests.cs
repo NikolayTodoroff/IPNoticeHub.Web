@@ -10,6 +10,7 @@ using IPNoticeHub.Infrastructure.Persistence;
 
 namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
 {
+    [NonParallelizable]
     public class CopyrightsRemoveIntegrationTests
     {
         private TestWebAppFactory appFactory = null!;

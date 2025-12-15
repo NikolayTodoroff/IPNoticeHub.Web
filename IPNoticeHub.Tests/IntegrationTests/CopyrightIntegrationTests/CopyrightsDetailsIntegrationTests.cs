@@ -8,6 +8,7 @@ using NUnit.Framework;
 
 namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
 {
+    [NonParallelizable]
     public class CopyrightsDetailsIntegrationTests
     {
         private TestWebAppFactory appFactory = null!;

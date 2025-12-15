@@ -17,6 +17,7 @@ using IPNoticeHub.Domain.Entities.Trademarks;
 
 namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
 {
+    [NonParallelizable]
     public class TrademarkAddIntegrationTests
     {
         private TestWebAppFactory appFactory = null!;

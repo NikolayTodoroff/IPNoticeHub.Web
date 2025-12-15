@@ -15,6 +15,7 @@ using IPNoticeHub.Domain.Entities.Copyrights;
 
 namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
 {
+    [NonParallelizable]
     public class CopyrightsMyCollectionIntegrationTests
     {
         private TestWebAppFactory appFactory = null!;

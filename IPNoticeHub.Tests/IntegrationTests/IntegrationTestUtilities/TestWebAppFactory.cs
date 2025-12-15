@@ -30,7 +30,9 @@ namespace IPNoticeHub.Tests.IntegrationTests.TestUtilities
         {
             builder.ConfigureTestServices(services =>
             {
-                var descriptor = services.SingleOrDefault(s => s.ServiceType == typeof(DbContextOptions<IPNoticeHubDbContext>));
+                var descriptor = services.SingleOrDefault(
+                    s => s.ServiceType == typeof(DbContextOptions<IPNoticeHubDbContext>));
+
                 if (descriptor is not null)
                 {
                     services.Remove(descriptor);
