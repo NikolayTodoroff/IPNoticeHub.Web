@@ -10,7 +10,6 @@ using IPNoticeHub.Domain.Entities.Trademarks;
 using IPNoticeHub.Infrastructure.Identity;
 using IPNoticeHub.Domain.Entities.Watchlist;
 
-
 namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
 {
     [TestFixture]

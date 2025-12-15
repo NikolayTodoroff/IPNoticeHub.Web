@@ -3,10 +3,6 @@ using Microsoft.AspNetCore.Http;
 
 namespace IPNoticeHub.Tests.IntegrationTests.TestUtilities
 {
-    /// <summary>
-    /// Test-only antiforgery that always validates and returns a dummy token set.
-    /// Avoids dealing with real tokens when we render no-op views.
-    /// </summary>
     public sealed class NoOpAntiforgery : IAntiforgery
     {
         public AntiforgeryTokenSet GetAndStoreTokens(HttpContext httpContext)
@@ -23,9 +19,6 @@ namespace IPNoticeHub.Tests.IntegrationTests.TestUtilities
         public string? HeaderName => "__NoOp_AF_Header";
         public string? FormFieldName => "__RequestVerificationToken";
 
-        public void SetCookieTokenAndHeader(HttpContext httpContext)
-        {
-            // No-op for test implementation
-        }
+        public void SetCookieTokenAndHeader(HttpContext httpContext) {}
     }
 }
