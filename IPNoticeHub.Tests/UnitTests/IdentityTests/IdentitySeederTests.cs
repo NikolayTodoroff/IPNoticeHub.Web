@@ -3,6 +3,7 @@ using IPNoticeHub.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using NUnit.Framework;
 using static IPNoticeHub.Shared.Constants.IdentityConstants.AdminAccountCredentials;
 using static IPNoticeHub.Shared.Support.RoleNames;
@@ -368,9 +369,6 @@ namespace IPNoticeHub.Tests.UnitTests.IdentityTests
 
             var roleManager =
                 scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-
-            await roleManager.CreateAsync(new IdentityRole(Admin));
-            await roleManager.CreateAsync(new IdentityRole(User));
 
             var allRoles = roleManager.Roles.ToList();
 

@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using static IPNoticeHub.Shared.Constants.IdentityConstants.AdminAccountCredentials;
 using static IPNoticeHub.Shared.Support.RoleNames;
-using IPNoticeHub.Domain.Entities.Identity;
 
 namespace IPNoticeHub.Infrastructure.Identity
 {

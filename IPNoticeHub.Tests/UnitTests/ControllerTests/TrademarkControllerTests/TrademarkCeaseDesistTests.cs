@@ -740,7 +740,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkCadControllerTest
         public async Task RecoverCeaseDesist_ShouldReturnNotFound_WhenTemplateTypeIsNotCeaseAndDesist()
         {
             var existingDocId = 1;
-            var fakeDocId = 1;
+            var fakeDocId = 2;
 
             var document = new LegalDocument
             {
