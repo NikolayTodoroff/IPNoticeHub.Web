@@ -96,7 +96,7 @@
 
 //                testDbContext.TrademarkRegistrations.AddRange(
 //                    new TrademarkEntity
-//                    { 
+//                    {
 //                        Wordmark = "Starstruck",
 //                        SourceId = "US-PAGE-A1",
 //                        RegistrationNumber = "RN-A",
@@ -104,10 +104,11 @@
 //                        Owner = "Arnold",
 //                        StatusCategory = TrademarkStatusCategory.Registered,
 //                        StatusDetail = "Registered",
-//                        Source = DataProvider.USPTO },
+//                        Source = DataProvider.USPTO
+//                    },
 
 //                    new TrademarkEntity
-//                    { 
+//                    {
 //                        Wordmark = "Starstruck100",
 //                        SourceId = "US-PAGE-B2",
 //                        RegistrationNumber = "RN-B",
@@ -115,10 +116,11 @@
 //                        Owner = "Arnold",
 //                        StatusCategory = TrademarkStatusCategory.Pending,
 //                        StatusDetail = "Pending",
-//                        Source = DataProvider.USPTO },
+//                        Source = DataProvider.USPTO
+//                    },
 
 //                    new TrademarkEntity
-//                    { 
+//                    {
 //                        Wordmark = "StarTrek",
 //                        SourceId = "US-PAGE-C3",
 //                        RegistrationNumber = "RN-C",
@@ -126,7 +128,8 @@
 //                        Owner = "Arnold",
 //                        StatusCategory = TrademarkStatusCategory.Pending,
 //                        StatusDetail = "Pending",
-//                        Source = DataProvider.USPTO }
+//                        Source = DataProvider.USPTO
+//                    }
 //                );
 //                await testDbContext.SaveChangesAsync();
 //            }
@@ -183,7 +186,8 @@
 //                        Owner = "AWW LLC",
 //                        StatusCategory = TrademarkStatusCategory.Registered,
 //                        StatusDetail = "Registered",
-//                        Source = DataProvider.USPTO },
+//                        Source = DataProvider.USPTO
+//                    },
 
 //                    new TrademarkEntity
 //                    {
@@ -194,7 +198,8 @@
 //                        Owner = "AWW LLC",
 //                        StatusCategory = TrademarkStatusCategory.Pending,
 //                        StatusDetail = "Pending",
-//                        Source = DataProvider.USPTO }
+//                        Source = DataProvider.USPTO
+//                    }
 //                );
 //                await testDbContext.SaveChangesAsync();
 //            }
@@ -215,7 +220,7 @@
 
 //                testDbContext.TrademarkRegistrations.AddRange(
 //                    new TrademarkEntity
-//                    { 
+//                    {
 //                        Wordmark = "D100",
 //                        SourceId = "US-SORTBAD-1",
 //                        RegistrationNumber = "RN-1",
@@ -223,10 +228,11 @@
 //                        Owner = "Anton B",
 //                        StatusCategory = TrademarkStatusCategory.Registered,
 //                        StatusDetail = "Registered",
-//                        Source = DataProvider.USPTO },
+//                        Source = DataProvider.USPTO
+//                    },
 
 //                    new TrademarkEntity
-//                    { 
+//                    {
 //                        Wordmark = "D100ZZ",
 //                        SourceId = "US-SORTBAD-2",
 //                        RegistrationNumber = "RN-2",
@@ -234,7 +240,8 @@
 //                        Owner = "Anton B",
 //                        StatusCategory = TrademarkStatusCategory.Pending,
 //                        StatusDetail = "Pending",
-//                        Source = DataProvider.USPTO }
+//                        Source = DataProvider.USPTO
+//                    }
 //                );
 
 //                await testDbContext.SaveChangesAsync();
@@ -257,7 +264,7 @@
 
 //                testDbContext.TrademarkRegistrations.AddRange(
 //                    new TrademarkEntity
-//                    { 
+//                    {
 //                        Wordmark = "AA",
 //                        SourceId = "US-RPPZ-1",
 //                        RegistrationNumber = "RN-1",
@@ -265,10 +272,11 @@
 //                        Owner = "Acme",
 //                        StatusCategory = TrademarkStatusCategory.Registered,
 //                        StatusDetail = "Registered",
-//                        Source = DataProvider.USPTO },
+//                        Source = DataProvider.USPTO
+//                    },
 
 //                    new TrademarkEntity
-//                    { 
+//                    {
 //                        Wordmark = "AAZ",
 //                        SourceId = "US-RPPZ-2",
 //                        RegistrationNumber = "RN-2",
@@ -276,7 +284,8 @@
 //                        Owner = "Acme",
 //                        StatusCategory = TrademarkStatusCategory.Pending,
 //                        StatusDetail = "Pending",
-//                        Source = DataProvider.USPTO }
+//                        Source = DataProvider.USPTO
+//                    }
 //                );
 //                await testDbContext.SaveChangesAsync();
 //            }
@@ -307,7 +316,8 @@
 //                        Owner = "Acme",
 //                        StatusCategory = TrademarkStatusCategory.Registered,
 //                        StatusDetail = "Registered",
-//                        Source = DataProvider.USPTO },
+//                        Source = DataProvider.USPTO
+//                    },
 
 //                    new TrademarkEntity
 //                    {
@@ -318,17 +328,20 @@
 //                        Owner = "Acme",
 //                        StatusCategory = TrademarkStatusCategory.Pending,
 //                        StatusDetail = "Pending",
-//                        Source = DataProvider.USPTO },
+//                        Source = DataProvider.USPTO
+//                    },
 
 //                    new TrademarkEntity
-//                    {   Wordmark = "ALPHONSO",
+//                    {
+//                        Wordmark = "ALPHONSO",
 //                        SourceId = "US-RPPL-3",
 //                        RegistrationNumber = "RN-3",
 //                        GoodsAndServices = "Software",
 //                        Owner = "Acme",
 //                        StatusCategory = TrademarkStatusCategory.Pending,
 //                        StatusDetail = "Pending",
-//                        Source = DataProvider.USPTO }
+//                        Source = DataProvider.USPTO
+//                    }
 //                );
 
 //                await testDbContext.SaveChangesAsync();
@@ -409,26 +422,28 @@
 //                var testDbContext = serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
 //                testDbContext.TrademarkRegistrations.AddRange(
 //                    new TrademarkEntity
-//                    { 
+//                    {
 //                        Wordmark = "ALPHA",
 //                        SourceId = "US-WS-1",
 //                        RegistrationNumber = "RN-1",
 //                        GoodsAndServices = "Software",
 //                        Owner = "Acme",
-//                        StatusCategory = TrademarkStatusCategory.Registered, 
+//                        StatusCategory = TrademarkStatusCategory.Registered,
 //                        StatusDetail = "Registered",
-//                        Source = DataProvider.USPTO },
+//                        Source = DataProvider.USPTO
+//                    },
 
-//                    new TrademarkEntity 
-//                    { 
+//                    new TrademarkEntity
+//                    {
 //                        Wordmark = "BRAVO",
-//                        SourceId = "US-WS-2", 
+//                        SourceId = "US-WS-2",
 //                        RegistrationNumber = "RN-2",
 //                        GoodsAndServices = "Games",
-//                        Owner = "Beta", 
+//                        Owner = "Beta",
 //                        StatusCategory = TrademarkStatusCategory.Pending,
-//                        StatusDetail = "Pending", 
-//                        Source = DataProvider.USPTO }
+//                        StatusDetail = "Pending",
+//                        Source = DataProvider.USPTO
+//                    }
 //                );
 //                await testDbContext.SaveChangesAsync();
 //            }

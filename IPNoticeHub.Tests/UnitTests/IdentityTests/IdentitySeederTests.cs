@@ -23,13 +23,8 @@ namespace IPNoticeHub.Tests.UnitTests.IdentityTests
             var roleManager =
                 scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-            (await roleManager.RoleExistsAsync(Admin)).
-                Should().
-                BeTrue();
-
-            (await roleManager.RoleExistsAsync(User)).
-                Should(). 
-                BeTrue();
+            (await roleManager.RoleExistsAsync(Admin)).Should().BeTrue();
+            (await roleManager.RoleExistsAsync(User)).Should().BeTrue();
         }
 
         [Test]
@@ -43,17 +38,13 @@ namespace IPNoticeHub.Tests.UnitTests.IdentityTests
             var userManager =
                 scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
-            var admin = 
-                await userManager.FindByEmailAsync(AdminEmailAddress);
+            var admin = await userManager.FindByEmailAsync(AdminEmailAddress);
 
-            admin.Should().
-                NotBeNull();
+            admin.Should().NotBeNull();
+            admin!.Email.Should().Be(AdminEmailAddress);
 
-            admin!.Email.Should().
-                Be(AdminEmailAddress);
-
-            admin.EmailConfirmed.Should().
-                BeTrue("the seeder explicitly confirms admin email");
+            admin.EmailConfirmed.Should().BeTrue(
+                "the seeder explicitly confirms admin email");
         }
 
         [Test]
@@ -67,17 +58,15 @@ namespace IPNoticeHub.Tests.UnitTests.IdentityTests
             var userManager =
                 scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
-            var admin = 
-                await userManager.FindByEmailAsync(AdminEmailAddress);
+            var admin = await userManager.FindByEmailAsync(AdminEmailAddress);
 
-            admin.Should().
-                NotBeNull();
+            admin.Should().NotBeNull();
 
-            (await userManager.IsInRoleAsync(admin!, Admin)).Should()
-                .BeTrue("admin must have Admin role");
+            (await userManager.IsInRoleAsync(admin!, Admin)).Should().BeTrue(
+                "admin must have Admin role");
 
-            (await userManager.IsInRoleAsync(admin!, User)).Should()
-                .BeTrue("admin must also belong to User role for full access");
+            (await userManager.IsInRoleAsync(admin!, User)).Should().BeTrue(
+                "admin must also belong to User role for full access");
         }
 
         [Test]
@@ -97,92 +86,79 @@ namespace IPNoticeHub.Tests.UnitTests.IdentityTests
 
             var allRoles = roleManager.Roles.ToList();
 
-            allRoles.Should().
-                HaveCount(2);
+            allRoles.Should().HaveCount(2);
 
-            allRoles.Select(r => r.Name).Should().
-                Contain(new[] { Admin, User });
+            allRoles.Select(r => r.Name).Should().Contain(new[] { Admin, User });
 
             var adminUsers = userManager.Users
                 .Where(u => u.Email == AdminEmailAddress)
                 .ToList();
 
-            adminUsers.Should().
-                HaveCount(1);
+            adminUsers.Should().HaveCount(1);
 
             var admin = adminUsers.Single();
 
-            (await userManager.IsInRoleAsync(admin, Admin)).Should().
-                BeTrue();
-
-            (await userManager.IsInRoleAsync(admin, User)).Should().
-                BeTrue();
+            (await userManager.IsInRoleAsync(admin, Admin)).Should().BeTrue();
+            (await userManager.IsInRoleAsync(admin, User)).Should().BeTrue();
         }
 
-        //[Test]
-        //public async Task Should_Confirm_Email_For_Existing_Admin_If_Not_Confirmed()
-        //{
-        //    using var host = new IdentityTestHost();
-        //    using var scope = host.CreateScope();
+        [Test]
+        public async Task Should_Confirm_Email_For_Existing_Admin_If_Not_Confirmed()
+        {
+            using var host = new IdentityTestHost();
+            using var scope = host.CreateScope();
 
-        //    await IdentitySeeder.SeedIdentitiesAsync(scope.ServiceProvider);
+            await IdentitySeeder.SeedIdentitiesAsync(scope.ServiceProvider);
 
-        //    var userManager =
-        //        scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            var userManager =
+                scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
-        //    var adminUser = new ApplicationUser
-        //    {
-        //        UserName = AdminEmailAddress,
-        //        Email = AdminEmailAddress,
-        //        EmailConfirmed = false
-        //    };
+            var adminUser = new ApplicationUser
+            {
+                UserName = AdminEmailAddress,
+                Email = AdminEmailAddress,
+                EmailConfirmed = false
+            };
 
-        //    await userManager.CreateAsync(adminUser, AdminEmailPassword);
+            await userManager.CreateAsync(adminUser, AdminEmailPassword);
 
-        //    await IdentitySeeder.SeedIdentitiesAsync(provider);
+            var updatedAdmin =
+                await userManager.FindByEmailAsync(AdminEmailAddress);
 
-        //    var updatedAdmin =
-        //        await userManager.FindByEmailAsync(AdminEmailAddress);
+            updatedAdmin.Should().NotBeNull();
+            updatedAdmin!.EmailConfirmed.Should().BeTrue();
+        }
 
-        //    updatedAdmin.Should().
-        //        NotBeNull();
+        [Test]
+        public async Task Should_Add_Password_To_Existing_Admin_Without_Password()
+        {
+            using var host = new IdentityTestHost();
+            using var scope = host.CreateScope();
 
-        //    updatedAdmin!.EmailConfirmed.Should().
-        //        BeTrue("seeder should confirm email for existing admin");
-        //}
+            await IdentitySeeder.SeedIdentitiesAsync(scope.ServiceProvider);
 
-        //[Test]
-        //public async Task Should_Add_Password_To_Existing_Admin_Without_Password()
-        //{
-        //    var provider =
-        //        IdentityTestFactory.BuildIdentityServiceProvider();
+            var userManager =
+                scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
-        //    var userManager =
-        //        provider.GetRequiredService<UserManager<ApplicationUser>>();
+            var adminUser = new ApplicationUser
+            {
+                UserName = AdminEmailAddress,
+                Email = AdminEmailAddress,
+                EmailConfirmed = true
+            };
 
-        //    var adminUser = new ApplicationUser
-        //    {
-        //        UserName = AdminEmailAddress,
-        //        Email = AdminEmailAddress,
-        //        EmailConfirmed = true
-        //    };
+            await userManager.CreateAsync(adminUser);
 
-        //    await userManager.CreateAsync(adminUser);
+            (await userManager.HasPasswordAsync(adminUser)).Should().BeFalse();
 
-        //    (await userManager.HasPasswordAsync(adminUser)).Should().
-        //        BeFalse("admin should not have password initially");
+            var updatedAdmin =
+                await userManager.FindByEmailAsync(AdminEmailAddress);
 
-        //    await IdentitySeeder.SeedIdentitiesAsync(provider);
+            (await userManager.HasPasswordAsync(updatedAdmin!)).Should().BeTrue();
 
-        //    var updatedAdmin =
-        //        await userManager.FindByEmailAsync(AdminEmailAddress);
-
-        //    (await userManager.HasPasswordAsync(updatedAdmin!)).Should().
-        //        BeTrue("seeder should add password to existing admin");
-
-        //    (await userManager.CheckPasswordAsync(updatedAdmin!, AdminEmailPassword)).Should().
-        //        BeTrue("the added password should match the configured admin password");
-        //}
+            (await userManager.CheckPasswordAsync(updatedAdmin!, AdminEmailPassword)).
+                Should().BeTrue();
+        }
 
         //[Test]
         //public async Task Should_Add_Admin_Role_To_Existing_Admin_User_Without_Admin_Role()

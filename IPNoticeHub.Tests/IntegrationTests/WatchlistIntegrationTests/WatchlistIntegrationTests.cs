@@ -12,7 +12,7 @@ using IPNoticeHub.Domain.Entities.Watchlist;
 
 namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
 {
-    [TestFixture]
+    [NonParallelizable]
     public class WatchlistIntegrationTests
     {
         private TestWebAppFactory appFactory = null!;
