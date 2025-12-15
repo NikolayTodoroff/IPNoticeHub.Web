@@ -111,11 +111,11 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkCadControllerTest
             result.Should().BeOfType<ViewResult>();
 
             var viewResult = result as ViewResult;
-            viewResult.Model.Should().BeOfType<CeaseDesistViewModel>();
+            viewResult!.Model.Should().BeOfType<CeaseDesistViewModel>();
 
             var model = viewResult.Model as CeaseDesistViewModel;
 
-            model.PublicId.Should().Be(publicId);
+            model!.PublicId.Should().Be(publicId);
             model.WorkTitle.Should().Be("Test Trademark");
             model.RegistrationNumber.Should().Be("REG123456");
             model.BodyTemplate.Should().Be("Test Template Body");
@@ -132,7 +132,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkCadControllerTest
                 Setup(s => s.GetDetailsAsync(
                     publicId, 
                     It.IsAny<CancellationToken>())).
-                ReturnsAsync((TrademarkDetailsDto)null);
+                ReturnsAsync((TrademarkDetailsDto?)null);
 
             var result = await controller.CeaseDesist(publicId);
 
@@ -207,13 +207,13 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkCadControllerTest
 
             letterTemplateProvider.
                 Setup(p => p.GetTemplateByKey("CND-Trademark")).
-                Returns((LetterTemplatePreset)null);
+                Returns((LetterTemplatePreset?)null);
 
             var result = await controller.CeaseDesist(publicId);
 
             var viewResult = result as ViewResult;
             var model = viewResult.Model as CeaseDesistViewModel;
-            model.BodyTemplate.Should().BeEmpty();
+            model!.BodyTemplate.Should().BeEmpty();
         }
 
         [Test]
@@ -241,7 +241,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkCadControllerTest
             result.Should().BeOfType<FileContentResult>();
             var fileResult = result as FileContentResult;
 
-            fileResult.ContentType.Should().Be("application/pdf");
+            fileResult!.ContentType.Should().Be("application/pdf");
             fileResult.FileContents.Should().BeEquivalentTo(pdfBytes);
             fileResult.FileDownloadName.Should().Contain("CeaseDesist-Test Work");
             fileResult.FileDownloadName.Should().Contain(".pdf");
@@ -262,7 +262,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkCadControllerTest
 
             result.Should().BeOfType<ViewResult>();
             var viewResult = result as ViewResult;
-            viewResult.Model.Should().Be(viewModel);
+            viewResult!.Model.Should().Be(viewModel);
         }
 
         [Test]
@@ -322,10 +322,10 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkCadControllerTest
 
             result.Should().BeOfType<ViewResult>();
             var viewResult = result as ViewResult;
-            viewResult.ViewName.Should().Be("CeaseDesistPreview");
+            viewResult!.ViewName.Should().Be("CeaseDesistPreview");
 
             var model = viewResult.Model as CeaseDesistViewModel;
-            model.BodyTemplate.Should().Be("Replaced Template");
+            model!.BodyTemplate.Should().Be("Replaced Template");
 
             templateReplacer.Verify(
                 r => r.ReplaceTemplate(
@@ -348,9 +348,9 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkCadControllerTest
 
             result.Should().BeOfType<ViewResult>();
             var viewResult = result as ViewResult;
-            var model = viewResult.Model as CeaseDesistViewModel;
+            var model = viewResult!.Model as CeaseDesistViewModel;
 
-            model.BodyTemplate.Should().Be(
+            model!.BodyTemplate.Should().Be(
                 "This is a complete template with no placeholders");
 
             templateReplacer.Verify(
@@ -387,9 +387,9 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkCadControllerTest
             var result = controller.CeaseDesistPreview(viewModel);
 
             var viewResult = result as ViewResult;
-            var model = viewResult.Model as CeaseDesistViewModel;
+            var model = viewResult!.Model as CeaseDesistViewModel;
 
-            model.BodyTemplate.Should().Be("Replaced Template");
+            model!.BodyTemplate.Should().Be("Replaced Template");
         }
 
         [Test]
@@ -442,17 +442,13 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkCadControllerTest
                     It.IsAny<Dictionary<string, string>>())).
                 Returns("Replaced Template");
 
-            var result = controller.CeaseDesistPreview(viewModel);
+            var result = await controller.CeaseDesistPreview(viewModel, CancellationToken.None);
 
-            result.Should().BeOfType<ViewResult>();
+            result.Should().BeOfType<RedirectToActionResult>();
 
-            var viewResult = result as ViewResult;
-            viewResult.ViewName.Should().Be("CeaseDesistPreview");
-            
-            var model = viewResult.Model as CeaseDesistViewModel;
-            model.Should().NotBeNull();
-            model.PublicId.Should().Be(viewModel.PublicId);
-            model.WorkTitle.Should().Be(viewModel.WorkTitle);
+            var redirectResult = result as RedirectToActionResult;
+            redirectResult!.Should().BeOfType<RedirectToActionResult>();
+            redirectResult.ActionName.Should().Be(nameof(controller.CeaseDesistPreview));
         }
 
         [Test]
@@ -470,7 +466,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkCadControllerTest
             result.Should().BeOfType<ViewResult>();
             var viewResult = result as ViewResult;
 
-            viewResult.ViewName.Should().Be("CeaseDesistPreview");
+            viewResult!.ViewName.Should().Be("CeaseDesistPreview");
             viewResult.Model.Should().Be(viewModel);
         }
 
@@ -534,7 +530,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkCadControllerTest
             result.Should().BeOfType<ViewResult>();
             var viewResult = result as ViewResult;
 
-            viewResult.ViewName.Should().Be("CeaseDesistEdit");
+            viewResult!.ViewName.Should().Be("CeaseDesistEdit");
             viewResult.Model.Should().Be(viewModel);
         }
 
@@ -571,7 +567,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkCadControllerTest
             result.Should().BeOfType<RedirectToActionResult>();
             var redirectResult = result as RedirectToActionResult;
 
-            redirectResult.ActionName.Should().Be(nameof(controller.CeaseDesistEdit));
+            redirectResult!.ActionName.Should().Be(nameof(controller.CeaseDesistEdit));
 
             controller.TempData["SuccessMessage"].Should()
                 .Be("Your Cease & Desist letter was successfully saved to your library.");
@@ -617,7 +613,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkCadControllerTest
             result.Should().BeOfType<ViewResult>();
             var viewResult = result as ViewResult;
 
-            viewResult.ViewName.Should().Be("CeaseDesistEdit");
+            viewResult!.ViewName.Should().Be("CeaseDesistEdit");
             viewResult.Model.Should().Be(viewModel);
         }
 
@@ -636,7 +632,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkCadControllerTest
             result.Should().BeOfType<ViewResult>();
             var viewResult = result as ViewResult;
 
-            viewResult.ViewName.Should().Be("CeaseDesistEdit");
+            viewResult!.ViewName.Should().Be("CeaseDesistEdit");
             viewResult.Model.Should().Be(viewModel);
         }
 
@@ -697,7 +693,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkCadControllerTest
 
             result.Should().BeOfType<ViewResult>();
             var viewResult = result as ViewResult;
-            viewResult.ViewName.Should().Be("CeaseDesistEdit");
+            viewResult!.ViewName.Should().Be("CeaseDesistEdit");
             viewResult.Model.Should().BeOfType<CeaseDesistViewModel>();
         }
 
