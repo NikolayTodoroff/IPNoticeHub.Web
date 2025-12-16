@@ -121,7 +121,8 @@ namespace IPNoticeHub.Web.Areas.Identity.Pages.Account
 
                     if (!roleResult.Succeeded)
                     {
-                        var errors = string.Join(", ", roleResult.Errors.Select(e => e.Description));
+                        var errors = 
+                            string.Join(", ", roleResult.Errors.Select(e => e.Description));
 
                         _logger.LogCritical(
                             "Registration created user {Email} but failed to assign role {Role}. Errors: {Errors}",

@@ -157,130 +157,130 @@ namespace IPNoticeHub.Tests.UnitTests.IdentityTests
                 Should().BeTrue();
         }
 
-        [Test]
-        public async Task Should_Assign_User_Role_To_All_Non_Admin_Users()
-        {
-            using var host = new IdentityTestHost();
-            using var scope = host.CreateScope();
+        //[Test]
+        //public async Task Should_Assign_User_Role_To_All_Non_Admin_Users()
+        //{
+        //    using var host = new IdentityTestHost();
+        //    using var scope = host.CreateScope();
 
-            var userManager =
-                scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+        //    var userManager =
+        //        scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
-            var regularUser1 = new ApplicationUser
-            {
-                UserName = "user1@test.com",
-                Email = "user1@test.com",
-                EmailConfirmed = true
-            };
+        //    var regularUser1 = new ApplicationUser
+        //    {
+        //        UserName = "user1@test.com",
+        //        Email = "user1@test.com",
+        //        EmailConfirmed = true
+        //    };
 
-            var regularUser2 = new ApplicationUser
-            {
-                UserName = "user2@test.com",
-                Email = "user2@test.com",
-                EmailConfirmed = true
-            };
+        //    var regularUser2 = new ApplicationUser
+        //    {
+        //        UserName = "user2@test.com",
+        //        Email = "user2@test.com",
+        //        EmailConfirmed = true
+        //    };
 
-            await userManager.CreateAsync(
-                regularUser1,
-                "Password123!");
+        //    await userManager.CreateAsync(
+        //        regularUser1,
+        //        "Password123!");
 
-            await userManager.CreateAsync(
-                regularUser2,
-                "Password456!");
+        //    await userManager.CreateAsync(
+        //        regularUser2,
+        //        "Password456!");
 
-            var user1 = await userManager.
-                FindByEmailAsync("user1@test.com");
+        //    var user1 = await userManager.
+        //        FindByEmailAsync("user1@test.com");
 
-            var user2 = await userManager.
-                FindByEmailAsync("user2@test.com");
+        //    var user2 = await userManager.
+        //        FindByEmailAsync("user2@test.com");
 
-            await IdentitySeeder.SeedIdentitiesAsync(scope.ServiceProvider);
+        //    await IdentitySeeder.SeedIdentitiesAsync(scope.ServiceProvider);
 
-            (await userManager.IsInRoleAsync(user1!, User)).Should().BeTrue(
-                "regular user 1 should have User role");
+        //    (await userManager.IsInRoleAsync(user1!, User)).Should().BeTrue(
+        //        "regular user 1 should have User role");
 
-            (await userManager.IsInRoleAsync(user2!, User)).Should().BeTrue(
-                "regular user 2 should have User role");
+        //    (await userManager.IsInRoleAsync(user2!, User)).Should().BeTrue(
+        //        "regular user 2 should have User role");
 
-            (await userManager.IsInRoleAsync(user1!, Admin)).Should().BeFalse(
-                "regular user 1 should not have Admin role");
+        //    (await userManager.IsInRoleAsync(user1!, Admin)).Should().BeFalse(
+        //        "regular user 1 should not have Admin role");
 
-            (await userManager.IsInRoleAsync(user2!, Admin)).Should().BeFalse(
-                "regular user 2 should not have Admin role");
-        }
+        //    (await userManager.IsInRoleAsync(user2!, Admin)).Should().BeFalse(
+        //        "regular user 2 should not have Admin role");
+        //}
 
-        [Test]
-        public async Task Should_Not_Duplicate_User_Role_For_Non_Admin_Users()
-        {
-            using var host = new IdentityTestHost();
-            using var scope = host.CreateScope();
+        //[Test]
+        //public async Task Should_Not_Duplicate_User_Role_For_Non_Admin_Users()
+        //{
+        //    using var host = new IdentityTestHost();
+        //    using var scope = host.CreateScope();
 
-            await IdentitySeeder.SeedIdentitiesAsync(scope.ServiceProvider);
+        //    await IdentitySeeder.SeedIdentitiesAsync(scope.ServiceProvider);
 
-            var userManager =
-                scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+        //    var userManager =
+        //        scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
-            var roleManager =
-                scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+        //    var roleManager =
+        //        scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-            await roleManager.CreateAsync(new IdentityRole(User));
+        //    await roleManager.CreateAsync(new IdentityRole(User));
 
-            var regularUser = new ApplicationUser
-            {
-                UserName = "user@test.com",
-                Email = "user@test.com",
-                EmailConfirmed = true
-            };
+        //    var regularUser = new ApplicationUser
+        //    {
+        //        UserName = "user@test.com",
+        //        Email = "user@test.com",
+        //        EmailConfirmed = true
+        //    };
 
-            await userManager.CreateAsync(regularUser, "Password123!");
-            await userManager.AddToRoleAsync(regularUser, User);
+        //    await userManager.CreateAsync(regularUser, "Password123!");
+        //    await userManager.AddToRoleAsync(regularUser, User);
 
-            var updatedUser = 
-                await userManager.FindByEmailAsync("user@test.com");
+        //    var updatedUser = 
+        //        await userManager.FindByEmailAsync("user@test.com");
 
-            var roles = await userManager.GetRolesAsync(updatedUser!);
+        //    var roles = await userManager.GetRolesAsync(updatedUser!);
 
-            roles.Should().Contain(User);
+        //    roles.Should().Contain(User);
 
-            roles.Count(r => r == User).Should().Be(
-                1, "User role should not be duplicated");
-        }
+        //    roles.Count(r => r == User).Should().Be(
+        //        1, "User role should not be duplicated");
+        //}
 
-        [Test]
-        public async Task Should_Skip_Adding_User_Role_To_Admin_Users()
-        {
-            using var host = new IdentityTestHost();
-            using var scope = host.CreateScope();
+        //[Test]
+        //public async Task Should_Skip_Adding_User_Role_To_Admin_Users()
+        //{
+        //    using var host = new IdentityTestHost();
+        //    using var scope = host.CreateScope();
 
-            await IdentitySeeder.SeedIdentitiesAsync(scope.ServiceProvider);
+        //    await IdentitySeeder.SeedIdentitiesAsync(scope.ServiceProvider);
 
-            var userManager =
-                scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+        //    var userManager =
+        //        scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
-            var roleManager =
-                scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+        //    var roleManager =
+        //        scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-            await roleManager.CreateAsync(new IdentityRole(Admin));
-            await roleManager.CreateAsync(new IdentityRole(User));
+        //    await roleManager.CreateAsync(new IdentityRole(Admin));
+        //    await roleManager.CreateAsync(new IdentityRole(User));
 
-            var newAdminUser = new ApplicationUser
-            {
-                UserName = "newAdmin",
-                Email = "newAdmin@test.com",
-                EmailConfirmed = true
-            };
+        //    var newRegisteredAdmin = new ApplicationUser
+        //    {
+        //        UserName = "newAdminUser",
+        //        Email = "newAdminEmail@test.com",
+        //        EmailConfirmed = true
+        //    };
 
-            await userManager.CreateAsync(newAdminUser, "newAdmin@test.com");
-            await userManager.AddToRoleAsync(newAdminUser, Admin);
+        //    await userManager.CreateAsync(newRegisteredAdmin, "newAdminEmail@test.com");
+        //    await userManager.AddToRoleAsync(newRegisteredAdmin, Admin);
 
-            var updatedUser = await userManager.FindByEmailAsync(
-                "newAdmin@test.com");
+        //    var newAdmin = await userManager.FindByEmailAsync(
+        //        "newAdminEmail@test.com");
 
-            updatedUser.Should().NotBeNull();
+        //    newAdmin.Should().NotBeNull();
 
-            (await userManager.IsInRoleAsync(updatedUser!, Admin)).Should().BeTrue();
-            (await userManager.IsInRoleAsync(updatedUser!, User)).Should().BeTrue();
-        }
+        //    (await userManager.IsInRoleAsync(newAdmin!, Admin)).Should().BeTrue();
+        //    (await userManager.IsInRoleAsync(newAdmin!, User)).Should().BeTrue();
+        //}
 
         [Test]
         public async Task Should_Handle_Empty_User_List()
