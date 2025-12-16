@@ -15,6 +15,7 @@ using IPNoticeHub.Application.Templates.Abstractions;
 
 namespace IPNoticeHub.Web.Controllers
 {
+    [Authorize(Policy = "HasUserId")]
     public sealed class TrademarksController : Controller
     {
         private readonly ITrademarkCollectionService tmCollectionService;
@@ -40,7 +41,6 @@ namespace IPNoticeHub.Web.Controllers
             this.documentLibraryService = documentLibraryService;
         }
 
-        [Authorize(Policy = "HasUserId")]
         [HttpGet]
         public async Task<IActionResult> MyCollection(
             CollectionSortBy sortBy = CollectionSortBy.DateAddedDesc,
@@ -114,7 +114,6 @@ namespace IPNoticeHub.Web.Controllers
             return View(viewModel);
         }
 
-        [Authorize(Policy = "HasUserId")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Add(
@@ -161,7 +160,6 @@ namespace IPNoticeHub.Web.Controllers
             }
         }
 
-        [Authorize(Policy = "HasUserId")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Remove(

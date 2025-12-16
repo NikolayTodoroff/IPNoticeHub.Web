@@ -40,7 +40,7 @@ namespace IPNoticeHub.Web.Controllers
             this.templateReplacer = templateReplacer;
         }
 
-        [HttpGet, Authorize(Policy = "HasUserId")]
+        [HttpGet]
         public async Task<IActionResult> CeaseDesist(
             Guid publicId,
             CancellationToken cancellationToken = default)
@@ -78,7 +78,7 @@ namespace IPNoticeHub.Web.Controllers
             return View(viewModel);
         }
 
-        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
+        [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> CeaseDesist(
             Guid publicId,
             CeaseDesistViewModel viewModel,

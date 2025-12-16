@@ -93,7 +93,6 @@ namespace IPNoticeHub.Web.Controllers
                 RedirectToAction(nameof(Details), new { id = publicId });
         }
 
-        [Authorize(Policy = "HasUserId")]
         [HttpGet("Copyrights/Edit/{id:guid}")]
         public async Task<IActionResult> Edit(
             Guid id, 
@@ -120,7 +119,6 @@ namespace IPNoticeHub.Web.Controllers
             return View(viewModel);
         }
 
-        [Authorize(Policy = "HasUserId")]
         [HttpPost("Copyrights/Edit/{id:guid}")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(

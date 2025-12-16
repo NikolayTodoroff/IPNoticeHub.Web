@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using static IPNoticeHub.Shared.Constants.IdentityConstants.AdminAccountCredentials;
@@ -13,61 +12,57 @@ namespace IPNoticeHub.Infrastructure.Identity
         {
             using var scope = services.CreateScope();
 
-            var roleManager = 
+            var roleManager =
                 scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-            var userManager = 
+            var userManager =
                 scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
-            var logger = 
+            var logger =
                 scope.ServiceProvider.GetRequiredService<ILogger<IdentitySeeder>>();
 
-            var roleNames = new[]
-            {
-                Admin,
-                User
-            };
-
-            foreach (var roleName in roleNames)
+            foreach (var roleName in new[] { Admin, User })
             {
                 if (!await roleManager.RoleExistsAsync(roleName))
                 {
-                    await roleManager.CreateAsync(new IdentityRole(roleName));
+                    var result = await roleManager.CreateAsync(new IdentityRole(roleName));
+
+                    if (!result.Succeeded)
+                    {
+                        logger.LogCritical(
+                            "Failed to create role {Role}. Errors: {Errors}",
+                            roleName,
+                            string.Join("; ", result.Errors.Select(e => e.Description)));
+                    }
                 }
             }
 
-            var adminEmail = AdminEmailAddress;
-            var adminPassword = AdminEmailPassword;
-
-            var adminUser = 
-                await userManager.FindByEmailAsync(adminEmail);
+            var adminUser = await userManager.FindByEmailAsync(AdminEmailAddress);
 
             if (adminUser == null)
             {
                 adminUser = new ApplicationUser
                 {
-                    UserName = adminEmail,
-                    Email = adminEmail,
+                    UserName = AdminEmailAddress,
+                    Email = AdminEmailAddress,
                     EmailConfirmed = true
                 };
 
-                var adminCreated = await userManager.CreateAsync(
-                    adminUser, 
-                    adminPassword);
+                var createResult = await userManager.CreateAsync(
+                    adminUser,
+                    AdminEmailPassword);
 
-                if (!adminCreated.Succeeded)
+                if (!createResult.Succeeded)
                 {
-                    var errors = adminCreated.Errors.Select(
-                        e => e.Description);
-
-                    logger.LogError(
-                        "Failed to create admin user. Errors: {Errors}", 
-                        string.Join("; ", errors));
+                    logger.LogCritical(
+                        "Failed to create admin user. Errors: {Errors}",
+                        string.Join("; ", createResult.Errors.Select(e => e.Description)));
 
                     return;
                 }
-            }
 
+                logger.LogInformation("Default admin user created.");
+            }
             else
             {
                 if (!adminUser.EmailConfirmed)
@@ -78,19 +73,15 @@ namespace IPNoticeHub.Infrastructure.Identity
 
                 if (!await userManager.HasPasswordAsync(adminUser))
                 {
-                    var addPwdResult = 
-                        await userManager.AddPasswordAsync(
-                            adminUser,
-                            adminPassword);
+                    var pwdResult = await userManager.AddPasswordAsync(
+                        adminUser,
+                        AdminEmailPassword);
 
-                    if (!addPwdResult.Succeeded)
+                    if (!pwdResult.Succeeded)
                     {
-                        var errors = addPwdResult.Errors.Select(
-                            e => e.Description);
-
                         logger.LogWarning(
-                            "Failed to add password to existing admin. Errors: {Errors}", 
-                            string.Join("; ", errors));
+                            "Failed to add password to existing admin. Errors: {Errors}",
+                            string.Join("; ", pwdResult.Errors.Select(e => e.Description)));
                     }
                 }
             }
@@ -98,26 +89,13 @@ namespace IPNoticeHub.Infrastructure.Identity
             if (!await userManager.IsInRoleAsync(adminUser, Admin))
             {
                 await userManager.AddToRoleAsync(adminUser, Admin);
+                logger.LogInformation("Admin role assigned to default admin.");
             }
 
             if (!await userManager.IsInRoleAsync(adminUser, User))
             {
                 await userManager.AddToRoleAsync(adminUser, User);
-            }
-
-            var allUsers = await userManager.Users.ToListAsync();
-
-            foreach (var user in allUsers)
-            {
-                if (await userManager.IsInRoleAsync(user, Admin))
-                {
-                    continue;
-                }
-
-                if (!await userManager.IsInRoleAsync(user, User))
-                {
-                    await userManager.AddToRoleAsync(user, User);
-                }
+                logger.LogInformation("User role assigned to default admin.");
             }
         }
     }

@@ -3,8 +3,10 @@ using IPNoticeHub.Web.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using IPNoticeHub.Application.Services.DocumentLibraryService.Abstractions;
+
 namespace IPNoticeHub.Web.Controllers
 {
+    [Authorize(Policy = "HasUserId")]
     public class DocumentLibraryController : Controller
     {
         private readonly IDocumentLibraryService documentService;
@@ -34,7 +36,6 @@ namespace IPNoticeHub.Web.Controllers
         }
 
         [HttpGet]
-        [Authorize(Policy = "HasUserId")]
         public async Task<IActionResult> Edit(
             int id, 
             CancellationToken cancellationToken = default)
