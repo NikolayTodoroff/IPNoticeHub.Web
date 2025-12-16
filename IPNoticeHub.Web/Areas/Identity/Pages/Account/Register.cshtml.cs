@@ -2,9 +2,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
-using System.ComponentModel.DataAnnotations;
-using System.Text;
-using System.Text.Encodings.Web;
+using IPNoticeHub.Application.DTOs.UserRegistrationDTOs;
+using IPNoticeHub.Application.Services.UserRegistrationServices.Abstractions;
 using IPNoticeHub.Infrastructure.Identity;
 using IPNoticeHub.Shared.Support;
 using Microsoft.AspNetCore.Authentication;
@@ -13,6 +12,9 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using System.ComponentModel.DataAnnotations;
+using System.Text;
+using System.Text.Encodings.Web;
 
 namespace IPNoticeHub.Web.Areas.Identity.Pages.Account
 {
@@ -24,13 +26,15 @@ namespace IPNoticeHub.Web.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<ApplicationUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly IUserRegistrationService _userRegistrationService;
 
         public RegisterModel(
             UserManager<ApplicationUser> userManager,
             IUserStore<ApplicationUser> userStore,
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            IUserRegistrationService userRegistrationService)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -38,6 +42,7 @@ namespace IPNoticeHub.Web.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _userRegistrationService = userRegistrationService;
         }
 
         /// <summary>
@@ -117,32 +122,15 @@ namespace IPNoticeHub.Web.Areas.Identity.Pages.Account
                 {
                     _logger.LogInformation("User created a new account with password.");
 
-                    var roleResult = await _userManager.AddToRoleAsync(user, RoleNames.User);
+                    var registrationResult = 
+                        await _userRegistrationService.RegisterUserAsync(
+                        new UserRegistrationRequest(Input.Email, Input.Password));
 
-                    if (!roleResult.Succeeded)
+                    if (!registrationResult.Succeeded)
                     {
-                        var errors = 
-                            string.Join(", ", roleResult.Errors.Select(e => e.Description));
+                        foreach (var error in registrationResult.Errors)
+                            ModelState.AddModelError(string.Empty, error);
 
-                        _logger.LogCritical(
-                            "Registration created user {Email} but failed to assign role {Role}. Errors: {Errors}",
-                            Input.Email,
-                            RoleNames.User,
-                            errors);
-
-                        var deleteResult = await _userManager.DeleteAsync(user);
-
-                        if (!deleteResult.Succeeded)
-                        {
-                            var deleteErrors = string.Join(", ", deleteResult.Errors.Select(e => e.Description));
-
-                            _logger.LogCritical(
-                                "Failed to delete orphaned user {Email} after role assignment failure. Errors: {Errors}",
-                                Input.Email,
-                                deleteErrors);
-                        }
-
-                        ModelState.AddModelError(string.Empty, "Registration failed. Please try again.");
                         return Page();
                     }
 
