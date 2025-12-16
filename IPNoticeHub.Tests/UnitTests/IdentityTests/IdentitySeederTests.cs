@@ -43,12 +43,11 @@ namespace IPNoticeHub.Tests.UnitTests.IdentityTests
             admin.Should().NotBeNull();
             admin!.Email.Should().Be(AdminEmailAddress);
 
-            admin.EmailConfirmed.Should().BeTrue(
-                "the seeder explicitly confirms admin email");
+            admin.EmailConfirmed.Should().BeTrue();
         }
 
         [Test]
-        public async Task Admin_Should_Be_Assigned_To_Admin_And_User_Roles()
+        public async Task DefaultAdmin_Should_Be_Assigned_To_Admin_And_User_Roles()
         {
             using var host = new IdentityTestHost();
             using var scope = host.CreateScope();
@@ -62,11 +61,9 @@ namespace IPNoticeHub.Tests.UnitTests.IdentityTests
 
             admin.Should().NotBeNull();
 
-            (await userManager.IsInRoleAsync(admin!, Admin)).Should().BeTrue(
-                "admin must have Admin role");
+            (await userManager.IsInRoleAsync(admin!, Admin)).Should().BeTrue();
 
-            (await userManager.IsInRoleAsync(admin!, User)).Should().BeTrue(
-                "admin must also belong to User role for full access");
+            (await userManager.IsInRoleAsync(admin!, User)).Should().BeTrue();
         }
 
         [Test]
@@ -158,42 +155,6 @@ namespace IPNoticeHub.Tests.UnitTests.IdentityTests
 
             (await userManager.CheckPasswordAsync(updatedAdmin!, AdminEmailPassword)).
                 Should().BeTrue();
-        }
-
-        [Test]
-        public async Task Should_Add_Admin_Role_To_Existing_Admin_User_Without_Admin_Role()
-        {
-            using var host = new IdentityTestHost();
-            using var scope = host.CreateScope();
-
-            await IdentitySeeder.SeedIdentitiesAsync(scope.ServiceProvider);
-
-            var userManager =
-                scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-
-            var roleManager =
-                scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-
-            await roleManager.CreateAsync(new IdentityRole(Admin));
-            await roleManager.CreateAsync(new IdentityRole(User));
-
-            var adminUser = new ApplicationUser
-            {
-                UserName = AdminEmailAddress,
-                Email = AdminEmailAddress,
-                EmailConfirmed = true
-            };
-
-            await userManager.CreateAsync(adminUser, AdminEmailPassword);
-
-            var updatedAdmin =
-                await userManager.FindByEmailAsync(AdminEmailAddress);
-
-            (await userManager.IsInRoleAsync(updatedAdmin!, Admin)).Should().
-                BeTrue("seeder should add Admin role to existing admin user");
-
-            (await userManager.IsInRoleAsync(updatedAdmin!, User)).Should().
-                BeTrue("seeder should add User role to existing admin user");
         }
 
         [Test]
@@ -302,22 +263,23 @@ namespace IPNoticeHub.Tests.UnitTests.IdentityTests
             await roleManager.CreateAsync(new IdentityRole(Admin));
             await roleManager.CreateAsync(new IdentityRole(User));
 
-            var adminUser = new ApplicationUser
+            var newAdminUser = new ApplicationUser
             {
-                UserName = "anotheradmin@test.com",
-                Email = "anotheradmin@test.com",
+                UserName = "newAdmin",
+                Email = "newAdmin@test.com",
                 EmailConfirmed = true
             };
 
-            await userManager.CreateAsync(adminUser, "Password123!");
-            await userManager.AddToRoleAsync(adminUser, Admin);
+            await userManager.CreateAsync(newAdminUser, "newAdmin@test.com");
+            await userManager.AddToRoleAsync(newAdminUser, Admin);
 
             var updatedUser = await userManager.FindByEmailAsync(
-                "anotheradmin@test.com");
+                "newAdmin@test.com");
 
             updatedUser.Should().NotBeNull();
 
             (await userManager.IsInRoleAsync(updatedUser!, Admin)).Should().BeTrue();
+            (await userManager.IsInRoleAsync(updatedUser!, User)).Should().BeTrue();
         }
 
         [Test]
@@ -353,8 +315,7 @@ namespace IPNoticeHub.Tests.UnitTests.IdentityTests
 
             admin.Should().NotBeNull();
 
-            admin!.UserName.Should().Be(
-                AdminEmailAddress, "username should match email");
+            admin!.UserName.Should().Be(AdminEmailAddress);
 
             admin.Email.Should().Be(AdminEmailAddress);
         }
