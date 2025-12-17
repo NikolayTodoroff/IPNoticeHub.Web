@@ -2,6 +2,7 @@
 using IPNoticeHub.Application.Services.UserRegistrationServices.Abstractions;
 using IPNoticeHub.Shared.Support;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace IPNoticeHub.Infrastructure.Identity
@@ -12,7 +13,7 @@ namespace IPNoticeHub.Infrastructure.Identity
         private readonly ILogger<UserRegistrationService> logger;
 
         public UserRegistrationService(
-            UserManager<ApplicationUser> userManager, 
+            UserManager<ApplicationUser> userManager,
             ILogger<UserRegistrationService> logger)
         {
             this.userManager = userManager;
@@ -20,58 +21,55 @@ namespace IPNoticeHub.Infrastructure.Identity
         }
 
         public async Task<UserRegistrationResult> RegisterUserAsync(
-            UserRegistrationRequest request, 
+            UserRegistrationRequest request,
             CancellationToken cancellationToken = default)
         {
             var user = new ApplicationUser
             {
                 UserName = request.Email,
                 Email = request.Email,
-                EmailConfirmed = true
+                EmailConfirmed = false
             };
 
-            var createResult = await userManager.CreateAsync(user, request.Password);
+            var createUser = await userManager.CreateAsync(user, request.Password);
 
-            if (!createResult.Succeeded)
+            if (!createUser.Succeeded)
             {
-                return new UserRegistrationResult(
-                    false,
-                    createResult.Errors.Select(e => e.Description).ToList());
-            }
+                return UserRegistrationResult.Failure(
+                    createUser.Errors.Select(e => e.Description));
+            }   
 
-            var roleResult = 
-                await userManager.AddToRoleAsync(user, RoleNames.User);
+            var role = await userManager.AddToRoleAsync(user, RoleNames.User);
 
-            if (!roleResult.Succeeded)
+            if (!role.Succeeded)
             {
-                var errors = 
-                    roleResult.Errors.Select(e => e.Description).ToList();
+                var errors = role.Errors.Select(e => e.Description).ToList();
+
+                var delete = await userManager.DeleteAsync(user);
+
+                if (!delete.Succeeded)
+                {
+                    var deleteErrors = 
+                        delete.Errors.Select(e => e.Description);
+
+                    logger.LogCritical(
+                        "Failed to delete orphaned user {Email} after role assignment failure. " +
+                        "Errors: {Errors}",
+                        request.Email, string.Join(", ", deleteErrors));
+                }
 
                 logger.LogCritical(
                     "Registration created user {Email} but failed to assign role {Role}. " +
                     "Errors: {Errors}",
-                    request.Email,
-                    RoleNames.User,
-                    string.Join(", ", errors));
+                    request.Email, RoleNames.User, string.Join(", ", errors));
 
-                var deleteResult = await userManager.DeleteAsync(user);
-
-                if (!deleteResult.Succeeded)
-                {
-                    var deleteErrors = 
-                        deleteResult.Errors.Select(e => e.Description).ToList();
-
-                    logger.LogCritical(
-                        "Failed to delete orphaned user {Email} " +
-                        "after role assignment failure. Errors: {Errors}",
-                        request.Email,
-                        string.Join(", ", deleteErrors));
-                }
-
-                return new UserRegistrationResult(false, errors);
+                return UserRegistrationResult.Failure(errors);
             }
 
-            return new UserRegistrationResult(true, Array.Empty<string>());
+            var emailToken = await userManager.GenerateEmailConfirmationTokenAsync(user);
+
+            return UserRegistrationResult.Success(user.Id, emailToken);
         }
     }
+
 }
