@@ -5,7 +5,6 @@
 using IPNoticeHub.Application.DTOs.UserRegistrationDTOs;
 using IPNoticeHub.Application.Services.UserRegistrationServices.Abstractions;
 using IPNoticeHub.Infrastructure.Identity;
-using IPNoticeHub.Shared.Support;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -132,6 +131,8 @@ namespace IPNoticeHub.Web.Areas.Identity.Pages.Account
 
             else
             {
+                var user = await _userManager.FindByIdAsync(regResult.UserId!);
+                await _signInManager.SignInAsync(user!, isPersistent: false);
                 return LocalRedirect(returnUrl);
             }
         }

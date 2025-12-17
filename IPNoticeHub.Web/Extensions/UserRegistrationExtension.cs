@@ -7,8 +7,7 @@ namespace IPNoticeHub.Web.Extensions
     {
         public static IServiceCollection AddUserRegistration(this IServiceCollection services)
         {
-            services.AddSingleton<IUserRegistrationService, UserRegistrationService>();
-
+            services.AddScoped<IUserRegistrationService, UserRegistrationService>();
             return services;
         }
     }

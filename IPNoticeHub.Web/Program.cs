@@ -11,6 +11,7 @@ namespace IPNoticeHub.Web
 
             builder.Services.AddDatabase(builder.Configuration);
             builder.Services.AddIdentityModule();
+            builder.Services.AddUserRegistration();
             builder.Services.AddAuthorizationPolicies();
             builder.Services.AddCookieConfiguration();
             builder.Services.AddPresentationLayer();
