@@ -21,6 +21,8 @@ namespace IPNoticeHub.Infrastructure.Identity
             var logger =
                 scope.ServiceProvider.GetRequiredService<ILogger<IdentitySeeder>>();
 
+            bool allRolesCreated = true;
+
             foreach (var roleName in new[] { Admin, User })
             {
                 if (!await roleManager.RoleExistsAsync(roleName))
@@ -29,6 +31,8 @@ namespace IPNoticeHub.Infrastructure.Identity
 
                     if (!result.Succeeded)
                     {
+                        allRolesCreated = false;
+
                         logger.LogCritical(
                             "Failed to create role {Role}. Errors: {Errors}",
                             roleName,
@@ -36,6 +40,8 @@ namespace IPNoticeHub.Infrastructure.Identity
                     }
                 }
             }
+
+            if (!allRolesCreated) return;
 
             var adminUser = await userManager.FindByEmailAsync(AdminEmailAddress);
 
