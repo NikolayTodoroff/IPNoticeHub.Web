@@ -63,6 +63,7 @@ namespace IPNoticeHub.Infrastructure.Identity
 
                 logger.LogInformation("Default admin user created.");
             }
+
             else
             {
                 if (!adminUser.EmailConfirmed)

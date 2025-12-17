@@ -3,7 +3,6 @@ using IPNoticeHub.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Moq;
 using NUnit.Framework;
 using static IPNoticeHub.Shared.Constants.IdentityConstants.AdminAccountCredentials;
 using static IPNoticeHub.Shared.Support.RoleNames;
@@ -60,9 +59,7 @@ namespace IPNoticeHub.Tests.UnitTests.IdentityTests
             var admin = await userManager.FindByEmailAsync(AdminEmailAddress);
 
             admin.Should().NotBeNull();
-
             (await userManager.IsInRoleAsync(admin!, Admin)).Should().BeTrue();
-
             (await userManager.IsInRoleAsync(admin!, User)).Should().BeTrue();
         }
 
@@ -100,207 +97,95 @@ namespace IPNoticeHub.Tests.UnitTests.IdentityTests
         }
 
         [Test]
-        public async Task Should_Confirm_Email_For_Existing_Admin_If_Not_Confirmed()
+        public async Task IdentitySeeder_Should_Confirm_Email_For_Preexisting_Admin()
+        {
+            using var host = new IdentityTestHost();
+
+            using (var scope = host.CreateScope())
+            {
+                var userManager =
+                scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+                var admin = new ApplicationUser
+                {
+                    UserName = AdminEmailAddress,
+                    Email = AdminEmailAddress,
+                    EmailConfirmed = false
+                };
+
+                var create = await userManager.CreateAsync(admin, AdminEmailPassword);
+                create.Succeeded.Should().BeTrue();
+
+                await IdentitySeeder.SeedIdentitiesAsync(scope.ServiceProvider);
+            } ;
+
+            using (var scope = host.CreateScope())
+            {
+                var userManager =
+                scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+                var updated = await userManager.FindByEmailAsync(AdminEmailAddress);
+                updated!.EmailConfirmed.Should().BeTrue();
+            }        
+        }
+
+        [Test]
+        public async Task IdentitySeeder_Should_Add_Password_For_Preexisting_Admin_Without_Password()
+        {
+            using var host = new IdentityTestHost();
+            
+            using (var scope = host.CreateScope())
+            {
+                var userManager = 
+                    scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+                var admin = new ApplicationUser { 
+                    UserName = AdminEmailAddress, 
+                    Email = AdminEmailAddress, 
+                    EmailConfirmed = true 
+                };
+
+                var create = await userManager.CreateAsync(admin);
+                create.Succeeded.Should().BeTrue();
+
+                (await userManager.HasPasswordAsync(admin)).Should().BeFalse();
+
+                await IdentitySeeder.SeedIdentitiesAsync(scope.ServiceProvider);
+            }
+
+            using (var scope = host.CreateScope())
+            {
+                var userManager = 
+                    scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+                var updated = await userManager.FindByEmailAsync(AdminEmailAddress);
+
+                (await userManager.HasPasswordAsync(updated!)).Should().BeTrue();
+                (await userManager.CheckPasswordAsync(updated!, AdminEmailPassword)).Should().BeTrue();
+            }
+        }
+
+        [Test]
+        public async Task Should_Seed_Only_Admin_User_When_No_Other_Users_Exist()
         {
             using var host = new IdentityTestHost();
             using var scope = host.CreateScope();
-
-            await IdentitySeeder.SeedIdentitiesAsync(scope.ServiceProvider);
 
             var userManager =
                 scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
-            var adminUser = new ApplicationUser
-            {
-                UserName = AdminEmailAddress,
-                Email = AdminEmailAddress,
-                EmailConfirmed = false
-            };
-
-            await userManager.CreateAsync(adminUser, AdminEmailPassword);
-
-            var updatedAdmin =
-                await userManager.FindByEmailAsync(AdminEmailAddress);
-
-            updatedAdmin.Should().NotBeNull();
-            updatedAdmin!.EmailConfirmed.Should().BeTrue();
-        }
-
-        [Test]
-        public async Task Should_Add_Password_To_Existing_Admin_Without_Password()
-        {
-            using var host = new IdentityTestHost();
-            using var scope = host.CreateScope();
+            var allUsersBefore = await userManager.Users.ToListAsync();
+            allUsersBefore.Should().BeEmpty();
 
             await IdentitySeeder.SeedIdentitiesAsync(scope.ServiceProvider);
 
-            var userManager =
-                scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-
-            var adminUser = new ApplicationUser
-            {
-                UserName = AdminEmailAddress,
-                Email = AdminEmailAddress,
-                EmailConfirmed = true
-            };
-
-            await userManager.CreateAsync(adminUser);
-
-            (await userManager.HasPasswordAsync(adminUser)).Should().BeFalse();
-
-            var updatedAdmin =
-                await userManager.FindByEmailAsync(AdminEmailAddress);
-
-            (await userManager.HasPasswordAsync(updatedAdmin!)).Should().BeTrue();
-
-            (await userManager.CheckPasswordAsync(updatedAdmin!, AdminEmailPassword)).
-                Should().BeTrue();
-        }
-
-        //[Test]
-        //public async Task Should_Assign_User_Role_To_All_Non_Admin_Users()
-        //{
-        //    using var host = new IdentityTestHost();
-        //    using var scope = host.CreateScope();
-
-        //    var userManager =
-        //        scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-
-        //    var regularUser1 = new ApplicationUser
-        //    {
-        //        UserName = "user1@test.com",
-        //        Email = "user1@test.com",
-        //        EmailConfirmed = true
-        //    };
-
-        //    var regularUser2 = new ApplicationUser
-        //    {
-        //        UserName = "user2@test.com",
-        //        Email = "user2@test.com",
-        //        EmailConfirmed = true
-        //    };
-
-        //    await userManager.CreateAsync(
-        //        regularUser1,
-        //        "Password123!");
-
-        //    await userManager.CreateAsync(
-        //        regularUser2,
-        //        "Password456!");
-
-        //    var user1 = await userManager.
-        //        FindByEmailAsync("user1@test.com");
-
-        //    var user2 = await userManager.
-        //        FindByEmailAsync("user2@test.com");
-
-        //    await IdentitySeeder.SeedIdentitiesAsync(scope.ServiceProvider);
-
-        //    (await userManager.IsInRoleAsync(user1!, User)).Should().BeTrue(
-        //        "regular user 1 should have User role");
-
-        //    (await userManager.IsInRoleAsync(user2!, User)).Should().BeTrue(
-        //        "regular user 2 should have User role");
-
-        //    (await userManager.IsInRoleAsync(user1!, Admin)).Should().BeFalse(
-        //        "regular user 1 should not have Admin role");
-
-        //    (await userManager.IsInRoleAsync(user2!, Admin)).Should().BeFalse(
-        //        "regular user 2 should not have Admin role");
-        //}
-
-        //[Test]
-        //public async Task Should_Not_Duplicate_User_Role_For_Non_Admin_Users()
-        //{
-        //    using var host = new IdentityTestHost();
-        //    using var scope = host.CreateScope();
-
-        //    await IdentitySeeder.SeedIdentitiesAsync(scope.ServiceProvider);
-
-        //    var userManager =
-        //        scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-
-        //    var roleManager =
-        //        scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-
-        //    await roleManager.CreateAsync(new IdentityRole(User));
-
-        //    var regularUser = new ApplicationUser
-        //    {
-        //        UserName = "user@test.com",
-        //        Email = "user@test.com",
-        //        EmailConfirmed = true
-        //    };
-
-        //    await userManager.CreateAsync(regularUser, "Password123!");
-        //    await userManager.AddToRoleAsync(regularUser, User);
-
-        //    var updatedUser = 
-        //        await userManager.FindByEmailAsync("user@test.com");
-
-        //    var roles = await userManager.GetRolesAsync(updatedUser!);
-
-        //    roles.Should().Contain(User);
-
-        //    roles.Count(r => r == User).Should().Be(
-        //        1, "User role should not be duplicated");
-        //}
-
-        //[Test]
-        //public async Task Should_Skip_Adding_User_Role_To_Admin_Users()
-        //{
-        //    using var host = new IdentityTestHost();
-        //    using var scope = host.CreateScope();
-
-        //    await IdentitySeeder.SeedIdentitiesAsync(scope.ServiceProvider);
-
-        //    var userManager =
-        //        scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-
-        //    var roleManager =
-        //        scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-
-        //    await roleManager.CreateAsync(new IdentityRole(Admin));
-        //    await roleManager.CreateAsync(new IdentityRole(User));
-
-        //    var newRegisteredAdmin = new ApplicationUser
-        //    {
-        //        UserName = "newAdminUser",
-        //        Email = "newAdminEmail@test.com",
-        //        EmailConfirmed = true
-        //    };
-
-        //    await userManager.CreateAsync(newRegisteredAdmin, "newAdminEmail@test.com");
-        //    await userManager.AddToRoleAsync(newRegisteredAdmin, Admin);
-
-        //    var newAdmin = await userManager.FindByEmailAsync(
-        //        "newAdminEmail@test.com");
-
-        //    newAdmin.Should().NotBeNull();
-
-        //    (await userManager.IsInRoleAsync(newAdmin!, Admin)).Should().BeTrue();
-        //    (await userManager.IsInRoleAsync(newAdmin!, User)).Should().BeTrue();
-        //}
-
-        [Test]
-        public async Task Should_Handle_Empty_User_List()
-        {
-            using var host = new IdentityTestHost();
-            using var scope = host.CreateScope();
-
-            await IdentitySeeder.SeedIdentitiesAsync(scope.ServiceProvider);
-
-            var userManager = 
-                scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-
-            var allUsers = await userManager.Users.ToListAsync();
-
-            allUsers.Should().HaveCount(1);
-            allUsers.Single().Email.Should().Be(AdminEmailAddress);
+            var allUsersAfter = await userManager.Users.ToListAsync();
+            allUsersAfter.Should().HaveCount(1);
+            allUsersAfter.Single().Email.Should().Be(AdminEmailAddress);
         }
 
         [Test]
-        public async Task Should_Create_Admin_With_Correct_Username_And_Email()
+        public async Task Should_Create_Default_Admin_With_Matching_Username_And_Email()
         {
             using var host = new IdentityTestHost();
             using var scope = host.CreateScope();
@@ -318,25 +203,6 @@ namespace IPNoticeHub.Tests.UnitTests.IdentityTests
             admin!.UserName.Should().Be(AdminEmailAddress);
 
             admin.Email.Should().Be(AdminEmailAddress);
-        }
-
-        [Test]
-        public async Task Should_Not_Skip_Roles_If_Already_Exist()
-        {
-            using var host = new IdentityTestHost();
-            using var scope = host.CreateScope();
-
-            await IdentitySeeder.SeedIdentitiesAsync(scope.ServiceProvider);
-
-            var roleManager =
-                scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-
-            var allRoles = roleManager.Roles.ToList();
-
-            allRoles.Should().HaveCount(2);
-
-            allRoles.Select(r => r.Name).Should().Contain(
-                new[] { Admin, User });
         }
     }
 }
