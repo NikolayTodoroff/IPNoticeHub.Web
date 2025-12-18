@@ -95,12 +95,11 @@ namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
 
             var client = appFactory.CreateClientAs(TestUserId);
 
-            var urlForm = new FormUrlEncodedContent(new[]
-            { new KeyValuePair<string,string>("trademarkId",trademarkId.ToString())});
+            var urlForm = new FormUrlEncodedContent(
+                new[]{ new KeyValuePair<string,string>("trademarkId",trademarkId.ToString())});
 
-            var responseMessage = await client.PostAsync(
-                "/Watchlist/Add", 
-                urlForm);
+            var responseMessage = 
+                await client.PostAsync("/Watchlist/Add", urlForm);
 
             responseMessage.StatusCode.Should().Be(HttpStatusCode.Redirect);
             responseMessage.Headers.Location!.ToString().Should().Be("/Watchlist");
@@ -111,14 +110,109 @@ namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
                 serviceScope.ServiceProvider.
                 GetRequiredService<IPNoticeHubDbContext>();
 
-            var link = 
-                dbContext.Watchlists.SingleOrDefault(
+            var watchlist = dbContext.Watchlists.SingleOrDefault(
                     ut => ut.UserId == TestUserId && 
                     ut.TrademarkId == trademarkId);
 
-            link.Should().NotBeNull();
-            link.NotificationsEnabled.Should().BeFalse();
-            link.InitialStatusText.Should().Be("Live/Registered");
+            watchlist.Should().NotBeNull();
+            watchlist.NotificationsEnabled.Should().BeFalse();
+            watchlist.InitialStatusText.Should().Be("Live/Registered");
+        }
+
+        [Test]
+        public async Task Post_Add_WhenWatchlistRowExists_UpdatesMissingFields_AndUndeletes()
+        {
+            int trademarkId;
+
+            using (var scope = appFactory.Services.CreateScope())
+            {
+                var testDbContext = 
+                    scope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+
+                testDbContext.Users.Add(new ApplicationUser
+                {
+                    Id = TestUserId,
+                    UserName = "testUser",
+                    NormalizedUserName = "TESTUSER",
+                    Email = "testUser@testemail.com",
+                    NormalizedEmail = "TESTUSER@TESTEMAIL.COM",
+                    SecurityStamp = Guid.NewGuid().ToString()
+                });
+
+                var entity = new TrademarkEntity
+                {
+                    Wordmark = "ALPHA",
+                    Owner = "Owner A",
+                    SourceId = "TestSourceId",
+                    RegistrationNumber = "1111",
+                    GoodsAndServices = "Goods",
+                    StatusCategory = TrademarkStatusCategory.Registered,
+
+                    StatusDetail = "Live/Registered",
+                    StatusCodeRaw = 630,
+                    StatusDateUtc = new DateTime(
+                        2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+
+                    Source = DataProvider.USPTO
+                };
+
+                testDbContext.TrademarkRegistrations.Add(entity);
+                await testDbContext.SaveChangesAsync();
+
+                trademarkId = entity.Id;
+
+                testDbContext.Watchlists.Add(new Watchlist
+                {
+                    UserId = TestUserId,
+                    TrademarkId = trademarkId,
+
+                    IsDeleted = true,
+                    NotificationsEnabled = false,
+
+                    AddedOnUtc = default,
+                    InitialStatusCodeRaw = null,
+                    InitialStatusText = null,
+                    InitialStatusDateUtc = null
+                });
+
+                await testDbContext.SaveChangesAsync();
+            }
+
+            var client = appFactory.CreateClientAs(TestUserId);
+
+            var urlForm = new FormUrlEncodedContent(new[]
+            {
+                new KeyValuePair<string, string>("trademarkId", trademarkId.ToString())
+            });
+
+            var response = 
+                await client.PostAsync("/Watchlist/Add", urlForm);
+
+            response.StatusCode.Should().Be(HttpStatusCode.Redirect);
+            response.Headers.Location!.ToString().Should().Be("/Watchlist");
+
+            using var verifyScope = appFactory.Services.CreateScope();
+
+            var verifyDb = 
+                verifyScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+
+            var watchlist = verifyDb.Watchlists.SingleOrDefault(w =>
+                w.UserId == TestUserId && w.TrademarkId == trademarkId);
+
+            watchlist.Should().NotBeNull();
+
+            watchlist!.IsDeleted.Should().BeFalse(
+                "existing soft-deleted entries should be undeleted on Add");
+            
+            watchlist.NotificationsEnabled.Should().BeFalse();
+
+            watchlist.AddedOnUtc.Should().NotBe(default);
+
+            watchlist.InitialStatusCodeRaw.Should().Be(630);
+            watchlist.InitialStatusText.Should().Be("Live/Registered");
+            watchlist.InitialStatusDateUtc.Should().Be(
+                new DateTime(2025, 1, 1, 
+                0, 0, 0, DateTimeKind.Utc));
         }
 
         [Test]
@@ -276,18 +370,12 @@ namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
 
             var form = new FormUrlEncodedContent(new[]
             {
-        new KeyValuePair<string,string>(
-            "trademarkId", 
-            trademarkId.ToString()),
+                 new KeyValuePair<string,string>("trademarkId",trademarkId.ToString()),
+                 new KeyValuePair<string,string>("returnUrl", returnUrl)
+            });
 
-        new KeyValuePair<string,string>(
-            "returnUrl",   
-            returnUrl)
-    });
-
-            var responseMessage = await client.PostAsync(
-                "/Watchlist/Add", 
-                form);
+            var responseMessage = 
+                await client.PostAsync("/Watchlist/Add",form);
 
             responseMessage.StatusCode.Should().Be(HttpStatusCode.Redirect);
             responseMessage.Headers.Location!.ToString().Should().Be(returnUrl);
@@ -360,14 +448,11 @@ namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
 
             var client = appFactory.CreateClientAs(TestUserId);
 
-            var form = new FormUrlEncodedContent(new[]
-            {new KeyValuePair<string,string>(
-                "trademarkId", 
-                trademarkId.ToString())
-            });
+            var form = new FormUrlEncodedContent(
+            new[]{ new KeyValuePair<string,string>("trademarkId",trademarkId.ToString())});
 
-            var response = await client.PostAsync(
-                "/Watchlist/Remove", form);
+            var response = 
+                await client.PostAsync("/Watchlist/Remove", form);
 
             response.StatusCode.Should().Be(HttpStatusCode.Redirect);
 
@@ -443,10 +528,8 @@ namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
                     ut.TrademarkId == trademarkId);
             }
 
-            var addForm = new FormUrlEncodedContent(new[]
-            {new KeyValuePair<string,string>(
-                "trademarkId", 
-                trademarkId.ToString())
+            var addForm = new FormUrlEncodedContent(
+                new[]{new KeyValuePair<string,string>("trademarkId", trademarkId.ToString())
             });
 
             (await client.PostAsync("/Watchlist/Add", addForm)).StatusCode.
@@ -455,13 +538,9 @@ namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
             (await ReadLinkAsync()).Should().NotBeNull();
             (await ReadLinkAsync())!.NotificationsEnabled.Should().BeFalse();
 
-            var onForm = new FormUrlEncodedContent(new[]
-            {new KeyValuePair<string,string>(
-                "trademarkId", 
-                trademarkId.ToString()),
-                new KeyValuePair<string,string>(
-                    "enabled", 
-                    "true")
+            var onForm = new FormUrlEncodedContent(
+                new[]{new KeyValuePair<string,string>("trademarkId", trademarkId.ToString()),
+                new KeyValuePair<string,string>("enabled", "true")
             });
 
             (await client.PostAsync("/Watchlist/ToggleNotifications", onForm)).StatusCode.
@@ -469,13 +548,9 @@ namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
 
             (await ReadLinkAsync())!.NotificationsEnabled.Should().BeTrue();
 
-            var offForm = new FormUrlEncodedContent(new[]
-            {new KeyValuePair<string,string>(
-                "trademarkId", 
-                trademarkId.ToString()), 
-                new KeyValuePair<string,string>(
-                    "enabled", 
-                    "false")
+            var offForm = new FormUrlEncodedContent(
+                new[]{new KeyValuePair<string,string>("trademarkId",trademarkId.ToString()), 
+                new KeyValuePair<string,string>("enabled", "false")
             });
 
             (await client.PostAsync(

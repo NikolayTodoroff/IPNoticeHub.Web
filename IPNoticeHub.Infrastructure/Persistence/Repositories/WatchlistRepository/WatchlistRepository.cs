@@ -21,16 +21,16 @@ namespace IPNoticeHub.Infrastructure.Persistence.Repositories.WatchlistRepositor
             DateTime? currentStatusDateUtc, 
             CancellationToken cancellationToken)
         {
-            var link = await dbContext.
+            var watchlist = await dbContext.
                 Watchlists.IgnoreQueryFilters().
                 FirstOrDefaultAsync(
                 ut => ut.UserId == userId && 
                 ut.TrademarkId == trademarkId, 
                 cancellationToken);
 
-            if (link is null)
+            if (watchlist is null)
             {
-                link = new Watchlist
+                watchlist = new Watchlist
                 {
                     UserId = userId,
                     TrademarkId = trademarkId,
@@ -43,25 +43,25 @@ namespace IPNoticeHub.Infrastructure.Persistence.Repositories.WatchlistRepositor
                 };
 
                 await dbContext.Watchlists.AddAsync(
-                    link, 
+                    watchlist, 
                     cancellationToken);
             }
 
             else
             {
-                if (link.IsDeleted) link.IsDeleted = false;
+                if (watchlist.IsDeleted) watchlist.IsDeleted = false;
 
-                if (link.AddedOnUtc == default)
-                    link.AddedOnUtc = DateTime.UtcNow;
+                if (watchlist.AddedOnUtc == default)
+                    watchlist.AddedOnUtc = DateTime.UtcNow;
 
-                if (link.InitialStatusCodeRaw is null)
-                    link.InitialStatusCodeRaw = currentStatusCodeRaw;
+                if (watchlist.InitialStatusCodeRaw is null)
+                    watchlist.InitialStatusCodeRaw = currentStatusCodeRaw;
 
-                if (string.IsNullOrEmpty(link.InitialStatusText))
-                    link.InitialStatusText = currentStatusText;
+                if (string.IsNullOrEmpty(watchlist.InitialStatusText))
+                    watchlist.InitialStatusText = currentStatusText;
 
-                if (link.InitialStatusDateUtc is null)
-                    link.InitialStatusDateUtc = currentStatusDateUtc;
+                if (watchlist.InitialStatusDateUtc is null)
+                    watchlist.InitialStatusDateUtc = currentStatusDateUtc;
             }
 
             await dbContext.SaveChangesAsync(cancellationToken);
@@ -110,16 +110,16 @@ namespace IPNoticeHub.Infrastructure.Persistence.Repositories.WatchlistRepositor
             int trademarkId, 
             CancellationToken cancellationToken)
         {
-            var link = await dbContext.Watchlists.
+            var watchlist = await dbContext.Watchlists.
             FirstOrDefaultAsync(
                 ut => ut.UserId == userId && 
                 ut.TrademarkId == trademarkId, 
                 cancellationToken);
 
-            if (link is null) return;
+            if (watchlist is null) return;
 
-            link.IsDeleted = true;
-            link.NotificationsEnabled = false;
+            watchlist.IsDeleted = true;
+            watchlist.NotificationsEnabled = false;
             await dbContext.SaveChangesAsync(cancellationToken);
         }
 
@@ -129,19 +129,19 @@ namespace IPNoticeHub.Infrastructure.Persistence.Repositories.WatchlistRepositor
             bool notificationsEnabled, 
             CancellationToken cancellationToken)
         {
-            var link = await dbContext.Watchlists.
+            var watchlist = await dbContext.Watchlists.
                 FirstOrDefaultAsync(
                 ut => ut.UserId == userId && 
                 ut.TrademarkId == trademarkId && 
                 !ut.IsDeleted, cancellationToken);
 
-            if (link is null) return;
+            if (watchlist is null) return;
 
-            if (link.NotificationsEnabled != notificationsEnabled)
+            if (watchlist.NotificationsEnabled != notificationsEnabled)
             {
-                link.NotificationsEnabled = notificationsEnabled;
+                watchlist.NotificationsEnabled = notificationsEnabled;
 
-                dbContext.Entry(link).
+                dbContext.Entry(watchlist).
                     Property(x => x.NotificationsEnabled).
                     IsModified = true;
                 
