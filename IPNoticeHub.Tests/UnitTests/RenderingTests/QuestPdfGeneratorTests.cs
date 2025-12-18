@@ -53,8 +53,9 @@ namespace IPNoticeHub.Tests.UnitTests.RenderingTests
             templateReplacer.VerifyNoOtherCalls();
         }
 
-        [Test]
-        public void GenerateDocument_WhenSenderAddressIsNull_DoesNotThrow_AndReturnsPdfBytes()
+        [TestCase(null)]
+        [TestCase("Some address")]
+        public void GenerateDocument_WhenSenderAddressIsNull_DoesNotThrow_AndReturnsPdfBytes(string senderAddress)
         {
             var replacer = 
                 new Mock<ITemplateTokenReplacer>();
@@ -69,7 +70,7 @@ namespace IPNoticeHub.Tests.UnitTests.RenderingTests
             var dto = new PdfLetterDto
             {
                 SenderName = "Sender",
-                SenderAddress = null,
+                SenderAddress = senderAddress,
                 BodyTemplate = "Body",
                 Tokens = new Dictionary<string, string>(),
                 DateUtc = DateTime.UtcNow,
