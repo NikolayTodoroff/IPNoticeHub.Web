@@ -12,16 +12,13 @@ namespace IPNoticeHub.Tests.UnitTests.WatchlistTests
         [Test]
         public void GetStatusLabel_ReturnsLabel_WhenSourceIsUspto_AndStatusCodeExists()
         {
-            // Arrange
             using var temp = new TempFolder();
 
             var relativePath = Path.Combine(
-                "Configurations", 
+                "Configurations",
                 "uspto-status-codes.json");
 
-            var fullPath = Path.Combine(
-                temp.Path, 
-                relativePath);
+            var fullPath = Path.Combine(temp.Path, relativePath);
 
             Directory.CreateDirectory(Path.GetDirectoryName(fullPath)!);
 
@@ -39,8 +36,8 @@ namespace IPNoticeHub.Tests.UnitTests.WatchlistTests
                 .AddInMemoryCollection(new Dictionary<string, string?>
                 {
                     ["StatusCodeCatalogs:USPTO"] = relativePath
-                })
-                .Build();
+                }).
+                Build();
 
             var environment = new Mock<IHostEnvironment>();
             environment.SetupGet(e => e.ContentRootPath).Returns(temp.Path);
@@ -55,7 +52,6 @@ namespace IPNoticeHub.Tests.UnitTests.WatchlistTests
                 "uspto", 
                 200);
 
-            // Assert
             result1.Should().Be("Registered");
             result2.Should().Be("Abandoned");
         }
@@ -74,8 +70,8 @@ namespace IPNoticeHub.Tests.UnitTests.WatchlistTests
                 .AddInMemoryCollection(new Dictionary<string, string?>
                 {
                     ["StatusCodeCatalogs:USPTO"] = relativePath
-                })
-                .Build();
+                }).
+                Build();
 
             var env = new Mock<IHostEnvironment>();
 
@@ -105,13 +101,14 @@ namespace IPNoticeHub.Tests.UnitTests.WatchlistTests
                 .AddInMemoryCollection(new Dictionary<string, string?>
                 {
                     ["StatusCodeCatalogs:USPTO"] = relativePath
-                })
-                .Build();
+                }).
+                Build();
 
             var env = new Mock<IHostEnvironment>();
 
             env.SetupGet(
-                e => e.ContentRootPath).Returns(temp.Path);
+                e => e.ContentRootPath).
+                Returns(temp.Path);
 
             var sut = new StatusLabelProvider(
                 config, 
@@ -139,12 +136,12 @@ namespace IPNoticeHub.Tests.UnitTests.WatchlistTests
                 }
                 """);
 
-            var config = new ConfigurationBuilder()
-                .AddInMemoryCollection(new Dictionary<string, string?>
+            var config = new ConfigurationBuilder().
+                AddInMemoryCollection(new Dictionary<string, string?>
                 {
                     ["StatusCodeCatalogs:USPTO"] = relativePath
-                })
-                .Build();
+                }).
+                Build();
 
             var env = new Mock<IHostEnvironment>();
 
