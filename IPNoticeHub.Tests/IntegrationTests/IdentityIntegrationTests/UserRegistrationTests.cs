@@ -162,6 +162,48 @@ namespace IPNoticeHub.Tests.IntegrationTests.IdentityIntegrationTests
         }
 
         [Test]
+        public async Task RegisterUserAsync_DeletesUser_And_ReturnsFailure_When_AddToRole_ReturnsFailedResult()
+        {
+            var userManager = UserManagerMockFactory.MockUserManager();
+
+            var logger = new TestLogger<UserRegistrationService>();
+
+            userManager.Setup(m => m.CreateAsync(
+                It.IsAny<ApplicationUser>(), 
+                It.IsAny<string>())).
+                ReturnsAsync(IdentityResult.Success);
+
+            userManager.Setup(m => m.AddToRoleAsync(
+                It.IsAny<ApplicationUser>(), 
+                User)).
+                ReturnsAsync(IdentityResult.Failed(
+                    new IdentityError { Description = "role assign failed" }));
+
+            userManager.Setup(
+                m => m.DeleteAsync(It.IsAny<ApplicationUser>())).
+                ReturnsAsync(IdentityResult.Success);
+
+            var service = 
+                new UserRegistrationService(userManager.Object, logger);
+
+            var result = await service.RegisterUserAsync(
+                new UserRegistrationRequest(
+                Email: "user@test.com",
+                Password: "Password123!"
+            ));
+
+            result.Succeeded.Should().BeFalse();
+            result.Errors.Should().Contain("role assign failed");
+
+            userManager.Verify(m => m.DeleteAsync(
+                It.IsAny<ApplicationUser>()), 
+                Times.Once);
+
+            logger.Entries.Any(e => e.level == LogLevel.Critical && 
+            e.message.Contains("failed to assign role")).Should().BeTrue();
+        }
+
+        [Test]
         public async Task RegisterUserAsync_LogsCritical_When_DeleteFails_After_RoleAssignmentFailure()
         {
             var userManager = 
