@@ -1,14 +1,15 @@
 ﻿using FluentAssertions;
+using IPNoticeHub.Application.Repositories.WatchlistRepository;
+using IPNoticeHub.Domain.Entities.Trademarks;
+using IPNoticeHub.Domain.Entities.Watchlist;
+using IPNoticeHub.Infrastructure.Identity;
+using IPNoticeHub.Infrastructure.Persistence;
 using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Tests.IntegrationTests.TestUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net;
-using IPNoticeHub.Infrastructure.Persistence;
-using IPNoticeHub.Domain.Entities.Trademarks;
-using IPNoticeHub.Infrastructure.Identity;
-using IPNoticeHub.Domain.Entities.Watchlist;
 
 namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
 {
@@ -39,8 +40,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
             var responseMessage = 
                 await client.GetAsync("/Watchlist");
 
-            responseMessage.StatusCode.Should().
-                Be(HttpStatusCode.Unauthorized);
+            responseMessage.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
 
         [Test]
@@ -51,8 +51,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
             var responseMessage = 
                 await client.GetAsync("/Watchlist");
 
-            responseMessage.StatusCode.Should().
-                Be(HttpStatusCode.OK);
+            responseMessage.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
         [Test]
@@ -87,6 +86,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
                     StatusDetail = "Live/Registered",
                     Source = DataProvider.USPTO
                 };
+
                 testDbContext.TrademarkRegistrations.Add(entity);
 
                 await testDbContext.SaveChangesAsync();
@@ -96,23 +96,16 @@ namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
             var client = appFactory.CreateClientAs(TestUserId);
 
             var urlForm = new FormUrlEncodedContent(new[]
-            { new KeyValuePair<string,string>(
-                "trademarkId",
-                trademarkId.ToString())
-    });
+            { new KeyValuePair<string,string>("trademarkId",trademarkId.ToString())});
 
             var responseMessage = await client.PostAsync(
                 "/Watchlist/Add", 
                 urlForm);
 
-            responseMessage.StatusCode.Should().
-                Be(HttpStatusCode.Redirect);
+            responseMessage.StatusCode.Should().Be(HttpStatusCode.Redirect);
+            responseMessage.Headers.Location!.ToString().Should().Be("/Watchlist");
 
-            responseMessage.Headers.Location!.ToString().Should().
-                Be("/Watchlist");
-
-            using var serviceScope = 
-                appFactory.Services.CreateScope();
+            using var serviceScope = appFactory.Services.CreateScope();
 
             var dbContext = 
                 serviceScope.ServiceProvider.
@@ -123,14 +116,107 @@ namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
                     ut => ut.UserId == TestUserId && 
                     ut.TrademarkId == trademarkId);
 
-            link.Should().
-                NotBeNull();
+            link.Should().NotBeNull();
+            link.NotificationsEnabled.Should().BeFalse();
+            link.InitialStatusText.Should().Be("Live/Registered");
+        }
 
-            link.NotificationsEnabled.Should().
-                BeFalse();
+        [Test]
+        public async Task CountByUserAsync_WithThreeWatchlistEntries_ReturnsThree()
+        {
+            using (var serviceScope = appFactory.Services.CreateScope())
+            {
+                var testDbContext =
+                    serviceScope.ServiceProvider.
+                    GetRequiredService<IPNoticeHubDbContext>();
 
-            link.InitialStatusText.Should().
-                Be("Live/Registered");
+                if (!await testDbContext.Users.AnyAsync(u => u.Id == TestUserId))
+                {
+                    testDbContext.Users.Add(new ApplicationUser
+                    {
+                        Id = TestUserId,
+                        UserName = "tester",
+                        NormalizedUserName = "TESTER",
+                        Email = "tester@example.com",
+                        NormalizedEmail = "TESTER@EXAMPLE.COM",
+                        SecurityStamp = Guid.NewGuid().ToString()
+                    });
+                }
+
+                var entity1 = new TrademarkEntity
+                {
+                    Wordmark = "firstTm",
+                    Owner = "Owner A",
+                    SourceId = "TestSourceId1",
+                    RegistrationNumber = "123456",
+                    GoodsAndServices = "Goods",
+                    StatusCategory = TrademarkStatusCategory.Registered,
+                    StatusDetail = "Live/Registered",
+                    Source = DataProvider.USPTO
+                };
+
+                var entity2 = new TrademarkEntity
+                {
+                    Wordmark = "secondTm",
+                    Owner = "Owner B",
+                    SourceId = "TestSourceId2",
+                    RegistrationNumber = "654321",
+                    GoodsAndServices = "Services",
+                    StatusCategory = TrademarkStatusCategory.Registered,
+                    StatusDetail = "Live/Registered",
+                    Source = DataProvider.USPTO
+                };
+
+                var entity3 = new TrademarkEntity
+                {
+                    Wordmark = "thirdTm",
+                    Owner = "Owner C",
+                    SourceId = "TestSourceId3",
+                    RegistrationNumber = "654124",
+                    GoodsAndServices = "Services",
+                    StatusCategory = TrademarkStatusCategory.Registered,
+                    StatusDetail = "Live/Registered",
+                    Source = DataProvider.USPTO
+                };
+
+                testDbContext.TrademarkRegistrations.AddRange(entity1, entity2, entity3);
+                await testDbContext.SaveChangesAsync();
+
+                testDbContext.Watchlists.AddRange(
+                    new Watchlist
+                    {
+                        UserId = TestUserId,
+                        TrademarkId = entity1.Id,
+                        NotificationsEnabled = true
+                    },
+
+                    new Watchlist
+                    {
+                        UserId = TestUserId,
+                        TrademarkId = entity2.Id,
+                        NotificationsEnabled = true
+                    },
+
+                    new Watchlist
+                    {
+                        UserId = TestUserId,
+                        TrademarkId = entity3.Id,
+                        NotificationsEnabled = true
+                    });
+
+                await testDbContext.SaveChangesAsync();
+            }
+
+            using (var verifyScope = appFactory.Services.CreateScope())
+            {
+                var repository = 
+                    verifyScope.ServiceProvider.GetRequiredService<IWatchlistRepository>();
+
+                var count = 
+                    await repository.CountByUserAsync(TestUserId,CancellationToken.None);
+
+                count.Should().Be(3);
+            }
         }
 
         [Test]
@@ -157,7 +243,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
                     });
                 }
 
-                var tm = new TrademarkEntity
+                var entity = new TrademarkEntity
                 {
                     Wordmark = "BETA",
                     Owner = "Owner B",
@@ -169,9 +255,9 @@ namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
                     Source = DataProvider.USPTO
                 };
 
-                testDbContext.TrademarkRegistrations.Add(tm);
+                testDbContext.TrademarkRegistrations.Add(entity);
                 await testDbContext.SaveChangesAsync();
-                trademarkId = tm.Id;
+                trademarkId = entity.Id;
 
                 testDbContext.Watchlists.Add(
                     new Watchlist
@@ -193,6 +279,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
         new KeyValuePair<string,string>(
             "trademarkId", 
             trademarkId.ToString()),
+
         new KeyValuePair<string,string>(
             "returnUrl",   
             returnUrl)
@@ -202,11 +289,8 @@ namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
                 "/Watchlist/Add", 
                 form);
 
-            responseMessage.StatusCode.Should().
-                Be(HttpStatusCode.Redirect);
-
-            responseMessage.Headers.Location!.ToString().Should().
-                Be(returnUrl);
+            responseMessage.StatusCode.Should().Be(HttpStatusCode.Redirect);
+            responseMessage.Headers.Location!.ToString().Should().Be(returnUrl);
 
             using var verify = appFactory.Services.CreateScope();
 
@@ -220,8 +304,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
                     ut.TrademarkId == trademarkId).
                     ToList();
 
-            links.Count.Should().
-                Be(1);
+            links.Count.Should().Be(1);
         }
 
         [Test]
@@ -259,6 +342,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
                     StatusDetail = "Live/Registered",
                     Source = DataProvider.USPTO
                 };
+
                 testDbContext.TrademarkRegistrations.Add(entity);
                 await testDbContext.SaveChangesAsync();
                 trademarkId = entity.Id;
@@ -280,16 +364,15 @@ namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
             {new KeyValuePair<string,string>(
                 "trademarkId", 
                 trademarkId.ToString())
-    });
+            });
 
             var response = await client.PostAsync(
                 "/Watchlist/Remove", form);
 
-            response.StatusCode.Should().
-                Be(HttpStatusCode.Redirect);
+            response.StatusCode.Should().Be(HttpStatusCode.Redirect);
 
-            response.Headers.Location!.ToString().Should().
-                MatchRegex(@"^/Watchlist(/Index)?/?(\?.*)?$");
+            response.Headers.Location!.ToString().
+                Should().MatchRegex(@"^/Watchlist(/Index)?/?(\?.*)?$");
 
             using (var verifyScope = appFactory.Services.CreateScope())
             {
@@ -303,14 +386,9 @@ namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
                     ut => ut.UserId == TestUserId && 
                     ut.TrademarkId == trademarkId);
 
-                link.Should().
-                    NotBeNull();
-
-                link!.IsDeleted.Should().
-                    BeTrue();
-
-                link.NotificationsEnabled.Should().
-                    BeFalse();
+                link.Should().NotBeNull();
+                link!.IsDeleted.Should().BeTrue();
+                link.NotificationsEnabled.Should().BeFalse();
             }
         }
 
@@ -344,6 +422,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
                     StatusDetail = "Pending examination",
                     Source = DataProvider.USPTO
                 };
+
                 dbContext.TrademarkRegistrations.Add(entity);
                 await dbContext.SaveChangesAsync();
                 trademarkId = entity.Id;
@@ -368,16 +447,13 @@ namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
             {new KeyValuePair<string,string>(
                 "trademarkId", 
                 trademarkId.ToString())
-    });
-            (await client.PostAsync("/Watchlist/Add", addForm))
-                .StatusCode.Should().
-                Be(HttpStatusCode.Redirect);
+            });
 
-            (await ReadLinkAsync()).Should().
-                NotBeNull();
+            (await client.PostAsync("/Watchlist/Add", addForm)).StatusCode.
+                Should().Be(HttpStatusCode.Redirect);
 
-            (await ReadLinkAsync())!.NotificationsEnabled.Should().
-                BeFalse();
+            (await ReadLinkAsync()).Should().NotBeNull();
+            (await ReadLinkAsync())!.NotificationsEnabled.Should().BeFalse();
 
             var onForm = new FormUrlEncodedContent(new[]
             {new KeyValuePair<string,string>(
@@ -386,13 +462,12 @@ namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
                 new KeyValuePair<string,string>(
                     "enabled", 
                     "true")
-    });
-            (await client.PostAsync("/Watchlist/ToggleNotifications", onForm))
-                .StatusCode.Should().
-                Be(HttpStatusCode.Redirect);
+            });
 
-            (await ReadLinkAsync())!.NotificationsEnabled.Should().
-                BeTrue();
+            (await client.PostAsync("/Watchlist/ToggleNotifications", onForm)).StatusCode.
+                Should().Be(HttpStatusCode.Redirect);
+
+            (await ReadLinkAsync())!.NotificationsEnabled.Should().BeTrue();
 
             var offForm = new FormUrlEncodedContent(new[]
             {new KeyValuePair<string,string>(
@@ -401,14 +476,13 @@ namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
                 new KeyValuePair<string,string>(
                     "enabled", 
                     "false")
-    });
-            (await client.PostAsync(
-                "/Watchlist/ToggleNotifications", offForm))
-                .StatusCode.Should().
-                Be(HttpStatusCode.Redirect);
+            });
 
-            (await ReadLinkAsync())!.NotificationsEnabled.Should().
-                BeFalse();
+            (await client.PostAsync(
+                "/Watchlist/ToggleNotifications", offForm)).StatusCode.
+                Should().Be(HttpStatusCode.Redirect);
+
+            (await ReadLinkAsync())!.NotificationsEnabled.Should().BeFalse();
         }
     }
 }
