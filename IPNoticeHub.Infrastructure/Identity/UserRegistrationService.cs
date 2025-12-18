@@ -2,7 +2,6 @@
 using IPNoticeHub.Application.Services.UserRegistrationServices.Abstractions;
 using IPNoticeHub.Shared.Support;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace IPNoticeHub.Infrastructure.Identity
@@ -31,37 +30,57 @@ namespace IPNoticeHub.Infrastructure.Identity
                 EmailConfirmed = false
             };
 
-            var createUser = await userManager.CreateAsync(user, request.Password);
+            var createUser = await userManager.CreateAsync(
+                user, 
+                request.Password);
 
             if (!createUser.Succeeded)
             {
                 return UserRegistrationResult.Failure(
                     createUser.Errors.Select(e => e.Description));
-            }   
+            }
 
-            var role = await userManager.AddToRoleAsync(user, RoleNames.User);
+            IdentityResult roleResult;
 
-            if (!role.Succeeded)
+            try
             {
-                var errors = role.Errors.Select(e => e.Description).ToList();
+                 roleResult = await userManager.AddToRoleAsync(user, RoleNames.User);
+            }
 
-                var delete = await userManager.DeleteAsync(user);
+            catch (InvalidOperationException ex)
+            {
 
-                if (!delete.Succeeded)
-                {
-                    var deleteErrors = 
-                        delete.Errors.Select(e => e.Description);
-
-                    logger.LogCritical(
-                        "Failed to delete orphaned user {Email} after role assignment failure. " +
-                        "Errors: {Errors}",
-                        request.Email, string.Join(", ", deleteErrors));
-                }
+                await DeleteOrphanedUserAsync(
+                    user,
+                    request.Email,
+                    "Failed to assign role.");
 
                 logger.LogCritical(
-                    "Registration created user {Email} but failed to assign role {Role}. " +
-                    "Errors: {Errors}",
-                    request.Email, RoleNames.User, string.Join(", ", errors));
+                    ex,
+                    "Registration created user {Email} but role {Role} " +
+                    "assignment failed due to an exception. " +
+                    "This indicates a system or configuration error.",
+                    request.Email,
+                    RoleNames.User);
+
+                return UserRegistrationResult.Failure(RoleAssignmentSystemError);
+            }
+
+            if (!roleResult.Succeeded)
+            {
+                var errors = roleResult.Errors.Select(e => e.Description).ToList();
+
+                await DeleteOrphanedUserAsync(
+                    user,
+                    request.Email,
+                    "Role assignment failure");
+
+                logger.LogCritical(
+                    "Registration created user {Email} " +
+                    "but failed to assign role {Role}. Identity errors: {Errors}",
+                    request.Email,
+                    RoleNames.User,
+                    string.Join(", ", errors));
 
                 return UserRegistrationResult.Failure(errors);
             }
@@ -70,6 +89,43 @@ namespace IPNoticeHub.Infrastructure.Identity
 
             return UserRegistrationResult.Success(user.Id, emailToken);
         }
-    }
 
+        private async Task DeleteOrphanedUserAsync(
+            ApplicationUser user,
+            string email,
+            string contextMessage)
+        {
+            var deleteResult = await userManager.DeleteAsync(user);
+
+            if (!deleteResult.Succeeded)
+            {
+                var deleteErrors = 
+                    deleteResult.Errors.Select(e => e.Description);
+
+                logger.LogCritical(
+                    "Failed to delete orphaned user {Email} after {Context}. " +
+                    "Errors: {Errors}",
+                    email,
+                    contextMessage,
+                    string.Join(", ", deleteErrors));
+            }
+        }
+
+        private static IReadOnlyCollection<string> MapIdentityErrors(IEnumerable<IdentityError> errors)
+        {
+            var messages = errors
+                .Select(e => e.Description?.Trim())
+                .Where(m => !string.IsNullOrWhiteSpace(m))
+                .Distinct()
+                .ToList();
+
+            return messages.Count == 0
+                ? new[] { "Registration failed. Please review your details and try again." }
+                : messages!;
+        }
+
+        private static readonly IReadOnlyCollection<string> RoleAssignmentSystemError = 
+            new[] { "We couldn’t complete registration due to a system configuration issue. " +
+                "Please try again later." };
+    }
 }

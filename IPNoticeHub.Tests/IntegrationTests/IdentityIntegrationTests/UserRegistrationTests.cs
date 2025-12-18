@@ -9,6 +9,7 @@ using Moq;
 using NUnit.Framework;
 using IPNoticeHub.Tests.UnitTests.TestFactories;
 using static IPNoticeHub.Shared.Support.RoleNames;
+using IPNoticeHub.Tests.IntegrationTests.IntegrationTestUtilities;
 
 namespace IPNoticeHub.Tests.IntegrationTests.IdentityIntegrationTests
 {
@@ -98,12 +99,118 @@ namespace IPNoticeHub.Tests.IntegrationTests.IdentityIntegrationTests
             roles.Count(r => r == User).Should().Be(1);
         }
 
+        [Test]
+        public async Task RegisterUserAsync_ReturnsFailure_When_CreateUser_Fails()
+        {
+            using var host = new IdentityTestHost();
+            using var scope = host.CreateScope();
+
+            var userManager = 
+                scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+            var logger = 
+                scope.ServiceProvider.GetRequiredService<ILogger<UserRegistrationService>>();
+
+            var service = new UserRegistrationService(userManager, logger);
+
+            var result = await service.RegisterUserAsync(
+                new UserRegistrationRequest(
+                Email: "badpass@test.com",
+                Password: "12"
+            ));
+
+            result.Succeeded.Should().BeFalse();
+            result.Errors.Should().NotBeEmpty();
+
+            var createdUser = 
+                await userManager.FindByEmailAsync("badpass@test.com");
+
+            createdUser.Should().BeNull();
+        }
+
+        [Test]
+        public async Task RegisterUserAsync_DeletesUser_And_ThrowsException_When_RoleDoesNotExist()
+        {
+            using var host = new IdentityTestHost();
+            using var scope = host.CreateScope();
+
+            var userManager = 
+                scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+            var logger = 
+                new TestLogger<UserRegistrationService>();
+
+            var service = new UserRegistrationService(userManager, logger);
+
+            var email = "norole@test.com";
+
+            var result = await service.RegisterUserAsync(
+                new UserRegistrationRequest(
+                Email: email,
+                Password: "Password123!"
+            ));
+
+            result.Succeeded.Should().BeFalse();
+            result.Errors.Should().NotBeEmpty();
+
+            var userAfter = await userManager.FindByEmailAsync(email);
+            userAfter.Should().BeNull();
+
+            logger.Entries.Any(
+                e => e.level == LogLevel.Critical && 
+            e.message.Contains("failed due to an exception")).Should().BeTrue();
+        }
+
+        [Test]
+        public async Task RegisterUserAsync_LogsCritical_When_DeleteFails_After_RoleAssignmentFailure()
+        {
+            var userManager = 
+                UserManagerMockFactory.MockUserManager();
+
+            var logger = 
+                new TestLogger<UserRegistrationService>();
+
+            var service = 
+                new UserRegistrationService(userManager.Object, logger);
+
+            userManager.Setup(m => m.CreateAsync(
+                It.IsAny<ApplicationUser>(), 
+                It.IsAny<string>())).
+                ReturnsAsync(IdentityResult.Success);
+
+            userManager.Setup(m => m.AddToRoleAsync(
+                It.IsAny<ApplicationUser>(), 
+                User)).
+                ReturnsAsync(IdentityResult.Failed(
+                    new IdentityError { Description = "Adding a role failed" }));
+
+            userManager.Setup(
+                m => m.DeleteAsync(It.IsAny<ApplicationUser>())).
+                ReturnsAsync(IdentityResult.Failed(
+                    new IdentityError { Description = "User Deletion fail" }));
+
+            var result = await service.RegisterUserAsync(
+                new UserRegistrationRequest(
+                Email: "x@test.com",
+                Password: "Password123!"
+            ));
+
+            result.Succeeded.Should().BeFalse();
+            result.Errors.Should().Contain("Adding a role failed");
+
+            logger.Entries.Any(e => e.level == LogLevel.Critical && 
+            e.message.Contains("Failed to delete orphaned user")).Should().BeTrue();
+
+            logger.Entries.Any(e => e.level == LogLevel.Critical && 
+            e.message.Contains("Failed to assign role")).Should().BeTrue();
+        }
+
         private static async Task EnsureRoleAsync(RoleManager<IdentityRole> roles, string roleName)
         {
             if (!await roles.RoleExistsAsync(roleName))
             {
                 var create = await roles.CreateAsync(new IdentityRole(roleName));
-                create.Succeeded.Should().BeTrue($"role '{roleName}' must exist");
+                create.Succeeded.Should().BeTrue($"Role '{roleName}' must exist");
             }
         }
     }
