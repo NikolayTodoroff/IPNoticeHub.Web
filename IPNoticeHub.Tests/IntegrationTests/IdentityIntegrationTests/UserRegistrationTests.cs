@@ -1,7 +1,6 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Application.DTOs.UserRegistrationDTOs;
 using IPNoticeHub.Infrastructure.Identity;
-using IPNoticeHub.Shared.Support;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -177,7 +176,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.IdentityIntegrationTests
                 It.IsAny<ApplicationUser>(), 
                 User)).
                 ReturnsAsync(IdentityResult.Failed(
-                    new IdentityError { Description = "role assign failed" }));
+                    new IdentityError { Description = "Role assign failed" }));
 
             userManager.Setup(
                 m => m.DeleteAsync(It.IsAny<ApplicationUser>())).
@@ -193,7 +192,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.IdentityIntegrationTests
             ));
 
             result.Succeeded.Should().BeFalse();
-            result.Errors.Should().Contain("role assign failed");
+            result.Errors.Should().Contain("Role assign failed");
 
             userManager.Verify(m => m.DeleteAsync(
                 It.IsAny<ApplicationUser>()), 
@@ -240,11 +239,11 @@ namespace IPNoticeHub.Tests.IntegrationTests.IdentityIntegrationTests
             result.Succeeded.Should().BeFalse();
             result.Errors.Should().Contain("Adding a role failed");
 
-            logger.Entries.Any(e => e.level == LogLevel.Critical && 
+            logger.Entries.Any(e => e.level == LogLevel.Critical &&
             e.message.Contains("Failed to delete orphaned user")).Should().BeTrue();
 
-            logger.Entries.Any(e => e.level == LogLevel.Critical && 
-            e.message.Contains("Failed to assign role")).Should().BeTrue();
+            logger.Entries.Any(e => e.level == LogLevel.Critical &&
+            e.message.Contains("failed to assign role")).Should().BeTrue();
         }
 
         private static async Task EnsureRoleAsync(RoleManager<IdentityRole> roles, string roleName)

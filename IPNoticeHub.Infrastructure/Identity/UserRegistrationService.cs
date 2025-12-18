@@ -36,8 +36,8 @@ namespace IPNoticeHub.Infrastructure.Identity
 
             if (!createUser.Succeeded)
             {
-                return UserRegistrationResult.Failure(
-                    createUser.Errors.Select(e => e.Description));
+                var errors = MapIdentityErrors(createUser.Errors);
+                return UserRegistrationResult.Failure(errors);
             }
 
             IdentityResult roleResult;
@@ -111,7 +111,8 @@ namespace IPNoticeHub.Infrastructure.Identity
             }
         }
 
-        private static IReadOnlyCollection<string> MapIdentityErrors(IEnumerable<IdentityError> errors)
+        public static IReadOnlyCollection<string> MapIdentityErrors(
+            IEnumerable<IdentityError> errors)
         {
             var messages = errors
                 .Select(e => e.Description?.Trim())
@@ -124,7 +125,7 @@ namespace IPNoticeHub.Infrastructure.Identity
                 : messages!;
         }
 
-        private static readonly IReadOnlyCollection<string> RoleAssignmentSystemError = 
+        public static readonly IReadOnlyCollection<string> RoleAssignmentSystemError = 
             new[] { "We couldn’t complete registration due to a system configuration issue. " +
                 "Please try again later." };
     }
