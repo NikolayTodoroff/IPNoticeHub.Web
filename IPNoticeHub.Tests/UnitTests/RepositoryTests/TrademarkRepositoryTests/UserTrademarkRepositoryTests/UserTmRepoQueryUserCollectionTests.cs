@@ -182,18 +182,13 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.UserTrademarkRe
 
             var singleLink = queryLinksResult.Single();
 
-            singleLink.TrademarkEntity!.Wordmark.Should().
-                Be("The Existing One");
+            singleLink.TrademarkEntity!.Wordmark.Should().Be("The Existing One");
 
-            singleLink.TrademarkEntity!.Classes!.Select
-                (c => c.ClassNumber).Should().
-                BeEquivalentTo(new[] { 9, 25 });
+            singleLink.TrademarkEntity!.Classes!.Select(c => c.ClassNumber).
+                Should().BeEquivalentTo(new[] { 9, 25 });
 
-            testDbContext.Entry(singleLink).State.Should().
-                Be(EntityState.Detached);
-
-            testDbContext.Entry(singleLink.TrademarkEntity!).State.Should().
-                Be(EntityState.Detached);
+            testDbContext.Entry(singleLink).State.Should().Be(EntityState.Detached);
+            testDbContext.Entry(singleLink.TrademarkEntity!).State.Should().Be(EntityState.Detached);
         }
     }
 }

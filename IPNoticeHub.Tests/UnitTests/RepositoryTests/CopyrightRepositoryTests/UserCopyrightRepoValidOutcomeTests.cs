@@ -46,8 +46,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Copyrights
                     x => x.ApplicationUserId == user.Id && 
                     x.CopyrightEntityId == copyrightEntity.Id);
 
-            link.IsDeleted.Should().
-                BeFalse();
+            link.IsDeleted.Should().BeFalse();
         }
 
         [Test]
@@ -82,7 +81,6 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Copyrights
                     x => x.ApplicationUserId == user.Id && 
                     x.CopyrightEntityId == copyrightEntity.Id);
 
-
             await copyrightRepo.SoftRemoveAsync(
                 user.Id, 
                 copyrightEntity.Id);
@@ -92,8 +90,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Copyrights
                     x => x.ApplicationUserId == user.Id && 
                     x.CopyrightEntityId == copyrightEntity.Id);
 
-            softDeletedLink.IsDeleted.Should().
-                BeTrue();
+            softDeletedLink.IsDeleted.Should().BeTrue();
 
             var initialDate = softDeletedLink.DateAdded;
             await Task.Delay(5);
@@ -104,11 +101,8 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Copyrights
                     x => x.ApplicationUserId == user.Id && 
                     x.CopyrightEntityId == copyrightEntity.Id);
 
-            undeletedLink.IsDeleted.Should().
-                BeFalse();
-
-            undeletedLink.DateAdded.Should().
-                BeOnOrAfter(initialDate);
+            undeletedLink.IsDeleted.Should().BeFalse();
+            undeletedLink.DateAdded.Should().BeOnOrAfter(initialDate);
         }
 
         [Test]
@@ -157,14 +151,14 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Copyrights
             (await copyrightRepo.IsLinkedAsync(
                 user.Id, 
                 copyrightEntity.Id, 
-                includeSoftDeleted: false)).Should().
-                BeFalse();
+                includeSoftDeleted: false)).
+                Should().BeFalse();
            
             (await copyrightRepo.IsLinkedAsync(
                 user.Id, 
                 copyrightEntity.Id, 
-                includeSoftDeleted: true)).Should().
-                BeTrue();
+                includeSoftDeleted: true)).
+                Should().BeTrue();
         }
 
         [Test]
@@ -190,9 +184,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Copyrights
             IUserCopyrightRepository copyrightRepo =
                 new UserCopyrightRepository(testDbContext);
 
-            await copyrightRepo.AddOrUndeleteAsync(
-                user.Id,
-                copyrightEntity.Id);
+            await copyrightRepo.AddOrUndeleteAsync(user.Id, copyrightEntity.Id);
 
             var pageResult = await copyrightRepo.GetUserCollectionPageAsync(
                 user.Id,
@@ -204,7 +196,6 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Copyrights
             var links = pageResult.Results;
 
             links.Should().HaveCount(1);
-
             links[0].IsDeleted.Should().BeFalse();
             links[0].CopyrightEntity.Should().NotBeNull();
             links[0].CopyrightEntity!.Title.Should().Be("copyrightRegE");
@@ -238,17 +229,14 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Copyrights
                 copyrightEntity.Id);
 
             var removedSuccessfully = 
-                await copyrightRepo.SoftRemoveAsync(
-                    user.Id, 
-                    copyrightEntity.Id);
+                await copyrightRepo.SoftRemoveAsync(user.Id, copyrightEntity.Id);
 
-            removedSuccessfully.Should().
-                BeTrue();
+            removedSuccessfully.Should().BeTrue();
 
             (await testDbContext.UserCopyrights.SingleAsync(
                 x => x.ApplicationUserId == user.Id && 
-                x.CopyrightEntityId == copyrightEntity.Id)).IsDeleted.Should().
-                BeTrue();
+                x.CopyrightEntityId == copyrightEntity.Id)).IsDeleted.
+                Should().BeTrue();
         }
     }
 }

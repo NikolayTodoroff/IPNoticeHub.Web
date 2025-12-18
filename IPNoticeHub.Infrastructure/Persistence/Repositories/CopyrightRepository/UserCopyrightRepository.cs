@@ -1,7 +1,4 @@
-﻿using Azure;
-using IPNoticeHub.Application.DTOs.CopyrightDTOs;
-using IPNoticeHub.Application.Repositories.CopyrightRepository;
-using IPNoticeHub.Domain.Entities.Copyrights;
+﻿using IPNoticeHub.Application.Repositories.CopyrightRepository;
 using IPNoticeHub.Domain.Entities.Identity;
 using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Shared.Support;
@@ -61,15 +58,9 @@ namespace IPNoticeHub.Infrastructure.Persistence.Repositories.CopyrightRepositor
                     uc => uc.ApplicationUserId == userId && 
                     uc.CopyrightEntityId == copyrightId);
 
-            if (!includeSoftDeleted)
-            {
-                query = query.Where(uc => !uc.IsDeleted);
-            } 
+            if (!includeSoftDeleted) query = query.Where(uc => !uc.IsDeleted);
 
-
-            return query.
-                AsNoTracking().
-                AnyAsync(cancellationToken);
+            return query.AsNoTracking().AnyAsync(cancellationToken);
         }
 
         public async Task<PagedResult<UserCopyright>> GetUserCollectionPageAsync(
@@ -128,16 +119,7 @@ namespace IPNoticeHub.Infrastructure.Persistence.Repositories.CopyrightRepositor
                 CurrentPage = normalizedPage,
                 ResultsCountPerPage = normalizedPageSize
             };
-        }       
-
-        public IQueryable<UserCopyright> GetUserLinks(string userId)
-        {
-            return dbContext.UserCopyrights.Where(
-                uc => uc.ApplicationUserId == userId && !uc.IsDeleted).
-                Include(uc => uc.CopyrightEntity).
-                AsSplitQuery().
-                AsNoTracking();
-        }    
+        }         
 
         public async Task<bool> SoftRemoveAsync(
             string userId, 
@@ -150,11 +132,7 @@ namespace IPNoticeHub.Infrastructure.Persistence.Repositories.CopyrightRepositor
                     uc.CopyrightEntityId == copyrightId, 
                     cancellationToken);
 
-            if (userCopyright is null || userCopyright.IsDeleted)
-            {
-                return false;
-            }
-                
+            if (userCopyright is null || userCopyright.IsDeleted) return false;
 
             userCopyright.IsDeleted = true;
             await dbContext.SaveChangesAsync(cancellationToken);

@@ -193,10 +193,10 @@ namespace IPNoticeHub.Tests.IntegrationTests.WatchlistIntegrationTests
 
             using var verifyScope = appFactory.Services.CreateScope();
 
-            var verifyDb = 
+            var verifyDbContext = 
                 verifyScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
 
-            var watchlist = verifyDb.Watchlists.SingleOrDefault(w =>
+            var watchlist = verifyDbContext.Watchlists.SingleOrDefault(w =>
                 w.UserId == TestUserId && w.TrademarkId == trademarkId);
 
             watchlist.Should().NotBeNull();
