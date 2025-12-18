@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Moq;
 using System.Security.Claims;
 
-namespace IPNoticeHub.Tests.UnitTests.UnitTestUtilities
+namespace IPNoticeHub.Tests.UnitTests.TestFactories
 {
     public class DocumentLibraryControllerFactory
     {

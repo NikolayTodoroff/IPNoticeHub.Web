@@ -6,7 +6,7 @@ using IPNoticeHub.Infrastructure.Persistence.Repositories.TrademarkRepository;
 using IPNoticeHub.Shared.Support;
 using Microsoft.EntityFrameworkCore;
 
-namespace IPNoticeHub.Tests.UnitTests.TestUtilities
+namespace IPNoticeHub.Tests.UnitTests.TestFactories
 { 
     public class TestReadRepository : ITrademarkReadRepository
     {

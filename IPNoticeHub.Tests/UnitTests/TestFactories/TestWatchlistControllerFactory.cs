@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Routing;
 using Moq;
 using System.Security.Claims;
 
-namespace IPNoticeHub.Tests.UnitTests.UnitTestUtilities
+namespace IPNoticeHub.Tests.UnitTests.TestFactories
 {
     public static class TestWatchlistControllerFactory
     {

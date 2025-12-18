@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Application.Repositories.CopyrightRepository;
 using IPNoticeHub.Infrastructure.Persistence.Repositories.CopyrightRepository;
-using IPNoticeHub.Tests.TestUtilities;
+using IPNoticeHub.Tests.UnitTests.TestFactories;
 using NUnit.Framework;
 
 namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.CopyrightRepositoryTests

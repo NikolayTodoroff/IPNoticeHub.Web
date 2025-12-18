@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Domain.Entities.Trademarks;
-using IPNoticeHub.Tests.TestUtilities;
+using IPNoticeHub.Tests.UnitTests.TestFactories;
 using NUnit.Framework;
 using IPNoticeHub.Infrastructure.Persistence;
 using IPNoticeHub.Application.DTOs.TrademarkDTOs;

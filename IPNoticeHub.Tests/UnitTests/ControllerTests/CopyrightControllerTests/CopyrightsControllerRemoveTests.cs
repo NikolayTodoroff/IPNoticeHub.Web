@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Application.Services.CopyrightServices.Abstractions;
-using IPNoticeHub.Tests.UnitTests.TestUtilities;
+using IPNoticeHub.Tests.UnitTests.TestFactories;
 using IPNoticeHub.Web.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Moq;

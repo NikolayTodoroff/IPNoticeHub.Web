@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Moq;
 
-namespace IPNoticeHub.Tests.UnitTests.TestUtilities
+namespace IPNoticeHub.Tests.UnitTests.TestFactories
 {
     public static class TestHomeControllerFactory
     {

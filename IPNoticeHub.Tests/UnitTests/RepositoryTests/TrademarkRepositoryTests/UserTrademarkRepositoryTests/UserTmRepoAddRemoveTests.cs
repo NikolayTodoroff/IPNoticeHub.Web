@@ -2,7 +2,7 @@
 using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Domain.Entities.Identity;
 using IPNoticeHub.Infrastructure.Persistence.Repositories.TrademarkRepository;
-using IPNoticeHub.Tests.TestUtilities;
+using IPNoticeHub.Tests.UnitTests.TestFactories;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using IPNoticeHub.Infrastructure.Persistence;

@@ -5,7 +5,7 @@ using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Infrastructure.Persistence;
 using IPNoticeHub.Infrastructure.Identity;
 
-namespace IPNoticeHub.Tests.TestUtilities
+namespace IPNoticeHub.Tests.UnitTests.TestFactories
 {
     public static class InMemoryDbContextFactory
     {

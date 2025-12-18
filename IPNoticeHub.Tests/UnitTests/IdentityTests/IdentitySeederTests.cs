@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using static IPNoticeHub.Shared.Constants.IdentityConstants.AdminAccountCredentials;
 using static IPNoticeHub.Shared.Support.RoleNames;
+using IPNoticeHub.Tests.UnitTests.TestFactories;
 
 namespace IPNoticeHub.Tests.UnitTests.IdentityTests
 {
