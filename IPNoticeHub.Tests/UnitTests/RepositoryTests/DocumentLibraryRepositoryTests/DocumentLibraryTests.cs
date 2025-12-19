@@ -5,6 +5,7 @@ using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Tests.UnitTests.TestFactories;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
+using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.DocumentLibraryRepositoryTests
 {
@@ -30,23 +31,15 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.DocumentLibraryRepositoryT
                 document, 
                 CancellationToken.None);
 
-            id.Should().
-                BeGreaterThan(0);
-
-            document.LegalDocumentId.Should().
-                Be(id);
+            id.Should().BeGreaterThan(0);
+            document.LegalDocumentId.Should().Be(id);
 
             var recoveredDocument = 
                 await testDbContext.LegalDocuments.SingleAsync();
 
-            recoveredDocument.LegalDocumentId.Should().
-                Be(id);
-
-            recoveredDocument.DocumentTitle.Should().
-                Be("My first document");
-
-            recoveredDocument.ApplicationUserId.Should().
-                Be("user-1");
+            recoveredDocument.LegalDocumentId.Should().Be(id);
+            recoveredDocument.DocumentTitle.Should().Be("My first document");
+            recoveredDocument.ApplicationUserId.Should().Be("user-1");
         }
 
         [Test]
@@ -116,16 +109,6 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.DocumentLibraryRepositoryT
             document.CreatedOn.Should().Be(defaultTime);
         }
 
-
-
-
-
-
-
-
-
-
-
         [Test]
         public async Task GetNonDeletedUserDocumentsAsync_ReturnsOnlyUsersDocuments()
         {
@@ -151,17 +134,15 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.DocumentLibraryRepositoryT
             var repository = 
                 new DocumentLibraryRepository(testDbContext,testClock);
 
-            var recoveredDocument = await repository.GetUserDocumentsAsync(
+            var recoveredDocument = 
+                await repository.GetUserDocumentsAsync(
                 "user-1",
                 null, 
                 null, 
                 CancellationToken.None);
 
-            recoveredDocument.Should().
-                HaveCount(1);
-
-            recoveredDocument.Single().DocumentTitle.Should().
-                Be("u1-doc-1");
+            recoveredDocument.Should().HaveCount(1);
+            recoveredDocument.Single().DocumentTitle.Should().Be("u1-doc-1");
         }
 
         [Test]
@@ -196,17 +177,15 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.DocumentLibraryRepositoryT
             var repository = 
                 new DocumentLibraryRepository(testDbContext,testClock);
 
-            var recoveredDocument = await repository.GetUserDocumentsAsync(
+            var recoveredDocument = 
+                await repository.GetUserDocumentsAsync(
                 "user-1",
                 DocumentSourceType.Trademark,
                 LetterTemplateType.CeaseAndDesist,
                 CancellationToken.None);
 
-            recoveredDocument.Should().
-                HaveCount(1);
-
-            recoveredDocument.Single().DocumentTitle.Should().
-                Be("TM-CND");
+            recoveredDocument.Should().HaveCount(1);
+            recoveredDocument.Single().DocumentTitle.Should().Be("TM-CND");
         }
 
         [Test]
@@ -240,32 +219,55 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.DocumentLibraryRepositoryT
             var repository = 
                 new DocumentLibraryRepository(testDbContext,testClock);
 
-            var recoveredDocument = await repository.GetDocumentByIdAsync(
+            var recoveredDocument = await 
+                repository.GetDocumentByIdAsync(
                 document1.LegalDocumentId, 
                 "user-1", 
                 CancellationToken.None);
             
-            recoveredDocument.Should().
-                NotBeNull();
+            recoveredDocument.Should().NotBeNull();
+            recoveredDocument!.DocumentTitle.Should().Be("Owned");
 
-            recoveredDocument!.DocumentTitle.Should().
-                Be("Owned");
-
-            var deletedDocument = await repository.GetDocumentByIdAsync(
+            var deletedDocument = 
+                await repository.GetDocumentByIdAsync(
                 document2.LegalDocumentId, 
                 "user-1", 
                 CancellationToken.None);
 
-            deletedDocument.Should().
-                BeNull();
+            deletedDocument.Should().BeNull();
 
-            var foreignDocument = await repository.GetDocumentByIdAsync(
+            var foreignDocument = 
+                await repository.GetDocumentByIdAsync(
                 document3.LegalDocumentId, 
                 "user-1", 
                 CancellationToken.None);
 
-            foreignDocument.Should().
-                BeNull();
+            foreignDocument.Should().BeNull();
+        }
+
+        [TestCase(null)]
+        [TestCase(" ")]
+        [TestCase("")]
+        public async Task GetDocumentByIdAsync_WithNullOrWhitespace_UserId_ThrowsArgException(string userId)
+        {
+            using var testDbContext =
+                InMemoryDbContextFactory.CreateTestDbContext();
+
+            var testClock = new TestClock();
+
+            await testDbContext.SaveChangesAsync();
+
+            var repository =
+                new DocumentLibraryRepository(testDbContext, testClock);
+
+            Func<Task> act = async () => await repository.GetDocumentByIdAsync(
+                12,
+                userId,
+                CancellationToken.None);
+
+            await act.Should().ThrowAsync<ArgumentException>()
+                .WithParameterName("userId")
+                .WithMessage("*UserId cannot be null or whitespace.*");
         }
 
         [Test]
@@ -303,11 +305,56 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.DocumentLibraryRepositoryT
                 OrderBy(d => d.LegalDocumentId).
                 ToListAsync();
 
-            recoveredDocuments[0].DocumentTitle.Should().
-                Be("New title");
+            recoveredDocuments[0].DocumentTitle.Should().Be("New title");
+            recoveredDocuments[1].DocumentTitle.Should().Be("Other users title");
+        }
 
-            recoveredDocuments[1].DocumentTitle.Should().
-                Be("Other users title");
+        [TestCase(null)]
+        [TestCase("")]
+        [TestCase(" ")]
+        public async Task RenameAsync_With_NullOrWhiteSpaceUserId_ThrowsArgException(string userId)
+        {
+            using var testDbContext =
+                InMemoryDbContextFactory.CreateTestDbContext();
+
+            var testClock = new TestClock();
+
+            var repository =
+               new DocumentLibraryRepository(testDbContext, testClock);
+
+            Func<Task> act = async () => await repository.RenameAsync(
+                100,
+                userId,
+                "New title",
+                CancellationToken.None);
+
+            await act.Should().ThrowAsync<ArgumentException>()
+                .WithParameterName("userId")
+                .WithMessage("*UserId cannot be null or whitespace.*");
+        }
+
+        [TestCase(null)]
+        [TestCase("")]
+        [TestCase(" ")]
+        public async Task RenameAsync_With_NullOrWhiteSpaceNewName_ThrowsArgException(string newTitle)
+        {
+            using var testDbContext =
+                InMemoryDbContextFactory.CreateTestDbContext();
+
+            var testClock = new TestClock();
+
+            var repository =
+               new DocumentLibraryRepository(testDbContext, testClock);
+
+            Func<Task> act = async () => await repository.RenameAsync(
+                100,
+                "testUserId",
+                newTitle,
+                CancellationToken.None);
+
+            await act.Should().ThrowAsync<ArgumentException>()
+                .WithParameterName("newTitle")
+                .WithMessage("*New title cannot be null or whitespace.*");
         }
 
         private static LegalDocument CreateDocument(
