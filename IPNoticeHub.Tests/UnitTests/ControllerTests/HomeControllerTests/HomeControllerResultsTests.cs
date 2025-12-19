@@ -25,11 +25,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.HomeControllerTests
 
             var indexResult = controller.Index();
 
-            indexResult.Should().
-                BeOfType<ViewResult>();
-
-            ((ViewResult)indexResult).Model.Should().
-                BeNull();
+            indexResult.Should().BeOfType<ViewResult>();
+            ((ViewResult)indexResult).Model.Should().BeNull();
         }
 
         [Test]
@@ -52,9 +49,10 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.HomeControllerTests
 
             tmSearchService.Setup(s => s.SearchAsync(
                 It.IsAny<TrademarkSearchQueryDto>(),It.IsAny<CancellationToken>())).
-            ReturnsAsync((searchResultsDTO, 1));
+                ReturnsAsync((searchResultsDTO, 1));
 
-            var controller = TestHomeControllerFactory.CreateHomeController(
+            var controller = 
+                TestHomeControllerFactory.CreateHomeController(
                 tmSearchService.Object);
 
             var actionResult = await controller.Results(
@@ -70,52 +68,27 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.HomeControllerTests
 
             var resultView = actionResult as ViewResult;
 
-            resultView.Should().
-                NotBeNull();
-
-            resultView!.Model.Should().
-                BeOfType<TrademarkSearchResultsViewModel>();
+            resultView.Should().NotBeNull();
+            resultView!.Model.Should().BeOfType<TrademarkSearchResultsViewModel>();
 
             var resultViewModel = 
                 (TrademarkSearchResultsViewModel) resultView.Model!;
 
-            resultViewModel.Query.Should().
-                Be("Anu");
-
-            resultViewModel.Class.Should().
-                Be((TrademarkClass?)25);
-
-            resultViewModel.Status.Should().
-                Be(TrademarkStatusCategory.Registered);
-
-            resultViewModel.SearchBy.Should().
-                Be(TrademarkSearchBy.Wordmark);
-
-            resultViewModel.Office.Should().
-                Be(DataProvider.USPTO);
-
-            resultViewModel.Mode.Should().
-                Be(SearchMode.Contains);
-
-            resultViewModel.Total.Should().
-                Be(1);
-
-            resultViewModel.Results.Should().
-                HaveCount(1);
+            resultViewModel.Query.Should().Be("Anu");
+            resultViewModel.Class.Should().Be((TrademarkClass?)25);
+            resultViewModel.Status.Should().Be(TrademarkStatusCategory.Registered);
+            resultViewModel.SearchBy.Should().Be(TrademarkSearchBy.Wordmark);
+            resultViewModel.Office.Should().Be(DataProvider.USPTO);
+            resultViewModel.Mode.Should().Be(SearchMode.Contains);
+            resultViewModel.Total.Should().Be(1);
+            resultViewModel.Results.Should().HaveCount(1);
 
             var item = resultViewModel.Results.Single();
 
-            item.RegistrationNumber.Should().
-                Be("1234567");
-
-            item.Wordmark.Should().
-                Be("Anubis");
-
-            item.Owner.Should().
-                Be("Egypt Inc.");
-
-            item.Status.Should().
-                Be(TrademarkStatusCategory.Registered.ToString());
+            item.RegistrationNumber.Should().Be("1234567");
+            item.Wordmark.Should().Be("Anubis");
+            item.Owner.Should().Be("Egypt Inc.");
+            item.Status.Should().Be(TrademarkStatusCategory.Registered.ToString());
         }
 
         [Test]
@@ -127,7 +100,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.HomeControllerTests
             tmSearchService.Setup(s => s.SearchAsync(
                 It.IsAny<TrademarkSearchQueryDto>(), 
                 It.IsAny<CancellationToken>())).
-            ReturnsAsync((new List<TrademarkSearchResultDto>(), 0));
+                ReturnsAsync((new List<TrademarkSearchResultDto>(), 0));
 
             var controller = TestHomeControllerFactory.CreateHomeController(
                 tmSearchService.Object);
@@ -145,20 +118,14 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.HomeControllerTests
 
             var resultView = actionResult as ViewResult;
 
-            resultView.Should().
-                NotBeNull();
-
-            resultView!.Model.Should().
-                BeOfType<TrademarkSearchResultsViewModel>();
+            resultView.Should().NotBeNull();
+            resultView!.Model.Should().BeOfType<TrademarkSearchResultsViewModel>();
 
             var resultViewModel = 
                 (TrademarkSearchResultsViewModel)resultView.Model!;
 
-            resultViewModel.Total.Should().
-                Be(0);
-
-            resultViewModel.Results.Should().
-                BeEmpty();
+            resultViewModel.Total.Should().Be(0);
+            resultViewModel.Results.Should().BeEmpty();
 
             tmSearchService.Verify(s => s.SearchAsync(
                 It.IsAny<TrademarkSearchQueryDto>(), 
@@ -175,7 +142,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.HomeControllerTests
             tmSearchService.Setup(s => s.SearchAsync(
                 It.IsAny<TrademarkSearchQueryDto>(), 
                 It.IsAny<CancellationToken>())).
-            ReturnsAsync((new List<TrademarkSearchResultDto>(), 0));
+                ReturnsAsync((new List<TrademarkSearchResultDto>(), 0));
 
             var controller = TestHomeControllerFactory.CreateHomeController(
                 tmSearchService.Object);
@@ -191,13 +158,11 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.HomeControllerTests
 
             var resultView = actionResult as ViewResult;
 
-            resultView.Should().
-                NotBeNull();
+            resultView.Should().NotBeNull();
+            resultView!.Model.Should().BeOfType<TrademarkSearchResultsViewModel>();
 
-            resultView!.Model.Should().
-                BeOfType<TrademarkSearchResultsViewModel>();
-
-            tmSearchService.Verify(s => s.SearchAsync(
+            tmSearchService.Verify(
+                s => s.SearchAsync(
                 It.Is<TrademarkSearchQueryDto>(q =>
                     q.Query == null &&
                     q.Class == null &&
