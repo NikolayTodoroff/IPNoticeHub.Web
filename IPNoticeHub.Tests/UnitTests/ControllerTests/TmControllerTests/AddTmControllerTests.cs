@@ -7,9 +7,9 @@ using Moq;
 using NUnit.Framework;
 using static IPNoticeHub.Shared.Constants.StatusMessages.TrademarkStatusMessages;
 
-namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
+namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TmControllerTests
 {
-    public class AddTrademarkControllerTests
+    public class AddTmControllerTests
     {
         [Test]
         public async Task Add_CallsService_SetsTempData_RedirectsToReturnUrl()

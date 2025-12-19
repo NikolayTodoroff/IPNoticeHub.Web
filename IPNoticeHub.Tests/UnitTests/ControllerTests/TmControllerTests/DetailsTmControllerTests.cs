@@ -16,9 +16,9 @@ using System.Security.Claims;
 using IPNoticeHub.Application.Templates.Abstractions;
 using IPNoticeHub.Application.Services.PdfGenerationServices.Abstractions;
 
-namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
+namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TmControllerTests
 {
-    public class DetailsTrademarkControllerTests
+    public class DetailsTmControllerTests
     {
         [Test]
         public async Task Details_WhenPublicIdExists_ReturnsViewWithViewModel()

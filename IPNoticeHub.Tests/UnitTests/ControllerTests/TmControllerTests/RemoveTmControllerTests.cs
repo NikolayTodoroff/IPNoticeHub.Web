@@ -7,12 +7,12 @@ using Moq;
 using NUnit.Framework;
 using static IPNoticeHub.Shared.Constants.StatusMessages.TrademarkStatusMessages;
 
-namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
+namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TmControllerTests
 {
-    public class RemoveTrademarkControllerTests
+    public class RemoveTmControllerTests
     {
         [Test]
-        public async Task Remove__CallsService_SetsTempData_RedirectsToMyCollection()
+        public async Task Remove_CallsService_SetsTempData_RedirectsToMyCollection()
         {
             var tmCollectionService =
                 new Mock<ITrademarkCollectionService>();

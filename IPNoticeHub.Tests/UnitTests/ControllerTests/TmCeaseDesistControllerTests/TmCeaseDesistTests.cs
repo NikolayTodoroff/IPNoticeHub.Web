@@ -19,7 +19,7 @@ using Moq;
 using NUnit.Framework;
 using System.Security.Claims;
 
-namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkCadControllerTests
+namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TmCeaseDesistControllerTests
 {
     public class TrademarkCadControllerTests
     {

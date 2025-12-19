@@ -9,10 +9,10 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 
-namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
+namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TmControllerTests
 {
     [TestFixture]
-    public class MyCollectionTrademarkControllerTests
+    public class MyCollectionTmControllerTests
     {
         [Test]
         public async Task MyCollection_WhenUserMissing_ReturnsForbid()
