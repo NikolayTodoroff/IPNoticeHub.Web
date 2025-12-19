@@ -2,16 +2,19 @@
 using IPNoticeHub.Domain.Entities.LegalDocuments;
 using IPNoticeHub.Application.Repositories.DocumentLibraryRepository;
 using Microsoft.EntityFrameworkCore;
+using IPNoticeHub.Application.Services.SystemClockService.Abstractions;
 
 namespace IPNoticeHub.Infrastructure.Persistence.Repositories.DocumentLibraryRepository
 {
     public class DocumentLibraryRepository : IDocumentLibraryRepository
     {
         private readonly IPNoticeHubDbContext dbContext;
+        private readonly ISystemClockService clock;
 
-        public DocumentLibraryRepository(IPNoticeHubDbContext context)
+        public DocumentLibraryRepository(IPNoticeHubDbContext context, ISystemClockService clock)
         {
             dbContext = context;
+            this.clock = clock;
         }
 
         public async Task<int> AddAsync(
@@ -22,7 +25,7 @@ namespace IPNoticeHub.Infrastructure.Persistence.Repositories.DocumentLibraryRep
                 throw new ArgumentNullException(nameof(document));
 
             if (document.CreatedOn == default) 
-                document.CreatedOn = DateTime.UtcNow;
+                document.CreatedOn = clock.UtcNow;
 
             await dbContext.LegalDocuments.AddAsync(
                 document, 

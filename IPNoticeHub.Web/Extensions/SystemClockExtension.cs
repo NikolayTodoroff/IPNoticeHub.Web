@@ -1,5 +1,5 @@
 ﻿using IPNoticeHub.Application.Services.SystemClockService.Abstractions;
-using IPNoticeHub.Infrastructure.Services.SystemClockService.Implementation;
+using IPNoticeHub.Infrastructure.Persistence.Services.SystemClockService.Implementation;
 
 namespace IPNoticeHub.Web.Extensions
 {

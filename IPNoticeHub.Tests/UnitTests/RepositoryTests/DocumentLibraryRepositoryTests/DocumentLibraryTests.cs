@@ -1,10 +1,8 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Domain.Entities.LegalDocuments;
-using IPNoticeHub.Infrastructure.Persistence;
 using IPNoticeHub.Infrastructure.Persistence.Repositories.DocumentLibraryRepository;
 using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Tests.UnitTests.TestFactories;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 
@@ -16,11 +14,13 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.DocumentLibraryRepositoryT
         [Test]
         public async Task AddAsync_PersistsDocument_AndReturnsGeneratedId()
         {
-            using IPNoticeHubDbContext? testDbContext = 
+            using var testDbContext = 
                 InMemoryDbContextFactory.CreateTestDbContext();
 
+            var testClock = new TestClock();
+
             var repository = 
-                new DocumentLibraryRepository(testDbContext);
+                new DocumentLibraryRepository(testDbContext,testClock);
 
             var document = CreateDocument(
                 "user-1", 
@@ -52,11 +52,13 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.DocumentLibraryRepositoryT
         [Test]
         public async Task AddAsync_WithNullDocument_ThrowsNullArgumentException()
         {
-            using IPNoticeHubDbContext? testDbContext =
+            using var testDbContext =
                 InMemoryDbContextFactory.CreateTestDbContext();
 
+            var testClock = new TestClock();
+
             var repository =
-                new DocumentLibraryRepository(testDbContext);
+                new DocumentLibraryRepository(testDbContext,testClock);
 
             Func<Task> act = async () => await repository.AddAsync(
                 null!,
@@ -69,32 +71,50 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.DocumentLibraryRepositoryT
         [Test]
         public async Task AddAsync_SetsCreatedOnToCurrentUtcTime_WhenCreatingNewDocument()
         {
-            using IPNoticeHubDbContext? testDbContext =
+            using var testDbContext =
                 InMemoryDbContextFactory.CreateTestDbContext();
 
+            var testClock = new TestClock();
+            
             var repository =
-                new DocumentLibraryRepository(testDbContext);
-
-            var beforeCreatedOn = DateTime.UtcNow;
+                new DocumentLibraryRepository(testDbContext,testClock);
 
             var document = CreateDocument(
                 "user-1",
                 "My first document");
 
-            var afterCreatedOn = DateTime.UtcNow;
+            document.CreatedOn = default;
 
             await repository.AddAsync(document,CancellationToken.None);
 
-            await repository.GetDocumentByIdAsync(
-                document.LegalDocumentId,
-                document.ApplicationUserId,
-                CancellationToken.None);
-
-            document.CreatedOn.Should().BeOnOrAfter(beforeCreatedOn);
-            document.CreatedOn.Should().BeOnOrBefore(afterCreatedOn);
+            document.CreatedOn.Should().Be(testClock.UtcNow);
         }
 
+        [Test]
+        public async Task AddAsync_DoesNotOverwriteCreatedOn_WhenAlreadySet()
+        {
+            using var testDbContext = 
+                InMemoryDbContextFactory.CreateTestDbContext();
 
+            var testClock = new TestClock();
+
+            var repository = 
+                new DocumentLibraryRepository(testDbContext, testClock);
+
+            var defaultTime = 
+                new DateTime(2020, 05, 06,
+                07, 08, 09, DateTimeKind.Utc);
+
+            var document = CreateDocument(
+                userId: "user-1", 
+                title: "My first document");
+
+            document.CreatedOn = defaultTime;
+
+            await repository.AddAsync(document, CancellationToken.None);
+
+            document.CreatedOn.Should().Be(defaultTime);
+        }
 
 
 
@@ -109,8 +129,10 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.DocumentLibraryRepositoryT
         [Test]
         public async Task GetNonDeletedUserDocumentsAsync_ReturnsOnlyUsersDocuments()
         {
-            using IPNoticeHubDbContext? testDbContext = 
+            using var testDbContext = 
                 InMemoryDbContextFactory.CreateTestDbContext();
+
+            var testClock = new TestClock();
 
             testDbContext.LegalDocuments.AddRange(
                 CreateDocument(
@@ -127,7 +149,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.DocumentLibraryRepositoryT
             await testDbContext.SaveChangesAsync();
 
             var repository = 
-                new DocumentLibraryRepository(testDbContext);
+                new DocumentLibraryRepository(testDbContext,testClock);
 
             var recoveredDocument = await repository.GetUserDocumentsAsync(
                 "user-1",
@@ -145,8 +167,10 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.DocumentLibraryRepositoryT
         [Test]
         public async Task GetUserDocumentsAsync_AppliesSourceAndTemplateFilters()
         {
-            using IPNoticeHubDbContext? testDbContext = 
+            using var testDbContext = 
                 InMemoryDbContextFactory.CreateTestDbContext();
+
+            var testClock = new TestClock();
 
             testDbContext.LegalDocuments.AddRange(
                 CreateDocument(
@@ -170,7 +194,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.DocumentLibraryRepositoryT
             await testDbContext.SaveChangesAsync();
 
             var repository = 
-                new DocumentLibraryRepository(testDbContext);
+                new DocumentLibraryRepository(testDbContext,testClock);
 
             var recoveredDocument = await repository.GetUserDocumentsAsync(
                 "user-1",
@@ -188,8 +212,10 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.DocumentLibraryRepositoryT
         [Test]
         public async Task GetNotDeletedDocumentByIdAsync_ReturnsDocument_ForOwner()
         {
-            using IPNoticeHubDbContext? testDbContext =
+            using var testDbContext =
                 InMemoryDbContextFactory.CreateTestDbContext();
+
+            var testClock = new TestClock();
 
             var document1 = CreateDocument(
                 "user-1", 
@@ -212,7 +238,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.DocumentLibraryRepositoryT
             await testDbContext.SaveChangesAsync();
 
             var repository = 
-                new DocumentLibraryRepository(testDbContext);
+                new DocumentLibraryRepository(testDbContext,testClock);
 
             var recoveredDocument = await repository.GetDocumentByIdAsync(
                 document1.LegalDocumentId, 
@@ -245,8 +271,10 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.DocumentLibraryRepositoryT
         [Test]
         public async Task RenameAsync_UpdatesTitle_OnlyForMatchingUser()
         {
-            using IPNoticeHubDbContext? testDbContext =
+            using var testDbContext =
                 InMemoryDbContextFactory.CreateTestDbContext();
+
+            var testClock = new TestClock();
 
             var doc1 = CreateDocument(
                 "user-1", 
@@ -262,7 +290,8 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.DocumentLibraryRepositoryT
 
             await testDbContext.SaveChangesAsync();
 
-            var repository = new DocumentLibraryRepository(testDbContext);
+            var repository = 
+                new DocumentLibraryRepository(testDbContext,testClock);
 
             await repository.RenameAsync(
                 doc1.LegalDocumentId, 
