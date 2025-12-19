@@ -1,11 +1,12 @@
 ﻿using FluentAssertions;
-using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Domain.Entities.LegalDocuments;
-using IPNoticeHub.Tests.UnitTests.TestFactories;
-using Microsoft.EntityFrameworkCore;
-using NUnit.Framework;
 using IPNoticeHub.Infrastructure.Persistence;
 using IPNoticeHub.Infrastructure.Persistence.Repositories.DocumentLibraryRepository;
+using IPNoticeHub.Shared.Enums;
+using IPNoticeHub.Tests.UnitTests.TestFactories;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
+using NUnit.Framework;
 
 namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.DocumentLibraryRepositoryTests
 {
@@ -47,6 +48,63 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.DocumentLibraryRepositoryT
             recoveredDocument.ApplicationUserId.Should().
                 Be("user-1");
         }
+
+        [Test]
+        public async Task AddAsync_WithNullDocument_ThrowsNullArgumentException()
+        {
+            using IPNoticeHubDbContext? testDbContext =
+                InMemoryDbContextFactory.CreateTestDbContext();
+
+            var repository =
+                new DocumentLibraryRepository(testDbContext);
+
+            Func<Task> act = async () => await repository.AddAsync(
+                null!,
+                CancellationToken.None);
+
+            await act.Should().ThrowAsync<ArgumentNullException>()
+                .WithParameterName("document");
+        }
+
+        [Test]
+        public async Task AddAsync_SetsCreatedOnToCurrentUtcTime_WhenCreatingNewDocument()
+        {
+            using IPNoticeHubDbContext? testDbContext =
+                InMemoryDbContextFactory.CreateTestDbContext();
+
+            var repository =
+                new DocumentLibraryRepository(testDbContext);
+
+            var beforeCreatedOn = DateTime.UtcNow;
+
+            var document = CreateDocument(
+                "user-1",
+                "My first document");
+
+            var afterCreatedOn = DateTime.UtcNow;
+
+            await repository.AddAsync(document,CancellationToken.None);
+
+            await repository.GetDocumentByIdAsync(
+                document.LegalDocumentId,
+                document.ApplicationUserId,
+                CancellationToken.None);
+
+            document.CreatedOn.Should().BeOnOrAfter(beforeCreatedOn);
+            document.CreatedOn.Should().BeOnOrBefore(afterCreatedOn);
+        }
+
+
+
+
+
+
+
+
+
+
+
+
 
         [Test]
         public async Task GetNonDeletedUserDocumentsAsync_ReturnsOnlyUsersDocuments()
