@@ -12,30 +12,30 @@ using NUnit.Framework;
 namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
 {
     [TestFixture]
-    public class TmControllerMyCollectionTests
+    public class MyCollectionTrademarkControllerTests
     {
         [Test]
         public async Task MyCollection_WhenUserMissing_ReturnsForbid()
         {
-            var tmCollectionService = 
+            var service = 
                 new Mock<ITrademarkCollectionService>(MockBehavior.Strict);
 
-            var controller = TestTrademarkControllerFactory.CreateTrademarksController(
-                tmCollectionService.Object, 
+            var controller = 
+                TestTrademarkControllerFactory.CreateTrademarksController(
+                service.Object, 
                 userId: null);
 
             var myCollectionActionResult = await controller.MyCollection();
 
-            myCollectionActionResult.Should().
-                BeOfType<ForbidResult>();
-
-            tmCollectionService.VerifyNoOtherCalls();
+            myCollectionActionResult.Should().BeOfType<ForbidResult>();
+            service.VerifyNoOtherCalls();
         }
 
         [Test]
         public async Task MyCollection_WhenUserPresent_ReturnsViewWithPage_AndSetsSortBag()
         {
-            var pagedResult = new PagedResult<TrademarkSingleItemDto>
+            var pagedResult = 
+                new PagedResult<TrademarkSingleItemDto>
             {
                 ResultsCount = 0,
                 CurrentPage = 1,
@@ -48,18 +48,19 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
             const int resultsPerPage = 10;
             const CollectionSortBy sortBy = CollectionSortBy.DateAddedDesc;
 
-            var tmCollectionService = 
+            var service = 
                 new Mock<ITrademarkCollectionService>();
 
-            tmCollectionService.Setup(s => s.GetUserCollectionAsync(
+            service.Setup(s => s.GetUserCollectionAsync(
                 userId, 
                 sortBy, 
                 currentPage, 
                 resultsPerPage, It.IsAny<CancellationToken>())).
-            ReturnsAsync(pagedResult);
+                ReturnsAsync(pagedResult);
 
-            var controller = TestTrademarkControllerFactory.CreateTrademarksController(
-                tmCollectionService.Object, 
+            var controller = 
+                TestTrademarkControllerFactory.CreateTrademarksController(
+                service.Object, 
                 userId: "u1");
 
             var result = await controller.MyCollection(
@@ -67,20 +68,14 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
                 currentPage, 
                 resultsPerPage);
 
-            var myCollectionView = result.Should().
-                BeOfType<ViewResult>().Subject;
-
-            myCollectionView.Model.Should().
-                BeOfType<TrademarkCollectionViewModel>();
-
+            var myCollectionView = result.Should().BeOfType<ViewResult>().Subject;
+            myCollectionView.Model.Should().BeOfType<TrademarkCollectionViewModel>();
 
             var sortInBag = (CollectionSortBy)controller.ViewBag.SortBy;
+            sortInBag.Should().Be(sortBy);
 
-            sortInBag.Should().
-                Be(sortBy);
-
-            tmCollectionService.
-                Verify(s => s.GetUserCollectionAsync(
+            service.Verify(
+                s => s.GetUserCollectionAsync(
                 userId, 
                 sortBy, 
                 currentPage, 
@@ -107,14 +102,14 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
             var tmCollectionService = 
                 new Mock<ITrademarkCollectionService>();
 
-            tmCollectionService.
-                Setup(s => s.GetUserCollectionAsync(
+            tmCollectionService.Setup(
+                s => s.GetUserCollectionAsync(
                 userId, 
                 sortBy, 
                 1, 
                 10, 
                 It.IsAny<CancellationToken>())).
-            ReturnsAsync(pagedResult);
+                ReturnsAsync(pagedResult);
 
             var controller = 
                 TestTrademarkControllerFactory.CreateTrademarksController(
@@ -127,20 +122,13 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TrademarkControllerTests
                 currentPage: 1, 
                 resultsPerPage: 10);
 
-            var myCollectionView = 
-                myCollectionActionResult as ViewResult;
+            var myCollectionView = myCollectionActionResult as ViewResult;
 
-            myCollectionView.Should().
-                NotBeNull();
+            myCollectionView.Should().NotBeNull();
+            myCollectionView.Model.Should().BeOfType<TrademarkCollectionViewModel>();
 
-            myCollectionView.Model.Should().
-                BeOfType<TrademarkCollectionViewModel>();
-
-            var sortInBag = 
-                (CollectionSortBy)controller.ViewBag.SortBy;
-
-            sortInBag.Should().
-                Be(sortBy);
+            var sortInBag = (CollectionSortBy)controller.ViewBag.SortBy;
+            sortInBag.Should().Be(sortBy);
         }
     }
 }
