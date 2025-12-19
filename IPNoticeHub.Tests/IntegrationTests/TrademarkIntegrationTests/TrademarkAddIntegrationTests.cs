@@ -586,32 +586,6 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
             }
         }
 
-        private sealed class NoIdAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
-        {
-            public NoIdAuthHandler(
-                IOptionsMonitor<AuthenticationSchemeOptions> options,
-                ILoggerFactory logger,UrlEncoder encoder) : base(
-                    options, 
-                    logger, 
-                    encoder) { }
-            protected override Task<AuthenticateResult> HandleAuthenticateAsync()
-            {
-                var identity = new ClaimsIdentity(new[]
-                {
-                    new Claim(ClaimTypes.Name, "AuthNoId"),
-                    new Claim(ClaimTypes.Email, "authnoid@test.local")
-                }, "NoId");
-
-                var principal = new ClaimsPrincipal(identity);
-
-                var ticket = new AuthenticationTicket(
-                    principal, 
-                    "NoId");
-                
-                return Task.FromResult(AuthenticateResult.Success(ticket));
-            }
-        }
-
         [Test]
         public async Task Post_AddTrademark_WithMissingTrademarkId_RedirectsToMyCollection_NoLinkCreated()
         {
@@ -792,6 +766,33 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
 
                 links[0].IsDeleted.Should().
                     BeFalse();
+            }
+        }
+
+        private sealed class NoIdAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
+        {
+            public NoIdAuthHandler(
+                IOptionsMonitor<AuthenticationSchemeOptions> options,
+                ILoggerFactory logger, UrlEncoder encoder) : base(
+                    options,
+                    logger,
+                    encoder)
+            { }
+            protected override Task<AuthenticateResult> HandleAuthenticateAsync()
+            {
+                var identity = new ClaimsIdentity(new[]
+                {
+                    new Claim(ClaimTypes.Name, "AuthNoId"),
+                    new Claim(ClaimTypes.Email, "authnoid@test.local")
+                }, "NoId");
+
+                var principal = new ClaimsPrincipal(identity);
+
+                var ticket = new AuthenticationTicket(
+                    principal,
+                    "NoId");
+
+                return Task.FromResult(AuthenticateResult.Success(ticket));
             }
         }
     }

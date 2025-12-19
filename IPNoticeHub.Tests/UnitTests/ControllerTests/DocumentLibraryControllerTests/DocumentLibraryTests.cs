@@ -1,16 +1,21 @@
 ﻿using FluentAssertions;
+using IPNoticeHub.Application.DTOs.DocumentLibraryDTOs;
 using IPNoticeHub.Application.Services.DocumentLibraryService.Abstractions;
+using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Tests.UnitTests.TestFactories;
 using IPNoticeHub.Web.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 
-
 namespace IPNoticeHub.Tests.UnitTests.ControllerTests.DocumentLibraryControllerTests
 {
     public class DocumentLibraryTests
     {
+        
+    
+
+
         [Test]
         public async Task Generate_WhenUserIdMissing_ReturnsForbid()
         {
@@ -244,6 +249,47 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.DocumentLibraryControllerT
                     userId,
                     It.IsAny<CancellationToken>()),
                 Times.Once);
+        }
+
+        [Test]
+        public async Task Rename_WithNullTitle_ReturnsRedirectWithErrorMessage()
+        {
+            var serviceMock =
+                new Mock<IDocumentLibraryService>();
+
+            var documentId = 1;
+            const string userId = "user-123";
+            string nullNewTitle = null!;
+
+            serviceMock.Setup(
+                s => s.DeleteDocumentAsync(
+                    documentId,
+                    userId,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(true);
+
+            var controller =
+                DocumentLibraryControllerFactory.CreateDocumentLibraryController(
+                    serviceMock,
+                    userId);
+
+            var result = await controller.Rename(documentId, nullNewTitle!);
+
+            var redirect = 
+                result.Should().BeOfType<RedirectToActionResult>().Subject;
+
+            redirect.ActionName.Should().Be(nameof(DocumentLibraryController.Index));
+
+            controller.TempData["ErrorMessage"].Should().
+                Be("Title cannot be empty.");
+
+            serviceMock.Verify(
+                s => s.RenameDocumentAsync(
+                    It.IsAny<int>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<CancellationToken>()),
+                Times.Never);
         }
     }
 }
