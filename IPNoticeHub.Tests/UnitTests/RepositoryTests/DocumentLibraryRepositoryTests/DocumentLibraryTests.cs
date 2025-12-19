@@ -5,7 +5,6 @@ using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Tests.UnitTests.TestFactories;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
-using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.DocumentLibraryRepositoryTests
 {
@@ -57,8 +56,8 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.DocumentLibraryRepositoryT
                 null!,
                 CancellationToken.None);
 
-            await act.Should().ThrowAsync<ArgumentNullException>()
-                .WithParameterName("document");
+            await act.Should().ThrowAsync<ArgumentNullException>().
+                WithParameterName("document");
         }
 
         [Test]
@@ -278,17 +277,17 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.DocumentLibraryRepositoryT
 
             var testClock = new TestClock();
 
-            var doc1 = CreateDocument(
+            var document1 = CreateDocument(
                 "user-1", 
                 "Old title");
 
-            var doc2 = CreateDocument(
+            var document2 = CreateDocument(
                 "user-2", 
                 "Other users title");
 
             testDbContext.LegalDocuments.AddRange(
-                doc1, 
-                doc2);
+                document1, 
+                document2);
 
             await testDbContext.SaveChangesAsync();
 
@@ -296,7 +295,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.DocumentLibraryRepositoryT
                 new DocumentLibraryRepository(testDbContext,testClock);
 
             await repository.RenameAsync(
-                doc1.LegalDocumentId, 
+                document1.LegalDocumentId, 
                 "user-1", 
                 "New title", 
                 CancellationToken.None);
@@ -328,9 +327,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.DocumentLibraryRepositoryT
                 "New title",
                 CancellationToken.None);
 
-            await act.Should().ThrowAsync<ArgumentException>()
-                .WithParameterName("userId")
-                .WithMessage("*UserId cannot be null or whitespace.*");
+            await act.Should().ThrowAsync<ArgumentException>().
+                WithParameterName("userId").
+                WithMessage("*UserId cannot be null or whitespace.*");
         }
 
         [TestCase(null)]
@@ -352,9 +351,186 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.DocumentLibraryRepositoryT
                 newTitle,
                 CancellationToken.None);
 
-            await act.Should().ThrowAsync<ArgumentException>()
-                .WithParameterName("newTitle")
-                .WithMessage("*New title cannot be null or whitespace.*");
+            await act.Should().ThrowAsync<ArgumentException>().
+                WithParameterName("newTitle").
+                WithMessage("*New title cannot be null or whitespace.*");
+        }
+
+        [Test]
+        public async Task SoftDeleteAsync_DeletesCorrectDocument()
+        {
+            using var testDbContext =
+                InMemoryDbContextFactory.CreateTestDbContext();
+
+            var testClock = new TestClock();
+
+            var repository =
+                new DocumentLibraryRepository(testDbContext, testClock);
+
+            var document1 = CreateDocument(
+                "user1",
+                "Document1");
+
+            var document2 = CreateDocument(
+                "user2",
+                "Document2");
+
+            await repository.AddAsync(
+                document1,
+                CancellationToken.None);
+
+            await repository.AddAsync(
+                document2,
+                CancellationToken.None);
+
+            await repository.SoftDeleteAsync(
+                document1.LegalDocumentId, 
+                document1.ApplicationUserId, 
+                CancellationToken.None);
+
+            var deletedDocument = 
+                await testDbContext.LegalDocuments.
+                IgnoreQueryFilters().
+                FirstOrDefaultAsync(
+                    d => d.LegalDocumentId == document1.LegalDocumentId);
+
+            deletedDocument.Should().NotBeNull();
+            deletedDocument!.IsDeleted.Should().BeTrue();
+
+            var document = await repository.GetDocumentByIdAsync(
+                document1.LegalDocumentId, 
+                document1.ApplicationUserId, 
+                CancellationToken.None);
+            
+            document.Should().BeNull();
+        }
+
+        [Test]
+        public async Task SoftDeleteAsync_MarksDocumentAsDeleted_AndPreventsRetrievalForOwner()
+        {
+            using var testDbContext =
+                InMemoryDbContextFactory.CreateTestDbContext();
+
+            var testClock = new TestClock();
+
+            var repository =
+                new DocumentLibraryRepository(testDbContext, testClock);
+
+            var document1 = CreateDocument(
+                "user1",
+                "Document1");
+
+            var document2 = CreateDocument(
+                "user2",
+                "Document2");
+
+            await repository.AddAsync(
+                document1,
+                CancellationToken.None);
+
+            await repository.AddAsync(
+                document2,
+                CancellationToken.None);
+
+            await repository.SoftDeleteAsync(
+                document1.LegalDocumentId, 
+                document1.ApplicationUserId, 
+                CancellationToken.None);
+
+            var deletedDocument = 
+                await testDbContext.LegalDocuments.
+                IgnoreQueryFilters().
+                FirstOrDefaultAsync(
+                    d => d.LegalDocumentId == document1.LegalDocumentId);
+
+            deletedDocument.Should().NotBeNull();
+            deletedDocument!.IsDeleted.Should().BeTrue();
+
+            var document = await repository.GetDocumentByIdAsync(
+                document1.LegalDocumentId, 
+                document1.ApplicationUserId, 
+                CancellationToken.None);
+            
+            document.Should().BeNull();
+        }
+
+        [TestCase(null)]
+        [TestCase(" ")]
+        [TestCase("")]
+        public async Task SoftDeleteAsync_WithNullOrWhitespaceUserId_ThrowsArgException(string userId)
+        {
+            using var testDbContext =
+                InMemoryDbContextFactory.CreateTestDbContext();
+
+            var testClock = new TestClock();
+
+            var repository =
+                new DocumentLibraryRepository(testDbContext, testClock);
+
+            Func<Task> act = async () => await repository.SoftDeleteAsync(
+               100,
+               userId,
+               CancellationToken.None);
+
+            await act.Should().ThrowAsync<ArgumentException>().
+                WithParameterName("userId").
+                WithMessage("*UserId cannot be null or whitespace.*");
+        }
+
+        [Test]
+        public async Task SoftDeleteAsync_WithNullDocument_Returns()
+        {
+            using var testDbContext =
+                InMemoryDbContextFactory.CreateTestDbContext();
+
+            var testClock = new TestClock();
+
+            var repository =
+                new DocumentLibraryRepository(testDbContext, testClock);
+
+            Func<Task> act = async () => await repository.SoftDeleteAsync(
+               22,
+               "randomId",
+               CancellationToken.None);
+
+            await act.Should().NotThrowAsync();
+
+            testDbContext.LegalDocuments.Should().BeEmpty();
+        }
+
+        [Test]
+        public async Task SoftDeleteAsync_WithNonExistentDocument_DoesNotAffectOtherDocuments()
+        {
+            using var testDbContext =
+                InMemoryDbContextFactory.CreateTestDbContext();
+
+            var testClock = new TestClock();
+
+            var repository =
+                new DocumentLibraryRepository(testDbContext, testClock);
+
+            var existingDocument = CreateDocument(
+                "user-1", 
+                "Existing Doc");
+
+            await repository.AddAsync(
+                existingDocument, 
+                CancellationToken.None);
+
+            var fakeDocumentId = existingDocument.LegalDocumentId + 999;
+
+            await repository.SoftDeleteAsync(
+                fakeDocumentId,
+                "user-2",
+                CancellationToken.None);
+
+            var unchangedDoc = await testDbContext.LegalDocuments.
+                IgnoreQueryFilters().
+                FirstOrDefaultAsync(
+                d => d.LegalDocumentId == existingDocument.LegalDocumentId);
+
+            unchangedDoc.Should().NotBeNull();
+            unchangedDoc!.IsDeleted.Should().BeFalse();
         }
 
         private static LegalDocument CreateDocument(
