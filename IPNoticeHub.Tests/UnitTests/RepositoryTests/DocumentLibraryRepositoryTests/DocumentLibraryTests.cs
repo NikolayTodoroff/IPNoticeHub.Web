@@ -5,6 +5,7 @@ using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Tests.UnitTests.TestFactories;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
+using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.DocumentLibraryRepositoryTests
 {
@@ -152,6 +153,9 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.DocumentLibraryRepositoryT
 
             var testClock = new TestClock();
 
+            var repository =
+                new DocumentLibraryRepository(testDbContext, testClock);
+
             testDbContext.LegalDocuments.AddRange(
                 CreateDocument(
                     "user-1", 
@@ -173,9 +177,6 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.DocumentLibraryRepositoryT
 
             await testDbContext.SaveChangesAsync();
 
-            var repository = 
-                new DocumentLibraryRepository(testDbContext,testClock);
-
             var recoveredDocument = 
                 await repository.GetUserDocumentsAsync(
                 "user-1",
@@ -185,6 +186,30 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.DocumentLibraryRepositoryT
 
             recoveredDocument.Should().HaveCount(1);
             recoveredDocument.Single().DocumentTitle.Should().Be("TM-CND");
+        }
+
+        [TestCase(null)]
+        [TestCase("")]
+        [TestCase(" ")]
+        public async Task GetUserDocumentsAsync_With_NullOrWhitespaceUserId_ThrowsArgException(string userId)
+        {
+            using var testDbContext =
+                InMemoryDbContextFactory.CreateTestDbContext();
+
+            var testClock = new TestClock();
+
+            var repository =
+                new DocumentLibraryRepository(testDbContext, testClock);
+
+            Func<Task> act = async () => await repository.GetUserDocumentsAsync(
+                userId,
+                DocumentSourceType.Trademark,
+                LetterTemplateType.CeaseAndDesist,
+                CancellationToken.None);
+
+            await act.Should().ThrowAsync<ArgumentException>()
+                .WithParameterName("userId")
+                .WithMessage("*UserId cannot be null or whitespace.*");
         }
 
         [Test]
