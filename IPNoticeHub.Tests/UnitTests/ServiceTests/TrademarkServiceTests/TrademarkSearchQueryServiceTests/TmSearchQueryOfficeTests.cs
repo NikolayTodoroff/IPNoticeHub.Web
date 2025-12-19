@@ -3,7 +3,6 @@ using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Tests.UnitTests.TestFactories;
 using NUnit.Framework;
 using static IPNoticeHub.Shared.Constants.PagingConstants.DefaultPagingConstants;
-using IPNoticeHub.Tests.UnitTests.TestFactories;
 using IPNoticeHub.Application.DTOs.TrademarkDTOs;
 using IPNoticeHub.Application.Repositories.TrademarkRepository;
 using IPNoticeHub.Infrastructure.Persistence;
