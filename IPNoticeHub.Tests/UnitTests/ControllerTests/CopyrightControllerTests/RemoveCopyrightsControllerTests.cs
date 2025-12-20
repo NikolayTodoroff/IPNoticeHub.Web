@@ -10,60 +10,58 @@ using static IPNoticeHub.Shared.Constants.StatusMessages.CopyrightStatusMessages
 namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
 {
     [TestFixture]
-    public class CopyrightsControllerRemoveTests
+    public class RemoveCopyrightsControllerTests
     {
         [Test]
         public async Task Remove_WithNoUser_ReturnsForbid()
         {
-            var copyrightService = 
+            var service = 
                 new Mock<ICopyrightService>(MockBehavior.Strict);
 
             var controller = 
                 TestCopyrightControllerFactory.CreateController(
-                copyrightService.Object, 
+                service.Object, 
                 userId: null);
 
-            var removeActionResult = 
+            var actionResult = 
                 await controller.Remove(Guid.NewGuid());
 
-            removeActionResult.Should().
+            actionResult.Should().
                 BeOfType<ForbidResult>();
 
-            copyrightService.VerifyNoOtherCalls();
+            service.VerifyNoOtherCalls();
         }
 
         [Test]
         public async Task Remove_LocalReturnUrl_RedirectsThere_AndSetsTempData()
         {
-            var copyrightService = 
+            var service = 
                 new Mock<ICopyrightService>();
 
-            copyrightService.Setup(
+            service.Setup(
                 s => s.RemoveAsync(
                 "u1", 
                 It.IsAny<Guid>(), 
                 It.IsAny<CancellationToken>())).
-            ReturnsAsync(true);
+                ReturnsAsync(true);
 
             var controller = 
                 TestCopyrightControllerFactory.CreateController(
-                copyrightService.Object, 
+                service.Object, 
                 userId: "u1");
 
-            var removeActionResult = await controller.Remove(
+            var actionResult = 
+                await controller.Remove(
                 Guid.NewGuid(), 
                 returnUrl: "/back");
 
-            var redirectResult = removeActionResult.Should().
-                BeOfType<RedirectResult>().Subject;
+            var redirect = 
+                actionResult.Should().BeOfType<RedirectResult>().Subject;
 
-            redirectResult.Url.Should().
-                Be("/back");
+            redirect.Url.Should().Be("/back");
+            controller.TempData["SuccessMessage"].Should().Be(CopyrightRemovedMessage);
 
-            controller.TempData["SuccessMessage"].Should().
-                Be(CopyrightRemovedMessage);
-
-            copyrightService.Verify(s => s.RemoveAsync(
+            service.Verify(s => s.RemoveAsync(
                 "u1", 
                 It.IsAny<Guid>(), 
                 It.IsAny<CancellationToken>()), 
@@ -73,36 +71,35 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
         [Test]
         public async Task Remove_NoReturnUrl_RedirectsToMyCollection_AndSetsTempData()
         {
-            var copyrightService = 
+            var service = 
                 new Mock<ICopyrightService>();
 
-            copyrightService.Setup(
+            service.Setup(
                 s => s.RemoveAsync(
                 "u1", 
                 It.IsAny<Guid>(), 
                 It.IsAny<CancellationToken>())).
-            ReturnsAsync(true);
+                ReturnsAsync(true);
 
             var controller = 
                 TestCopyrightControllerFactory.CreateController(
-                copyrightService.Object, 
+                service.Object, 
                 userId: "u1");
 
-            var removeActionResult = await controller.Remove(
+            var actionResult = 
+                await controller.Remove(
                 Guid.NewGuid(), 
                 returnUrl: null);
 
-            var redirectToActionResult = 
-                removeActionResult.Should().
-                BeOfType<RedirectToActionResult>().Subject;
+            var redirect = 
+                actionResult.Should().BeOfType<RedirectToActionResult>().Subject;
 
-            redirectToActionResult.ActionName.Should().
+            redirect.ActionName.Should().
                 Be(nameof(CopyrightsController.MyCollection));
 
-           controller.TempData["SuccessMessage"].Should().
-                Be(CopyrightRemovedMessage);
+           controller.TempData["SuccessMessage"].Should().Be(CopyrightRemovedMessage);
 
-            copyrightService.Verify(
+            service.Verify(
                 s => s.RemoveAsync(
                 "u1", 
                 It.IsAny<Guid>(), 

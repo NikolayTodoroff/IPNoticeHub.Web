@@ -13,30 +13,27 @@ using IPNoticeHub.Application.DTOs.CopyrightDTOs;
 namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
 {
     [TestFixture]
-    public class CopyrightsControllerEditTests
+    public class EditCopyrightsControllerTests
     {
         [Test]
         public async Task Get_Edit_WhenDetailsNull_ReturnsNotFound()
         {
-            var copyrightService = 
+            var service = 
                 new Mock<ICopyrightService>();
 
-            copyrightService.Setup(s => s.GetDetailsAsync(
+            service.Setup(s => s.GetDetailsAsync(
                 "u1", 
                 It.IsAny<Guid>(), 
                 It.IsAny<CancellationToken>())).
-            ReturnsAsync((CopyrightDetailsDto?) null);
+                ReturnsAsync((CopyrightDetailsDto?) null);
 
             var controller = 
                 TestCopyrightControllerFactory.CreateController(
-                copyrightService.Object, 
+                service.Object, 
                 userId: "u1");
 
-            var editActionResult = 
-                await controller.Edit(Guid.NewGuid());
-
-            editActionResult.Should().
-                BeOfType<NotFoundResult>();
+            var actionResult = await controller.Edit(Guid.NewGuid());
+            actionResult.Should().BeOfType<NotFoundResult>();
         }
 
         [Test]
@@ -44,15 +41,15 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
         {
             var id = Guid.NewGuid();
 
-            var copyrightService = 
+            var service = 
                 new Mock<ICopyrightService>();
 
-            copyrightService.Setup(
+            service.Setup(
                 s => s.GetDetailsAsync(
                 "u1", 
                 id, 
                 It.IsAny<CancellationToken>())).
-            ReturnsAsync(new CopyrightDetailsDto
+                ReturnsAsync(new CopyrightDetailsDto
             {
                 PublicId = id,
                 RegistrationNumber = "TX-1",
@@ -64,25 +61,20 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
 
             var controller = 
                 TestCopyrightControllerFactory.CreateController(
-                copyrightService.Object, 
+                service.Object, 
                 userId: "u1");
 
-            var editActionResult = await controller.Edit(id);
+            var actionResult = await controller.Edit(id);
 
-            var editView = editActionResult.Should().
-                BeOfType<ViewResult>().Subject;
+            var viewResult = 
+                actionResult.Should().BeOfType<ViewResult>().Subject;
 
-            var editViewModel = editView.Model.Should().
-                BeOfType<CopyrightEditViewModel>().Subject;
+            var viewModel = 
+                viewResult.Model.Should().BeOfType<CopyrightEditViewModel>().Subject;
 
-            editViewModel.PublicId.Should().
-                Be(id);
-
-            editViewModel.WorkType.Should().
-                Be(CopyrightWorkType.Other);
-
-            editViewModel.OtherWorkType.Should().
-                Be("Custom Type Of Work");
+            viewModel.PublicId.Should().Be(id);
+            viewModel.WorkType.Should().Be(CopyrightWorkType.Other);
+            viewModel.OtherWorkType.Should().Be("Custom Type Of Work");
         }
 
         [Test]
@@ -90,15 +82,15 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
         {
             var id = Guid.NewGuid();
 
-            var copyrightService = 
+            var service = 
                 new Mock<ICopyrightService>();
 
             var controller = 
                 TestCopyrightControllerFactory.CreateController(
-                copyrightService.Object, 
+                service.Object, 
                 userId: "u1");
 
-            var editViewModel = new CopyrightEditViewModel
+            var viewModel = new CopyrightEditViewModel
             {
                 PublicId = id,
                 RegistrationNumber = "TX-1",
@@ -107,27 +99,25 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
                 Owner = "Owner"
             };
 
-            var editActionResult = await controller.Edit(
+            var actionResult = await controller.Edit(
                 id, 
-                editViewModel, 
+                viewModel, 
                 returnUrl: null);
 
-            var editView = editActionResult.Should().
-                BeOfType<ViewResult>().Subject;
+            var viewResult = 
+                actionResult.Should().BeOfType<ViewResult>().Subject;
 
             controller.ModelState.ContainsKey(
-                nameof(CopyrightEditViewModel.OtherWorkType)).Should().
-                BeTrue();
+                nameof(CopyrightEditViewModel.OtherWorkType)).Should().BeTrue();
 
-            editView.Model.Should().
-                Be(editViewModel);
+            viewResult.Model.Should().Be(viewModel);
 
-            copyrightService.Verify(
+            service.Verify(
                 s => s.EditAsync(
                     It.IsAny<string>(), 
-                    It.IsAny<Guid>(), 
-                It.IsAny<CopyrightEditDto>(), 
-                It.IsAny<CancellationToken>()), 
+                    It.IsAny<Guid>(),
+                    It.IsAny<CopyrightEditDto>(),
+                    It.IsAny<CancellationToken>()),
                 Times.Never);
         }
 
@@ -136,22 +126,22 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
         {
             var id = Guid.NewGuid();
 
-            var copyrightService = 
+            var service = 
                 new Mock<ICopyrightService>();
 
-            copyrightService.Setup(s => s.EditAsync(
+            service.Setup(s => s.EditAsync(
                 "u1", 
                 id, 
                 It.IsAny<CopyrightEditDto>(), 
                 It.IsAny<CancellationToken>())).
-            ReturnsAsync(false);
+                ReturnsAsync(false);
 
             var controller = 
                 TestCopyrightControllerFactory.CreateController(
-                copyrightService.Object, 
+                service.Object, 
                 userId: "u1");
 
-            var editViewModel = new CopyrightEditViewModel
+            var viewModel = new CopyrightEditViewModel
             {
                 PublicId = id,
                 RegistrationNumber = "TX-1",
@@ -160,19 +150,16 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
                 Owner = "Owner"
             };
 
-            var editActionResult = await controller.Edit(
+            var actionResult = await controller.Edit(
                 id, 
-                editViewModel, 
+                viewModel, 
                 returnUrl: null);
 
-            var editView = editActionResult.Should().
-                BeOfType<ViewResult>().Subject;
+            var editView = 
+                actionResult.Should().BeOfType<ViewResult>().Subject;
 
-            editView.Model.Should().
-                Be(editViewModel);
-
-            controller.ModelState.IsValid.Should().
-                BeFalse();
+            editView.Model.Should().Be(viewModel);
+            controller.ModelState.IsValid.Should().BeFalse();
         }
 
         [Test]
@@ -180,22 +167,22 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
         {
             var id = Guid.NewGuid();
 
-            var copyrightService = 
+            var service = 
                 new Mock<ICopyrightService>();
 
-            copyrightService.Setup(s => s.EditAsync(
+            service.Setup(s => s.EditAsync(
                 "u1", 
                 id, 
                 It.IsAny<CopyrightEditDto>(), 
                 It.IsAny<CancellationToken>())).
-            ReturnsAsync(true);
+                ReturnsAsync(true);
 
             var controller = 
                 TestCopyrightControllerFactory.CreateController(
-                copyrightService.Object, 
+                service.Object, 
                 userId: "u1");
 
-            var editViewModel = new CopyrightEditViewModel
+            var viewModel = new CopyrightEditViewModel
             {
                 PublicId = id,
                 RegistrationNumber = "TX-1",
@@ -204,19 +191,18 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
                 Owner = "Owner"
             };
 
-            var editActionResult = await controller.Edit(
+            var actionResult = await controller.Edit(
                 id, 
-                editViewModel, 
+                viewModel, 
                 returnUrl: "/back");
 
-            var redirectResult = editActionResult.Should().
-                BeOfType<RedirectResult>().Subject;
+            var redirectResult = 
+                actionResult.Should().BeOfType<RedirectResult>().Subject;
 
-            redirectResult.Url.Should().
-                Be("/back");
+            redirectResult.Url.Should().Be("/back");
 
-            controller.TempData["SuccessMessage"].Should().
-                Be(CopyrightUpdatesMessage);
+            controller.TempData[
+                "SuccessMessage"].Should().Be(CopyrightUpdatesMessage);
         }
 
         [Test]
@@ -224,22 +210,22 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
         {
             var id = Guid.NewGuid();
 
-            var copyrightService = 
+            var service = 
                 new Mock<ICopyrightService>();
 
-            copyrightService.Setup(s => s.EditAsync(
+            service.Setup(s => s.EditAsync(
                 "u1", 
                 id, 
                 It.IsAny<CopyrightEditDto>(), 
                 It.IsAny<CancellationToken>())).
-            ReturnsAsync(true);
+                ReturnsAsync(true);
 
             var controller = 
                 TestCopyrightControllerFactory.CreateController(
-                copyrightService.Object, 
+                service.Object, 
                 userId: "u1");
 
-            var editViewModel = new CopyrightEditViewModel
+            var viewModel = new CopyrightEditViewModel
             {
                 PublicId = id,
                 RegistrationNumber = "TX-1",
@@ -248,57 +234,52 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
                 Owner = "Owner"
             };
 
-            var editActionResult = await controller.Edit(
+            var actionResult = await controller.Edit(
                 id, 
-                editViewModel, 
+                viewModel, 
                 returnUrl: null);
 
-            var redirectResult = editActionResult.Should().
-                BeOfType<RedirectToActionResult>().Subject;
+            var redirectResult = 
+                actionResult.Should().BeOfType<RedirectToActionResult>().Subject;
 
-            redirectResult.ActionName.Should().
-                Be(nameof(CopyrightsController.Details));
-
-            redirectResult.RouteValues!["id"].Should().
-                Be(id);
+            redirectResult.ActionName.Should().Be(nameof(CopyrightsController.Details));
+            redirectResult.RouteValues!["id"].Should().Be(id);
         }
 
         [Test]
         public async Task Get_Edit_WhenNoUser_ReturnsForbid()
         {
-            var copyrightService = 
+            var service = 
                 new Mock<ICopyrightService>(MockBehavior.Strict);
 
             var controller = 
                 TestCopyrightControllerFactory.CreateController(
-                service: copyrightService.Object,
+                service: service.Object,
                 userId: null,
                 includeTempData: false,
                 includeUrlHelper: false);
 
-            var editActionResult = 
+            var actionResult = 
                 await controller.Edit(Guid.NewGuid());
 
-            editActionResult.Should().
-                BeOfType<ForbidResult>();
-
-            copyrightService.VerifyNoOtherCalls();
+            actionResult.Should().BeOfType<ForbidResult>();
+            service.VerifyNoOtherCalls();
         }
 
         [Test]
         public async Task Post_Edit_WhenNoUser_ReturnsForbid()
         {
-            var copyrightService = 
+            var service = 
                 new Mock<ICopyrightService>(MockBehavior.Strict);
 
             var controller = 
                 TestCopyrightControllerFactory.CreateController(
-                service: copyrightService.Object,
+                service: service.Object,
                 userId: null,
                 includeTempData: true,
                 includeUrlHelper: true);
 
-            var editViewModel = new CopyrightEditViewModel
+            var viewModel = new CopyrightEditViewModel
             {
                 PublicId = Guid.NewGuid(),
                 RegistrationNumber = "TX-1",
@@ -307,57 +288,52 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
                 Owner = "Owner"
             };
 
-            var editActionResult = await controller.Edit(
-                editViewModel.PublicId, 
-                editViewModel, 
+            var actionResult = await controller.Edit(
+                viewModel.PublicId, 
+                viewModel, 
                 returnUrl: null,
                 cancellationToken: CancellationToken.None);
 
-            editActionResult.Should().
-                BeOfType<ForbidResult>();
-
-            copyrightService.VerifyNoOtherCalls();
+            actionResult.Should().BeOfType<ForbidResult>();
+            service.VerifyNoOtherCalls();
         }
 
         [Test]
         public async Task Get_Edit_MapsKnownEnumString_ToThatEnum_WithoutOtherText()
         {
             var id = Guid.NewGuid();
-            var copyrightService = 
+            var service = 
                 new Mock<ICopyrightService>();
 
-            copyrightService.Setup(
+            service.Setup(
                 s => s.GetDetailsAsync(
                 "u1", 
                 id, 
                 It.IsAny<CancellationToken>())).
-            ReturnsAsync(new CopyrightDetailsDto
+                ReturnsAsync(new CopyrightDetailsDto
             {
                 PublicId = id,
                 RegistrationNumber = "TX-KNOWN",
                 TypeOfWork = "VisualArts",
                 Title = "Title",
                 Owner = "Owner"
-            });
+                });
 
             var controller = 
                 TestCopyrightControllerFactory.CreateController(
-                copyrightService.Object, 
+                service.Object, 
                 userId: "u1");
 
-            var editActionResult = await controller.Edit(id);
+            var actionResult = await controller.Edit(id);
 
-            var view = editActionResult.Should().
-                BeOfType<ViewResult>().Subject;
+            var view = 
+                actionResult.Should().BeOfType<ViewResult>().Subject;
 
-            var editViewModel = view.Model.Should().
-                BeOfType<CopyrightEditViewModel>().Subject;
+            var viewModel = 
+                view.Model.Should().BeOfType<CopyrightEditViewModel>().Subject;
 
-            editViewModel.WorkType.Should().
-                Be(CopyrightWorkType.VisualArts);
-
-            editViewModel.OtherWorkType.Should().
-                BeNull();
+            viewModel.WorkType.Should().Be(CopyrightWorkType.VisualArts);
+            viewModel.OtherWorkType.Should().BeNull();
         }
 
         [Test]
@@ -365,41 +341,38 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
         {
             var id = Guid.NewGuid();
 
-            var copyrightService = 
+            var service = 
                 new Mock<ICopyrightService>();
 
-            copyrightService.Setup(
+            service.Setup(
                 s => s.GetDetailsAsync(
                 "u1", 
                 id, 
                 It.IsAny<CancellationToken>())).
-            ReturnsAsync(new CopyrightDetailsDto
+                ReturnsAsync(new CopyrightDetailsDto
             {
                 PublicId = id,
                 RegistrationNumber = "TX-EMPTY",
                 TypeOfWork = "",
                 Title = "Title",
                 Owner = "Owner"
-            });
+                });
 
             var controller = 
                 TestCopyrightControllerFactory.CreateController(
-                copyrightService.Object, 
+                service.Object, 
                 userId: "u1");
 
-            var editActionResult = await controller.Edit(id);
+            var actionResult = await controller.Edit(id);
 
-            var editView = editActionResult.Should().
-                BeOfType<ViewResult>().Subject;
+            var editView = 
+                actionResult.Should().BeOfType<ViewResult>().Subject;
 
-            var editViewModel = editView.Model.Should().
-                BeOfType<CopyrightEditViewModel>().Subject;
+            var viewModel = 
+                editView.Model.Should().BeOfType<CopyrightEditViewModel>().Subject;
 
-            editViewModel.WorkType.Should().
-                Be(CopyrightWorkType.Other);
-
-            editViewModel.OtherWorkType.Should().
-                BeNull();
+            viewModel.WorkType.Should().Be(CopyrightWorkType.Other);
+            viewModel.OtherWorkType.Should().BeNull();
         }
     }
 }

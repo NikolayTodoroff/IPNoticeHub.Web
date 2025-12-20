@@ -12,9 +12,9 @@ using Moq;
 using NUnit.Framework;
 using System.Security.Claims;
 
-namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TmCeaseDesistControllerTests
+namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TmCadControllerTests
 {
-    public abstract class BaseTmCaDControllerTests
+    public abstract class BaseTmCadControllerTests
     {
         protected const string TestUserId = "test-user-id";
 

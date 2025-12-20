@@ -7,9 +7,9 @@ using Moq;
 using NUnit.Framework;
 using System.Security.Claims;
 
-namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TmCeaseDesistControllerTests
+namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TmCadControllerTests
 {
-    public class RecoverTmCaDControllerTests : BaseTmCaDControllerTests
+    public class RecoverTmCadControllerTests : BaseTmCadControllerTests
     {
         [Test]
         public async Task RecoverCeaseDesist_ShouldReturnView_WhenDocumentExists()

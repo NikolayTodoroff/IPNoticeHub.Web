@@ -9,9 +9,9 @@ using Moq;
 using NUnit.Framework;
 using System.Security.Claims;
 
-namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TmCeaseDesistControllerTests
+namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TmCadControllerTests
 {
-    public class TmCaDControllerTests : BaseTmCaDControllerTests
+    public class TmCadControllerTests : BaseTmCadControllerTests
     {
         [Test]
         public async Task CeaseDesist_Get_ShouldReturnViewModel_WhenTrademarkExistsAndInCollection()

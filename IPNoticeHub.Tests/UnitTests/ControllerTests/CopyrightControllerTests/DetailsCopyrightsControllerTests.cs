@@ -7,11 +7,10 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 
-
 namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
 {
     [TestFixture]
-    public class CopyrightsControllerDetailsTests
+    public class DetailsCopyrightsControllerTests
     {
         [Test]
         public async Task Details_Success_ReturnsViewWithModel()
@@ -32,18 +31,17 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
                 "u1", 
                 id, 
                 It.IsAny<CancellationToken>())).
-            ReturnsAsync(dto);
+                ReturnsAsync(dto);
 
             var controller = 
                 TestCopyrightControllerFactory.CreateController(
                 service.Object, 
                 userId: "u1");
 
-            var detailsActionResult = 
-                await controller.Details(id);
+            var actionResult = await controller.Details(id);
 
-            var viewModel = detailsActionResult.Should().
-                BeOfType<ViewResult>().Subject;
+            var viewModel = 
+                actionResult.Should(). BeOfType<ViewResult>().Subject;
 
             viewModel.Model.Should().
                 BeEquivalentTo(new CopyrightDetailsViewModel
@@ -59,45 +57,42 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
         [Test]
         public async Task Details_NoUser_ReturnsForbid()
         {
-            var copyrightService = 
+            var service = 
                 new Mock<ICopyrightService>(MockBehavior.Strict);
 
             var controller = 
                 TestCopyrightControllerFactory.CreateController(
-                copyrightService.Object, 
+                service.Object, 
                 userId: null);
 
-            var detailsActionResult = 
+            var actionResult = 
                 await controller.Details(Guid.NewGuid());
 
-            detailsActionResult.Should().
-                BeOfType<ForbidResult>();
-
-            copyrightService.VerifyNoOtherCalls();
+            actionResult.Should().BeOfType<ForbidResult>();
+            service.VerifyNoOtherCalls();
         }
 
         [Test]
         public async Task Details_NotFound_ReturnsNotFound()
         {
-            var copyrightService = new Mock<ICopyrightService>();
+            var service = new Mock<ICopyrightService>();
 
-            copyrightService.Setup(
+            service.Setup(
                 s => s.GetDetailsAsync(
                 "u1", 
                 It.IsAny<Guid>(), 
                 It.IsAny<CancellationToken>())).
-            ReturnsAsync((CopyrightDetailsDto?)null);
+                ReturnsAsync((CopyrightDetailsDto?)null);
 
             var controller = 
                 TestCopyrightControllerFactory.CreateController(
-                copyrightService.Object, 
+                service.Object, 
                 userId: "u1");
 
             var detailsActionResult = 
                 await controller.Details(Guid.NewGuid());
 
-            detailsActionResult.Should().
-                BeOfType<NotFoundResult>();
+            detailsActionResult.Should().BeOfType<NotFoundResult>();
         }
     }
 }

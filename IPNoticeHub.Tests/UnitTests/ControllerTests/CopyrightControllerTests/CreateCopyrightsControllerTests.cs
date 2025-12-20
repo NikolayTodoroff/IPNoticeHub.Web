@@ -13,7 +13,7 @@ using IPNoticeHub.Application.Services.CopyrightServices.Abstractions;
 namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
 {
     [TestFixture]
-    public class CopyrightsControllerCreateTests
+    public class CreateCopyrightsControllerTests
     {
         [Test]
         public void Create_Get_ReturnsViewWithEmptyDto()
@@ -22,80 +22,74 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
                 TestCopyrightControllerFactory.CreateController(
                 Mock.Of<ICopyrightService>());
 
-            var createActionResult = controller.Create();
+            var actionResult = controller.Create();
 
-            var viewMode = createActionResult.Should().
-                BeOfType<ViewResult>().Subject;
+            var viewResult = 
+                actionResult.Should().BeOfType<ViewResult>().Subject;
 
-            viewMode.Model.Should().
-                BeOfType<CopyrightCreateViewModel>();
+            viewResult.Model.Should().BeOfType<CopyrightCreateViewModel>();
         }
 
         [Test]
         public async Task Create_Post_InvalidModel_ReturnsViewWithDto()
         {
-            var copyrightService = 
+            var service = 
                 new Mock<ICopyrightService>(MockBehavior.Strict);
 
             var controller = 
                 TestCopyrightControllerFactory.CreateController(
-                copyrightService.Object);
+                service.Object);
 
-            var dto = new CopyrightCreateViewModel{};
+            var viewModel = new CopyrightCreateViewModel{};
 
             controller.ModelState.AddModelError("Title", "Required");
 
-            var createActionResult = await controller.Create(dto);
+            var actionResult = await controller.Create(viewModel);
 
-            var viewMode = createActionResult.Should().
-                BeOfType<ViewResult>().Subject;
+            var viewResult = 
+                actionResult.Should().BeOfType<ViewResult>().Subject;
 
-            viewMode.Model.Should().
-                Be(dto);
-
-            copyrightService.VerifyNoOtherCalls();
+            viewResult.Model.Should().Be(viewModel);
+            service.VerifyNoOtherCalls();
         }
 
         [Test]
         public async Task Create_Post_WithNoUser_ReturnsForbid()
         {
-            var copyrightService = 
+            var service = 
                 new Mock<ICopyrightService>(MockBehavior.Strict);
 
             var controller = 
                 TestCopyrightControllerFactory.CreateController(
-                copyrightService.Object, 
+                service.Object, 
                 userId: null);
 
-            var dto = new CopyrightCreateViewModel { 
+            var viewModel = new CopyrightCreateViewModel { 
                 RegistrationNumber = "TX-1",
                 WorkType = CopyrightWorkType.Literary,
                 Title = "Title", 
                 Owner = "Owner" };
 
-            var createActionResult = await controller.Create(dto);
-
-            createActionResult.Should().
-                BeOfType<ForbidResult>();
-
-            copyrightService.VerifyNoOtherCalls();
+            var actionResult = await controller.Create(viewModel);
+            actionResult.Should().BeOfType<ForbidResult>();
+            service.VerifyNoOtherCalls();
         }
 
         [Test]
         public async Task Create_Post_Success_LocalReturnUrl_RedirectsThere_AndSetsTempData()
         {
-            var copyrightService = new Mock<ICopyrightService>();
+            var service = new Mock<ICopyrightService>();
 
-            copyrightService.Setup(
+            service.Setup(
                 s => s.CreateAsync(
                     "u1", 
                 It.IsAny<CopyrightCreateDto>(), 
                 It.IsAny<CancellationToken>())).
-            ReturnsAsync(Guid.NewGuid());
+                ReturnsAsync(Guid.NewGuid());
 
             var controller = 
                 TestCopyrightControllerFactory.CreateController(
-                copyrightService.Object, userId: "u1");
+                service.Object, userId: "u1");
 
             var createCopyrightDTO = 
                 new CopyrightCreateViewModel { 
@@ -104,19 +98,17 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
                 Title = "New Image",
                 Owner = "New Artist" };
 
-            var createActionResult = await controller.Create(
+            var actionResult = await controller.Create(
                 createCopyrightDTO, 
                 returnUrl: "/back");
 
-            var redirectResult = createActionResult.Should().
-                BeOfType<RedirectResult>().Subject;
+            var redirect = 
+                actionResult.Should().BeOfType<RedirectResult>().Subject;
 
-            redirectResult.Url.Should().Be("/back");
+            redirect.Url.Should().Be("/back");
+            controller.TempData["SuccessMessage"].Should().Be(CopyrightAddedMessage);
 
-            controller.TempData["SuccessMessage"].Should().
-                Be(CopyrightAddedMessage);
-
-            copyrightService.Verify(
+            service.Verify(
                 s => s.CreateAsync(
                     "u1", 
                 It.IsAny<CopyrightCreateDto>(), 
@@ -129,41 +121,40 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightControllerTests
         {
             var id = Guid.NewGuid();
 
-            var copyrightService = 
+            var service = 
                 new Mock<ICopyrightService>();
 
-            copyrightService.Setup(s => s.CreateAsync(
+            service.Setup(s => s.CreateAsync(
                 "u1", 
                 It.IsAny<CopyrightCreateDto>(), 
                 It.IsAny<CancellationToken>())).
-            ReturnsAsync(id);
+                ReturnsAsync(id);
 
             var controller = 
                 TestCopyrightControllerFactory.CreateController(
-                copyrightService.Object, 
+                service.Object, 
                 userId: "u1");
 
-            var dto = new CopyrightCreateViewModel { 
+            var viewModel = new CopyrightCreateViewModel { 
                 RegistrationNumber = "TX-3",
                 WorkType = CopyrightWorkType.Literary,
                 Title = "New Title",
                 Owner = "New Owner" };
 
-            var createActionResult = await controller.Create(
-                dto, 
+            var actionResult = await controller.Create(
+                viewModel, 
                 returnUrl: null);
 
-            var redirect = createActionResult.Should().
-                BeOfType<RedirectToActionResult>().Subject;
+            var redirect = 
+                actionResult.Should().BeOfType<RedirectToActionResult>().Subject;
 
             redirect.ActionName.Should().
                 Be(nameof(CopyrightsController.Details));
 
-            redirect.RouteValues!["id"].Should().
-                Be(id);
+            redirect.RouteValues!["id"].Should().Be(id);
 
-            controller.TempData["SuccessMessage"].Should().
-                Be(CopyrightAddedMessage);
+            controller.TempData[
+                "SuccessMessage"].Should().Be(CopyrightAddedMessage);
         }
     }
 }

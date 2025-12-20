@@ -8,9 +8,9 @@ using Moq;
 using NUnit.Framework;
 using System.Security.Claims;
 
-namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TmCeaseDesistControllerTests
+namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TmCadControllerTests
 {
-    public class PreviewTmCaDControllerTests : BaseTmCaDControllerTests
+    public class PreviewTmCadControllerTests : BaseTmCadControllerTests
     {
         [Test]
         public void CeaseDesistPreview_Get_ShouldReplaceTokens_WhenBodyContainsPlaceholders()
