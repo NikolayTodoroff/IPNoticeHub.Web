@@ -59,7 +59,10 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightDmcaControllerTes
             actionResult.Should().BeOfType<ForbidResult>();
 
             documentLibraryService.Verify(
-                s => s.SaveDocumentAsync(It.IsAny<string>(), It.IsAny<DocumentCreateDto>(), It.IsAny<CancellationToken>()),
+                s => s.SaveDocumentAsync(
+                    It.IsAny<string>(), 
+                    It.IsAny<DocumentCreateDto>(), 
+                    It.IsAny<CancellationToken>()),
                 Times.Never);
         }
 
@@ -70,7 +73,9 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightDmcaControllerTes
 
             controller.ModelState.AddModelError("SenderName", "Required");
 
-            var actionResult = await controller.DmcaEdit(viewModel, command: "save");
+            var actionResult = await controller.DmcaEdit(
+                viewModel, 
+                command: "save");
 
             actionResult.Should().BeOfType<ViewResult>();
             var viewResult = (ViewResult)actionResult;
@@ -79,7 +84,10 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightDmcaControllerTes
             viewResult.Model.Should().BeSameAs(viewModel);
 
             documentLibraryService.Verify(
-                s => s.SaveDocumentAsync(It.IsAny<string>(), It.IsAny<DocumentCreateDto>(), It.IsAny<CancellationToken>()),
+                s => s.SaveDocumentAsync(
+                    It.IsAny<string>(), 
+                    It.IsAny<DocumentCreateDto>(), 
+                    It.IsAny<CancellationToken>()),
                 Times.Never);
         }
 
@@ -93,9 +101,12 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightDmcaControllerTes
                 BodyTemplate = "Final body"
             };
 
-            documentLibraryService
-                .Setup(s => s.SaveDocumentAsync(TestUserId, It.IsAny<DocumentCreateDto>(), It.IsAny<CancellationToken>()))
-                .Returns(Task.FromResult(0));
+            documentLibraryService.Setup(
+                s => s.SaveDocumentAsync(
+                    TestUserId, 
+                    It.IsAny<DocumentCreateDto>(), 
+                    It.IsAny<CancellationToken>())).
+                    Returns(Task.FromResult(0));
 
             var actionResult = await controller.DmcaEdit(
                 viewModel, 
@@ -108,8 +119,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightDmcaControllerTes
 
             controller.TempData.ContainsKey("SuccessMessage").Should().BeTrue();
 
-            controller.TempData["SuccessMessage"]!.ToString()
-                .Should().Contain("successfully saved");
+            controller.TempData["SuccessMessage"]!.ToString().
+                Should().Contain("successfully saved");
 
             documentLibraryService.Verify(
                 s => s.SaveDocumentAsync(
@@ -149,7 +160,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightDmcaControllerTes
 
             var actionResult = await controller.DmcaEdit(
                 viewModel, 
-                command: "wat");
+                command: "unknown");
 
             actionResult.Should().BeOfType<ViewResult>();
             var viewResult = (ViewResult)actionResult;
