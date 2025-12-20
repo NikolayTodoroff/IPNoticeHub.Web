@@ -9,8 +9,7 @@ using IPNoticeHub.Application.Services.TrademarkService.Implementations;
 
 namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServiceTests
 {
-    [TestFixture]
-    public class TmCollectionServiceQueryEdgeCaseTests
+    public class QueryUserTrademarkServiceNegativeTests
     {
         [Test]
         public async Task IsInCollectionAsync_WhenUserDoesNotExistInDbContext_ReturnsFalse()
@@ -32,13 +31,22 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServi
 
             await testDbContext.SaveChangesAsync();
 
-            ITrademarkRepository tmRepository = new TrademarkRepository(testDbContext);
-            IUserTrademarkRepository userTmRepository = new UserTrademarkRepository(testDbContext);
+            ITrademarkRepository tmRepository = 
+                new TrademarkRepository(testDbContext);
 
-            var service = new TrademarkCollectionService(tmRepository, userTmRepository);
+            IUserTrademarkRepository userTmRepository = 
+                new UserTrademarkRepository(testDbContext);
+
+            var service = 
+                new TrademarkCollectionService(
+                    tmRepository, 
+                    userTmRepository);
 
             var linkExists = await service.IsInCollectionAsync(
-                "missing-user", tmEntity.Id, includeSoftDeleted: true, default);
+                "missing-user", 
+                tmEntity.Id, 
+                includeSoftDeleted: true,
+                default);
 
             linkExists.Should().BeFalse();
         }
@@ -59,13 +67,23 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServi
 
             await testDbContext.SaveChangesAsync();
 
-            ITrademarkRepository tmRepository = new TrademarkRepository(testDbContext);
-            IUserTrademarkRepository userTmRepository = new UserTrademarkRepository(testDbContext);
+            ITrademarkRepository tmRepository = 
+                new TrademarkRepository(testDbContext);
 
-            var service = new TrademarkCollectionService(tmRepository, userTmRepository);
+            IUserTrademarkRepository userTmRepository = 
+                new UserTrademarkRepository(testDbContext);
 
-            var pagedResult = await service.GetUserCollectionAsync(
-                user.Id, currentPage: 1, resultsPerPage: 10, default);
+            var service = 
+                new TrademarkCollectionService(
+                    tmRepository, 
+                    userTmRepository);
+
+            var pagedResult = 
+                await service.GetUserCollectionAsync(
+                user.Id, 
+                currentPage: 1, 
+                resultsPerPage: 10, 
+                default);
 
             pagedResult.ResultsCount.Should().Be(0);
             pagedResult.Results.Should().BeEmpty();
@@ -109,19 +127,39 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServi
 
             testDbContext.Users.Add(user);
 
-            testDbContext.TrademarkRegistrations.AddRange(tmEntity1, tmEntity2);
+            testDbContext.TrademarkRegistrations.AddRange(
+                tmEntity1, 
+                tmEntity2);
+
             await testDbContext.SaveChangesAsync();
 
-            ITrademarkRepository tmRepository = new TrademarkRepository(testDbContext);
-            IUserTrademarkRepository userTmRepository = new UserTrademarkRepository(testDbContext);
+            ITrademarkRepository tmRepository = 
+                new TrademarkRepository(testDbContext);
 
-            var service = new TrademarkCollectionService(tmRepository, userTmRepository);
+            IUserTrademarkRepository userTmRepository = 
+                new UserTrademarkRepository(testDbContext);
 
-            await service.AddAsync(user.Id, tmEntity1.Id, default);
-            await service.AddAsync(user.Id, tmEntity2.Id, default);
+            var service = 
+                new TrademarkCollectionService(
+                    tmRepository, 
+                    userTmRepository);
 
-            var pageResult = await service.GetUserCollectionAsync(
-                user.Id, currentPage: 0, resultsPerPage: 0, default);
+            await service.AddAsync(
+                user.Id, 
+                tmEntity1.Id, 
+                default);
+
+            await service.AddAsync(
+                user.Id, 
+                tmEntity2.Id, 
+                default);
+
+            var pageResult = 
+                await service.GetUserCollectionAsync(
+                user.Id, 
+                currentPage: 0, 
+                resultsPerPage: 0,
+                default);
 
             pageResult.CurrentPage.Should().BeGreaterThan(0);
             pageResult.ResultsCountPerPage.Should().BeGreaterThan(0);
