@@ -135,7 +135,7 @@ namespace IPNoticeHub.Web.Controllers
                     templateReplacer.ReplaceTemplate(template, placeholders);
             }
 
-            return View("CeaseDesistPreview", viewModel);
+            return RedirectToAction(nameof(CeaseDesistPreview), viewModel);
         }
 
         [HttpGet, Authorize(Policy = "HasUserId")]

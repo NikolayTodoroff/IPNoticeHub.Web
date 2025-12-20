@@ -1,12 +1,65 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using IPNoticeHub.Application.Rendering.Abstractions;
+using IPNoticeHub.Application.Services.CopyrightServices.Abstractions;
+using IPNoticeHub.Application.Services.DocumentLibraryService.Abstractions;
+using IPNoticeHub.Application.Services.PdfGenerationServices.Abstractions;
+using IPNoticeHub.Application.Templates.Abstractions;
+using IPNoticeHub.Web.Controllers;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Moq;
+using NUnit.Framework;
+using System.Security.Claims;
 
 namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightCadControllerTests
 {
-    public class BaseCopyrightCadControllerTests
+    public abstract class BaseCopyrightCadControllerTests
     {
+        protected const string TestUserId = "test-user-id";
+
+        protected Mock<ICopyrightService> copyrightService = null!;
+        protected Mock<IPdfLetterService> pdfService = null!;
+        protected Mock<ILetterTemplateProvider> letterTemplateProvider = null!;
+        protected Mock<IDocumentLibraryService> documentLibraryService = null!;
+        protected Mock<ITemplateTokenReplacer> templateReplacer = null!;
+
+        protected CopyrightCadController controller = null!;
+
+        [SetUp]
+        public void BaseSetUp()
+        {
+            copyrightService = new Mock<ICopyrightService>();
+            pdfService = new Mock<IPdfLetterService>();
+            letterTemplateProvider = new Mock<ILetterTemplateProvider>();
+            documentLibraryService = new Mock<IDocumentLibraryService>();
+            templateReplacer = new Mock<ITemplateTokenReplacer>();
+
+            controller = new CopyrightCadController(
+                copyrightService.Object,
+                pdfService.Object,
+                letterTemplateProvider.Object,
+                documentLibraryService.Object,
+                templateReplacer.Object);
+
+            SetupControllerContext();
+        }
+
+        protected void SetupControllerContext()
+        {
+            var httpContext = new DefaultHttpContext
+            {
+                User = new ClaimsPrincipal(new ClaimsIdentity(new[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, TestUserId)
+                }, "TestAuth"))
+            };
+
+            controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            controller.TempData = new TempDataDictionary(httpContext, Mock.Of<ITempDataProvider>());
+        }
     }
 }
