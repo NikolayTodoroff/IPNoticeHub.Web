@@ -130,7 +130,6 @@ namespace IPNoticeHub.Web.Controllers
                 dto,
                 MergeStrategy.FillBlanks);
 
-
             if (string.IsNullOrWhiteSpace(viewModel.BodyTemplate) ||
                 viewModel.BodyTemplate.Contains("{{"))
             {
