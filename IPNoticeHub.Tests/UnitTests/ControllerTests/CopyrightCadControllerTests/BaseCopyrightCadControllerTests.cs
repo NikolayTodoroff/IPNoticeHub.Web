@@ -2,6 +2,7 @@
 using IPNoticeHub.Application.Services.CopyrightServices.Abstractions;
 using IPNoticeHub.Application.Services.DocumentLibraryService.Abstractions;
 using IPNoticeHub.Application.Services.PdfGenerationServices.Abstractions;
+using IPNoticeHub.Application.Services.DraftServices.Abstractions;
 using IPNoticeHub.Application.Templates.Abstractions;
 using IPNoticeHub.Web.Controllers;
 using Microsoft.AspNetCore.Http;
@@ -22,6 +23,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightCadControllerTest
         protected Mock<ILetterTemplateProvider> letterTemplateProvider = null!;
         protected Mock<IDocumentLibraryService> documentLibraryService = null!;
         protected Mock<ITemplateTokenReplacer> templateReplacer = null!;
+        protected Mock<IUserInputDraftStore> draftStore = null!;
 
         protected CopyrightCadController controller = null!;
 
@@ -33,13 +35,15 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightCadControllerTest
             letterTemplateProvider = new Mock<ILetterTemplateProvider>();
             documentLibraryService = new Mock<IDocumentLibraryService>();
             templateReplacer = new Mock<ITemplateTokenReplacer>();
+            draftStore = new Mock<IUserInputDraftStore>();
 
             controller = new CopyrightCadController(
                 copyrightService.Object,
                 pdfService.Object,
                 letterTemplateProvider.Object,
                 documentLibraryService.Object,
-                templateReplacer.Object);
+                templateReplacer.Object,
+                draftStore.Object);
 
             SetupControllerContext();
         }

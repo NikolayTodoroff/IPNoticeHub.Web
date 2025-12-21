@@ -1,6 +1,9 @@
-﻿using IPNoticeHub.Application.Rendering.Abstractions;
+﻿using IPNoticeHub.Application.DTOs.DraftStoreDTOs;
+using IPNoticeHub.Application.Rendering.Abstractions;
 using IPNoticeHub.Application.Services.CopyrightServices.Abstractions;
 using IPNoticeHub.Application.Services.DocumentLibraryService.Abstractions;
+using IPNoticeHub.Application.Services.DraftServices.Abstractions;
+using IPNoticeHub.Application.Services.PdfGenerationServices.Abstractions;
 using IPNoticeHub.Application.Templates.Abstractions;
 using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Web.Extensions;
@@ -8,8 +11,7 @@ using IPNoticeHub.Web.Models.PdfGeneration;
 using IPNoticeHub.Web.WebHelpers.Mappings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using static IPNoticeHub.Web.WebHelpers.ApplyEntityDetails;
-using IPNoticeHub.Application.Services.PdfGenerationServices.Abstractions;
+using static IPNoticeHub.Shared.Constants.InputDraftConstants.UserInputDraftOptions;
 
 namespace IPNoticeHub.Web.Controllers
 {
@@ -21,22 +23,25 @@ namespace IPNoticeHub.Web.Controllers
         private readonly ILetterTemplateProvider letterTemplateProvider;
         private readonly IDocumentLibraryService documentLibraryService;
         private readonly ITemplateTokenReplacer templateReplacer;
+        private readonly IUserInputDraftStore draftStore;
 
         public CopyrightCadController(
             ICopyrightService copyrightService,
             IPdfLetterService pdfService,
             ILetterTemplateProvider letterTemplateProvider,
             IDocumentLibraryService documentLibraryService, 
-            ITemplateTokenReplacer templateReplacer)
+            ITemplateTokenReplacer templateReplacer, 
+            IUserInputDraftStore draftStore)
         {
             this.copyrightService = copyrightService;
             this.pdfService = pdfService;
             this.letterTemplateProvider = letterTemplateProvider;
             this.documentLibraryService = documentLibraryService;
             this.templateReplacer = templateReplacer;
+            this.draftStore = draftStore;
         }
 
-        [HttpGet, Authorize(Policy = "HasUserId")]
+        [HttpGet]
         public async Task<IActionResult> CeaseDesist(
             Guid publicId,
             CancellationToken cancellationToken = default)
@@ -65,7 +70,7 @@ namespace IPNoticeHub.Web.Controllers
             return View(viewModel);
         }
 
-        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
+        [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> CeaseDesist(
             Guid publicId,
             CeaseDesistViewModel viewModel,
@@ -82,28 +87,68 @@ namespace IPNoticeHub.Web.Controllers
                 $"CeaseDesist-{viewModel.WorkTitle}-{DateTime.UtcNow:DateTimeFormat}.pdf");
         }
 
-        [HttpGet, Authorize(Policy = "HasUserId")]
-        public async Task<IActionResult> CeaseDesistPreview(CeaseDesistViewModel viewModel)
+        [HttpGet]
+        public async Task<IActionResult> CeaseDesistPreview(
+            Guid publicId, 
+            Guid? draftId, 
+            CancellationToken cancellationToken = default)
         {
             if (!User.TryGetUserId(out var userId)) return Forbid();
 
-            if (string.IsNullOrWhiteSpace(viewModel.BodyTemplate) ||
-                viewModel.BodyTemplate.Contains("{{"))
+            if (draftId is not Guid id)
             {
-                var template = letterTemplateProvider
-                    .GetTemplateByKey("CND-Copyright")?.BodyTemplate ?? string.Empty;
-
-                var placeholders =
-                    CopyrightsMapping.MapCeaseDesistViewModelToPlaceholders(viewModel);
-
-                viewModel.BodyTemplate = 
-                    templateReplacer.ReplaceTemplate(template, placeholders);
+                TempData["PreviewInfo"] = 
+                    "No preview data found. Please complete the form.";
+                return RedirectToAction(nameof(CeaseDesist), new { publicId });
             }
 
-            return View("CeaseDesistPreview", viewModel);
+            var draftDto = 
+                await draftStore.GetAsync<CopyrightCadDraftDto>(
+                    userId: userId,
+                    draftId: id,
+                    keySpace: CopyrightCadKeySpace,
+                    cancellationToken: cancellationToken);
+
+            if (draftDto is null)
+            {
+                TempData["PreviewInfo"] = 
+                    "Your preview session expired. Please re-enter your details.";
+                return RedirectToAction(nameof(CeaseDesist), new { publicId });
+            }
+
+            var copyrightDto = 
+                await copyrightService.GetDetailsAsync(
+                userId, 
+                publicId, 
+                cancellationToken);
+            
+            if (copyrightDto is null)
+            {
+                TempData["PreviewInfo"] =
+                    "Unable to load copyright details for preview.";
+                return RedirectToAction(nameof(CeaseDesist), new { publicId });
+            }
+
+            var viewModel = 
+                CopyrightsMapping.MapDetailsDtoToCeaseDesistViewModel(
+                copyrightDto, 
+                publicId);
+
+            CopyrightCadDraftMapping.MapDraftDtoToCeaseDesistViewModel(viewModel, draftDto);
+
+            var template = 
+                letterTemplateProvider.GetTemplateByKey("CND-Copyright")?.BodyTemplate ?? 
+                string.Empty;
+
+            var placeholders = 
+                CopyrightCadDraftMapping.MapCeaseDesistViewModelToPlaceholders(viewModel);
+
+            viewModel.BodyTemplate = templateReplacer.ReplaceTemplate(template, placeholders);
+
+            return View(viewModel);
         }
 
-        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
+        [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> CeaseDesistPreview(
             CeaseDesistViewModel viewModel,
             CancellationToken cancellationToken = default)
@@ -112,33 +157,26 @@ namespace IPNoticeHub.Web.Controllers
 
             if (!User.TryGetUserId(out var userId)) return Forbid();
 
-            var dto = await copyrightService.GetDetailsAsync(
-                userId,
-                viewModel.PublicId,
-                cancellationToken);
 
-            if (dto != null) ApplyCopyrightCeaseDesistDetails(
-                viewModel,
-                dto,
-                MergeStrategy.FillBlanks);
+            viewModel.BodyTemplate = string.Empty;
 
-            if (string.IsNullOrWhiteSpace(viewModel.BodyTemplate) ||
-                viewModel.BodyTemplate.Contains("{{"))
-            {
-                var template = letterTemplateProvider.GetTemplateByKey(
-                    "CND-Copyright")?.BodyTemplate ?? string.Empty;
+            var draftDto = 
+                CopyrightCadDraftMapping.MapCeaseDesistViewModelDraftDto(viewModel);
 
-                var placeholders =
-                    CopyrightsMapping.MapCeaseDesistViewModelToPlaceholders(viewModel);
+            var draftId = await draftStore.SaveAsync(
+                userId: userId,
+                keySpace: CopyrightCadKeySpace,
+                payload: draftDto,
+                ttl: InputTtl,                        
+                cancellationToken: cancellationToken);
 
-                viewModel.BodyTemplate =
-                    templateReplacer.ReplaceTemplate(template, placeholders);
-            }
-
-            return RedirectToAction(nameof(CeaseDesistPreview), viewModel);
+            return RedirectToAction(
+                nameof(CeaseDesistPreview), 
+                new { publicId = viewModel.PublicId, draftId
+                });
         }
 
-        [HttpGet, Authorize(Policy = "HasUserId")]
+        [HttpGet]
         public IActionResult CeaseDesistEdit(CeaseDesistViewModel model)
         {
             if (!User.TryGetUserId(out var userId)) return Forbid();
@@ -146,7 +184,7 @@ namespace IPNoticeHub.Web.Controllers
             return View("CeaseDesistEdit", model);
         }
 
-        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
+        [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> CeaseDesistEdit(
             CeaseDesistViewModel viewModel,
             string command,
@@ -181,7 +219,6 @@ namespace IPNoticeHub.Web.Controllers
         }
 
         [HttpGet]
-        [Authorize(Policy = "HasUserId")]
         public async Task<IActionResult> RecoverCeaseDesist(
             int documentId,
             CancellationToken cancellationToken = default)

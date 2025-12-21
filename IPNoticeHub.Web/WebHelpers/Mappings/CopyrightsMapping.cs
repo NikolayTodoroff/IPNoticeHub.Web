@@ -167,30 +167,6 @@ namespace IPNoticeHub.Web.WebHelpers.Mappings
             };
         }
 
-        public static Dictionary<string, string> MapCeaseDesistViewModelToPlaceholders(CeaseDesistViewModel viewModel)
-        {
-            static string mapModel(string? v) => v ?? string.Empty;
-
-            return new Dictionary<string, string>
-            {
-                ["Date"] = DateTime.UtcNow
-                    .ToString(DateTimeFormat, CultureInfo.InvariantCulture),
-
-                ["RecipientName"] = mapModel(viewModel.RecipientName),
-                ["RecipientAddress"] = mapModel(viewModel.RecipientAddress),
-                ["RecipientEmail"] = mapModel(viewModel.RecipientEmail),
-
-                ["SenderName"] = mapModel(viewModel.SenderName),
-                ["SenderAddress"] = mapModel(viewModel.SenderAddress),
-                ["SenderEmail"] = mapModel(viewModel.SenderEmail),
-
-                ["InfringingUrl"] = mapModel(viewModel.InfringingUrl),
-                ["WorkTitle"] = mapModel(viewModel.WorkTitle),
-                ["RegistrationNumber"] = mapModel(viewModel.RegistrationNumber),
-                ["AdditionalFacts"] = mapModel(viewModel.AdditionalFacts)
-            };
-        }
-
         public static CeaseDesistViewModel MapDetailsDtoToCeaseDesistViewModel(CopyrightDetailsDto dto,Guid publicId)
         {
             return new CeaseDesistViewModel()
