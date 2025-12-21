@@ -1,14 +1,15 @@
 ﻿using Humanizer;
+using IPNoticeHub.Application.DTOs.CopyrightDTOs;
+using IPNoticeHub.Application.DTOs.DocumentLibraryDTOs;
+using IPNoticeHub.Application.DTOs.PdfDTOs;
+using IPNoticeHub.Application.DTOs.TrademarkDTOs;
 using IPNoticeHub.Shared.Enums;
+using IPNoticeHub.Shared.Support;
 using IPNoticeHub.Web.Models.PdfGeneration;
 using IPNoticeHub.Web.Models.Trademarks;
 using IPNoticeHub.Web.ViewModels.Trademarks;
 using System.Globalization;
 using static IPNoticeHub.Shared.Constants.DateTimeFormats.DefaultDateTimeFormat;
-using IPNoticeHub.Shared.Support;
-using IPNoticeHub.Application.DTOs.DocumentLibraryDTOs;
-using IPNoticeHub.Application.DTOs.TrademarkDTOs;
-using IPNoticeHub.Application.DTOs.PdfDTOs;
 
 namespace IPNoticeHub.Web.WebHelpers.Mappings
 {
@@ -147,6 +148,16 @@ namespace IPNoticeHub.Web.WebHelpers.Mappings
 
                 LetterDate = DateTime.UtcNow,
                 BodyTemplate = viewModel.BodyTemplate
+            };
+        }
+
+        public static CeaseDesistViewModel MapDetailsDtoToCeaseDesistViewModel(TrademarkDetailsDto dto, Guid publicId)
+        {
+            return new CeaseDesistViewModel()
+            {
+                PublicId = publicId,
+                WorkTitle = dto.Wordmark,
+                RegistrationNumber = dto.RegistrationNumber
             };
         }
     }

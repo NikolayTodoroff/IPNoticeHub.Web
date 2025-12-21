@@ -103,7 +103,7 @@ namespace IPNoticeHub.Web.Controllers
             }
 
             var draftDto = 
-                await draftStore.GetAsync<CopyrightCadDraftDto>(
+                await draftStore.GetAsync<CeaseDesistDraftDto>(
                     userId: userId,
                     draftId: id,
                     keySpace: CopyrightCadKeySpace,
@@ -134,14 +134,14 @@ namespace IPNoticeHub.Web.Controllers
                 copyrightDto, 
                 publicId);
 
-            CopyrightCadDraftMapping.MapDraftDtoToCeaseDesistViewModel(viewModel, draftDto);
+            UserInputDraftMapping.MapDraftDtoToCeaseDesistViewModel(viewModel, draftDto);
 
             var template = 
                 letterTemplateProvider.GetTemplateByKey("CND-Copyright")?.BodyTemplate ?? 
                 string.Empty;
 
             var placeholders = 
-                CopyrightCadDraftMapping.MapCeaseDesistViewModelToPlaceholders(viewModel);
+                UserInputDraftMapping.MapCeaseDesistViewModelToPlaceholders(viewModel);
 
             viewModel.BodyTemplate = templateReplacer.ReplaceTemplate(template, placeholders);
 
@@ -157,11 +157,10 @@ namespace IPNoticeHub.Web.Controllers
 
             if (!User.TryGetUserId(out var userId)) return Forbid();
 
-
             viewModel.BodyTemplate = string.Empty;
 
             var draftDto = 
-                CopyrightCadDraftMapping.MapCeaseDesistViewModelDraftDto(viewModel);
+                UserInputDraftMapping.MapCeaseDesistViewModelDraftDto(viewModel);
 
             var draftId = await draftStore.SaveAsync(
                 userId: userId,
@@ -172,8 +171,7 @@ namespace IPNoticeHub.Web.Controllers
 
             return RedirectToAction(
                 nameof(CeaseDesistPreview), 
-                new { publicId = viewModel.PublicId, draftId
-                });
+                new { publicId = viewModel.PublicId, draftId });
         }
 
         [HttpGet]

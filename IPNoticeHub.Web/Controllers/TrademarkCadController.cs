@@ -1,5 +1,9 @@
-﻿using IPNoticeHub.Application.Rendering.Abstractions;
+﻿using IPNoticeHub.Application.DTOs.DraftStoreDTOs;
+using IPNoticeHub.Application.Rendering.Abstractions;
+using IPNoticeHub.Application.Services.CopyrightService.Implementations;
 using IPNoticeHub.Application.Services.DocumentLibraryService.Abstractions;
+using IPNoticeHub.Application.Services.DraftServices.Abstractions;
+using IPNoticeHub.Application.Services.PdfGenerationServices.Abstractions;
 using IPNoticeHub.Application.Services.TrademarkService.Abstractions;
 using IPNoticeHub.Application.Templates.Abstractions;
 using IPNoticeHub.Application.Trademarks.Abstractions;
@@ -9,8 +13,8 @@ using IPNoticeHub.Web.Models.PdfGeneration;
 using IPNoticeHub.Web.WebHelpers.Mappings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using static IPNoticeHub.Web.WebHelpers.ApplyEntityDetails;
-using IPNoticeHub.Application.Services.PdfGenerationServices.Abstractions;
+using static IPNoticeHub.Shared.Constants.InputDraftConstants.UserInputDraftOptions;
+
 
 namespace IPNoticeHub.Web.Controllers
 {
@@ -23,6 +27,7 @@ namespace IPNoticeHub.Web.Controllers
         private readonly ILetterTemplateProvider letterTemplateProvider;
         private readonly IDocumentLibraryService documentLibraryService;
         private readonly ITemplateTokenReplacer templateReplacer;
+        private readonly IUserInputDraftStore draftStore;
 
         public TrademarkCadController(
             ITrademarkSearchService trademarkSearchService,
@@ -30,7 +35,8 @@ namespace IPNoticeHub.Web.Controllers
             IPdfLetterService pdfService,
             ILetterTemplateProvider letterTemplateProvider,
             IDocumentLibraryService documentLibraryService,
-            ITemplateTokenReplacer templateReplacer)
+            ITemplateTokenReplacer templateReplacer,
+            IUserInputDraftStore draftStore)
         {
             this.trademarkSearchService = trademarkSearchService;
             this.trademarkCollectionService = trademarkCollectionService;
@@ -38,6 +44,7 @@ namespace IPNoticeHub.Web.Controllers
             this.letterTemplateProvider = letterTemplateProvider;
             this.documentLibraryService = documentLibraryService;
             this.templateReplacer = templateReplacer;
+            this.draftStore = draftStore;
         }
 
         [HttpGet]
@@ -95,28 +102,67 @@ namespace IPNoticeHub.Web.Controllers
                 $"CeaseDesist-{viewModel.WorkTitle}-{DateTime.UtcNow:DateTimeFormat}.pdf");
         }
 
-        [HttpGet, Authorize(Policy = "HasUserId")]
-        public IActionResult CeaseDesistPreview(CeaseDesistViewModel viewModel)
+        [HttpGet]
+        public async Task<IActionResult> CeaseDesistPreview(
+            Guid publicId,
+            Guid? draftId,
+            CancellationToken cancellationToken = default)
         {
             if (!User.TryGetUserId(out var userId)) return Forbid();
 
-            if (string.IsNullOrWhiteSpace(viewModel.BodyTemplate) ||
-                viewModel.BodyTemplate.Contains("{{"))
+            if (draftId is not Guid id)
             {
-                var template = letterTemplateProvider.GetTemplateByKey(
-                    "CND-Trademark")?.BodyTemplate ?? string.Empty;
-
-                var placeholders =
-                    TrademarksMapping.MapCeaseDesistViewModellToPlaceholders(viewModel);
-
-                viewModel.BodyTemplate = 
-                    templateReplacer.ReplaceTemplate(template, placeholders);
+                TempData["PreviewInfo"] =
+                    "No preview data found. Please complete the form.";
+                return RedirectToAction(nameof(CeaseDesist), new { publicId });
             }
 
-            return View("CeaseDesistPreview", viewModel);
+            var draftDto =
+                await draftStore.GetAsync<CeaseDesistDraftDto>(
+                    userId: userId,
+                    draftId: id,
+                    keySpace: TrademarkCadKeySpace,
+                    cancellationToken: cancellationToken);
+
+            if (draftDto is null)
+            {
+                TempData["PreviewInfo"] =
+                    "Your preview session expired. Please re-enter your details.";
+                return RedirectToAction(nameof(CeaseDesist), new { publicId });
+            }
+
+            var trademarkDto =
+                await trademarkSearchService.GetDetailsAsync(
+                publicId,
+                cancellationToken);
+
+            if (trademarkDto is null)
+            {
+                TempData["PreviewInfo"] =
+                    "Unable to load trademark details for preview.";
+                return RedirectToAction(nameof(CeaseDesist), new { publicId });
+            }
+
+            var viewModel =
+                TrademarksMapping.MapDetailsDtoToCeaseDesistViewModel(
+                trademarkDto,
+                publicId);
+
+            UserInputDraftMapping.MapDraftDtoToCeaseDesistViewModel(viewModel, draftDto);
+
+            var template =
+                letterTemplateProvider.GetTemplateByKey("CND-Trademark")?.BodyTemplate ??
+                string.Empty;
+
+            var placeholders =
+                UserInputDraftMapping.MapCeaseDesistViewModelToPlaceholders(viewModel);
+
+            viewModel.BodyTemplate = templateReplacer.ReplaceTemplate(template, placeholders);
+
+            return View(viewModel);
         }
 
-        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
+        [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> CeaseDesistPreview(
             CeaseDesistViewModel viewModel,
             CancellationToken cancellationToken = default)
@@ -125,32 +171,23 @@ namespace IPNoticeHub.Web.Controllers
 
             if (!User.TryGetUserId(out var userId)) return Forbid();
 
-            var dto = await trademarkSearchService.GetDetailsAsync(
-                viewModel.PublicId,
-                cancellationToken);
+            viewModel.BodyTemplate = string.Empty;
 
-            if (dto != null) ApplyTrademarkCeaseDesistDetails(
-                viewModel,
-                dto,
-                MergeStrategy.FillBlanks);
+            var draftDto =
+                UserInputDraftMapping.MapCeaseDesistViewModelDraftDto(viewModel);
 
-            if (string.IsNullOrWhiteSpace(viewModel.BodyTemplate) ||
-                viewModel.BodyTemplate.Contains("{{"))
-            {
-                var template = letterTemplateProvider.GetTemplateByKey(
-                    "CND-Trademark")?.BodyTemplate ?? string.Empty;
+            var draftId = await draftStore.SaveAsync(
+                userId: userId,
+                keySpace: TrademarkCadKeySpace,
+                payload: draftDto,
+                ttl: InputTtl,
+                cancellationToken: cancellationToken);
 
-                var placeholders =
-                    TrademarksMapping.MapCeaseDesistViewModellToPlaceholders(viewModel);
-
-                viewModel.BodyTemplate =
-                    templateReplacer.ReplaceTemplate(template, placeholders);
-            }
-
-            return RedirectToAction(nameof(CeaseDesistPreview), viewModel);
+            return RedirectToAction(nameof(CeaseDesistPreview),
+                new{ publicId = viewModel.PublicId, draftId });
         }
 
-        [HttpGet, Authorize(Policy = "HasUserId")]
+        [HttpGet]
         public IActionResult CeaseDesistEdit(CeaseDesistViewModel viewModel)
         {
             if (!User.TryGetUserId(out var userId)) return Forbid();
@@ -158,7 +195,7 @@ namespace IPNoticeHub.Web.Controllers
             return View("CeaseDesistEdit", viewModel);
         }
 
-        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
+        [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> CeaseDesistEdit(
             CeaseDesistViewModel viewModel,
             string command,
@@ -190,7 +227,6 @@ namespace IPNoticeHub.Web.Controllers
         }
 
         [HttpGet]
-        [Authorize(Policy = "HasUserId")]
         public async Task<IActionResult> RecoverCeaseDesist(
             int documentId,
             CancellationToken cancellationToken = default)

@@ -1,16 +1,15 @@
 ﻿using IPNoticeHub.Application.DTOs.DraftStoreDTOs;
 using IPNoticeHub.Web.Models.PdfGeneration;
 using System.Globalization;
-using System.Runtime.Serialization;
 using static IPNoticeHub.Shared.Constants.DateTimeFormats;
 
 namespace IPNoticeHub.Web.WebHelpers.Mappings
 {
-    public class CopyrightCadDraftMapping
+    public class UserInputDraftMapping
     {
-        public static CopyrightCadDraftDto MapCeaseDesistViewModelDraftDto(CeaseDesistViewModel viewModel)
+        public static CeaseDesistDraftDto MapCeaseDesistViewModelDraftDto(CeaseDesistViewModel viewModel)
         {
-            return new CopyrightCadDraftDto
+            return new CeaseDesistDraftDto
             {
                 WorkTitle = viewModel.WorkTitle,
                 RegistrationNumber = viewModel.RegistrationNumber,
@@ -28,7 +27,7 @@ namespace IPNoticeHub.Web.WebHelpers.Mappings
             };
         }
 
-        public static void MapDraftDtoToCeaseDesistViewModel(CeaseDesistViewModel viewModel, CopyrightCadDraftDto dto)
+        public static void MapDraftDtoToCeaseDesistViewModel(CeaseDesistViewModel viewModel, CeaseDesistDraftDto dto)
         {
             viewModel.WorkTitle = dto.WorkTitle ?? string.Empty;
             viewModel.RegistrationNumber = dto.RegistrationNumber;

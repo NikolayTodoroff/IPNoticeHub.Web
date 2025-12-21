@@ -1,6 +1,6 @@
 ﻿namespace IPNoticeHub.Application.DTOs.DraftStoreDTOs
 {
-    public class CopyrightCadDraftDto
+    public class CeaseDesistDraftDto
     {
         public string? WorkTitle { get; init; }
         public string? RegistrationNumber { get; init; }

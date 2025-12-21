@@ -1,15 +1,10 @@
 ﻿using IPNoticeHub.Application.DTOs.DraftStoreDTOs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace IPNoticeHub.Application.LetterComposition.PlaceholderBuilders
 {
     public class CopyrightCadPlaceholderBuilder
     {
-        public static IDictionary<string, string> BuildPlaceholders(CopyrightCadDraftDto dto)
+        public static IDictionary<string, string> BuildPlaceholders(CeaseDesistDraftDto dto)
         {
             var placeholders = 
                 new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
