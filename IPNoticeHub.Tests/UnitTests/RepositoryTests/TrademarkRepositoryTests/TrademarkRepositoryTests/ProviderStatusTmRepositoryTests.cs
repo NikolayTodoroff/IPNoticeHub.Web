@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Shared.Enums;
-using IPNoticeHub.Tests.UnitTests.TestFactories;
+using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 using NUnit.Framework;
 using IPNoticeHub.Application.DTOs.TrademarkDTOs;
 using IPNoticeHub.Infrastructure.Persistence.Repositories.TrademarkRepository;
@@ -9,7 +9,7 @@ using IPNoticeHub.Infrastructure.Persistence;
 namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkRepositoryTests
 {
     [TestFixture]
-    public class TmRepoProviderStatusTests
+    public class ProviderStatusTmRepositoryTests
     {
         [Test]
         public void QueryRepository_FilterByProviderOnly()
@@ -72,7 +72,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
         }
 
         [Test]
-        public void QueryRepositoru_FiltersByStatusOnly()
+        public void QueryRepository_FiltersByStatusOnly()
         {
             using IPNoticeHubDbContext? testDbContext = 
                 InMemoryDbContextFactory.CreateTestDbContext();
@@ -128,8 +128,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             Select(t => t.Wordmark).
             ToArray();
 
-            pendingOnly.Should().
-                BeEquivalentTo(new[] { "BETA" });
+            pendingOnly.Should().BeEquivalentTo(new[] { "BETA" });
         }
 
         [Test]
@@ -207,8 +206,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             Select(t => t.Wordmark).
             ToArray();
 
-            result.Should().
-                Equal("ALPHA");
+            result.Should().Equal("ALPHA");
         }
     }
 }

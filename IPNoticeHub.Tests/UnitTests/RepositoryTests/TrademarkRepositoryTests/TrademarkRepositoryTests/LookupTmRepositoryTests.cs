@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Shared.Enums;
-using IPNoticeHub.Tests.UnitTests.TestFactories;
+using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using IPNoticeHub.Infrastructure.Persistence.Repositories.TrademarkRepository;
@@ -8,7 +8,7 @@ using IPNoticeHub.Domain.Entities.Trademarks;
 
 namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkRepositoryTests
 {
-    public class TmRepoLookupsTests
+    public class LookupTmRepositoryTests
     {
         [Test]
         public async Task ExistsAsync_ReturnsTrue_WhenIdExists()

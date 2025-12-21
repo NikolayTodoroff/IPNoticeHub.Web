@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Shared.Enums;
-using IPNoticeHub.Tests.UnitTests.TestFactories;
+using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 using static IPNoticeHub.Shared.Constants.PagingConstants.DefaultPagingConstants;
 using Microsoft.AspNetCore.Mvc;
 using Moq;

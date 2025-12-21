@@ -2,7 +2,7 @@
 using IPNoticeHub.Domain.Entities.LegalDocuments;
 using IPNoticeHub.Infrastructure.Persistence.Repositories.DocumentLibraryRepository;
 using IPNoticeHub.Shared.Enums;
-using IPNoticeHub.Tests.UnitTests.TestFactories;
+using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;

@@ -2,13 +2,13 @@
 using IPNoticeHub.Application.Repositories.CopyrightRepository;
 using IPNoticeHub.Infrastructure.Persistence;
 using IPNoticeHub.Infrastructure.Persistence.Repositories.CopyrightRepository;
-using IPNoticeHub.Tests.UnitTests.TestFactories;
+using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 using NUnit.Framework;
 
 namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Copyrights
 {
     [TestFixture]
-    public class CopyrightRepoValidOutcomeTests
+    public class CopyrightRepositoryTests
     {
         [Test]
         public async Task Add_Then_GetByPublicId_ReturnsSameEntity()
@@ -27,25 +27,18 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Copyrights
             testDbContext.CopyrightRegistrations.Add(copyrightEntity);
             await testDbContext.SaveChangesAsync();
 
-            ICopyrightRepository copyrightRepo = 
+            ICopyrightRepository repository = 
                 new CopyrightRepository(testDbContext);
 
             var fetchedEntity = 
-                await copyrightRepo.GetByPublicIdAsync(
+                await repository.GetByPublicIdAsync(
                 copyrightEntity.PublicId, 
                 default);
 
-            fetchedEntity.Should().
-                NotBeNull();
-
-            fetchedEntity!.Id.Should().
-                Be(copyrightEntity.Id);
-
-            fetchedEntity.PublicId.Should().
-                Be(copyrightEntity.PublicId);
-
-            fetchedEntity.Title.Should().
-                Be("Space Science");
+            fetchedEntity.Should().NotBeNull();
+            fetchedEntity!.Id.Should().Be(copyrightEntity.Id);
+            fetchedEntity.PublicId.Should().Be(copyrightEntity.PublicId);
+            fetchedEntity.Title.Should().Be("Space Science");
         }
 
         [Test]
@@ -54,7 +47,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Copyrights
             using var testDbContext = 
                 InMemoryDbContextFactory.CreateTestDbContext();
 
-            ICopyrightRepository copyrightRepo = 
+            ICopyrightRepository repository = 
                 new CopyrightRepository(testDbContext);
 
             var copyrightEntity =
@@ -63,23 +56,18 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Copyrights
                 title: "Test Copyright",
                 owner: "Captain America");
 
-            await copyrightRepo.AddAsync(
+            await repository.AddAsync(
                 copyrightEntity, 
                 CancellationToken.None);
 
             var fetchedEntity = 
-                await copyrightRepo.GetByRegNumberAsync(
+                await repository.GetByRegNumberAsync(
                     "TX-123456",true, 
                     CancellationToken.None);
 
-            fetchedEntity.Should().
-                NotBeNull();
-
-            fetchedEntity!.RegistrationNumber.Should().
-                Be("TX-123456");
-
-            fetchedEntity.Title.Should().
-                Be("Test Copyright");
+            fetchedEntity.Should().NotBeNull();
+            fetchedEntity!.RegistrationNumber.Should().Be("TX-123456");
+            fetchedEntity.Title.Should().Be("Test Copyright");
         }
 
         [Test]
@@ -88,7 +76,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Copyrights
             using var testDbContext = 
                 InMemoryDbContextFactory.CreateTestDbContext();
 
-            ICopyrightRepository copyrightRepo = 
+            ICopyrightRepository repository = 
                 new CopyrightRepository(testDbContext);
 
             var copyrightEntity = 
@@ -96,25 +84,22 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Copyrights
                 registrationNumber: "TX-654321",
                 title: "Another Copyright");
 
-            await copyrightRepo.AddAsync(
+            await repository.AddAsync(
                 copyrightEntity, 
                 CancellationToken.None);
 
             bool validRegExists = 
-                await copyrightRepo.ExistsByRegNumberAsync(
+                await repository.ExistsByRegNumberAsync(
                     "TX-654321", 
                     CancellationToken.None);
 
             bool randomRegExists = 
-                await copyrightRepo.ExistsByRegNumberAsync(
+                await repository.ExistsByRegNumberAsync(
                     "TX-000000", 
                     CancellationToken.None);
 
-            validRegExists.Should().
-                BeTrue();
-
-            randomRegExists.Should().
-                BeFalse();
+            validRegExists.Should().BeTrue();
+            randomRegExists.Should().BeFalse();
         }
     }
 }

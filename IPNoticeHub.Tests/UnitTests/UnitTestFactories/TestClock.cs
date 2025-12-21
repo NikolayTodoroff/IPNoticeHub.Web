@@ -1,6 +1,6 @@
 ﻿using IPNoticeHub.Application.Services.SystemClockService.Abstractions;
 
-namespace IPNoticeHub.Tests.UnitTests.TestFactories
+namespace IPNoticeHub.Tests.UnitTests.UnitTestFactories
 {
     public sealed class TestClock : ISystemClockService
     {

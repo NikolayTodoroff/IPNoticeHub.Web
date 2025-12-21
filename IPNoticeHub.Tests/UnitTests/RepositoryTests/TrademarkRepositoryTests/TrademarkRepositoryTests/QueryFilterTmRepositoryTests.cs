@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Shared.Enums;
-using IPNoticeHub.Tests.UnitTests.TestFactories;
+using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 using NUnit.Framework;
 using IPNoticeHub.Application.DTOs.TrademarkDTOs;
 using IPNoticeHub.Infrastructure.Persistence.Repositories.TrademarkRepository;
@@ -9,8 +9,7 @@ using IPNoticeHub.Domain.Entities.Trademarks;
 
 namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkRepositoryTests
 {
-    [TestFixture]
-    public class TmRepoSearchTests
+    public class QueryFilterTmRepositoryTests
     {
         [Test]
         public void QueryRepository_FilterByWordmark_ReturnsResults_ForExactMatch()
@@ -114,8 +113,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             Select(t => t.Wordmark).
             ToArray();
 
-            wordmarkPartialMatchResult.Should().
-                Equal("FIRSTWAVE");
+            wordmarkPartialMatchResult.Should().Equal("FIRSTWAVE");
         }
 
         [Test]
@@ -164,9 +162,8 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
                 ExactMatch = true
             });
 
-            exactOwnerMatches.Should().
-                ContainSingle().Which.Owner.Should().
-                Be("White Trades Inc");
+            exactOwnerMatches.Should().ContainSingle().Which.Owner.
+                Should().Be("White Trades Inc");
         }
 
         [Test]
@@ -215,9 +212,8 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
                 ExactMatch = false
             });
 
-            partialOwnerMatches.Should().
-                ContainSingle().Which.Owner.Should().
-                Be("Black Company LLC");
+            partialOwnerMatches.Should().ContainSingle().
+                Which.Owner.Should(). Be("Black Company LLC");
         }
 
         [Test]
@@ -268,8 +264,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             Select(t => t.Wordmark).
             ToArray();
 
-            queryResults.Should().
-                Equal("ALPHA");
+            queryResults.Should().Equal("ALPHA");
         }
 
         [Test]
@@ -331,8 +326,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             Select(t => t.Wordmark).
             ToArray();
 
-            queryResults.Should().
-                BeEquivalentTo(new[] { "ALPHA", "Beta" });
+            queryResults.Should().BeEquivalentTo(new[] { "ALPHA", "Beta" });
         }
 
         [Test]
@@ -383,8 +377,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             Select(t => t.Wordmark).
             ToArray();
 
-            queryResult.Should().
-                Equal("Dead End");
+            queryResult.Should().Equal("Dead End");
         }
 
         [Test]
@@ -435,8 +428,54 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             Select(t => t.Wordmark).
             ToArray();
 
-            queryResult.Should().
-                BeEquivalentTo(new[] { "S&P500" });
+            queryResult.Should().BeEquivalentTo(new[] { "S&P500" });
+        }
+
+        [Test]
+        public void QueryRepository_WithDefaultFilter_ReturnsAllTrademarks()
+        {
+            using IPNoticeHubDbContext? testDbContext =
+                InMemoryDbContextFactory.CreateTestDbContext();
+
+            var (firstTestTrademark, _) =
+                InMemoryDbContextFactory.CreateTrademark(
+                wordmark: "ALPHA1",
+                owner: "OwnerA",
+                goodsAndServices: "testGoodsAndSerices",
+                sourceId: "testSourceId",
+                statusDetail: "testStatusDetail",
+                regNumber: "1234567",
+                TrademarkStatusCategory.Registered,
+                DataProvider.USPTO,
+                classNumbers: new[] { 25 });
+
+            var (secondTestTrademark, _) =
+                InMemoryDbContextFactory.CreateTrademark(
+                wordmark: "BETA2",
+                owner: "OwnerB",
+                goodsAndServices: "testGoodsAndSerices0",
+                sourceId: "testSourceId0",
+                statusDetail: "testStatusDetail0",
+                regNumber: "7654321",
+                TrademarkStatusCategory.Pending,
+                DataProvider.EUIPO,
+                classNumbers: new[] { 30 });
+
+            testDbContext.TrademarkRegistrations.AddRange(
+                firstTestTrademark,
+                secondTestTrademark);
+
+            testDbContext.SaveChanges();
+
+            var trademarkRepository =
+                new TrademarkRepository(testDbContext);
+
+            var queryResult = trademarkRepository.Query(
+                new TrademarkSearchFilter()).
+                Select(t => t.Wordmark).
+                ToArray();
+
+            queryResult.Should().BeEquivalentTo(new[] { "ALPHA1", "BETA2" });
         }
     }
 }

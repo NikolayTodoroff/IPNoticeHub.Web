@@ -1,13 +1,12 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Infrastructure.Persistence.Repositories.TrademarkRepository;
-using IPNoticeHub.Tests.UnitTests.TestFactories;
+using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 using NUnit.Framework;
 
 namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.UserTrademarkRepositoryTests
 {
-    [TestFixture]
-    public class UserTmRepoCancellationTests
+    public class CancellationUserTmRepositoryTests
     {
         [Test]
         public async Task AddOrUndeleteAsync_ThrowsException_WhenCancellationRequested()

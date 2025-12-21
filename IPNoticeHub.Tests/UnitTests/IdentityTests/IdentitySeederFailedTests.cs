@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using static IPNoticeHub.Shared.Constants.IdentityConstants.AdminAccountCredentials;
-using IPNoticeHub.Tests.UnitTests.TestFactories;
+using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 
 namespace IPNoticeHub.Tests.UnitTests.IdentityTests
 {

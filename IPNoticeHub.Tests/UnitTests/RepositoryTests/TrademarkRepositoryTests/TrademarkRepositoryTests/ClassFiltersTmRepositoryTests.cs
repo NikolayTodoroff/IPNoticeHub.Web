@@ -1,15 +1,14 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Infrastructure.Persistence.Repositories.TrademarkRepository;
-using IPNoticeHub.Tests.UnitTests.TestFactories;
+using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 using NUnit.Framework;
 using IPNoticeHub.Infrastructure.Persistence;
 using IPNoticeHub.Application.DTOs.TrademarkDTOs;
 
 namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkRepositoryTests
 {
-    [TestFixture]
-    public class TmRepoClassFiltersTests
+    public class ClassFiltersTmRepositoryTests
     {
         [Test]
         public void QueryRepository_FilterBySingleClass_ReturnsTrademarksForThatClass()
@@ -60,7 +59,8 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
 
             testDbContext.SaveChanges();
 
-            var trademarkRepository = new TrademarkRepository(testDbContext);
+            var trademarkRepository = 
+                new TrademarkRepository(testDbContext);
 
             var queryResult = trademarkRepository.Query(
                 new TrademarkSearchFilter
@@ -221,8 +221,8 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             OrderBy(x => x).
             ToArray();
 
-            duplicateFilterQuery.Should().
-                Equal(distinctFilterQuery).
+            duplicateFilterQuery.
+                Should().Equal(distinctFilterQuery).
                 And.BeEquivalentTo(new[] { "A1", "B2" });
         }
     }

@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Moq;
 
-namespace IPNoticeHub.Tests.UnitTests.TestFactories
+namespace IPNoticeHub.Tests.UnitTests.UnitTestFactories
 {
     public static class TestTrademarkControllerFactory
     {

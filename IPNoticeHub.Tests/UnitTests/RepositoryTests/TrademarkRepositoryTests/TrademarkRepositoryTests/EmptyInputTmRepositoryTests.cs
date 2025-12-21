@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Shared.Enums;
-using IPNoticeHub.Tests.UnitTests.TestFactories;
+using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 using NUnit.Framework;
 using IPNoticeHub.Infrastructure.Persistence;
 using IPNoticeHub.Infrastructure.Persistence.Repositories.TrademarkRepository;
@@ -8,8 +8,7 @@ using IPNoticeHub.Application.DTOs.TrademarkDTOs;
 
 namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkRepositoryTests
 {
-    [TestFixture]
-    public class TmRepoSoftDeleteAndNullsTests
+    public class EmptyInputTmRepositoryTests
     {
         [Test]
         public void QueryRepository_EmptyWordmarkInput_DoesNotMatch_OnPartialWordmarkFilters()
@@ -58,8 +57,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             Select(t => t.Wordmark).
             ToArray();
 
-            partialQueryResult.Should().
-                BeEquivalentTo(new[] { "Target" });
+            partialQueryResult.Should().BeEquivalentTo(new[] { "Target" });
         }
 
         [Test]
@@ -109,8 +107,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             Select(t => t.Wordmark).
             ToArray();
 
-            exactQueryResult.Should().
-                Equal("Target");
+            exactQueryResult.Should().Equal("Target");
         }
 
         [Test]
@@ -210,8 +207,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             Select(t => t.Owner).
             ToArray();
 
-            partialQueryResult.Should().
-                BeEquivalentTo(new[] { "Marlon Brando" });
+            partialQueryResult.Should().BeEquivalentTo(new[] { "Marlon Brando" });
         }
 
         [Test]
@@ -246,8 +242,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             }).
             ToArray();
 
-            emptyQuery.Should().
-                BeEmpty();
+            emptyQuery.Should().BeEmpty();
         }
 
     }

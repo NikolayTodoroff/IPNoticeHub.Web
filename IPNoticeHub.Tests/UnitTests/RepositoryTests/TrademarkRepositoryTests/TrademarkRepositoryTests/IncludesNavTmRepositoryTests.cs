@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Infrastructure.Persistence.Repositories.TrademarkRepository;
-using IPNoticeHub.Tests.UnitTests.TestFactories;
+using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 using NUnit.Framework;
 using IPNoticeHub.Infrastructure.Persistence;
 using IPNoticeHub.Application.DTOs.TrademarkDTOs;
@@ -9,7 +9,7 @@ using IPNoticeHub.Application.DTOs.TrademarkDTOs;
 namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkRepositoryTests
 {
     [TestFixture]
-    public class TmRepoIncludesNavTests
+    public class IncludesNavTmRepositoryTests
     {
         [Test]
         public void QueryRepository_IncludeNav_False_DoesNotPopulateClasses()
@@ -32,7 +32,8 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             testDbContext.TrademarkRegistrations.Add(trademarkEntity);
             testDbContext.SaveChanges();
 
-            var trademarkRepository = new TrademarkRepository(testDbContext);
+            var trademarkRepository = 
+                new TrademarkRepository(testDbContext);
 
             var result = 
                 trademarkRepository.Query(new TrademarkSearchFilter
@@ -42,8 +43,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
                 ExactMatch = true
             }, includeNav: false).Single();
 
-            (result.Classes == null || result.Classes.Count == 0).Should().
-                BeTrue();
+            (result.Classes == null || result.Classes.Count == 0).Should().BeTrue();
         }
 
         [Test]
@@ -92,15 +92,14 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             }, includeNav: true).
             ToArray();
 
-            queryResult.Select(r => r.Wordmark).Should().
-                Equal("ALPHA");
+            queryResult.Select(r => r.Wordmark).
+                Should().Equal("ALPHA");
 
-            queryResult.Single().Classes.Should().
-                NotBeNull();
+            queryResult.Single().Classes.Should().NotBeNull();
 
             queryResult.Single().Classes!.
-                Select(c => c.ClassNumber).Should().
-                BeEquivalentTo(new[] { 9, 25 });
+                Select(c => c.ClassNumber).
+                Should().BeEquivalentTo(new[] { 9, 25 });
         }
     }
 }

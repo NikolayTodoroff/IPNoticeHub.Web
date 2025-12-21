@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
-using IPNoticeHub.Tests.UnitTests.TestFactories;
+using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 using static IPNoticeHub.Shared.Support.RoleNames;
 using IPNoticeHub.Tests.IntegrationTests.IntegrationTestUtilities;
 

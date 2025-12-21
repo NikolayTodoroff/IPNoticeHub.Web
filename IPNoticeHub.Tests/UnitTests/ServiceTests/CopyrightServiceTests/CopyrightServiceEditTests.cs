@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Application.DTOs.CopyrightDTOs;
-using IPNoticeHub.Tests.UnitTests.TestFactories;
+using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using IPNoticeHub.Infrastructure.Persistence;

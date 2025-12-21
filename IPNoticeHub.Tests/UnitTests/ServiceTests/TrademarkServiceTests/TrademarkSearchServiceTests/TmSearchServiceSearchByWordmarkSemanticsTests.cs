@@ -3,7 +3,7 @@ using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Infrastructure.Persistence.Repositories.TrademarkRepository;
 using IPNoticeHub.Application.Repositories.TrademarkRepository;
 using IPNoticeHub.Application.DTOs.TrademarkDTOs;
-using IPNoticeHub.Tests.UnitTests.TestFactories;
+using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 using NUnit.Framework;
 using IPNoticeHub.Application.Services.TrademarkService.Implementations;
 

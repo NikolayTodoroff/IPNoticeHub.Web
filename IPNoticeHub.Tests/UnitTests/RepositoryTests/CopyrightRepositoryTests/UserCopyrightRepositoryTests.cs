@@ -4,14 +4,14 @@ using IPNoticeHub.Infrastructure.Identity;
 using IPNoticeHub.Infrastructure.Persistence;
 using IPNoticeHub.Infrastructure.Persistence.Repositories.CopyrightRepository;
 using IPNoticeHub.Shared.Enums;
-using IPNoticeHub.Tests.UnitTests.TestFactories;
+using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 
 namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Copyrights
 {
     [TestFixture]
-    public class UserCopyrightRepoValidOutcomeTests
+    public class UserCopyrightRepositoryTests
     {
         [Test]
         public async Task AddOrUndeleteAsync_NewLink_CreatesActiveRow()
@@ -33,10 +33,10 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Copyrights
             testDbContext.CopyrightRegistrations.Add(copyrightEntity);
             await testDbContext.SaveChangesAsync();
 
-            IUserCopyrightRepository copyrightRepo = 
+            IUserCopyrightRepository repository = 
                 new UserCopyrightRepository(testDbContext);
 
-            await copyrightRepo.AddOrUndeleteAsync(
+            await repository.AddOrUndeleteAsync(
                 user.Id, 
                 copyrightEntity.Id, 
                 CancellationToken.None);
@@ -69,10 +69,10 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Copyrights
             testDbContext.CopyrightRegistrations.Add(copyrightEntity);
             await testDbContext.SaveChangesAsync();
 
-            IUserCopyrightRepository copyrightRepo = 
+            IUserCopyrightRepository repository = 
                 new UserCopyrightRepository(testDbContext);
 
-            await copyrightRepo.AddOrUndeleteAsync(
+            await repository.AddOrUndeleteAsync(
                 user.Id, 
                 copyrightEntity.Id);
 
@@ -81,7 +81,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Copyrights
                     x => x.ApplicationUserId == user.Id && 
                     x.CopyrightEntityId == copyrightEntity.Id);
 
-            await copyrightRepo.SoftRemoveAsync(
+            await repository.SoftRemoveAsync(
                 user.Id, 
                 copyrightEntity.Id);
 
@@ -94,7 +94,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Copyrights
 
             var initialDate = softDeletedLink.DateAdded;
             await Task.Delay(5);
-            await copyrightRepo.AddOrUndeleteAsync(user.Id, copyrightEntity.Id);
+            await repository.AddOrUndeleteAsync(user.Id, copyrightEntity.Id);
 
             var undeletedLink = 
                 await testDbContext.UserCopyrights.SingleAsync(
@@ -125,36 +125,36 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Copyrights
             testDbContext.CopyrightRegistrations.Add(copyrightEntity);
             await testDbContext.SaveChangesAsync();
 
-            IUserCopyrightRepository copyrightRepo = 
+            IUserCopyrightRepository repository = 
                 new UserCopyrightRepository(testDbContext);
 
-            await copyrightRepo.AddOrUndeleteAsync(
+            await repository.AddOrUndeleteAsync(
                 user.Id, 
                 copyrightEntity.Id);
 
-            (await copyrightRepo.IsLinkedAsync(
+            (await repository.IsLinkedAsync(
                 user.Id, 
                 copyrightEntity.Id, 
-                includeSoftDeleted: false)).Should().
-                BeTrue();
+                includeSoftDeleted: false)).
+                Should().BeTrue();
            
-            (await copyrightRepo.IsLinkedAsync(
+            (await repository.IsLinkedAsync(
                 user.Id, 
                 copyrightEntity.Id, 
-                includeSoftDeleted: true)).Should().
-                BeTrue();
+                includeSoftDeleted: true)).
+                Should().BeTrue();
 
-            await copyrightRepo.SoftRemoveAsync(
+            await repository.SoftRemoveAsync(
                 user.Id, 
                 copyrightEntity.Id);
 
-            (await copyrightRepo.IsLinkedAsync(
+            (await repository.IsLinkedAsync(
                 user.Id, 
                 copyrightEntity.Id, 
                 includeSoftDeleted: false)).
                 Should().BeFalse();
            
-            (await copyrightRepo.IsLinkedAsync(
+            (await repository.IsLinkedAsync(
                 user.Id, 
                 copyrightEntity.Id, 
                 includeSoftDeleted: true)).
@@ -164,7 +164,8 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Copyrights
         [Test]
         public async Task GetUserCollectionPageAsync_ReturnsActiveLinksWithIncludedRegistration()
         {
-            using var testDbContext = InMemoryDbContextFactory.CreateTestDbContext();
+            using var testDbContext = 
+                InMemoryDbContextFactory.CreateTestDbContext();
 
             var user = new ApplicationUser
             {
@@ -173,7 +174,8 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Copyrights
                 Email = "u5@test"
             };
 
-            var copyrightEntity = InMemoryDbContextFactory.CreateCopyright(
+            var copyrightEntity = 
+                InMemoryDbContextFactory.CreateCopyright(
                 registrationNumber: "TX-54321",
                 title: "copyrightRegE");
 
@@ -181,12 +183,13 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Copyrights
             testDbContext.CopyrightRegistrations.Add(copyrightEntity);
             await testDbContext.SaveChangesAsync();
 
-            IUserCopyrightRepository copyrightRepo =
+            IUserCopyrightRepository repository =
                 new UserCopyrightRepository(testDbContext);
 
-            await copyrightRepo.AddOrUndeleteAsync(user.Id, copyrightEntity.Id);
+            await repository.AddOrUndeleteAsync(user.Id, copyrightEntity.Id);
 
-            var pageResult = await copyrightRepo.GetUserCollectionPageAsync(
+            var pageResult = 
+                await repository.GetUserCollectionPageAsync(
                 user.Id,
                 CollectionSortBy.DateAddedDesc,
                 page: 1,
@@ -221,15 +224,15 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Copyrights
             testDbContext.CopyrightRegistrations.Add(copyrightEntity);
             await testDbContext.SaveChangesAsync();
 
-            IUserCopyrightRepository copyrightRepo = 
+            IUserCopyrightRepository repository = 
                 new UserCopyrightRepository(testDbContext);
 
-            await copyrightRepo.AddOrUndeleteAsync(
+            await repository.AddOrUndeleteAsync(
                 user.Id, 
                 copyrightEntity.Id);
 
             var removedSuccessfully = 
-                await copyrightRepo.SoftRemoveAsync(user.Id, copyrightEntity.Id);
+                await repository.SoftRemoveAsync(user.Id, copyrightEntity.Id);
 
             removedSuccessfully.Should().BeTrue();
 

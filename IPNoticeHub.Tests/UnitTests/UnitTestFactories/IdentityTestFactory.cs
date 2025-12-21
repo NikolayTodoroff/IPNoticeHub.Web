@@ -5,7 +5,7 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace IPNoticeHub.Tests.UnitTests.TestFactories
+namespace IPNoticeHub.Tests.UnitTests.UnitTestFactories
 {
     public sealed class IdentityTestHost : IDisposable
     {

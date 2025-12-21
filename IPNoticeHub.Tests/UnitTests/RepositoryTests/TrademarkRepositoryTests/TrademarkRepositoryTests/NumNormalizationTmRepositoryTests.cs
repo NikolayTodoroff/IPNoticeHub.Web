@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Shared.Enums;
-using IPNoticeHub.Tests.UnitTests.TestFactories;
+using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 using NUnit.Framework;
 using IPNoticeHub.Infrastructure.Persistence;
 using IPNoticeHub.Infrastructure.Persistence.Repositories.TrademarkRepository;
@@ -9,7 +9,7 @@ using IPNoticeHub.Application.DTOs.TrademarkDTOs;
 namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkRepositoryTests
 {
     [TestFixture]
-    public class TmRepoNumberNormalizationTests
+    public class NumNormalizationTmRepositoryTests
     {
         [Test]
         public void QueryRepository_FilterByNumber_Normalizes_RegistrationNumbers_ForExactSearch()
@@ -44,8 +44,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             Select(t => t.Wordmark).
             ToArray();
 
-            queryResult.Should().
-                Equal("Alpha & Omega");
+            queryResult.Should().Equal("Alpha & Omega");
         }
 
         [Test]
@@ -81,8 +80,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             Select(t => t.Wordmark).
             ToArray();
 
-            queryResult.Should().
-                Equal("Alpha & Omega");
+            queryResult.Should().Equal("Alpha & Omega");
         }
 
         [Test]
@@ -120,8 +118,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             Select(t => t.Wordmark).
             ToArray();
 
-            queryResult.Should().
-                Equal("Alpha & Omega");
+            queryResult.Should().Equal("Alpha & Omega");
         }
 
         [Test]
@@ -159,8 +156,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             Select(t => t.Wordmark).
             ToArray();
 
-            queryResult.Should().
-                BeEquivalentTo(new[] { "Bingo10" });
+            queryResult.Should().BeEquivalentTo(new[] { "Bingo10" });
         }
 
         [Test]
@@ -247,10 +243,10 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
                 SearchBy = TrademarkSearchBy.Number,
                 SearchTerm = "abc",
                 ExactMatch = true
-            }).ToArray();
+            }).
+            ToArray();
 
-            queryResult.Should().
-                BeEmpty();
+            queryResult.Should().BeEmpty();
         }
 
         [Test]
@@ -289,8 +285,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             Select(t => t.Wordmark).
             ToArray();
 
-            queryResult.Should().
-                BeEquivalentTo(new[] { "AMZ" });
+            queryResult.Should().BeEquivalentTo(new[] { "AMZ" });
         }
     }
 }

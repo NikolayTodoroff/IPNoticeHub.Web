@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Application.DTOs.WatchlistDTOs;
-using IPNoticeHub.Tests.UnitTests.TestFactories;
+using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 using IPNoticeHub.Web.Controllers;
 using IPNoticeHub.Web.Models.Watchlist;
 using Microsoft.AspNetCore.Mvc;

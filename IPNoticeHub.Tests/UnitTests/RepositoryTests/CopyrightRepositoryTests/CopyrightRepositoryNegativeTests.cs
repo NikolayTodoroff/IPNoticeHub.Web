@@ -1,13 +1,13 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Application.Repositories.CopyrightRepository;
 using IPNoticeHub.Infrastructure.Persistence.Repositories.CopyrightRepository;
-using IPNoticeHub.Tests.UnitTests.TestFactories;
+using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 using NUnit.Framework;
 
 namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.CopyrightRepositoryTests
 {
     [TestFixture]
-    public class CopyrightRepoEdgeCaseTests
+    public class CopyrightRepositoryNegativeTests
     {
         [Test]
         public async Task GetByPublicIdAsync_WithUnknownId_ReturnsNull()
@@ -15,16 +15,15 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.CopyrightRepositoryTests
             using var testDbContext = 
                 InMemoryDbContextFactory.CreateTestDbContext();
 
-            ICopyrightRepository copyrightRepo = 
+            ICopyrightRepository repository = 
                 new CopyrightRepository(testDbContext);
 
             var fetchedEntity = 
-                await copyrightRepo.GetByPublicIdAsync(
+                await repository.GetByPublicIdAsync(
                     Guid.NewGuid(), 
                     cancellationToken: CancellationToken.None);
 
-            fetchedEntity.Should().
-                BeNull();
+            fetchedEntity.Should().BeNull();
         }
 
         [Test]
@@ -33,11 +32,11 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.CopyrightRepositoryTests
             using var testDbContext = 
                 InMemoryDbContextFactory.CreateTestDbContext();
 
-            ICopyrightRepository copyrightRepo = 
+            ICopyrightRepository repository = 
                 new CopyrightRepository(testDbContext);
 
             var fetchedEntity = 
-                await copyrightRepo.GetByRegNumberAsync(
+                await repository.GetByRegNumberAsync(
                     "TX-000000", 
                     cancellationToken: CancellationToken.None);
 
@@ -50,16 +49,15 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.CopyrightRepositoryTests
             using var testDbContext = 
                 InMemoryDbContextFactory.CreateTestDbContext();
 
-            ICopyrightRepository copyrightRepo = 
+            ICopyrightRepository repository = 
                 new CopyrightRepository(testDbContext);
 
             bool regEntityExists = 
-                await copyrightRepo.ExistsByRegNumberAsync(
+                await repository.ExistsByRegNumberAsync(
                     "TX-000000", 
                     CancellationToken.None);
 
-            regEntityExists.Should().
-                BeFalse();
+            regEntityExists.Should().BeFalse();
         }
 
         [Test]
@@ -68,7 +66,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.CopyrightRepositoryTests
             using var testDbContext = 
                 InMemoryDbContextFactory.CreateTestDbContext();
 
-            ICopyrightRepository copyrightRepo = 
+            ICopyrightRepository repository = 
                 new CopyrightRepository(testDbContext);
 
             var copyrightEntity = 
@@ -76,12 +74,12 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.CopyrightRepositoryTests
                     registrationNumber: "TX-777777", 
                     title: "TrimCheck");
 
-            await copyrightRepo.AddAsync(
+            await repository.AddAsync(
                 copyrightEntity, 
                 CancellationToken.None);
 
             var fetchedEntity = 
-                await copyrightRepo.GetByRegNumberAsync
+                await repository.GetByRegNumberAsync
                 ("  TX-777777  ", 
                 cancellationToken: CancellationToken.None);
 
@@ -94,7 +92,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.CopyrightRepositoryTests
             using var testDbContext = 
                 InMemoryDbContextFactory.CreateTestDbContext();
 
-            var copyrightRepo = 
+            var repository = 
                 new CopyrightRepository(testDbContext);
 
             var copyrightEntity = 
@@ -102,17 +100,16 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.CopyrightRepositoryTests
                 registrationNumber: "TX-888888", 
                 title: "LowercaseCheck");
 
-            await copyrightRepo.AddAsync(
+            await repository.AddAsync(
                 copyrightEntity, 
                 CancellationToken.None);
 
             var fetchedEntity = 
-                await copyrightRepo.GetByRegNumberAsync(
+                await repository.GetByRegNumberAsync(
                     "tx-888888", 
                     cancellationToken: CancellationToken.None);
 
-            fetchedEntity.Should().
-                NotBeNull();
+            fetchedEntity.Should().NotBeNull();
         }
 
         [Test]
@@ -121,7 +118,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.CopyrightRepositoryTests
             using var testDbContext = 
                 InMemoryDbContextFactory.CreateTestDbContext();
 
-            var copyrightRepo = 
+            var repository = 
                 new CopyrightRepository(testDbContext);
 
             var copyrightEntity = 
@@ -129,17 +126,16 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.CopyrightRepositoryTests
                 registrationNumber: "TX-123456", 
                 title: "NullCheck");
 
-            await copyrightRepo.AddAsync(
+            await repository.AddAsync(
                 copyrightEntity, 
                 CancellationToken.None);
 
             var fetchedEntity = 
-                await copyrightRepo.GetByRegNumberAsync(
+                await repository.GetByRegNumberAsync(
                     null!, 
                     cancellationToken: CancellationToken.None);
 
-            fetchedEntity.Should().
-                BeNull();
+            fetchedEntity.Should().BeNull();
         }
     }
 }

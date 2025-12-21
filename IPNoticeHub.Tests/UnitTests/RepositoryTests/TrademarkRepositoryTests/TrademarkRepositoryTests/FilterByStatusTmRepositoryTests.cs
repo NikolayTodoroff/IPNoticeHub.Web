@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Domain.Entities.Trademarks;
-using IPNoticeHub.Tests.UnitTests.TestFactories;
+using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 using NUnit.Framework;
 using IPNoticeHub.Infrastructure.Persistence;
 using IPNoticeHub.Application.DTOs.TrademarkDTOs;
@@ -9,8 +9,7 @@ using IPNoticeHub.Infrastructure.Persistence.Repositories.TrademarkRepository;
 
 namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkRepositoryTests
 {
-    [TestFixture]
-    public class TmRepoFilterByProviderClassStatusTests
+    public class FilterByStatusTmRepositoryTests
     {
         [Test]
         public void QueryRepository_FilterByProvider_Class_Status_And_Includes_Nav()
@@ -86,14 +85,13 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             }, includeNav: true).
             ToArray();
 
-            queryResult.Select(r => r.Wordmark).Should().
-                Equal("ALPHA");
+            queryResult.Select(r => r.Wordmark).
+                Should().Equal("ALPHA");
 
-            queryResult.Single().Classes.Should().
-                NotBeNull();
+            queryResult.Single().Classes.Should().NotBeNull();
 
-            queryResult.Single().Classes.Should().
-                Contain(c => c.ClassNumber == 25);
+            queryResult.Single().Classes.
+                Should().Contain(c => c.ClassNumber == 25);
         }
     }
 }

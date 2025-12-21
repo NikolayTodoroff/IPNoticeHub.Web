@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Application.Services.DocumentLibraryService.Abstractions;
 using IPNoticeHub.Web.Controllers;
-using IPNoticeHub.Tests.UnitTests.TestFactories;
+using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;

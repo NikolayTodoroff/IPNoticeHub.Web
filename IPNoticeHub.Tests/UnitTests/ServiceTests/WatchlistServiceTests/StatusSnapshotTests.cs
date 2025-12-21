@@ -6,7 +6,7 @@ using IPNoticeHub.Application.Services.WatchlistService.Implementations;
 using IPNoticeHub.Infrastructure.Persistence.Repositories.TrademarkRepository;
 using Moq;
 using NUnit.Framework;
-using IPNoticeHub.Tests.UnitTests.TestFactories;
+using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 
 namespace IPNoticeHub.Tests.UnitTests.ServiceTests.WatchlistServiceTests
 {

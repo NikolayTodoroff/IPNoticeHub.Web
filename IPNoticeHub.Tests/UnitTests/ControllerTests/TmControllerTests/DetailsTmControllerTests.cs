@@ -5,7 +5,7 @@ using IPNoticeHub.Application.Services.DocumentLibraryService.Abstractions;
 using IPNoticeHub.Application.Trademarks.Abstractions;
 using IPNoticeHub.Application.Services.TrademarkService.Abstractions;
 using IPNoticeHub.Application.DTOs.TrademarkDTOs;
-using IPNoticeHub.Tests.UnitTests.TestFactories;
+using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 using IPNoticeHub.Web.Controllers;
 using IPNoticeHub.Web.ViewModels.Trademarks;
 using Microsoft.AspNetCore.Http;

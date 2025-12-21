@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Shared.Enums;
-using IPNoticeHub.Tests.UnitTests.TestFactories;
+using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 using IPNoticeHub.Web.Models.TrademarkSearch;
 using Microsoft.AspNetCore.Mvc;
 using Moq;

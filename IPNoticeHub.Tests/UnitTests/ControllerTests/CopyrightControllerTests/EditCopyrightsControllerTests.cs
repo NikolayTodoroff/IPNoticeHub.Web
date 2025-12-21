@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Shared.Enums;
-using IPNoticeHub.Tests.UnitTests.TestFactories;
+using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 using IPNoticeHub.Web.Models.Copyrights;
 using static IPNoticeHub.Shared.Constants.StatusMessages.CopyrightStatusMessages;
 using Microsoft.AspNetCore.Mvc;

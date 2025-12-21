@@ -3,7 +3,7 @@ using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Shared.Support;
 using IPNoticeHub.Application.Services.TrademarkService.Abstractions;
 using IPNoticeHub.Application.DTOs.TrademarkDTOs;
-using IPNoticeHub.Tests.UnitTests.TestFactories;
+using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 using IPNoticeHub.Web.Models.Trademarks;
 using Microsoft.AspNetCore.Mvc;
 using Moq;

@@ -2,7 +2,7 @@
 using IPNoticeHub.Application.Services.DocumentLibraryService.Abstractions;
 using IPNoticeHub.Domain.Entities.LegalDocuments;
 using IPNoticeHub.Shared.Enums;
-using IPNoticeHub.Tests.UnitTests.TestFactories;
+using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;

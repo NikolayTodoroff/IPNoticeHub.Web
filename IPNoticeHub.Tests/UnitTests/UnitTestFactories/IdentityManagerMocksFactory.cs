@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Moq;
 using Microsoft.Extensions.Logging;
 
-namespace IPNoticeHub.Tests.UnitTests.TestFactories
+namespace IPNoticeHub.Tests.UnitTests.UnitTestFactories
 {
     public class IdentityManagerMocksFactory
     {

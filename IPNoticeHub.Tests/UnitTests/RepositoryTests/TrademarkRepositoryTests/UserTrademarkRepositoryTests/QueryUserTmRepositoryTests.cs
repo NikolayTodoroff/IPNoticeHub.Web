@@ -1,26 +1,31 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Infrastructure.Persistence.Repositories.TrademarkRepository;
-using IPNoticeHub.Tests.UnitTests.TestFactories;
+using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 
 namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.UserTrademarkRepositoryTests
 {
     [TestFixture]
-    public class UserTmRepoQueryUserCollectionTests
+    public class QueryUserTmRepositoryTests
     {
         [Test]
         public async Task QueryUserCollection_ReturnsActiveTrademarksForUser_WithClasses_AsNoTracking()
         {
-            using var testDbContext = InMemoryDbContextFactory.CreateTestDbContext();
+            using var testDbContext = 
+                InMemoryDbContextFactory.CreateTestDbContext();
 
-            var user1 = InMemoryDbContextFactory.CreateApplicationUser(id: "user1");
-            var user2 = InMemoryDbContextFactory.CreateApplicationUser(id: "user2");
+            var user1 = 
+                InMemoryDbContextFactory.CreateApplicationUser(id: "user1");
+
+            var user2 = 
+                InMemoryDbContextFactory.CreateApplicationUser(id: "user2");
 
             testDbContext.Users.AddRange(user1, user2);
 
-            var (user1TmEntity1, _) = InMemoryDbContextFactory.CreateTrademark(
+            var (user1TmEntity1, _) = 
+                InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "The Existing One",
                 owner: "Owner1",
                 goodsAndServices: "testGoodsAndSerices",
@@ -31,7 +36,8 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.UserTrademarkRe
                 DataProvider.USPTO,
                 classNumbers: new[] { 9, 25 });
 
-            var (user1TmEntity2, _) = InMemoryDbContextFactory.CreateTrademark(
+            var (user1TmEntity2, _) = 
+                InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "The Removed One",
                 owner: "Owner1",
                 goodsAndServices: "testGoodsAndSerices",
@@ -42,7 +48,8 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.UserTrademarkRe
                 DataProvider.USPTO,
                 classNumbers: new[] { 30 });
 
-            var (user2TmEntity, _) = InMemoryDbContextFactory.CreateTrademark(
+            var (user2TmEntity, _) = 
+                InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "From Another User",
                 owner: "Owner2",
                 goodsAndServices: "testGoodsAndSerices",
@@ -60,15 +67,27 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.UserTrademarkRe
 
             await testDbContext.SaveChangesAsync();
 
-            var userTmRepository = new UserTrademarkRepository(testDbContext);
+            var userTmRepository = 
+                new UserTrademarkRepository(testDbContext);
 
-            await userTmRepository.AddOrUndeleteAsync(user1.Id, user1TmEntity1.Id);
-            await userTmRepository.AddOrUndeleteAsync(user1.Id, user1TmEntity2.Id);
-            await userTmRepository.SoftRemoveAsync(user1.Id, user1TmEntity2.Id);
+            await userTmRepository.AddOrUndeleteAsync(
+                user1.Id, 
+                user1TmEntity1.Id);
 
-            await userTmRepository.AddOrUndeleteAsync(user2.Id, user2TmEntity.Id);
+            await userTmRepository.AddOrUndeleteAsync(
+                user1.Id, 
+                user1TmEntity2.Id);
 
-            var pagedResult = await userTmRepository.GetUserCollectionPageAsync(
+            await userTmRepository.SoftRemoveAsync(
+                user1.Id, 
+                user1TmEntity2.Id);
+
+            await userTmRepository.AddOrUndeleteAsync(
+                user2.Id, 
+                user2TmEntity.Id);
+
+            var pagedResult = 
+                await userTmRepository.GetUserCollectionPageAsync(
                 user1.Id,
                 CollectionSortBy.DateAddedDesc,
                 currentPage: 1,
@@ -85,12 +104,13 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.UserTrademarkRe
             link.TrademarkEntity.Should().NotBeNull();
             link.TrademarkEntity!.Wordmark.Should().Be("The Existing One");
 
-            link.TrademarkEntity.Classes!
-                .Select(c => c.ClassNumber)
-                .Should().BeEquivalentTo(new[] { 9, 25 });
+            link.TrademarkEntity.Classes!.Select(c => c.ClassNumber).
+                Should().BeEquivalentTo(new[] { 9, 25 });
 
             testDbContext.Entry(link).State.Should().Be(EntityState.Detached);
-            testDbContext.Entry(link.TrademarkEntity!).State.Should().Be(EntityState.Detached);
+
+            testDbContext.Entry(link.TrademarkEntity!).State.
+                Should().Be(EntityState.Detached);
         }
 
 
@@ -184,11 +204,64 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.UserTrademarkRe
 
             singleLink.TrademarkEntity!.Wordmark.Should().Be("The Existing One");
 
-            singleLink.TrademarkEntity!.Classes!.Select(c => c.ClassNumber).
+            singleLink.TrademarkEntity!.Classes!.
+                Select(c => c.ClassNumber).
                 Should().BeEquivalentTo(new[] { 9, 25 });
 
             testDbContext.Entry(singleLink).State.Should().Be(EntityState.Detached);
-            testDbContext.Entry(singleLink.TrademarkEntity!).State.Should().Be(EntityState.Detached);
+
+            testDbContext.Entry(singleLink.TrademarkEntity!).State.
+                Should().Be(EntityState.Detached);
+        }
+
+        [Test]
+        public async Task GetUserCollection_Empty_ReturnsEmpty_NoExceptions()
+        {
+            using var testDbContext =
+                InMemoryDbContextFactory.CreateTestDbContext();
+
+            var user =
+                InMemoryDbContextFactory.CreateApplicationUser(id: "user1");
+
+            testDbContext.Users.Add(user);
+            await testDbContext.SaveChangesAsync();
+
+            var userTmRepository =
+                new UserTrademarkRepository(testDbContext);
+
+            var pageResult =
+                await userTmRepository.GetUserCollectionPageAsync(
+                user.Id,
+                CollectionSortBy.DateAddedDesc,
+                currentPage: 1,
+                resultsPerPage: 10,
+                cancellationToken: default);
+
+            pageResult.Results.Should().BeEmpty();
+            pageResult.ResultsCount.Should().Be(0);
+            pageResult.CurrentPage.Should().Be(1);
+            pageResult.ResultsCountPerPage.Should().Be(10);
+        }
+
+        [Test]
+        public void QueryUserLinks_Empty_ReturnsEmpty_NoExceptions()
+        {
+            using var testDbContext =
+                InMemoryDbContextFactory.CreateTestDbContext();
+
+            var user =
+                InMemoryDbContextFactory.CreateApplicationUser("user1");
+
+            testDbContext.Users.Add(user);
+            testDbContext.SaveChangesAsync();
+
+            var repository =
+                new UserTrademarkRepository(testDbContext);
+
+            var queryLinksResult =
+                repository.GetUserLinks(user.Id).ToArray();
+
+            queryLinksResult.Should().BeEmpty();
         }
     }
 }
