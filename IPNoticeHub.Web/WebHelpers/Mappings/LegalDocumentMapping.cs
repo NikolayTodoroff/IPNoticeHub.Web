@@ -24,9 +24,9 @@ namespace IPNoticeHub.Web.WebHelpers.Mappings
             };
         }
 
-        public static DMCAViewModel MapDocumentToDmcaViewModel(LegalDocument document)
+        public static DmcaViewModel MapDocumentToDmcaViewModel(LegalDocument document)
         {
-            return new DMCAViewModel()
+            return new DmcaViewModel()
             {
                 PublicId = document.RelatedPublicId,
                 WorkTitle = document.IpTitle ?? "Intellectual property identified by registration",

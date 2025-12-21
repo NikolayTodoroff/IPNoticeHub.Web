@@ -17,7 +17,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightDmcaControllerTes
             controller.ControllerContext.HttpContext!.User =
                 new ClaimsPrincipal(new ClaimsIdentity());
 
-            var viewModel = new DMCAViewModel
+            var viewModel = new DmcaViewModel
             {
                 PublicId = Guid.NewGuid(),
                 WorkTitle = "Test Work"
@@ -31,7 +31,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightDmcaControllerTes
         [Test]
         public void DmcaEdit_Get_ShouldReturnView_WithViewModel_WhenUserIdExists()
         {
-            var viewModel = new DMCAViewModel
+            var viewModel = new DmcaViewModel
             {
                 PublicId = Guid.NewGuid(),
                 WorkTitle = "Test Work"
@@ -52,7 +52,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightDmcaControllerTes
             controller.ControllerContext.HttpContext!.User =
                 new ClaimsPrincipal(new ClaimsIdentity());
 
-            var viewModel = new DMCAViewModel { PublicId = Guid.NewGuid() };
+            var viewModel = new DmcaViewModel { PublicId = Guid.NewGuid() };
 
             var actionResult = await controller.DmcaEdit(viewModel, command: "save");
 
@@ -69,7 +69,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightDmcaControllerTes
         [Test]
         public async Task DmcaEdit_Post_ShouldReturnView_WhenModelStateInvalid()
         {
-            var viewModel = new DMCAViewModel { PublicId = Guid.NewGuid() };
+            var viewModel = new DmcaViewModel { PublicId = Guid.NewGuid() };
 
             controller.ModelState.AddModelError("SenderName", "Required");
 
@@ -94,7 +94,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightDmcaControllerTes
         [Test]
         public async Task DmcaEdit_Post_ShouldSaveDocument_SetTempData_AndRedirectToDmcaEdit_WhenCommandIsSave()
         {
-            var viewModel = new DMCAViewModel
+            var viewModel = new DmcaViewModel
             {
                 PublicId = Guid.NewGuid(),
                 WorkTitle = "Test Work",
@@ -133,7 +133,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightDmcaControllerTes
         [Test]
         public async Task DmcaEdit_Post_ShouldRedirectToCopyrightsMyCollection_WhenCommandIsDone()
         {
-            var viewModel = new DMCAViewModel { PublicId = Guid.NewGuid() };
+            var viewModel = new DmcaViewModel { PublicId = Guid.NewGuid() };
 
             var actionResult = await controller.DmcaEdit(
                 viewModel, 
@@ -156,7 +156,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightDmcaControllerTes
         [Test]
         public async Task DmcaEdit_Post_ShouldReturnView_WhenCommandIsUnknown()
         {
-            var viewModel = new DMCAViewModel { PublicId = Guid.NewGuid() };
+            var viewModel = new DmcaViewModel { PublicId = Guid.NewGuid() };
 
             var actionResult = await controller.DmcaEdit(
                 viewModel, 

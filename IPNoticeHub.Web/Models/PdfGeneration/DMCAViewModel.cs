@@ -3,7 +3,7 @@ using static IPNoticeHub.Shared.Constants.ValidationConstants;
 
 namespace IPNoticeHub.Web.Models.PdfGeneration
 {
-    public sealed class DMCAViewModel : IPdfLetterViewModel
+    public sealed class DmcaViewModel : IPdfLetterViewModel
     {
         public Guid PublicId { get; init; }
 

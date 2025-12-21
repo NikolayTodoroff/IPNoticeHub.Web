@@ -73,8 +73,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightDmcaControllerTes
             actionResult.Should().BeOfType<ViewResult>();
             var viewResult = (ViewResult)actionResult;
 
-            viewResult.Model.Should().BeOfType<DMCAViewModel>();
-            var viewModel = (DMCAViewModel)viewResult.Model!;
+            viewResult.Model.Should().BeOfType<DmcaViewModel>();
+            var viewModel = (DmcaViewModel)viewResult.Model!;
 
             viewModel.PublicId.Should().Be(publicId);
             viewModel.BodyTemplate.Should().Be("DMCA TEMPLATE BODY");
@@ -88,7 +88,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightDmcaControllerTes
         public async Task Dmca_Post_ShouldReturnView_WhenModelStateInvalid()
         {
             var publicId = Guid.NewGuid();
-            var viewModel = new DMCAViewModel { PublicId = publicId };
+            var viewModel = new DmcaViewModel { PublicId = publicId };
 
             controller.ModelState.AddModelError(
                 "SenderName", 
@@ -122,7 +122,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightDmcaControllerTes
                 new ClaimsPrincipal(new ClaimsIdentity());
 
             var publicId = Guid.NewGuid();
-            var viewModel = new DMCAViewModel { PublicId = publicId };
+            var viewModel = new DmcaViewModel { PublicId = publicId };
 
             var result = await controller.Dmca(publicId, viewModel);
 
@@ -133,7 +133,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightDmcaControllerTes
         public async Task Dmca_Post_ShouldReturnNotFound_WhenDetailsDtoIsNull()
         {
             var publicId = Guid.NewGuid();
-            var vm = new DMCAViewModel { PublicId = publicId };
+            var vm = new DmcaViewModel { PublicId = publicId };
 
             copyrightService.Setup(
                 s => s.GetDetailsAsync(
@@ -172,7 +172,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightDmcaControllerTes
                     It.IsAny<CancellationToken>())).
                     ReturnsAsync(dto);
 
-            var viewModel = new DMCAViewModel
+            var viewModel = new DmcaViewModel
             {
                 PublicId = publicId,
                 WorkTitle = "User Title (will be overwritten)",

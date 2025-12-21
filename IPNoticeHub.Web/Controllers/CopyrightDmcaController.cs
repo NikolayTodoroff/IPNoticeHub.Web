@@ -1,6 +1,7 @@
 ﻿using IPNoticeHub.Application.Rendering.Abstractions;
 using IPNoticeHub.Application.Services.CopyrightServices.Abstractions;
 using IPNoticeHub.Application.Services.DocumentLibraryService.Abstractions;
+using IPNoticeHub.Application.Services.DraftServices.Abstractions;
 using IPNoticeHub.Application.Services.PdfGenerationServices.Abstractions;
 using IPNoticeHub.Application.Templates.Abstractions;
 using IPNoticeHub.Shared.Enums;
@@ -9,6 +10,7 @@ using IPNoticeHub.Web.Models.PdfGeneration;
 using IPNoticeHub.Web.WebHelpers.Mappings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using static IPNoticeHub.Shared.Constants.InputDraftConstants.UserInputDraftOptions;
 using static IPNoticeHub.Web.WebHelpers.ApplyEntityDetails;
 
 namespace IPNoticeHub.Web.Controllers
@@ -21,19 +23,22 @@ namespace IPNoticeHub.Web.Controllers
         private readonly ILetterTemplateProvider letterTemplateProvider;
         private readonly IDocumentLibraryService documentLibraryService;
         private readonly ITemplateTokenReplacer templateReplacer;
+        private readonly IUserInputDraftStore draftStore;
 
         public CopyrightDmcaController(
             ICopyrightService copyrightService,
             IPdfLetterService pdfService,
             ILetterTemplateProvider letterTemplateProvider,
             IDocumentLibraryService documentLibraryService,
-            ITemplateTokenReplacer templateReplacer)
+            ITemplateTokenReplacer templateReplacer, 
+            IUserInputDraftStore draftStore)
         {
             this.copyrightService = copyrightService;
             this.pdfService = pdfService;
             this.letterTemplateProvider = letterTemplateProvider;
             this.documentLibraryService = documentLibraryService;
             this.templateReplacer = templateReplacer;
+            this.draftStore = draftStore;
         }
 
         [HttpGet, Authorize(Policy = "HasUserId")]
@@ -62,7 +67,7 @@ namespace IPNoticeHub.Web.Controllers
         [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
         public async Task<IActionResult> Dmca(
             Guid publicId,
-            DMCAViewModel viewModel,
+            DmcaViewModel viewModel,
             CancellationToken cancellationToken = default)
         {
             if (!ModelState.IsValid) return View(viewModel);
@@ -91,7 +96,7 @@ namespace IPNoticeHub.Web.Controllers
         }
 
         [HttpGet, Authorize(Policy = "HasUserId")]
-        public async Task<IActionResult> DmcaPreview(DMCAViewModel viewModel)
+        public async Task<IActionResult> DmcaPreview(DmcaViewModel viewModel)
         {
             if (!User.TryGetUserId(out var userId)) return Forbid();
 
@@ -113,7 +118,7 @@ namespace IPNoticeHub.Web.Controllers
 
         [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
         public async Task<IActionResult> DmcaPreview(
-            DMCAViewModel viewModel,
+            DmcaViewModel viewModel,
             CancellationToken cancellationToken = default)
         {
             if (!ModelState.IsValid) return View("DMCA", viewModel);
@@ -122,34 +127,24 @@ namespace IPNoticeHub.Web.Controllers
 
             viewModel.BodyTemplate = string.Empty;
 
-            //var dto = await copyrightService.GetDetailsAsync(
-            //    userId,
-            //    viewModel.PublicId,
-            //    cancellationToken);
+            var draftDto =
+                UserInputDraftMapping.MapDmcaViewModelDraftDto(viewModel);
 
-            //if (dto != null) ApplyCopyrightDMCADetails(
-            //    viewModel,
-            //    dto,
-            //    MergeStrategy.FillBlanks);
+            var draftId = await draftStore.SaveAsync(
+                userId: userId,
+                keySpace: CopyrightDmcaKeySpace,
+                payload: draftDto,
+                ttl: InputTtl,
+                cancellationToken: cancellationToken);
 
-            //if (string.IsNullOrWhiteSpace(viewModel.BodyTemplate) ||
-            //    viewModel.BodyTemplate.Contains("{{"))
-            //{
-            //    var template = letterTemplateProvider.GetTemplateByKey(
-            //        "DMCA-General")?.BodyTemplate ?? viewModel.BodyTemplate;
 
-            //    var placeholders =
-            //        CopyrightsMapping.MapDmcaViewModelToPlaceholders(viewModel);
-
-            //    viewModel.BodyTemplate = 
-            //        templateReplacer.ReplaceTemplate(template, placeholders);
-            //}
-
-            return RedirectToAction(nameof(DmcaPreview), viewModel);
+            return RedirectToAction(
+                nameof(DmcaPreview),
+                new { publicId = viewModel.PublicId, draftId });
         }
 
         [HttpGet, Authorize(Policy = "HasUserId")]
-        public IActionResult DmcaEdit(DMCAViewModel viewModel)
+        public IActionResult DmcaEdit(DmcaViewModel viewModel)
         {
             if (!User.TryGetUserId(out var userId)) return Forbid();
 
@@ -158,7 +153,7 @@ namespace IPNoticeHub.Web.Controllers
 
         [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
         public async Task<IActionResult> DmcaEdit(
-            DMCAViewModel viewModel,
+            DmcaViewModel viewModel,
             string command,
             CancellationToken cancellationToken = default)
         {

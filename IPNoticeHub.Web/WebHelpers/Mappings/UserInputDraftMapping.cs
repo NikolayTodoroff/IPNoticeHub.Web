@@ -68,5 +68,29 @@ namespace IPNoticeHub.Web.WebHelpers.Mappings
                 ["AdditionalFacts"] = mapModel(viewModel.AdditionalFacts)
             };
         }
+
+        public static DmcaDraftDto MapDmcaViewModelDraftDto(DmcaViewModel viewModel)
+        {
+            return new DmcaDraftDto
+            {
+                WorkTitle = viewModel.WorkTitle,
+                RegistrationNumber = viewModel.RegistrationNumber,
+
+                YearOfCreation = viewModel.YearOfCreation,
+                DateOfPublication = viewModel.DateOfPublication,
+                NationOfFirstPublication = viewModel.NationOfFirstPublication,
+
+                SenderName = viewModel.SenderName,
+                SenderAddress = viewModel.SenderAddress,
+                SenderEmail = viewModel.SenderEmail,
+
+                RecipientName = viewModel.RecipientName,
+                RecipientAddress = viewModel.RecipientAddress,
+                RecipientEmail = viewModel.RecipientEmail,
+
+                InfringingUrl = viewModel.InfringingUrl,
+                AdditionalFacts = viewModel.AdditionalFacts
+            };
+        }
     }
 }

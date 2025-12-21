@@ -98,11 +98,11 @@ namespace IPNoticeHub.Web.WebHelpers.Mappings
             };
         }
 
-        public static DMCAViewModel MapDetailsDtoToDmcaViewModel(
+        public static DmcaViewModel MapDetailsDtoToDmcaViewModel(
             CopyrightDetailsDto dto, 
             Guid publicId)
         {
-            return new DMCAViewModel()
+            return new DmcaViewModel()
             {
                 PublicId = publicId,
                 WorkTitle = dto.Title,
@@ -114,7 +114,7 @@ namespace IPNoticeHub.Web.WebHelpers.Mappings
         }
 
         public static LetterInputDto MapDmcaViewModelToInput(
-            DMCAViewModel viewModel, 
+            DmcaViewModel viewModel, 
             DateTime? now = null)
         {
             return new LetterInputDto
@@ -137,7 +137,7 @@ namespace IPNoticeHub.Web.WebHelpers.Mappings
             };
         }
 
-        public static Dictionary<string, string> MapDmcaViewModelToPlaceholders(DMCAViewModel viewModel)
+        public static Dictionary<string, string> MapDmcaViewModelToPlaceholders(DmcaViewModel viewModel)
         {
             static string mapModel(string? v) => v ?? string.Empty;
 
@@ -224,7 +224,7 @@ namespace IPNoticeHub.Web.WebHelpers.Mappings
         }
 
         public static DocumentCreateDto MapDmcaViewModelToDocCreateDto(
-            DMCAViewModel viewModel)
+            DmcaViewModel viewModel)
         {
             return new DocumentCreateDto
             {

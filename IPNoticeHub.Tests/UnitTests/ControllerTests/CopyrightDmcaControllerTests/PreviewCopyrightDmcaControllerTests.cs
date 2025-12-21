@@ -19,7 +19,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightDmcaControllerTes
             controller.ControllerContext.HttpContext!.User =
                 new ClaimsPrincipal(new ClaimsIdentity());
 
-            var viewModel = new DMCAViewModel
+            var viewModel = new DmcaViewModel
             {
                 PublicId = Guid.NewGuid(),
                 BodyTemplate = "Some body"
@@ -33,7 +33,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightDmcaControllerTes
         [Test]
         public async Task DmcaPreview_Get_ShouldReplaceTemplate_WhenBodyTemplateIsNullOrWhitespace()
         {
-            var viewModel = new DMCAViewModel
+            var viewModel = new DmcaViewModel
             {
                 PublicId = Guid.NewGuid(),
                 WorkTitle = "Test Work",
@@ -77,7 +77,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightDmcaControllerTes
         [Test]
         public async Task DmcaPreview_Get_ShouldReplaceTemplate_WhenBodyTemplateStillHasTokens()
         {
-            var viewModel = new DMCAViewModel
+            var viewModel = new DmcaViewModel
             {
                 PublicId = Guid.NewGuid(),
                 BodyTemplate = "Hello {{WorkTitle}}"
@@ -109,7 +109,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightDmcaControllerTes
         [Test]
         public async Task DmcaPreview_Get_ShouldNotReplaceTemplate_WhenBodyTemplateIsAlreadyFinal()
         {
-            var viewModel = new DMCAViewModel
+            var viewModel = new DmcaViewModel
             {
                 PublicId = Guid.NewGuid(),
                 BodyTemplate = "Already final body."
@@ -137,7 +137,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightDmcaControllerTes
         //[Test]
         //public async Task DmcaPreview_Post_ShouldReturnDMCAView_WhenModelStateInvalid()
         //{
-        //    var viewModel = new DMCAViewModel
+        //    var viewModel = new DmcaViewModel
         //    {
         //        PublicId = Guid.NewGuid()
         //    };
@@ -178,7 +178,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightDmcaControllerTes
             controller.ControllerContext.HttpContext!.User =
                 new ClaimsPrincipal(new ClaimsIdentity());
 
-            var viewModel = new DMCAViewModel
+            var viewModel = new DmcaViewModel
             {
                 PublicId = Guid.NewGuid(),
                 BodyTemplate = "Final body"
@@ -201,7 +201,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightDmcaControllerTes
         //{
         //    var publicId = Guid.NewGuid();
 
-        //    var viewModel = new DMCAViewModel
+        //    var viewModel = new DmcaViewModel
         //    {
         //        PublicId = publicId,
         //        WorkTitle = "",
@@ -247,7 +247,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightDmcaControllerTes
         //{
         //    var publicId = Guid.NewGuid();
 
-        //    var viewModel = new DMCAViewModel
+        //    var viewModel = new DmcaViewModel
         //    {
         //        PublicId = publicId,
         //        WorkTitle = "User Title",

@@ -100,9 +100,9 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightDmcaControllerTes
             var viewResult = (ViewResult)actionResult;
 
             viewResult.ViewName.Should().Be("DmcaEdit");
-            viewResult.Model.Should().BeOfType<DMCAViewModel>();
+            viewResult.Model.Should().BeOfType<DmcaViewModel>();
 
-            var viewModel = (DMCAViewModel)viewResult.Model!;
+            var viewModel = (DmcaViewModel)viewResult.Model!;
 
             viewModel.PublicId.Should().Be(document.RelatedPublicId);
             viewModel.WorkTitle.Should().Be(document.IpTitle);

@@ -7,7 +7,7 @@ namespace IPNoticeHub.Web.WebHelpers
 {
     public static class ApplyEntityDetails
     {
-        public static void ApplyCopyrightDMCADetails(DMCAViewModel viewModel, CopyrightDetailsDto dto,
+        public static void ApplyCopyrightDMCADetails(DmcaViewModel viewModel, CopyrightDetailsDto dto,
             MergeStrategy strategy = MergeStrategy.FillBlanks)
         {
             static string? FillOnly(string? user, string? fromDb)
