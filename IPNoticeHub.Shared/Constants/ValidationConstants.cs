@@ -60,6 +60,19 @@
             public const int GoodFaithStatementMaxLength = 2048;
             public const int AdditionalFactsMaxLength = 2048;
             public const int NationOfFirstPublicationMaxLength = 256;
-        } 
+        }
+
+        public static class DmcaDocumentConstants
+        {
+            public const string GoodFaithStatement = 
+                "I have a good faith belief that the disputed use of the " +
+                "copyrighted material is not authorized by the copyright owner, " +
+                "its agent, or the law.";
+
+            public const string BodyTemplate = "Dear {{RecipientName}},\n\nI, {{SenderName}} ({{SenderEmail}}), " +
+            "submit this DMCA notice concerning the work \"{{WorkTitle}}\" (Reg. No. {{RegistrationNumber}}). " +
+            "The infringing material appears at {{InfringingUrl}}." +
+            "\n\n{{GoodFaithStatement}}\n\nSincerely,\n{{SenderName}}\n{{SenderAddress}}";
+        }
     }
 }

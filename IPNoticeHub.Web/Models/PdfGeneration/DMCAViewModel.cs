@@ -1,6 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using static IPNoticeHub.Shared.Constants.ValidationConstants;
 
 namespace IPNoticeHub.Web.Models.PdfGeneration
 {
@@ -36,13 +35,10 @@ namespace IPNoticeHub.Web.Models.PdfGeneration
 
         public string? AdditionalFacts { get; set; }
 
-        public string GoodFaithStatement { get; set; } = "I have a good faith belief that the " +
-            "disputed use of the copyrighted material is not authorized by the copyright owner, " +
-            "its agent, or the law.";
+        public string GoodFaithStatement { get; set; } = 
+            DmcaDocumentConstants.GoodFaithStatement;
 
-        public string BodyTemplate { get; set; } = "Dear {{RecipientName}},\n\nI, {{SenderName}} ({{SenderEmail}}), " +
-            "submit this DMCA notice concerning the work \"{{WorkTitle}}\" (Reg. No. {{RegistrationNumber}}). " +
-            "The infringing material appears at {{InfringingUrl}}." +
-            "\n\n{{GoodFaithStatement}}\n\nSincerely,\n{{SenderName}}\n{{SenderAddress}}";
+        public string BodyTemplate { get; set; } = 
+            DmcaDocumentConstants.BodyTemplate;
     }
 }

@@ -120,28 +120,30 @@ namespace IPNoticeHub.Web.Controllers
 
             if (!User.TryGetUserId(out var userId)) return Forbid();
 
-            var dto = await copyrightService.GetDetailsAsync(
-                userId,
-                viewModel.PublicId,
-                cancellationToken);
+            viewModel.BodyTemplate = string.Empty;
 
-            if (dto != null) ApplyCopyrightDMCADetails(
-                viewModel,
-                dto,
-                MergeStrategy.FillBlanks);
+            //var dto = await copyrightService.GetDetailsAsync(
+            //    userId,
+            //    viewModel.PublicId,
+            //    cancellationToken);
 
-            if (string.IsNullOrWhiteSpace(viewModel.BodyTemplate) ||
-                viewModel.BodyTemplate.Contains("{{"))
-            {
-                var template = letterTemplateProvider.GetTemplateByKey(
-                    "DMCA-General")?.BodyTemplate ?? viewModel.BodyTemplate;
+            //if (dto != null) ApplyCopyrightDMCADetails(
+            //    viewModel,
+            //    dto,
+            //    MergeStrategy.FillBlanks);
 
-                var placeholders =
-                    CopyrightsMapping.MapDmcaViewModelToPlaceholders(viewModel);
+            //if (string.IsNullOrWhiteSpace(viewModel.BodyTemplate) ||
+            //    viewModel.BodyTemplate.Contains("{{"))
+            //{
+            //    var template = letterTemplateProvider.GetTemplateByKey(
+            //        "DMCA-General")?.BodyTemplate ?? viewModel.BodyTemplate;
 
-                viewModel.BodyTemplate = 
-                    templateReplacer.ReplaceTemplate(template, placeholders);
-            }
+            //    var placeholders =
+            //        CopyrightsMapping.MapDmcaViewModelToPlaceholders(viewModel);
+
+            //    viewModel.BodyTemplate = 
+            //        templateReplacer.ReplaceTemplate(template, placeholders);
+            //}
 
             return RedirectToAction(nameof(DmcaPreview), viewModel);
         }
