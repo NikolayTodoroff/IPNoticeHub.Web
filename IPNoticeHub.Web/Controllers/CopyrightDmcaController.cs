@@ -13,6 +13,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static IPNoticeHub.Shared.Constants.InputDraftConstants.UserInputDraftOptions;
 using static IPNoticeHub.Web.WebHelpers.ApplyEntityDetails;
+using static IPNoticeHub.Shared.Constants.StatusMessages.PreviewPageMessages;
+using static IPNoticeHub.Shared.Constants.StatusMessages.EditPageMessages;
 
 namespace IPNoticeHub.Web.Controllers
 {
@@ -106,8 +108,7 @@ namespace IPNoticeHub.Web.Controllers
 
             if (draftId is not Guid id)
             {
-                TempData["PreviewInfo"] =
-                    "No preview data found. Please complete the form.";
+                TempData["PreviewInfo"] = NoDataMessage;
                 return RedirectToAction(nameof(Dmca), new { publicId });
             }
 
@@ -120,8 +121,7 @@ namespace IPNoticeHub.Web.Controllers
 
             if (draftDto is null)
             {
-                TempData["PreviewInfo"] =
-                    "Your preview session expired. Please re-enter your details.";
+                TempData["PreviewInfo"] = SessionExpiredMessage;
                 return RedirectToAction(nameof(Dmca), new { publicId });
             }
 
@@ -133,8 +133,7 @@ namespace IPNoticeHub.Web.Controllers
 
             if (copyrightDto is null)
             {
-                TempData["PreviewInfo"] =
-                    "Unable to load copyright details for preview.";
+                TempData["PreviewInfo"] = CopyrightDetailsMissingMessage;
                 return RedirectToAction(nameof(Dmca), new { publicId });
             }
 
@@ -212,8 +211,7 @@ namespace IPNoticeHub.Web.Controllers
                     dto, 
                     cancellationToken);
 
-                TempData["SuccessMessage"] =
-                    "Your DMCA notice was successfully saved to your library.";
+                TempData["SuccessMessage"] = DmcaNoticeSavedMessage;
 
                 return RedirectToAction(nameof(DmcaEdit), viewModel);
             }

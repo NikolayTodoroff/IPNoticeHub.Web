@@ -12,6 +12,8 @@ using IPNoticeHub.Web.WebHelpers.Mappings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static IPNoticeHub.Shared.Constants.InputDraftConstants.UserInputDraftOptions;
+using static IPNoticeHub.Shared.Constants.StatusMessages.PreviewPageMessages;
+using static IPNoticeHub.Shared.Constants.StatusMessages.EditPageMessages;
 
 namespace IPNoticeHub.Web.Controllers
 {
@@ -97,8 +99,7 @@ namespace IPNoticeHub.Web.Controllers
 
             if (draftId is not Guid id)
             {
-                TempData["PreviewInfo"] = 
-                    "No preview data found. Please complete the form.";
+                TempData["PreviewInfo"] = NoDataMessage;
                 return RedirectToAction(nameof(CeaseDesist), new { publicId });
             }
 
@@ -111,8 +112,7 @@ namespace IPNoticeHub.Web.Controllers
 
             if (draftDto is null)
             {
-                TempData["PreviewInfo"] = 
-                    "Your preview session expired. Please re-enter your details.";
+                TempData["PreviewInfo"] = SessionExpiredMessage;
                 return RedirectToAction(nameof(CeaseDesist), new { publicId });
             }
 
@@ -124,8 +124,7 @@ namespace IPNoticeHub.Web.Controllers
             
             if (copyrightDto is null)
             {
-                TempData["PreviewInfo"] =
-                    "Unable to load copyright details for preview.";
+                TempData["PreviewInfo"] = CopyrightDetailsMissingMessage;
                 return RedirectToAction(nameof(CeaseDesist), new { publicId });
             }
 
@@ -202,8 +201,7 @@ namespace IPNoticeHub.Web.Controllers
                     dto, 
                     cancellationToken);
 
-                TempData["SuccessMessage"] =
-                    "Your Cease & Desist letter was successfully saved to your library.";
+                TempData["SuccessMessage"] = CeaseDesistSavedMessage;
 
                 return RedirectToAction(nameof(CeaseDesistEdit), viewModel);
             }
