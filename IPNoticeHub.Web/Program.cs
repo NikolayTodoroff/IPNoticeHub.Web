@@ -16,6 +16,7 @@ namespace IPNoticeHub.Web
             builder.Services.AddCookieConfiguration();
             builder.Services.AddPresentationLayer();
             builder.Services.AddSystemClock();
+            builder.Services.AddUserInputDraftStore();
 
             builder.Services.AddTrademarkModule();
             builder.Services.AddCopyrightModule();
