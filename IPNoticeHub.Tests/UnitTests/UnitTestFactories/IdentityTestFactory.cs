@@ -31,9 +31,9 @@ namespace IPNoticeHub.Tests.UnitTests.UnitTestFactories
                 options.Password.RequireUppercase = false;
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequiredLength = 6;
-            })
-            .AddEntityFrameworkStores<IPNoticeHubDbContext>()
-            .AddDefaultTokenProviders();
+            }).
+            AddEntityFrameworkStores<IPNoticeHubDbContext>().
+            AddDefaultTokenProviders();
 
             Provider = services.BuildServiceProvider();
 

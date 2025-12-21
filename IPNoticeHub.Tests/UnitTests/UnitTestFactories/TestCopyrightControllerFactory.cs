@@ -20,9 +20,15 @@ namespace IPNoticeHub.Tests.UnitTests.UnitTestFactories
             bool includeUrlHelper = true)
         {
             var httpContext = new DefaultHttpContext();
-            var pdfService = new Mock<IPdfLetterService>();
-            var letterTemplate = new Mock<ILetterTemplateProvider>();
-            var documentLibraryService = new Mock<IDocumentLibraryService>();
+
+            var pdfService = 
+                new Mock<IPdfLetterService>();
+
+            var letterTemplate = 
+                new Mock<ILetterTemplateProvider>();
+
+            var documentLibraryService = 
+                new Mock<IDocumentLibraryService>();
 
             if (!string.IsNullOrEmpty(userId))
                 httpContext.User = CreatePrincipal(userId);
@@ -37,14 +43,17 @@ namespace IPNoticeHub.Tests.UnitTests.UnitTestFactories
             };
 
             if (includeTempData)
-                controller.TempData = new TempDataDictionary(httpContext, Mock.Of<ITempDataProvider>());
+                controller.TempData = new TempDataDictionary(
+                    httpContext, 
+                    Mock.Of<ITempDataProvider>());
 
             if (includeUrlHelper)
             {
                 var urlHelperMock = new Mock<IUrlHelper>();
 
-                urlHelperMock.Setup(u => u.IsLocalUrl(It.IsAny<string>()))
-                    .Returns<string>(url => !string.IsNullOrWhiteSpace(url) && url.StartsWith("/"));
+                urlHelperMock.Setup(u => u.IsLocalUrl(It.IsAny<string>())).
+                    Returns<string>(url => !string.IsNullOrWhiteSpace(url) && 
+                    url.StartsWith("/"));
 
                 controller.Url = urlHelperMock.Object;
             }
@@ -55,7 +64,8 @@ namespace IPNoticeHub.Tests.UnitTests.UnitTestFactories
         public static ClaimsPrincipal CreatePrincipal(string userId)
         {
             return new ClaimsPrincipal(new ClaimsIdentity(
-                new[] { new Claim(ClaimTypes.NameIdentifier, userId) }, "TestAuth"));
+                new[] { new Claim(ClaimTypes.NameIdentifier, userId) }, 
+                "TestAuth"));
         }
     }
 }

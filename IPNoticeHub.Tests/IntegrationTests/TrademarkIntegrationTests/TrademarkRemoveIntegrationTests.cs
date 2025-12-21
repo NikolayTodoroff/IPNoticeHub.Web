@@ -2,7 +2,7 @@
 using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Domain.Entities.Identity;
 using IPNoticeHub.Domain.Entities.Trademarks;
-using IPNoticeHub.Tests.IntegrationTests.TestUtilities;
+using IPNoticeHub.Tests.IntegrationTests.IntegrationTestFactories;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;

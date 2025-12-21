@@ -69,9 +69,10 @@ namespace IPNoticeHub.Tests.UnitTests.UnitTestFactories
             if (includeUrlHelper)
             {
                 var urlHelperMock = new Mock<IUrlHelper>();
-                urlHelperMock
-                    .Setup(u => u.IsLocalUrl(It.IsAny<string>()))
-                    .Returns<string>(url => !string.IsNullOrWhiteSpace(url) && 
+
+                urlHelperMock.
+                    Setup(u => u.IsLocalUrl(It.IsAny<string>())).
+                    Returns<string>(url => !string.IsNullOrWhiteSpace(url) && 
                     url.StartsWith("/"));
 
                 controller.Url = urlHelperMock.Object;

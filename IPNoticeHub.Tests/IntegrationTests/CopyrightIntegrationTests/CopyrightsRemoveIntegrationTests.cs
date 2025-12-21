@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Domain.Entities.Identity;
 using IPNoticeHub.Domain.Entities.Copyrights;
-using IPNoticeHub.Tests.IntegrationTests.TestUtilities;
+using IPNoticeHub.Tests.IntegrationTests.IntegrationTestFactories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;

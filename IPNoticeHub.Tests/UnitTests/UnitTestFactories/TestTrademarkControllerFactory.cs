@@ -63,14 +63,22 @@ namespace IPNoticeHub.Tests.UnitTests.UnitTestFactories
             IDocumentLibraryService? documentLibraryService = null)
         {
             var httpContext = new DefaultHttpContext();
-            var pdfService = new Mock<IPdfLetterService>();
-            var letterTemplate = new Mock<ILetterTemplateProvider>();
-            var docLibraryService = documentLibraryService ?? Mock.Of<IDocumentLibraryService>();
+
+            var pdfService = 
+                new Mock<IPdfLetterService>();
+
+            var letterTemplate = 
+                new Mock<ILetterTemplateProvider>();
+
+            var docLibraryService = 
+                documentLibraryService ?? Mock.Of<IDocumentLibraryService>();
 
             if (!string.IsNullOrEmpty(userId))
             {
                 httpContext.User = new ClaimsPrincipal(
-                    new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, userId) }, "TestAuth"));
+                    new ClaimsIdentity(new[] { 
+                        new Claim(ClaimTypes.NameIdentifier, userId) }, 
+                        "TestAuth"));
             }
 
             var controller = new TrademarksController(
@@ -86,19 +94,23 @@ namespace IPNoticeHub.Tests.UnitTests.UnitTestFactories
 
             if (includeTempData)
             {
-                tempData = new TempDataDictionary(httpContext, Mock.Of<ITempDataProvider>());
+                tempData = new TempDataDictionary(
+                    httpContext, 
+                    Mock.Of<ITempDataProvider>());
+
                 controller.TempData = tempData;
             }
-            else
-            {
-                tempData = null!;
-            }
+
+            else tempData = null!;
 
             if (includeUrlHelper)
             {
                 var urlHelperMock = new Mock<IUrlHelper>();
-                urlHelperMock.Setup(u => u.IsLocalUrl(It.IsAny<string>()))
-                    .Returns<string>(url => !string.IsNullOrEmpty(url) && url.StartsWith("/"));
+
+                urlHelperMock.Setup(
+                    u => u.IsLocalUrl(It.IsAny<string>())).
+                    Returns<string>(url => !string.IsNullOrEmpty(url) && 
+                    url.StartsWith("/"));
 
                 controller.Url = urlHelperMock.Object;
             }

@@ -2,19 +2,15 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace IPNoticeHub.Tests.IntegrationTests.IntegrationTestUtilities
+namespace IPNoticeHub.Tests.IntegrationTests.IntegrationTestFactories
 {
     public class UserManagerMockFactory
     {
         public static Mock<UserManager<ApplicationUser>> MockUserManager()
         {
-            var store = new Mock<IUserStore<ApplicationUser>>();
+            var store = 
+                new Mock<IUserStore<ApplicationUser>>();
 
             var options =
                 Microsoft.Extensions.Options.Options.Create(new IdentityOptions());
@@ -30,7 +26,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.IntegrationTestUtilities
                 Array.Empty<IPasswordValidator<ApplicationUser>>(),
                 new UpperInvariantLookupNormalizer(),
                 new IdentityErrorDescriber(),
-                null,
+                null!,
                 new Mock<ILogger<UserManager<ApplicationUser>>>().Object);
         }
     }

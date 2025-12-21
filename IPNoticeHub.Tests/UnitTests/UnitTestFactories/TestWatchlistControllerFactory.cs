@@ -52,10 +52,7 @@ namespace IPNoticeHub.Tests.UnitTests.UnitTestFactories
 
             controller.ConfigureUrlHelper();
 
-            return (
-                controller, 
-                service, 
-                httpContext);
+            return (controller, service, httpContext);
         }
 
         public static (
@@ -70,10 +67,7 @@ namespace IPNoticeHub.Tests.UnitTests.UnitTestFactories
                 CreateWatchlistController(userExists);
 
             controller.ConfigureUrlHelper(returnUrl, isLocal);
-            return (
-                controller, 
-                svc, 
-                http);
+            return (controller, svc, http);
         }
 
         public static void ConfigureUrlHelper(
@@ -88,6 +82,7 @@ namespace IPNoticeHub.Tests.UnitTests.UnitTestFactories
                 url.Setup(u => u.IsLocalUrl(returnUrl)).
                     Returns(isLocal);
             }
+
             else
             {
                 url.Setup(u => u.IsLocalUrl(It.IsAny<string?>()))

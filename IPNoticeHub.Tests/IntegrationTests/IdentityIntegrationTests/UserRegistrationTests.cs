@@ -8,7 +8,7 @@ using Moq;
 using NUnit.Framework;
 using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 using static IPNoticeHub.Shared.Support.RoleNames;
-using IPNoticeHub.Tests.IntegrationTests.IntegrationTestUtilities;
+using IPNoticeHub.Tests.IntegrationTests.IntegrationTestFactories;
 
 namespace IPNoticeHub.Tests.IntegrationTests.IdentityIntegrationTests
 {

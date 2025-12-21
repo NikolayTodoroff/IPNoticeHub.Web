@@ -21,8 +21,12 @@ namespace IPNoticeHub.Tests.UnitTests.UnitTestFactories
             TrademarkSearchQueryDto searchQuery, 
             CancellationToken cancellationToken = default)
         {
-            var realRepo = new TrademarkReadRepository(testDbContext);
-            return await realRepo.SearchAsync(searchQuery, cancellationToken);
+            var realRepo = 
+                new TrademarkReadRepository(testDbContext);
+
+            return await realRepo.SearchAsync(
+                searchQuery, 
+                cancellationToken);
         }
 
         public IQueryable<TrademarkEntity> TrademarkQueryNoTracking()

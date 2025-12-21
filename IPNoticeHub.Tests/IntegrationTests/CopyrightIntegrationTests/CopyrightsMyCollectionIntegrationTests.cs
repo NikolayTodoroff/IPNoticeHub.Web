@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Domain.Entities.Identity;
-using IPNoticeHub.Tests.IntegrationTests.TestUtilities;
+using IPNoticeHub.Tests.IntegrationTests.IntegrationTestFactories;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;

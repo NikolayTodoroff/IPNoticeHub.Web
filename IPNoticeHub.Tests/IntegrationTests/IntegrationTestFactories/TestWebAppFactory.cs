@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using IPNoticeHub.Infrastructure.Persistence;
 
-namespace IPNoticeHub.Tests.IntegrationTests.TestUtilities
+namespace IPNoticeHub.Tests.IntegrationTests.IntegrationTestFactories
 {
     public sealed class TestWebAppFactory : WebApplicationFactory<Program>
     {
@@ -20,7 +20,8 @@ namespace IPNoticeHub.Tests.IntegrationTests.TestUtilities
         public HttpClient CreateClientAs(string userId)
         {
             currentUserId = userId;
-            return CreateClient(new WebApplicationFactoryClientOptions
+            return CreateClient(
+                new WebApplicationFactoryClientOptions
             {
                 AllowAutoRedirect = false
             });

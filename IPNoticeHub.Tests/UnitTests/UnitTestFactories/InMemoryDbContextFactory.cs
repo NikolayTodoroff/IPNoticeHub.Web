@@ -12,10 +12,10 @@ namespace IPNoticeHub.Tests.UnitTests.UnitTestFactories
         public static IPNoticeHubDbContext CreateTestDbContext(string? dbContextName = null)
         {
             DbContextOptions<IPNoticeHubDbContext>? options = 
-                new DbContextOptionsBuilder<IPNoticeHubDbContext>()
-                .UseInMemoryDatabase(dbContextName ?? Guid.NewGuid().ToString())
-                .EnableSensitiveDataLogging()
-                .Options;
+                new DbContextOptionsBuilder<IPNoticeHubDbContext>().
+                UseInMemoryDatabase(dbContextName ?? Guid.NewGuid().ToString()).
+                EnableSensitiveDataLogging().
+                Options;
 
             var testDbContext = new IPNoticeHubDbContext(options);
             testDbContext.Database.EnsureCreated();

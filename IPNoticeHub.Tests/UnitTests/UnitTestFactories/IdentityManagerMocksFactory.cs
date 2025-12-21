@@ -9,7 +9,8 @@ namespace IPNoticeHub.Tests.UnitTests.UnitTestFactories
     {
         public static Mock<UserManager<ApplicationUser>> MockUserManager()
         {
-            var store = new Mock<IUserStore<ApplicationUser>>();
+            var store = 
+                new Mock<IUserStore<ApplicationUser>>();
 
             var options =
                 Microsoft.Extensions.Options.Options.Create(new IdentityOptions());
@@ -31,11 +32,12 @@ namespace IPNoticeHub.Tests.UnitTests.UnitTestFactories
 
         public static Mock<RoleManager<IdentityRole>> MockRoleManager()
         {
-            var store = new Mock<IRoleStore<IdentityRole>>();
+            var store = 
+                new Mock<IRoleStore<IdentityRole>>();
 
             var roleValidators = new IRoleValidator<IdentityRole>[]
             {
-        new RoleValidator<IdentityRole>()
+                new RoleValidator<IdentityRole>()
             };
 
             return new Mock<RoleManager<IdentityRole>>(

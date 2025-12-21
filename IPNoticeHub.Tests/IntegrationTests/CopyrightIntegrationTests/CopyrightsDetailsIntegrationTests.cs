@@ -2,7 +2,7 @@
 using FluentAssertions;
 using IPNoticeHub.Domain.Entities.Identity;
 using IPNoticeHub.Infrastructure.Persistence;
-using IPNoticeHub.Tests.IntegrationTests.TestUtilities;
+using IPNoticeHub.Tests.IntegrationTests.IntegrationTestFactories;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 

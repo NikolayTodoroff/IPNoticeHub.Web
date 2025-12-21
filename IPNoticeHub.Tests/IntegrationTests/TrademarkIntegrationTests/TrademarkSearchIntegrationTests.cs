@@ -2,7 +2,7 @@
 using IPNoticeHub.Domain.Entities.Trademarks;
 using IPNoticeHub.Infrastructure.Persistence;
 using IPNoticeHub.Shared.Enums;
-using IPNoticeHub.Tests.IntegrationTests.TestUtilities;
+using IPNoticeHub.Tests.IntegrationTests.IntegrationTestFactories;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net;

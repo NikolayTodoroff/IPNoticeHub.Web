@@ -5,7 +5,7 @@ using IPNoticeHub.Domain.Entities.Watchlist;
 using IPNoticeHub.Infrastructure.Identity;
 using IPNoticeHub.Infrastructure.Persistence;
 using IPNoticeHub.Shared.Enums;
-using IPNoticeHub.Tests.IntegrationTests.TestUtilities;
+using IPNoticeHub.Tests.IntegrationTests.IntegrationTestFactories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
