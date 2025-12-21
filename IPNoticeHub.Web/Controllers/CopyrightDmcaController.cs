@@ -1,4 +1,5 @@
-﻿using IPNoticeHub.Application.Rendering.Abstractions;
+﻿using IPNoticeHub.Application.DTOs.DraftStoreDTOs;
+using IPNoticeHub.Application.Rendering.Abstractions;
 using IPNoticeHub.Application.Services.CopyrightServices.Abstractions;
 using IPNoticeHub.Application.Services.DocumentLibraryService.Abstractions;
 using IPNoticeHub.Application.Services.DraftServices.Abstractions;
@@ -96,24 +97,64 @@ namespace IPNoticeHub.Web.Controllers
         }
 
         [HttpGet, Authorize(Policy = "HasUserId")]
-        public async Task<IActionResult> DmcaPreview(DmcaViewModel viewModel)
+        public async Task<IActionResult> DmcaPreview(
+            Guid publicId,
+            Guid? draftId,
+            CancellationToken cancellationToken = default)
         {
             if (!User.TryGetUserId(out var userId)) return Forbid();
 
-            if (string.IsNullOrWhiteSpace(viewModel.BodyTemplate) ||
-                viewModel.BodyTemplate.Contains("{{"))
+            if (draftId is not Guid id)
             {
-                var template = letterTemplateProvider
-                    .GetTemplateByKey("DMCA-Copyright")?.BodyTemplate ?? string.Empty;
-
-                var placeholders =
-                    CopyrightsMapping.MapDmcaViewModelToPlaceholders(viewModel);
-
-                viewModel.BodyTemplate = 
-                    templateReplacer.ReplaceTemplate(template, placeholders);
+                TempData["PreviewInfo"] =
+                    "No preview data found. Please complete the form.";
+                return RedirectToAction(nameof(Dmca), new { publicId });
             }
 
-            return View("DmcaPreview", viewModel);
+            var draftDto =
+                await draftStore.GetAsync<DmcaDraftDto>(
+                    userId: userId,
+                    draftId: id,
+                    keySpace: CopyrightDmcaKeySpace,
+                    cancellationToken: cancellationToken);
+
+            if (draftDto is null)
+            {
+                TempData["PreviewInfo"] =
+                    "Your preview session expired. Please re-enter your details.";
+                return RedirectToAction(nameof(Dmca), new { publicId });
+            }
+
+            var copyrightDto =
+                await copyrightService.GetDetailsAsync(
+                userId,
+                publicId,
+                cancellationToken);
+
+            if (copyrightDto is null)
+            {
+                TempData["PreviewInfo"] =
+                    "Unable to load copyright details for preview.";
+                return RedirectToAction(nameof(Dmca), new { publicId });
+            }
+
+            var viewModel =
+                CopyrightsMapping.MapDetailsDtoToDmcaViewModel(
+                copyrightDto,
+                publicId);
+
+            UserInputDraftMapping.MapDraftDtoToDmcaViewModel(viewModel, draftDto);
+
+            var template =
+                letterTemplateProvider.GetTemplateByKey("DMCA-General")?.BodyTemplate ??
+                string.Empty;
+
+            var placeholders =
+                UserInputDraftMapping.MapDmcaViewModelToPlaceholders(viewModel);
+
+            viewModel.BodyTemplate = templateReplacer.ReplaceTemplate(template, placeholders);
+
+            return View(viewModel);
         }
 
         [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "HasUserId")]
