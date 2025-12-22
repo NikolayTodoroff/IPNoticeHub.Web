@@ -28,7 +28,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightCadControllerTest
 
             copyrightService.Setup(
                 s => s.GetDetailsAsync(
-                    TestUserId,
+                    UserId,
                     publicId,
                     It.IsAny<CancellationToken>())).
                     ReturnsAsync(dto);
@@ -64,7 +64,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightCadControllerTest
 
             copyrightService.Setup(
                 s => s.GetDetailsAsync(
-                    TestUserId,
+                    UserId,
                     publicId,
                     It.IsAny<CancellationToken>())).
                     ReturnsAsync((CopyrightDetailsDto?)null);

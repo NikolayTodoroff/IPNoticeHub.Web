@@ -101,7 +101,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightCadControllerTest
 
             documentLibraryService.Setup(
                 s => s.SaveDocumentAsync(
-                    TestUserId, 
+                    UserId, 
                     It.IsAny<DocumentCreateDto>(), 
                     It.IsAny<CancellationToken>())).
                     Returns(Task.FromResult(0));
@@ -119,7 +119,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightCadControllerTest
 
             documentLibraryService.Verify(
                 s => s.SaveDocumentAsync(
-                    TestUserId, 
+                    UserId, 
                     It.IsAny<DocumentCreateDto>(), 
                     It.IsAny<CancellationToken>()),
                 Times.Once);

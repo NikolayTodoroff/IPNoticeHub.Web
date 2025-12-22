@@ -36,7 +36,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightCadControllerTest
             documentLibraryService.Setup(
                 s => s.GetSingleDocumentByIdAsync(
                     123, 
-                    TestUserId, 
+                    UserId, 
                     It.IsAny<CancellationToken>())).
                     ReturnsAsync((LegalDocument)null!);
 
@@ -53,7 +53,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightCadControllerTest
             documentLibraryService.Setup(
                 s => s.GetSingleDocumentByIdAsync(
                     123, 
-                    TestUserId, 
+                    UserId, 
                     It.IsAny<CancellationToken>())).
                     ReturnsAsync(document);
 
@@ -70,7 +70,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightCadControllerTest
             documentLibraryService.Setup(
                 s => s.GetSingleDocumentByIdAsync(
                     123, 
-                    TestUserId, 
+                    UserId, 
                     It.IsAny<CancellationToken>())).
                     ReturnsAsync(doc);
 
@@ -88,7 +88,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightCadControllerTest
             documentLibraryService.Setup(
                 s => s.GetSingleDocumentByIdAsync(
                     123, 
-                    TestUserId, 
+                    UserId, 
                     It.IsAny<CancellationToken>())).
                     ReturnsAsync(document);
 

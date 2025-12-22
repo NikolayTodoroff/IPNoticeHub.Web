@@ -9,7 +9,7 @@ namespace IPNoticeHub.Web.Models.PdfGeneration
 
         public string WorkTitle { get; set; } = string.Empty;
 
-        public string? RegistrationNumber { get; set; } = string.Empty;
+        public string? RegistrationNumber { get; set; }
 
         public int? YearOfCreation { get; set; }
 
