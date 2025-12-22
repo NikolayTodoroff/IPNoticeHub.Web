@@ -29,19 +29,35 @@ namespace IPNoticeHub.Web.WebHelpers.Mappings
 
         public static void MapDraftDtoToCeaseDesistViewModel(CeaseDesistViewModel viewModel, CeaseDesistDraftDto dto)
         {
-            viewModel.WorkTitle = dto.WorkTitle ?? string.Empty;
-            viewModel.RegistrationNumber = dto.RegistrationNumber;
+            if (!string.IsNullOrWhiteSpace(dto.WorkTitle))
+                viewModel.WorkTitle = dto.WorkTitle;
 
-            viewModel.SenderName = dto.SenderName ?? string.Empty;
-            viewModel.SenderAddress = dto.SenderAddress ?? string.Empty;
-            viewModel.SenderEmail = dto.SenderEmail ?? string.Empty;
+            if (!string.IsNullOrWhiteSpace(dto.RegistrationNumber))
+                viewModel.RegistrationNumber = dto.RegistrationNumber;
 
-            viewModel.RecipientName = dto.RecipientName ?? string.Empty;
-            viewModel.RecipientAddress = dto.RecipientAddress ?? string.Empty;
-            viewModel.RecipientEmail = dto.RecipientEmail ?? string.Empty;
+            if (!string.IsNullOrWhiteSpace(dto.SenderName))
+                viewModel.SenderName = dto.SenderName;
 
-            viewModel.InfringingUrl = dto.InfringingUrl;
-            viewModel.AdditionalFacts = dto.AdditionalFacts;
+            if (!string.IsNullOrWhiteSpace(dto.SenderAddress))
+                viewModel.SenderAddress = dto.SenderAddress;
+
+            if (!string.IsNullOrWhiteSpace(dto.SenderEmail))
+                viewModel.SenderEmail = dto.SenderEmail;
+
+            if (!string.IsNullOrWhiteSpace(dto.RecipientName))
+                viewModel.RecipientName = dto.RecipientName;
+
+            if (!string.IsNullOrWhiteSpace(dto.RecipientAddress))
+                viewModel.RecipientAddress = dto.RecipientAddress;
+
+            if (!string.IsNullOrWhiteSpace(dto.RecipientEmail))
+                viewModel.RecipientEmail = dto.RecipientEmail;
+
+            if (!string.IsNullOrWhiteSpace(dto.InfringingUrl))
+                viewModel.InfringingUrl = dto.InfringingUrl;
+
+            if (!string.IsNullOrWhiteSpace(dto.AdditionalFacts))
+                viewModel.AdditionalFacts = dto.AdditionalFacts;
         }
 
         public static Dictionary<string, string> MapCeaseDesistViewModelToPlaceholders(CeaseDesistViewModel viewModel)
@@ -96,23 +112,44 @@ namespace IPNoticeHub.Web.WebHelpers.Mappings
 
         public static void MapDraftDtoToDmcaViewModel(DmcaViewModel viewModel, DmcaDraftDto dto)
         {
-            viewModel.WorkTitle = dto.WorkTitle ?? string.Empty;
-            viewModel.RegistrationNumber = dto.RegistrationNumber;
+            if (!string.IsNullOrWhiteSpace(dto.WorkTitle))
+                viewModel.WorkTitle = dto.WorkTitle;
 
-            viewModel.YearOfCreation = dto.YearOfCreation;
-            viewModel.DateOfPublication = dto.DateOfPublication;
-            viewModel.NationOfFirstPublication = dto.NationOfFirstPublication;
+            if (!string.IsNullOrWhiteSpace(dto.RegistrationNumber))
+                viewModel.RegistrationNumber = dto.RegistrationNumber;
 
-            viewModel.SenderName = dto.SenderName ?? string.Empty;
-            viewModel.SenderAddress = dto.SenderAddress ?? string.Empty;
-            viewModel.SenderEmail = dto.SenderEmail ?? string.Empty;
+            if (dto.YearOfCreation is not null)
+                viewModel.YearOfCreation = dto.YearOfCreation;
 
-            viewModel.RecipientName = dto.RecipientName ?? string.Empty;
-            viewModel.RecipientAddress = dto.RecipientAddress ?? string.Empty;
-            viewModel.RecipientEmail = dto.RecipientEmail ?? string.Empty;
+            if (dto.DateOfPublication is not null)
+                viewModel.DateOfPublication = dto.DateOfPublication;
 
-            viewModel.InfringingUrl = dto.InfringingUrl;
-            viewModel.AdditionalFacts = dto.AdditionalFacts;
+            if (!string.IsNullOrWhiteSpace(dto.NationOfFirstPublication))
+                viewModel.NationOfFirstPublication = dto.NationOfFirstPublication;
+
+            if (!string.IsNullOrWhiteSpace(dto.SenderName))
+                viewModel.SenderName = dto.SenderName;
+
+            if (!string.IsNullOrWhiteSpace(dto.SenderAddress))
+                viewModel.SenderAddress = dto.SenderAddress;
+
+            if (!string.IsNullOrWhiteSpace(dto.SenderEmail))
+                viewModel.SenderEmail = dto.SenderEmail;
+
+            if (!string.IsNullOrWhiteSpace(dto.RecipientName))
+                viewModel.RecipientName = dto.RecipientName;
+
+            if (!string.IsNullOrWhiteSpace(dto.RecipientAddress))
+                viewModel.RecipientAddress = dto.RecipientAddress;
+
+            if (!string.IsNullOrWhiteSpace(dto.RecipientEmail))
+                viewModel.RecipientEmail = dto.RecipientEmail;
+
+            if (!string.IsNullOrWhiteSpace(dto.InfringingUrl))
+                viewModel.InfringingUrl = dto.InfringingUrl;
+
+            if (!string.IsNullOrWhiteSpace(dto.AdditionalFacts))
+                viewModel.AdditionalFacts = dto.AdditionalFacts;
         }
 
         public static Dictionary<string, string> MapDmcaViewModelToPlaceholders(DmcaViewModel viewModel)

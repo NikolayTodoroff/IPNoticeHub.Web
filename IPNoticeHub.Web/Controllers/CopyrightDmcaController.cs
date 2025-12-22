@@ -15,6 +15,7 @@ using static IPNoticeHub.Shared.Constants.InputDraftConstants.UserInputDraftOpti
 using static IPNoticeHub.Web.WebHelpers.ApplyEntityDetails;
 using static IPNoticeHub.Shared.Constants.StatusMessages.PreviewPageMessages;
 using static IPNoticeHub.Shared.Constants.StatusMessages.EditPageMessages;
+using static IPNoticeHub.Shared.Constants.LetterTemplateKeys.TemplateTypeKeys;
 
 namespace IPNoticeHub.Web.Controllers
 {
@@ -62,7 +63,7 @@ namespace IPNoticeHub.Web.Controllers
                 CopyrightsMapping.MapDetailsDtoToDmcaViewModel(dto, publicId);
 
             viewModel.BodyTemplate = letterTemplateProvider.GetTemplateByKey(
-                "DMCA-General")?.BodyTemplate ?? viewModel.BodyTemplate;
+                CopyrightDmcaKey)?.BodyTemplate ?? viewModel.BodyTemplate;
 
             return View(viewModel);
         }
@@ -145,7 +146,7 @@ namespace IPNoticeHub.Web.Controllers
             UserInputDraftMapping.MapDraftDtoToDmcaViewModel(viewModel, draftDto);
 
             var template =
-                letterTemplateProvider.GetTemplateByKey("DMCA-General")?.BodyTemplate ??
+                letterTemplateProvider.GetTemplateByKey(CopyrightDmcaKey)?.BodyTemplate ??
                 string.Empty;
 
             var placeholders =

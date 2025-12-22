@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 using static IPNoticeHub.Shared.Constants.InputDraftConstants.UserInputDraftOptions;
 using static IPNoticeHub.Shared.Constants.StatusMessages.PreviewPageMessages;
 using static IPNoticeHub.Shared.Constants.StatusMessages.EditPageMessages;
+using static IPNoticeHub.Shared.Constants.LetterTemplateKeys.TemplateTypeKeys;
 
 namespace IPNoticeHub.Web.Controllers
 {
@@ -78,7 +79,7 @@ namespace IPNoticeHub.Web.Controllers
 
             viewModel.BodyTemplate = 
                 letterTemplateProvider.GetTemplateByKey(
-                "CND-Trademark")?.BodyTemplate ?? string.Empty;
+                TrademarkCeaseDesistKey)?.BodyTemplate ?? string.Empty;
 
             ViewData["ShowAdditionalFacts"] = true;
 
@@ -148,7 +149,7 @@ namespace IPNoticeHub.Web.Controllers
             UserInputDraftMapping.MapDraftDtoToCeaseDesistViewModel(viewModel, draftDto);
 
             var template =
-                letterTemplateProvider.GetTemplateByKey("CND-Trademark")?.BodyTemplate ??
+                letterTemplateProvider.GetTemplateByKey(TrademarkCeaseDesistKey)?.BodyTemplate ??
                 string.Empty;
 
             var placeholders =

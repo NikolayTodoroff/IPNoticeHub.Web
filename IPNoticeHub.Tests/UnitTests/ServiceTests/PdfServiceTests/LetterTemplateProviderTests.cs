@@ -38,8 +38,8 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.PdfServiceTests
         {
             var provider = new LetterTemplateProvider();
 
-            var keyLower = "cnd-general";
-            var keyUpper = "CND-GENERAL";
+            var keyLower = "dmca-general";
+            var keyUpper = "DMCA-GENERAL";
 
             var lower = provider.GetTemplateByKey(keyLower);
             var upper = provider.GetTemplateByKey(keyUpper);
@@ -47,8 +47,8 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.PdfServiceTests
             lower.Should().NotBeNull();
             upper.Should().NotBeNull();
 
-            lower!.Key.Should().Be("CND-General");
-            upper!.Key.Should().Be("CND-General");
+            lower!.Key.Should().Be("DMCA-General");
+            upper!.Key.Should().Be("DMCA-General");
 
             lower.BodyTemplate.Should().NotBeNullOrWhiteSpace();
             upper.BodyTemplate.Should().NotBeNullOrWhiteSpace();

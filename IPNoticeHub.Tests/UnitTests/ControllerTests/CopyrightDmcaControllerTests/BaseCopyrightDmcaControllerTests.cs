@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Moq;
 using NUnit.Framework;
 using System.Security.Claims;
+using IPNoticeHub.Application.Services.DraftServices.Abstractions;
 
 namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightDmcaControllerTests
 {
@@ -22,6 +23,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightDmcaControllerTes
         protected Mock<ILetterTemplateProvider> letterTemplateProvider = null!;
         protected Mock<IDocumentLibraryService> documentLibraryService = null!;
         protected Mock<ITemplateTokenReplacer> templateReplacer = null!;
+        protected Mock<IUserInputDraftStore> draftStore = null!;
 
         protected CopyrightDmcaController controller = null!;
 
@@ -33,13 +35,15 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightDmcaControllerTes
             letterTemplateProvider = new Mock<ILetterTemplateProvider>();
             documentLibraryService = new Mock<IDocumentLibraryService>();
             templateReplacer = new Mock<ITemplateTokenReplacer>();
+            draftStore = new Mock<IUserInputDraftStore>();
 
             controller = new CopyrightDmcaController(
                 copyrightService.Object,
                 pdfService.Object,
                 letterTemplateProvider.Object,
                 documentLibraryService.Object,
-                templateReplacer.Object);
+                templateReplacer.Object,
+                draftStore.Object);
 
             SetupControllerContext();
         }

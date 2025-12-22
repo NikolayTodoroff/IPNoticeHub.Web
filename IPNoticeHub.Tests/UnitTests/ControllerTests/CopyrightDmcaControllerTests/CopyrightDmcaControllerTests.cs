@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using System.Security.Claims;
+using static IPNoticeHub.Shared.Constants.LetterTemplateKeys.TemplateTypeKeys;
 
 namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightDmcaControllerTests
 {
@@ -61,10 +62,10 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightDmcaControllerTes
                     ReturnsAsync(dto);
 
             letterTemplateProvider.Setup(
-                p => p.GetTemplateByKey("DMCA-General")).
+                p => p.GetTemplateByKey(CopyrightDmcaKey)).
                 Returns(new LetterTemplatePreset(
                     LetterTemplateType.Dmca,
-                    "DMCA-General",
+                    CopyrightDmcaKey,
                     "DMCA - General",
                     "DMCA TEMPLATE BODY"));
 
@@ -80,7 +81,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightDmcaControllerTes
             viewModel.BodyTemplate.Should().Be("DMCA TEMPLATE BODY");
 
             letterTemplateProvider.Verify(
-                p => p.GetTemplateByKey("DMCA-General"), 
+                p => p.GetTemplateByKey(CopyrightDmcaKey), 
                 Times.Once);
         }
 

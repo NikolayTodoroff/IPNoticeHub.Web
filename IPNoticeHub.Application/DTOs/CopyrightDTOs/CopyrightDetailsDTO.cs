@@ -7,14 +7,15 @@ namespace IPNoticeHub.Application.DTOs.CopyrightDTOs
     {
         public Guid PublicId { get; init; }
 
+        [Required, MaxLength(TitleMaxLength)]
+        public string Title { get; init; } = string.Empty;
+
         [Required, MaxLength(RegistrationNumberMaxLength)]
         public string RegistrationNumber { get; init; } = string.Empty;
 
+
         [Required, MaxLength(WorkTypeMaxLength)]
         public string TypeOfWork { get; init; } = string.Empty;
-
-        [Required, MaxLength(TitleMaxLength)]
-        public string Title { get; init; } = string.Empty;
 
         public int? YearOfCreation { get; init; }
 

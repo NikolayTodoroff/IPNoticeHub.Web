@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using static IPNoticeHub.Shared.Constants.ValidationConstants;
+using static IPNoticeHub.Shared.Constants.StatusMessages;
 
 namespace IPNoticeHub.Web.Models.PdfGeneration
 {
@@ -9,7 +9,7 @@ namespace IPNoticeHub.Web.Models.PdfGeneration
 
         public string WorkTitle { get; set; } = string.Empty;
 
-        public string? RegistrationNumber { get; set; } = string.Empty;
+        public string? RegistrationNumber { get; set; }
 
         public int? YearOfCreation { get; set; }
 
@@ -35,10 +35,10 @@ namespace IPNoticeHub.Web.Models.PdfGeneration
 
         public string? AdditionalFacts { get; set; }
 
-        public string GoodFaithStatement { get; set; } = 
-            DmcaDocumentConstants.GoodFaithStatement;
+        public string GoodFaithStatement { get; set; } =
+            DmcaDocumentTemplates.GoodFaithStatement;
 
-        public string BodyTemplate { get; set; } = 
-            DmcaDocumentConstants.BodyTemplate;
+        public string BodyTemplate { get; set; } =
+            DmcaDocumentTemplates.BodyTemplate;
     }
 }

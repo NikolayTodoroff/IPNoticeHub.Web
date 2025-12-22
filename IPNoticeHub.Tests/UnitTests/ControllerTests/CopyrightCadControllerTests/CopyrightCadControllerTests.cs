@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using System.Security.Claims;
+using static IPNoticeHub.Shared.Constants.LetterTemplateKeys.TemplateTypeKeys;
 
 namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightCadControllerTests
 {
@@ -33,10 +34,10 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightCadControllerTest
                     ReturnsAsync(dto);
 
             letterTemplateProvider.Setup(
-                p => p.GetTemplateByKey("CND-Copyright")).
+                p => p.GetTemplateByKey(CopyrightCeaseDesistKey)).
                 Returns(new LetterTemplatePreset(
                     LetterTemplateType.CeaseAndDesist,
-                    "CND-Copyright",
+                    CopyrightCeaseDesistKey,
                     "Copyright Cease & Desist",
                     "Test Template Body"));
 

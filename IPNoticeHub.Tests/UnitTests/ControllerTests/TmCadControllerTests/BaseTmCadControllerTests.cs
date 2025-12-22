@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Moq;
 using NUnit.Framework;
 using System.Security.Claims;
+using IPNoticeHub.Application.Services.DraftServices.Abstractions;
 
 namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TmCadControllerTests
 {
@@ -24,6 +25,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TmCadControllerTests
         protected Mock<ILetterTemplateProvider> letterTemplateProvider = null!;
         protected Mock<IDocumentLibraryService> documentLibraryService = null!;
         protected Mock<ITemplateTokenReplacer> templateReplacer = null!;
+        protected Mock<IUserInputDraftStore> draftStore = null!;
         protected TrademarkCadController controller = null!;
 
         [SetUp]
@@ -35,6 +37,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TmCadControllerTests
             letterTemplateProvider = new Mock<ILetterTemplateProvider>();
             documentLibraryService = new Mock<IDocumentLibraryService>();
             templateReplacer = new Mock<ITemplateTokenReplacer>();
+            draftStore = new Mock<IUserInputDraftStore>();
 
             controller = new TrademarkCadController(
                 trademarkSearchService.Object,
@@ -42,7 +45,8 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TmCadControllerTests
                 pdfService.Object,
                 letterTemplateProvider.Object,
                 documentLibraryService.Object,
-                templateReplacer.Object
+                templateReplacer.Object,
+                draftStore.Object
             );
 
             SetupControllerContext();

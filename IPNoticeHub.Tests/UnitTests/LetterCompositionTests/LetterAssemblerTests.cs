@@ -5,6 +5,7 @@ using IPNoticeHub.Application.Templates.Abstractions;
 using Moq;
 using NUnit.Framework;
 using static IPNoticeHub.Shared.Constants.DateTimeFormats;
+using static IPNoticeHub.Shared.Constants.LetterTemplateKeys.TemplateTypeKeys;
 
 namespace IPNoticeHub.Tests.UnitTests.LetterCompositionTests
 {
@@ -20,7 +21,7 @@ namespace IPNoticeHub.Tests.UnitTests.LetterCompositionTests
 
             var input = new LetterInputDto
             {
-                DocumentType = "CND-Trademark",
+                DocumentType = TrademarkCeaseDesistKey,
                 DocumentTitle = "Cease & Desist",
                 WorkTitle = "Some Work",
                 SenderName = "Alice",
@@ -43,7 +44,7 @@ namespace IPNoticeHub.Tests.UnitTests.LetterCompositionTests
         {
             var preset = new LetterTemplatePreset(
                 Type: default,
-                Key: "CND-Trademark",
+                Key: TrademarkCeaseDesistKey,
                 DisplayName: "CND",
                 BodyTemplate: "Template body");
 
@@ -51,14 +52,14 @@ namespace IPNoticeHub.Tests.UnitTests.LetterCompositionTests
                 new Mock<ILetterTemplateProvider>(MockBehavior.Strict);
 
             provider.Setup(
-                p => p.GetTemplateByKey("CND-Trademark")).
+                p => p.GetTemplateByKey(TrademarkCeaseDesistKey)).
                 Returns(preset);
 
             var sut = new LetterAssembler(provider.Object);
 
             var input = new LetterInputDto
             {
-                DocumentType = "CND-Trademark",
+                DocumentType = TrademarkCeaseDesistKey,
                 DocumentTitle = "Cease & Desist",
                 WorkTitle = "Some Work",
                 SenderName = "Alice",
@@ -71,7 +72,7 @@ namespace IPNoticeHub.Tests.UnitTests.LetterCompositionTests
             result.BodyTemplate.Should().Be("Template body");
 
             provider.Verify(
-                p => p.GetTemplateByKey("CND-Trademark"), Times.Once);
+                p => p.GetTemplateByKey(TrademarkCeaseDesistKey), Times.Once);
         }
 
         [Test]
@@ -81,14 +82,14 @@ namespace IPNoticeHub.Tests.UnitTests.LetterCompositionTests
                 new Mock<ILetterTemplateProvider>(MockBehavior.Strict);
 
             provider.Setup(
-                p => p.GetTemplateByKey("CND-Trademark")).
+                p => p.GetTemplateByKey(TrademarkCeaseDesistKey)).
                 Returns((LetterTemplatePreset?)null);
 
             var sut = new LetterAssembler(provider.Object);
 
             var input = new LetterInputDto
             {
-                DocumentType = "CND-Trademark",
+                DocumentType = TrademarkCeaseDesistKey,
                 DocumentTitle = "Cease & Desist",
                 WorkTitle = "Some Work",
                 SenderName = "Alice",
@@ -101,7 +102,7 @@ namespace IPNoticeHub.Tests.UnitTests.LetterCompositionTests
             result.BodyTemplate.Should().BeEmpty();
 
             provider.Verify(
-                p => p.GetTemplateByKey("CND-Trademark"), Times.Once);
+                p => p.GetTemplateByKey(TrademarkCeaseDesistKey), Times.Once);
         }
 
         [Test]
@@ -173,7 +174,7 @@ namespace IPNoticeHub.Tests.UnitTests.LetterCompositionTests
 
             var input = new LetterInputDto
             {
-                DocumentType = "CND-Trademark",
+                DocumentType = TrademarkCeaseDesistKey,
                 DocumentTitle = "Cease & Desist",
                 WorkTitle = "My Work",
                 RegistrationNumber = "123",

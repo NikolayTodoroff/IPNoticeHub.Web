@@ -1,5 +1,6 @@
 ﻿using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Application.Templates.Abstractions;
+using static IPNoticeHub.Shared.Constants.LetterTemplateKeys.TemplateTypeKeys;
 
 namespace IPNoticeHub.Application.Services.PdfGenerationService.Implementations
 {
@@ -7,33 +8,10 @@ namespace IPNoticeHub.Application.Services.PdfGenerationService.Implementations
     {
         private static readonly List<LetterTemplatePreset> Presets = new List<LetterTemplatePreset>()
         {
-            new LetterTemplatePreset(LetterTemplateType.CeaseAndDesist,"CND-General", "Cease & Desist (General)",
-                BodyTemplate: @"{{Date}}
-
-                {{RecipientName}}
-                {{RecipientAddress}}
-
-                Subject: Cease and Desist – Unauthorized Use of “{{WorkTitle}}” ({{RegistrationNumber}})
-
-                Dear {{RecipientName}},
-
-                I am writing to notify you that your activities involving “{{WorkTitle}}” (registration: {{RegistrationNumber}}) are unauthorized and infringe upon rights I control. This notice demands that you cease and desist from any further use, display, distribution, advertising, or sale related to the Work.
-
-                We identified the unauthorized use at the location(s) under your control: {{InfringingUrl}}. {{AdditionalFacts}}
-
-                You are required to immediately remove the infringing material, disable any listings or advertisements, and refrain from re-posting or otherwise using the Work without written permission.
-
-                Please provide written confirmation within seven (7) days from the date of this letter that the infringing material has been removed and that you will refrain from further unauthorized use. Failure to comply may result in pursuit of all available legal remedies, including injunctive relief and damages.
-
-                Nothing in this letter constitutes a waiver of any rights or remedies, all of which are expressly reserved.
-
-                Sincerely,
-
-                {{SenderName}}
-                {{SenderAddress}}")
-            ,
-
-            new LetterTemplatePreset (LetterTemplateType.CeaseAndDesist, "CND-Copyright", "Cease & Desist (Copyright)",
+            new LetterTemplatePreset (
+                LetterTemplateType.CeaseAndDesist, 
+                CopyrightCeaseDesistKey, 
+                "Cease & Desist (Copyright)",
                 BodyTemplate: @"{{Date}}
 
                 {{RecipientName}}
@@ -58,7 +36,10 @@ namespace IPNoticeHub.Application.Services.PdfGenerationService.Implementations
                 {{SenderName}}
                 {{SenderAddress}}"),
 
-            new(LetterTemplateType.CeaseAndDesist, "CND-Trademark", "Cease & Desist (Trademark)",
+            new LetterTemplatePreset(
+                LetterTemplateType.CeaseAndDesist, 
+                TrademarkCeaseDesistKey, 
+                "Cease & Desist (Trademark)",
                 BodyTemplate: @"{{Date}}
 
                 {{RecipientName}}
@@ -83,7 +64,10 @@ namespace IPNoticeHub.Application.Services.PdfGenerationService.Implementations
                 {{SenderName}}
                 {{SenderAddress}}"),
 
-            new(LetterTemplateType.Dmca, "DMCA-General", "DMCA Takedown (General)",
+            new LetterTemplatePreset(
+                LetterTemplateType.Dmca, 
+                CopyrightDmcaKey, 
+                "DMCA Takedown (General)",
                 BodyTemplate: @"{{Date}}
 
                 {{RecipientName}}
@@ -125,12 +109,17 @@ namespace IPNoticeHub.Application.Services.PdfGenerationService.Implementations
 
         public IReadOnlyList<LetterTemplatePreset> GetLetterTemplatePresets(LetterTemplateType type)
     {
-            return Presets.Where(p => p.Type == type).ToList();
+            return Presets.Where(
+                p => p.Type == type).ToList();
     }
 
         public LetterTemplatePreset? GetTemplateByKey(string key)
         {
-            return Presets.FirstOrDefault(p => string.Equals(p.Key, key, StringComparison.OrdinalIgnoreCase));
+            return Presets.FirstOrDefault(
+                p => string.Equals(
+                    p.Key, 
+                    key, 
+                    StringComparison.OrdinalIgnoreCase));
         }
     }
 }

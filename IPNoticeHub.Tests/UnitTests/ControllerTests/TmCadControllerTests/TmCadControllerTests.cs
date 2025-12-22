@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using System.Security.Claims;
+using static IPNoticeHub.Shared.Constants.LetterTemplateKeys.TemplateTypeKeys;
 
 namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TmCadControllerTests
 {
@@ -25,10 +26,10 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TmCadControllerTests
             };
 
             letterTemplateProvider.
-                Setup(p => p.GetTemplateByKey("CND-Trademark")).
+                Setup(p => p.GetTemplateByKey(TrademarkCeaseDesistKey)).
                 Returns(new LetterTemplatePreset(
                     LetterTemplateType.CeaseAndDesist,
-                    "CND-Trademark",
+                    TrademarkCeaseDesistKey,
                     "Trademark Cease & Desist",
                     "Test Template Body"
                     ));
@@ -145,7 +146,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TmCadControllerTests
                     ReturnsAsync(true);
 
             letterTemplateProvider.Setup(
-                p => p.GetTemplateByKey("CND-Trademark")).
+                p => p.GetTemplateByKey(TrademarkCeaseDesistKey)).
                 Returns((LetterTemplatePreset?)null);
 
             var result = await controller.CeaseDesist(publicId);
