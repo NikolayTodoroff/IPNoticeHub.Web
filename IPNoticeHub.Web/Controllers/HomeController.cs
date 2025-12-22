@@ -89,16 +89,16 @@ namespace IPNoticeHub.Web.Controllers
         }
 
         [AllowAnonymous]
-        public IActionResult StatusCode(int code)
+        public IActionResult ErrorStatus(int statusCode)
         {
-            if (code == 404) return View("NotFound");
+            if (statusCode == 404) return View("NotFound");
 
-            var model = new ErrorViewModel
+            var errorViewModel = new ErrorViewModel
             {
                 RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
             };
 
-            return View("Error", model);
+            return View("Error", errorViewModel);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

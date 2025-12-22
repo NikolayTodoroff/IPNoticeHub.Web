@@ -7,34 +7,27 @@ using Moq;
 using NUnit.Framework;
 using static IPNoticeHub.Shared.Constants.PagingConstants.DefaultPagingConstants;
 using IPNoticeHub.Application.DTOs.TrademarkDTOs;
-using IPNoticeHub.Application.Services.TrademarkSearchService.Abstractions;
 
 namespace IPNoticeHub.Tests.UnitTests.ControllerTests.HomeControllerTests
 {
-    [TestFixture]
-    public class HomeControllerResultsTests
+    public class HomeControllerResultsTests : HomeControllerBase
     {
         [Test]
         public void HomeControllerIndex_ReturnsView()
         {
-            var tmSearchService = 
-                new Mock<ITrademarkSearchQueryService>(MockBehavior.Strict);
-
             var controller = TestHomeControllerFactory.CreateHomeController(
-                tmSearchService.Object);
+                service.Object);
 
-            var indexResult = controller.Index();
+            var actionResult = controller.Index();
 
-            indexResult.Should().BeOfType<ViewResult>();
-            ((ViewResult)indexResult).Model.Should().BeNull();
+            actionResult.Should().BeOfType<ViewResult>();
+            ((ViewResult)actionResult).Model.Should().BeNull();
         }
 
         [Test]
         public async Task SearchResults_MapsQueryAndReturnsViewModel()
         {
-            var tmSearchService = new Mock<ITrademarkSearchQueryService>(MockBehavior.Strict);
-
-            var searchResultsDTO = new[]
+            var dto = new[]
             {
                 new TrademarkSearchResultDto
                 {
@@ -47,13 +40,15 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.HomeControllerTests
                 }
             };
 
-            tmSearchService.Setup(s => s.SearchAsync(
-                It.IsAny<TrademarkSearchQueryDto>(),It.IsAny<CancellationToken>())).
-                ReturnsAsync((searchResultsDTO, 1));
+            service.Setup(
+                s => s.SearchAsync(
+                It.IsAny<TrademarkSearchQueryDto>(),
+                It.IsAny<CancellationToken>())).
+                ReturnsAsync((dto, 1));
 
             var controller = 
                 TestHomeControllerFactory.CreateHomeController(
-                tmSearchService.Object);
+                service.Object);
 
             var actionResult = await controller.Results(
                 trademark: "Anu",
@@ -71,39 +66,38 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.HomeControllerTests
             resultView.Should().NotBeNull();
             resultView!.Model.Should().BeOfType<TrademarkSearchResultsViewModel>();
 
-            var resultViewModel = 
+            var viewModel = 
                 (TrademarkSearchResultsViewModel) resultView.Model!;
 
-            resultViewModel.Query.Should().Be("Anu");
-            resultViewModel.Class.Should().Be((TrademarkClass?)25);
-            resultViewModel.Status.Should().Be(TrademarkStatusCategory.Registered);
-            resultViewModel.SearchBy.Should().Be(TrademarkSearchBy.Wordmark);
-            resultViewModel.Office.Should().Be(DataProvider.USPTO);
-            resultViewModel.Mode.Should().Be(SearchMode.Contains);
-            resultViewModel.Total.Should().Be(1);
-            resultViewModel.Results.Should().HaveCount(1);
+            viewModel.Query.Should().Be("Anu");
+            viewModel.Class.Should().Be((TrademarkClass?)25);
+            viewModel.Status.Should().Be(TrademarkStatusCategory.Registered);
+            viewModel.SearchBy.Should().Be(TrademarkSearchBy.Wordmark);
+            viewModel.Office.Should().Be(DataProvider.USPTO);
+            viewModel.Mode.Should().Be(SearchMode.Contains);
+            viewModel.Total.Should().Be(1);
+            viewModel.Results.Should().HaveCount(1);
 
-            var item = resultViewModel.Results.Single();
+            var itemViewModel = viewModel.Results.Single();
 
-            item.RegistrationNumber.Should().Be("1234567");
-            item.Wordmark.Should().Be("Anubis");
-            item.Owner.Should().Be("Egypt Inc.");
-            item.Status.Should().Be(TrademarkStatusCategory.Registered.ToString());
+            itemViewModel.RegistrationNumber.Should().Be("1234567");
+            itemViewModel.Wordmark.Should().Be("Anubis");
+            itemViewModel.Owner.Should().Be("Egypt Inc.");
+            itemViewModel.Status.Should().Be(TrademarkStatusCategory.Registered.ToString());
         }
 
         [Test]
         public async Task Results_WhenServiceReturnsEmpty_ShowsEmptyModelWithTotalZero()
         {
-            var tmSearchService = 
-                new Mock<ITrademarkSearchQueryService>(MockBehavior.Strict);
-
-            tmSearchService.Setup(s => s.SearchAsync(
+            service.Setup(
+                s => s.SearchAsync(
                 It.IsAny<TrademarkSearchQueryDto>(), 
                 It.IsAny<CancellationToken>())).
                 ReturnsAsync((new List<TrademarkSearchResultDto>(), 0));
 
-            var controller = TestHomeControllerFactory.CreateHomeController(
-                tmSearchService.Object);
+            var controller = 
+                TestHomeControllerFactory.CreateHomeController(
+                service.Object);
 
             var actionResult = await controller.Results(
                 trademark: "",
@@ -116,18 +110,19 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.HomeControllerTests
                 pageSize: 25,
                 cancellationToken: CancellationToken.None);
 
-            var resultView = actionResult as ViewResult;
+            var viewResult = actionResult as ViewResult;
 
-            resultView.Should().NotBeNull();
-            resultView!.Model.Should().BeOfType<TrademarkSearchResultsViewModel>();
+            viewResult.Should().NotBeNull();
+            viewResult!.Model.Should().BeOfType<TrademarkSearchResultsViewModel>();
 
-            var resultViewModel = 
-                (TrademarkSearchResultsViewModel)resultView.Model!;
+            var viewModel = 
+                (TrademarkSearchResultsViewModel)viewResult.Model!;
 
-            resultViewModel.Total.Should().Be(0);
-            resultViewModel.Results.Should().BeEmpty();
+            viewModel.Total.Should().Be(0);
+            viewModel.Results.Should().BeEmpty();
 
-            tmSearchService.Verify(s => s.SearchAsync(
+            service.Verify(
+                s => s.SearchAsync(
                 It.IsAny<TrademarkSearchQueryDto>(), 
                 It.IsAny<CancellationToken>()), 
                 Times.Once);
@@ -136,16 +131,15 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.HomeControllerTests
         [Test]
         public async Task Results_UsesDefaultValues_WhenParametersAreMissing()
         {
-            var tmSearchService = 
-                new Mock<ITrademarkSearchQueryService>(MockBehavior.Strict);
-
-            tmSearchService.Setup(s => s.SearchAsync(
+            service.Setup(
+                s => s.SearchAsync(
                 It.IsAny<TrademarkSearchQueryDto>(), 
                 It.IsAny<CancellationToken>())).
                 ReturnsAsync((new List<TrademarkSearchResultDto>(), 0));
 
-            var controller = TestHomeControllerFactory.CreateHomeController(
-                tmSearchService.Object);
+            var controller = 
+                TestHomeControllerFactory.CreateHomeController(
+                service.Object);
 
             var actionResult = await controller.Results(
                 trademark: null,
@@ -161,7 +155,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.HomeControllerTests
             resultView.Should().NotBeNull();
             resultView!.Model.Should().BeOfType<TrademarkSearchResultsViewModel>();
 
-            tmSearchService.Verify(
+            service.Verify(
                 s => s.SearchAsync(
                 It.Is<TrademarkSearchQueryDto>(q =>
                     q.Query == null &&

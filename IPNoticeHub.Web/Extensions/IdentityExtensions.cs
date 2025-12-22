@@ -16,10 +16,10 @@ namespace IPNoticeHub.Web.Extensions
                 options.Password.RequireUppercase = false;
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequiredLength = 6;
-            })
-            .AddEntityFrameworkStores<IPNoticeHubDbContext>()
-            .AddDefaultTokenProviders()
-            .AddDefaultUI();
+            }).
+            AddEntityFrameworkStores<IPNoticeHubDbContext>().
+            AddDefaultTokenProviders().
+            AddDefaultUI();
 
             return services;
         }

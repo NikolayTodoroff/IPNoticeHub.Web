@@ -359,8 +359,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                     CountAsync(
                     ut => ut.TrademarkEntityId == entityId);
 
-                linkCount.Should().
-                    Be(0);
+                linkCount.Should().Be(0);
             }
         }
 
@@ -726,8 +725,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                     "/Trademarks/Remove", 
                     new FormUrlEncodedContent(form));
 
-                response.StatusCode.Should().
-                    Be(HttpStatusCode.Forbidden);
+                response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
 
                 using (var serviceScope = 
                     layeredFactory.Services.CreateScope())
@@ -742,11 +740,8 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
                         ut => ut.ApplicationUserId == someUserId && 
                         ut.TrademarkEntityId == entityId);
 
-                    userTrademark.Should().
-                        NotBeNull();
-
-                    userTrademark!.IsDeleted.Should().
-                        BeFalse();
+                    userTrademark.Should().NotBeNull();
+                    userTrademark!.IsDeleted.Should().BeFalse();
                 }
             }
         }

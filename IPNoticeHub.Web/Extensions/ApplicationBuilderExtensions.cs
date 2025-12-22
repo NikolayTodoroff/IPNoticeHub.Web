@@ -21,7 +21,7 @@ namespace IPNoticeHub.Web.Extensions
                 app.UseHsts();
             }
 
-            app.UseStatusCodePagesWithReExecute("/Home/StatusCode", "?code={0}");
+            app.UseStatusCodePagesWithReExecute("/Home/ErrorStatus", "?code={0}");
 
             return app;
         }
