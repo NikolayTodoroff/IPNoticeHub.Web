@@ -32,7 +32,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightDmcaControllerTes
 
             copyrightService.Setup(
                 s => s.GetDetailsAsync(
-                    TestUserId, 
+                    UserId, 
                     publicId, 
                     It.IsAny<CancellationToken>())).
                     ReturnsAsync((CopyrightDetailsDto?)null);
@@ -56,7 +56,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightDmcaControllerTes
 
             copyrightService.Setup(
                 s => s.GetDetailsAsync(
-                    TestUserId, 
+                    UserId, 
                     publicId, 
                     It.IsAny<CancellationToken>())).
                     ReturnsAsync(dto);
@@ -138,7 +138,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightDmcaControllerTes
 
             copyrightService.Setup(
                 s => s.GetDetailsAsync(
-                    TestUserId, 
+                    UserId, 
                     publicId, 
                     It.IsAny<CancellationToken>())).
                     ReturnsAsync((CopyrightDetailsDto?)null);
@@ -168,7 +168,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightDmcaControllerTes
 
             copyrightService.Setup(
                 s => s.GetDetailsAsync(
-                    TestUserId, 
+                    UserId, 
                     publicId, 
                     It.IsAny<CancellationToken>())).
                     ReturnsAsync(dto);

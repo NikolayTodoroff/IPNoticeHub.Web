@@ -1,8 +1,10 @@
 ﻿using IPNoticeHub.Application.Rendering.Abstractions;
 using IPNoticeHub.Application.Services.CopyrightServices.Abstractions;
 using IPNoticeHub.Application.Services.DocumentLibraryService.Abstractions;
+using IPNoticeHub.Application.Services.DraftServices.Abstractions;
 using IPNoticeHub.Application.Services.PdfGenerationServices.Abstractions;
 using IPNoticeHub.Application.Templates.Abstractions;
+using IPNoticeHub.Shared.Constants;
 using IPNoticeHub.Web.Controllers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,13 +12,16 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Moq;
 using NUnit.Framework;
 using System.Security.Claims;
-using IPNoticeHub.Application.Services.DraftServices.Abstractions;
 
 namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightDmcaControllerTests
 {
     public abstract class BaseCopyrightDmcaControllerTests
     {
-        protected const string TestUserId = "test-user-id";
+        protected const string UserId = "user-123";
+        protected static readonly Guid PublicId = Guid.NewGuid();
+
+        protected const string KeySpace =
+            InputDraftConstants.UserInputDraftOptions.CopyrightDmcaKeySpace;
 
         protected Mock<ICopyrightService> copyrightService = null!;
         protected Mock<IPdfLetterService> pdfService = null!;
@@ -54,7 +59,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightDmcaControllerTes
             {
                 User = new ClaimsPrincipal(new ClaimsIdentity(new[]
                 {
-                    new Claim(ClaimTypes.NameIdentifier, TestUserId)
+                    new Claim(ClaimTypes.NameIdentifier, UserId)
                 }, "TestAuth"))
             };
 

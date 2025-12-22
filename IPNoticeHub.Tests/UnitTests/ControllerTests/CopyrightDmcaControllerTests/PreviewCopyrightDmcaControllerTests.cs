@@ -1,6 +1,8 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Application.DTOs.CopyrightDTOs;
+using IPNoticeHub.Application.DTOs.DraftStoreDTOs;
 using IPNoticeHub.Application.Templates.Abstractions;
+using IPNoticeHub.Shared.Constants;
 using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Web.Controllers;
 using IPNoticeHub.Web.Models.PdfGeneration;
@@ -8,31 +10,53 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using System.Security.Claims;
+using static IPNoticeHub.Shared.Constants.LetterTemplateKeys.TemplateTypeKeys;
 
 namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightDmcaControllerTests
 {
     public class PreviewCopyrightDmcaControllerTests : BaseCopyrightDmcaControllerTests
     {
         [Test]
-        public async Task DmcaPreview_Get_ShouldReturnForbid_WhenUserIdMissing()
+        public async Task PostDmcaPreview_ShouldReturnDmcaView_WhenModelStateIsInvalid()
         {
-            controller.ControllerContext.HttpContext!.User =
-                new ClaimsPrincipal(new ClaimsIdentity());
-
             var viewModel = new DmcaViewModel
             {
-                PublicId = Guid.NewGuid(),
-                BodyTemplate = "Some body"
+                PublicId = Guid.NewGuid()
             };
 
-            var actionResult = await controller.DmcaPreview(viewModel);
+            controller.ModelState.AddModelError(
+                "SenderName",
+                "Required");
 
-            actionResult.Should().BeOfType<ForbidResult>();
+            var actionResult = await controller.DmcaPreview(
+                viewModel,
+                CancellationToken.None);
+
+            actionResult.Should().BeOfType<ViewResult>();
+            var viewResult = (ViewResult)actionResult;
+
+            viewResult.ViewName.Should().Be("DMCA");
+            viewResult.Model.Should().BeSameAs(viewModel);
+
+            copyrightService.Verify(
+                s => s.GetDetailsAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<Guid>(),
+                    It.IsAny<CancellationToken>()),
+                Times.Never);
+
+            letterTemplateProvider.Verify(p => p.GetTemplateByKey(
+                It.IsAny<string>()),
+                Times.Never);
+
+            templateReplacer.Verify(r => r.ReplaceTemplate(
+                It.IsAny<string>(),
+                It.IsAny<Dictionary<string, string>>()),
+                Times.Never);
         }
 
-        
         [Test]
-        public async Task DmcaPreview_Post_ShouldReturnForbid_WhenUserIdMissing_AndModelStateValid()
+        public async Task PostDmcaPreview_ShouldReturnForbid_WhenUserIdMissing_AndModelStateIsValid()
         {
             controller.ControllerContext.HttpContext!.User =
                 new ClaimsPrincipal(new ClaimsIdentity());
@@ -55,6 +79,290 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightDmcaControllerTes
                 Times.Never);
         }
 
-        
+        [Test]
+        public async Task PostDmcaPreview_ShouldSaveDraft_AndRedirectToPreview()
+        {
+            var viewModel = new DmcaViewModel
+            {
+                PublicId = PublicId,
+                WorkTitle = "Some Work",
+                SenderName = "Alice",
+                BodyTemplate = "should be cleared"
+            };
+
+            var expectedDraftId = Guid.NewGuid();
+
+            draftStore.Setup(
+                s => s.SaveAsync(
+                    It.Is<string>(u => u == UserId),
+                    It.Is<string>(ks => ks == KeySpace),
+                    It.Is<DmcaDraftDto>(d =>
+                        d.WorkTitle == viewModel.WorkTitle &&
+                        d.SenderName == viewModel.SenderName),
+                    It.Is<TimeSpan>(ttl => ttl == InputDraftConstants.UserInputDraftOptions.InputTtl),
+                    It.IsAny<CancellationToken>())).
+                    ReturnsAsync(expectedDraftId);
+
+            var actionResult = await controller.DmcaPreview(
+                viewModel,
+                CancellationToken.None);
+
+            var redirect =
+                actionResult.Should().BeOfType<RedirectToActionResult>().Subject;
+
+            redirect.ActionName.Should().Be(nameof(CopyrightDmcaController.DmcaPreview));
+
+            redirect.RouteValues.Should().ContainKey("publicId").
+                WhoseValue.Should().Be(PublicId);
+
+            redirect.RouteValues.Should().ContainKey("draftId").
+                WhoseValue.Should().Be(expectedDraftId);
+
+            draftStore.VerifyAll();
+
+            copyrightService.Verify(
+                s => s.GetDetailsAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<Guid>(),
+                    It.IsAny<CancellationToken>()),
+                Times.Never);
+
+            letterTemplateProvider.Verify(
+                t => t.GetTemplateByKey(
+                    It.IsAny<string>()),
+                Times.Never);
+
+            templateReplacer.Verify(
+                r => r.ReplaceTemplate(
+                    It.IsAny<string>(),
+                    It.IsAny<IReadOnlyDictionary<string, string>>()),
+                Times.Never);
+        }
+
+        [Test]
+        public async Task PostDmcaPreview_ShouldClearBodyTemplate_BeforeSaving()
+        {
+            var viewModel = new DmcaViewModel
+            {
+                PublicId = PublicId,
+                BodyTemplate = "user-posted-body-should-not-survive",
+                SenderName = "Alice"
+            };
+
+            draftStore.Setup(
+                s => s.SaveAsync(
+                    It.Is<string>(u => u == UserId),
+                    It.Is<string>(ks => ks == KeySpace),
+                    It.IsAny<DmcaDraftDto>(),
+                    It.IsAny<TimeSpan>(),
+                    It.IsAny<CancellationToken>())).
+                    ReturnsAsync(Guid.NewGuid());
+
+            var result = await controller.DmcaPreview(
+                viewModel,
+                CancellationToken.None);
+
+            result.Should().BeOfType<RedirectToActionResult>();
+            viewModel.BodyTemplate.Should().BeEmpty();
+            draftStore.VerifyAll();
+        }
+
+        [Test]
+        public async Task GetDmcaPreview_ShouldReturnForbid_WhenUserMissing()
+        {
+            controller.ControllerContext.HttpContext.User =
+                new ClaimsPrincipal(new ClaimsIdentity());
+
+            var result = await controller.DmcaPreview(
+                PublicId,
+                Guid.NewGuid(),
+                CancellationToken.None);
+
+            result.Should().BeOfType<ForbidResult>();
+        }
+
+        [Test]
+        public async Task GetDmcaPreview_ShouldReturnForbid_WhenUserIdMissing()
+        {
+            controller.ControllerContext.HttpContext!.User =
+                new ClaimsPrincipal(new ClaimsIdentity());
+
+            var viewModel = new DmcaViewModel
+            {
+                PublicId = Guid.NewGuid(),
+                BodyTemplate = "Some body"
+            };
+
+            var result = await controller.DmcaPreview(viewModel);
+
+            result.Should().BeOfType<ForbidResult>();
+        }
+
+        [Test]
+        public async Task GetDmcaPreview_ShouldRedirectToDmca_WhenDraftIdMissing()
+        {
+            var result = await controller.DmcaPreview(
+                PublicId,
+                null, CancellationToken.None);
+
+            var redirect =
+                result.Should().BeOfType<RedirectToActionResult>().Subject;
+
+            redirect.ActionName.Should().Be("Dmca");
+            redirect.RouteValues!["publicId"].Should().Be(PublicId);
+            controller.TempData.ContainsKey("PreviewInfo").Should().BeTrue();
+
+            draftStore.VerifyNoOtherCalls();
+            letterTemplateProvider.VerifyNoOtherCalls();
+            templateReplacer.VerifyNoOtherCalls();
+            copyrightService.VerifyNoOtherCalls();
+        }
+
+        [Test]
+        public async Task GetDmcaPreview_ShouldRedirect_WhenDraftMissingOrExpired()
+        {
+            var draftId = Guid.NewGuid();
+
+            draftStore.Setup(
+                d => d.GetAsync<DmcaDraftDto>(
+                    UserId,
+                    draftId,
+                    KeySpace,
+                    It.IsAny<CancellationToken>())).
+                    ReturnsAsync((DmcaDraftDto)null!);
+
+            var result = await controller.DmcaPreview(
+                PublicId,
+                draftId,
+                CancellationToken.None);
+
+            var redirect =
+                result.Should().BeOfType<RedirectToActionResult>().Subject;
+
+            redirect.ActionName.Should().Be("Dmca");
+            redirect.RouteValues!["publicId"].Should().Be(PublicId);
+            controller.TempData.ContainsKey("PreviewInfo").Should().BeTrue();
+
+            draftStore.VerifyAll();
+            letterTemplateProvider.VerifyNoOtherCalls();
+            templateReplacer.VerifyNoOtherCalls();
+            copyrightService.VerifyNoOtherCalls();
+        }
+
+        [Test]
+        public async Task GetDmcaPreview_ShouldRedirect_WhenDetailsMissing()
+        {
+            var draftId = Guid.NewGuid();
+            var draft = new DmcaDraftDto { SenderName = "Alice" };
+
+            draftStore.Setup(
+                d => d.GetAsync<DmcaDraftDto>(
+                    UserId,
+                    draftId,
+                    KeySpace,
+                    It.IsAny<CancellationToken>())).
+                    ReturnsAsync(draft);
+
+            copyrightService.Setup(
+                s => s.GetDetailsAsync(
+                    UserId,
+                    PublicId,
+                    It.IsAny<CancellationToken>())).
+                    ReturnsAsync((CopyrightDetailsDto)null!);
+
+            var result = await controller.DmcaPreview(
+                PublicId,
+                draftId,
+                CancellationToken.None);
+
+            var redirect =
+                result.Should().BeOfType<RedirectToActionResult>().Subject;
+
+            redirect.ActionName.Should().Be("Dmca");
+            redirect.RouteValues!["publicId"].Should().Be(PublicId);
+            controller.TempData.ContainsKey("PreviewInfo").Should().BeTrue();
+
+            draftStore.VerifyAll();
+            copyrightService.VerifyAll();
+            letterTemplateProvider.VerifyNoOtherCalls();
+            templateReplacer.VerifyNoOtherCalls();
+        }
+
+        [Test]
+        public async Task GetDmcaPreview_ShouldReturnView_WithComposedBody()
+        {
+            var draftId = Guid.NewGuid();
+
+            var draft = new DmcaDraftDto { SenderName = "Alice" };
+
+            draftStore.Setup(
+                d => d.GetAsync<DmcaDraftDto>(
+                    UserId,
+                    draftId,
+                    KeySpace,
+                    It.IsAny<CancellationToken>())).
+                    ReturnsAsync(draft);
+
+            var detailsDto = new CopyrightDetailsDto
+            {
+                Title = "My Work",
+                RegistrationNumber = "R-123",
+                TypeOfWork = "Software",
+                YearOfCreation = 2010,
+                DateOfPublication = new DateTime(2020, 01, 01),
+                Owner = "TestOwner",
+                NationOfFirstPublication = "USA"
+            };
+            copyrightService.Setup(
+                s => s.GetDetailsAsync(
+                    UserId,
+                    PublicId,
+                    It.IsAny<CancellationToken>())).
+                    ReturnsAsync(detailsDto);
+
+            const string rawTemplate = "Hello {{SenderName}} about {{WorkTitle}}";
+
+            letterTemplateProvider.Setup(
+                t => t.GetTemplateByKey(CopyrightDmcaKey)).
+                Returns(new LetterTemplatePreset(
+                LetterTemplateType.Dmca,
+                KeySpace,
+                DisplayName: "Copyright Dmca",
+                BodyTemplate: rawTemplate));
+
+            templateReplacer.Setup(
+                r => r.ReplaceTemplate(
+                    It.IsAny<string>(),
+                    It.IsAny<IReadOnlyDictionary<string, string>>())).
+                    Returns<string, IReadOnlyDictionary<string, string>>((
+                        tpl,
+                        placeholders) =>
+                    {
+                        var output = tpl;
+                        foreach (var kv in placeholders)
+                            output = output.Replace("{{" + kv.Key + "}}", kv.Value ?? string.Empty);
+                        return output;
+                    });
+
+            var result = await controller.DmcaPreview(
+                PublicId,
+                draftId,
+                CancellationToken.None);
+
+            var view = result.Should().BeOfType<ViewResult>().Subject;
+            view.ViewName.Should().BeNull();
+
+            var model =
+                view.Model.Should().BeOfType<DmcaViewModel>().Subject;
+
+            model.PublicId.Should().Be(PublicId);
+            model.BodyTemplate.Should().Contain("Alice");
+            model.BodyTemplate.Should().Contain("My Work");
+
+            draftStore.VerifyAll();
+            copyrightService.VerifyAll();
+            letterTemplateProvider.VerifyAll();
+            templateReplacer.VerifyAll();
+        }
     }
 }

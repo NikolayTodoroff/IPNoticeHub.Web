@@ -103,7 +103,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightDmcaControllerTes
 
             documentLibraryService.Setup(
                 s => s.SaveDocumentAsync(
-                    TestUserId, 
+                    UserId, 
                     It.IsAny<DocumentCreateDto>(), 
                     It.IsAny<CancellationToken>())).
                     Returns(Task.FromResult(0));
@@ -124,7 +124,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightDmcaControllerTes
 
             documentLibraryService.Verify(
                 s => s.SaveDocumentAsync(
-                    TestUserId, 
+                    UserId, 
                     It.IsAny<DocumentCreateDto>(), 
                     It.IsAny<CancellationToken>()),
                 Times.Once);

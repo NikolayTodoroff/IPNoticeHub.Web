@@ -17,7 +17,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightCadControllerTest
     public class PreviewCopyrightCadControllerTests : BaseCopyrightCadControllerTests
     {
         [Test]
-        public async Task CeaseDesistPreview_Post_ShouldReturnCeaseDesistView_WhenModelStateInvalid()
+        public async Task PostCadPreview_ShouldReturnCeaseDesistView_WhenModelStateIsInvalid()
         {
             var viewModel = new CeaseDesistViewModel
             {
@@ -56,7 +56,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightCadControllerTest
         }
 
         [Test]
-        public async Task CeaseDesistPreview_Post_ShouldReturnForbid_WhenUserIdMissing_AndModelStateValid()
+        public async Task PostCadPreview_ShouldReturnForbid_WhenUserIdMissing_AndModelIsStateValid()
         {
             controller.ControllerContext.HttpContext!.User =
                 new ClaimsPrincipal(new ClaimsIdentity());
@@ -80,7 +80,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightCadControllerTest
         }
 
         [Test]
-        public async Task CeaseDesistPreview_Post_ShouldSaveDraft_AndRedirectToPreview_WhenValid()
+        public async Task PostCadPreview_ShouldSaveDraft_AndRedirectToPreview()
         {
             var viewModel = new CeaseDesistViewModel
             {
@@ -140,7 +140,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightCadControllerTest
         }
 
         [Test]
-        public async Task CeaseDesistPreview_Post_ShouldClearBodyTemplate_BeforeSaving()
+        public async Task PostCadPreview_ShouldClearBodyTemplate_BeforeSaving()
         {
             var viewModel = new CeaseDesistViewModel
             {
@@ -168,7 +168,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightCadControllerTest
         }
 
         [Test]
-        public async Task GetPreview_ShouldReturnForbid_WhenUserMissing()
+        public async Task GetCadPreview_ShouldReturnForbid_WhenUserMissing()
         {
             controller.ControllerContext.HttpContext.User =
                 new ClaimsPrincipal(new ClaimsIdentity());
@@ -182,7 +182,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightCadControllerTest
         }
 
         [Test]
-        public async Task CeaseDesistPreview_Get_ShouldReturnForbid_WhenUserIdMissing()
+        public async Task GetCadPreview_ShouldReturnForbid_WhenUserIdMissing()
         {
             controller.ControllerContext.HttpContext!.User =
                 new ClaimsPrincipal(new ClaimsIdentity());
@@ -199,7 +199,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightCadControllerTest
         }
 
         [Test]
-        public async Task GetPreview_ShouldRedirectToCeaseDesist_WhenDraftIdMissing()
+        public async Task GetCadPreview_ShouldRedirectToCeaseDesist_WhenDraftIdMissing()
         {
             var result = await controller.CeaseDesistPreview(
                 PublicId,
@@ -219,7 +219,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightCadControllerTest
         }
 
         [Test]
-        public async Task GetPreview_ShouldRedirect_WhenDraftMissingOrExpired()
+        public async Task GetCadPreview_ShouldRedirect_WhenDraftMissingOrExpired()
         {
             var draftId = Guid.NewGuid();
 
@@ -250,7 +250,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightCadControllerTest
         }
 
         [Test]
-        public async Task GetPreview_ShouldRedirect_WhenDetailsMissing()
+        public async Task GetCadPreview_ShouldRedirect_WhenDetailsMissing()
         {
             var draftId = Guid.NewGuid();
             var draft = new CeaseDesistDraftDto { SenderName = "Alice" };
@@ -289,7 +289,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightCadControllerTest
         }
 
         [Test]
-        public async Task GetPreview_ShouldReturnView_WithComposedBody_WhenHappyPath()
+        public async Task GetCadPreview_ShouldReturnView_WithComposedBody()
         {
             var draftId = Guid.NewGuid();
 
