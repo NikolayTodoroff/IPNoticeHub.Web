@@ -42,7 +42,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TmCadControllerTests
 
             trademarkCollectionService.Setup(
                 s => s.IsInCollectionAsync(
-                    TestUserId, 
+                    UserId, 
                     trademarkDto.Id, 
                     false, 
                     It.IsAny<CancellationToken>())).
@@ -98,7 +98,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TmCadControllerTests
 
             trademarkCollectionService.Setup(
                 s => s.IsInCollectionAsync(
-                    TestUserId, 
+                    UserId, 
                     trademarkDto.Id,
                     false, 
                     It.IsAny<CancellationToken>())).
@@ -139,7 +139,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TmCadControllerTests
 
             trademarkCollectionService.Setup(
                 s => s.IsInCollectionAsync(
-                    TestUserId,
+                    UserId,
                     trademarkDto.Id,
                     false,
                     It.IsAny<CancellationToken>())).

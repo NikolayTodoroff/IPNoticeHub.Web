@@ -27,7 +27,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TmCadControllerTests
             documentLibraryService.Setup(
                 s => s.GetSingleDocumentByIdAsync(
                     documentId,
-                    TestUserId,
+                    UserId,
                     It.IsAny<CancellationToken>())).
                     ReturnsAsync(document);
 
@@ -48,7 +48,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TmCadControllerTests
             documentLibraryService.Setup(
                 s => s.GetSingleDocumentByIdAsync(
                     documentId,
-                    TestUserId,
+                    UserId,
                     It.IsAny<CancellationToken>())).
                     ReturnsAsync((LegalDocument)null!);
 
@@ -70,7 +70,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TmCadControllerTests
             documentLibraryService.Setup(
                 s => s.GetSingleDocumentByIdAsync(
                     documentId,
-                    TestUserId,
+                    UserId,
                     It.IsAny<CancellationToken>())).
                     ReturnsAsync(document);
 
@@ -94,7 +94,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TmCadControllerTests
             documentLibraryService.Setup(
                 s => s.GetSingleDocumentByIdAsync(
                     existingDocId,
-                    TestUserId,
+                    UserId,
                     It.IsAny<CancellationToken>())).
                     ReturnsAsync(document);
 
@@ -122,7 +122,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TmCadControllerTests
             documentLibraryService.Setup(
                 s => s.GetSingleDocumentByIdAsync(
                     documentId,
-                    TestUserId,
+                    UserId,
                     It.IsAny<CancellationToken>())).
                     ReturnsAsync((LegalDocument)null!);
 
@@ -131,7 +131,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TmCadControllerTests
             documentLibraryService.Verify(
                 s => s.GetSingleDocumentByIdAsync(
                     documentId,
-                    TestUserId,
+                    UserId,
                     It.IsAny<CancellationToken>()),
                 Times.Once);
         }

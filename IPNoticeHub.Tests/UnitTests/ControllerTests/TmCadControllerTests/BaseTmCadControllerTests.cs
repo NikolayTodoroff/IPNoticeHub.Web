@@ -1,9 +1,11 @@
 ﻿using IPNoticeHub.Application.Rendering.Abstractions;
 using IPNoticeHub.Application.Services.DocumentLibraryService.Abstractions;
+using IPNoticeHub.Application.Services.DraftServices.Abstractions;
 using IPNoticeHub.Application.Services.PdfGenerationServices.Abstractions;
 using IPNoticeHub.Application.Services.TrademarkService.Abstractions;
 using IPNoticeHub.Application.Templates.Abstractions;
 using IPNoticeHub.Application.Trademarks.Abstractions;
+using IPNoticeHub.Shared.Constants;
 using IPNoticeHub.Web.Controllers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -11,13 +13,16 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Moq;
 using NUnit.Framework;
 using System.Security.Claims;
-using IPNoticeHub.Application.Services.DraftServices.Abstractions;
 
 namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TmCadControllerTests
 {
     public abstract class BaseTmCadControllerTests
     {
-        protected const string TestUserId = "test-user-id";
+        protected const string UserId = "user-123";
+        protected static readonly Guid PublicId = Guid.NewGuid();
+
+        protected const string KeySpace =
+            InputDraftConstants.UserInputDraftOptions.TrademarkCadKeySpace;
 
         protected Mock<ITrademarkSearchService> trademarkSearchService = null!;
         protected Mock<ITrademarkCollectionService> trademarkCollectionService = null!;
@@ -58,7 +63,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TmCadControllerTests
             {
                 User = new ClaimsPrincipal(
                     new ClaimsIdentity(
-                        new[]{new Claim(ClaimTypes.NameIdentifier, TestUserId)}, 
+                        new[]{new Claim(ClaimTypes.NameIdentifier, UserId)}, 
                         "TestAuth"))
             };
 

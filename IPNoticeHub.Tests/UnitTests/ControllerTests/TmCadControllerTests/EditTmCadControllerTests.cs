@@ -52,7 +52,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TmCadControllerTests
 
             documentLibraryService.Setup(
                 s => s.SaveDocumentAsync(
-                    TestUserId,
+                    UserId,
                     It.IsAny<DocumentCreateDto>(),
                     It.IsAny<CancellationToken>())).
                     ReturnsAsync(0);
@@ -70,7 +70,7 @@ namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TmCadControllerTests
 
             documentLibraryService.Verify(
                 s => s.SaveDocumentAsync(
-                    TestUserId,
+                    UserId,
                     It.IsAny<DocumentCreateDto>(),
                     It.IsAny<CancellationToken>()),
                 Times.Once);
