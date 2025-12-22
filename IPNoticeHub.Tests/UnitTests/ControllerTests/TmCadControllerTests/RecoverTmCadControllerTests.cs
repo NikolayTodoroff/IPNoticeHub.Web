@@ -9,7 +9,7 @@ using System.Security.Claims;
 
 namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TmCadControllerTests
 {
-    public class RecoverTmCadControllerTests : BaseTmCadControllerTests
+    public class RecoverTmCadControllerTests : TmCadControllerBase
     {
         [Test]
         public async Task RecoverCeaseDesist_ShouldReturnView_WhenDocumentExists()

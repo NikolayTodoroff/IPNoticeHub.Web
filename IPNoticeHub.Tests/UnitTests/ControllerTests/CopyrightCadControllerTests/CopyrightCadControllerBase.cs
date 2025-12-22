@@ -15,7 +15,7 @@ using System.Security.Claims;
 
 namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightCadControllerTests
 {
-    public abstract class BaseCopyrightCadControllerTests
+    public abstract class CopyrightCadControllerBase
     {
         protected const string UserId = "user-123";
         protected static readonly Guid PublicId = Guid.NewGuid();

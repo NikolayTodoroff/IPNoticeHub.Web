@@ -12,7 +12,7 @@ using static IPNoticeHub.Shared.Constants.LetterTemplateKeys.TemplateTypeKeys;
 
 namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TmCadControllerTests
 {
-    public class TmCadControllerTests : BaseTmCadControllerTests
+    public class TmCadControllerTests : TmCadControllerBase
     {
         [Test]
         public async Task CeaseDesist_Get_ShouldReturnViewModel_WhenTrademarkExistsAndInCollection()

@@ -8,7 +8,7 @@ using System.Security.Claims;
 
 namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TmCadControllerTests
 {
-    public class EditTmCadControllerTests : BaseTmCadControllerTests
+    public class EditTmCadControllerTests : TmCadControllerBase
     {
         [Test]
         public void CeaseDesistEdit_Get_ShouldReturnView_WithViewModel()

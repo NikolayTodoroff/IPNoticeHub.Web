@@ -9,7 +9,7 @@ using System.Security.Claims;
 
 namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightCadControllerTests
 {
-    public class RecoverCopyrightCadControllerTests : BaseCopyrightCadControllerTests
+    public class RecoverCopyrightCadControllerTests : CopyrightCadControllerBase
     {
         [Test]
         public async Task RecoverCeaseDesist_ShouldReturnForbid_WhenUserIdMissing()

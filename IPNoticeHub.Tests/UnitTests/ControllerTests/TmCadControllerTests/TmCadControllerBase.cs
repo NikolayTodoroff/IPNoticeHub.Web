@@ -16,7 +16,7 @@ using System.Security.Claims;
 
 namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TmCadControllerTests
 {
-    public abstract class BaseTmCadControllerTests
+    public abstract class TmCadControllerBase
     {
         protected const string UserId = "user-123";
         protected static readonly Guid PublicId = Guid.NewGuid();

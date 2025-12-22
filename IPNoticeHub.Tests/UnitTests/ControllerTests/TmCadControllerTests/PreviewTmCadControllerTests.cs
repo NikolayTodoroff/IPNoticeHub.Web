@@ -14,7 +14,7 @@ using static IPNoticeHub.Shared.Constants.LetterTemplateKeys.TemplateTypeKeys;
 
 namespace IPNoticeHub.Tests.UnitTests.ControllerTests.TmCadControllerTests
 {
-    public class PreviewTmCadControllerTests : BaseTmCadControllerTests
+    public class PreviewTmCadControllerTests : TmCadControllerBase
     {
         [Test]
         public async Task PostTrademarkCadPreview_ShouldRedirectToPreview_WhenModelStateIsValid()

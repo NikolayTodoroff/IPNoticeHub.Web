@@ -14,7 +14,7 @@ using static IPNoticeHub.Shared.Constants.LetterTemplateKeys.TemplateTypeKeys;
 
 namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightDmcaControllerTests
 {
-    public class PreviewCopyrightDmcaControllerTests : BaseCopyrightDmcaControllerTests
+    public class PreviewCopyrightDmcaControllerTests : CopyrightDmcaControllerBase
     {
         [Test]
         public async Task PostDmcaPreview_ShouldReturnDmcaView_WhenModelStateIsInvalid()

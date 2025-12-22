@@ -9,7 +9,7 @@ using System.Security.Claims;
 
 namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightDmcaControllerTests
 {
-    public class RecoverCopyrightDmcaControllerTests : BaseCopyrightDmcaControllerTests
+    public class RecoverCopyrightDmcaControllerTests : CopyrightDmcaControllerBase
     {
         [Test]
         public async Task RecoverDmca_ShouldReturnForbid_WhenUserIdMissing()

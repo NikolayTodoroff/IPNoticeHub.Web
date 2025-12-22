@@ -9,7 +9,7 @@ using System.Security.Claims;
 
 namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightDmcaControllerTests
 {
-    public class EditCopyrightDmcaControllerTests : BaseCopyrightDmcaControllerTests
+    public class EditCopyrightDmcaControllerTests : CopyrightDmcaControllerBase
     {
         [Test]
         public void DmcaEdit_Get_ShouldReturnForbid_WhenUserIdMissing()

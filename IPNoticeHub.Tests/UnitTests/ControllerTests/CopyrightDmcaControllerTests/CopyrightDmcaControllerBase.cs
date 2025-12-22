@@ -15,7 +15,7 @@ using System.Security.Claims;
 
 namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightDmcaControllerTests
 {
-    public abstract class BaseCopyrightDmcaControllerTests
+    public abstract class CopyrightDmcaControllerBase
     {
         protected const string UserId = "user-123";
         protected static readonly Guid PublicId = Guid.NewGuid();

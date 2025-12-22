@@ -12,7 +12,7 @@ using static IPNoticeHub.Shared.Constants.LetterTemplateKeys.TemplateTypeKeys;
 
 namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightCadControllerTests
 {
-    public class CopyrightCadControllerTests : BaseCopyrightCadControllerTests
+    public class CopyrightCadControllerTests : CopyrightCadControllerBase
     {
         [Test]
         public async Task CeaseDesist_Get_ShouldReturnView_WithViewModel_WhenCopyrightExists()

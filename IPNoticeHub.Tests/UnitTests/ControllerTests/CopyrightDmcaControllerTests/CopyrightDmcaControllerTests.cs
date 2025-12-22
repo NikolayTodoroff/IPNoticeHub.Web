@@ -12,7 +12,7 @@ using static IPNoticeHub.Shared.Constants.LetterTemplateKeys.TemplateTypeKeys;
 
 namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightDmcaControllerTests
 {
-    public class CopyrightDmcaControllerTests : BaseCopyrightDmcaControllerTests
+    public class CopyrightDmcaControllerTests : CopyrightDmcaControllerBase
     {
         [Test]
         public async Task Dmca_Get_ShouldReturnForbid_WhenUserIdMissing()

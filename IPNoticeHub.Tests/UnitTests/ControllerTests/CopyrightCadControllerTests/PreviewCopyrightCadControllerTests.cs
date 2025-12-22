@@ -14,7 +14,7 @@ using static IPNoticeHub.Shared.Constants.LetterTemplateKeys.TemplateTypeKeys;
 
 namespace IPNoticeHub.Tests.UnitTests.ControllerTests.CopyrightCadControllerTests
 {
-    public class PreviewCopyrightCadControllerTests : BaseCopyrightCadControllerTests
+    public class PreviewCopyrightCadControllerTests : CopyrightCadControllerBase
     {
         [Test]
         public async Task PostCadPreview_ShouldReturnCeaseDesistView_WhenModelStateIsInvalid()
