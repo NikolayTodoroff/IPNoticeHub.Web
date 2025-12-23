@@ -4,28 +4,15 @@ using IPNoticeHub.Application.DTOs.CopyrightDTOs;
 using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
-using IPNoticeHub.Infrastructure.Persistence;
-using IPNoticeHub.Infrastructure.Identity;
-using IPNoticeHub.Infrastructure.Persistence.Repositories.CopyrightRepository;
-using IPNoticeHub.Application.Services.CopyrightService.Implementations;
 
 namespace IPNoticeHub.Tests.UnitTests.ServiceTests.CopyrightServiceTests
 {
-    [TestFixture]
-    public class CopyrightServiceEditTests
+    public class EditCopyrightServiceTests : CopyrightServiceBase
     {
         [Test]
         public async Task EditAsync_WhenLinked_UpdatesFields_AndReturnsTrue()
         {
-            using IPNoticeHubDbContext testDbContext = 
-                InMemoryDbContextFactory.CreateTestDbContext();
-
-            var user = new ApplicationUser { 
-                Id = "u111", 
-                UserName = "user1", 
-                Email = "newUser@test.com" };
-
-            testDbContext.Users.Add(user);
+            await SetUp();
 
             var initialEntity = 
                 InMemoryDbContextFactory.CreateCopyright(
@@ -40,21 +27,11 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.CopyrightServiceTests
             testDbContext.CopyrightRegistrations.Add(initialEntity);
             await testDbContext.SaveChangesAsync();
 
-            var userCopyrightRepo = 
-                new UserCopyrightRepository(testDbContext);
-
             await userCopyrightRepo.AddOrUndeleteAsync(
                 user.Id, 
                 initialEntity.Id);
 
-            var copyrightRepo = 
-                new CopyrightRepository(testDbContext);
-
-            var service = new CopyrightService(
-                copyrightRepo, 
-                userCopyrightRepo);
-
-            var editedEntity = new CopyrightEditDto
+            var dto = new CopyrightEditDto
             {
                 RegistrationNumber = "TX-ED1-UPDATED",
                 WorkType = CopyrightWorkType.Other,
@@ -66,57 +43,36 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.CopyrightServiceTests
                 NationOfFirstPublication = "UK"
             };
 
-            bool entityUpdatedSuccessfully = await service.EditAsync(
+            bool result = await service.EditAsync(
                 user.Id, 
                 initialEntity.PublicId, 
-                editedEntity, 
+                dto, 
                 CancellationToken.None);
 
-            entityUpdatedSuccessfully.Should().
-                BeTrue();
+            result.Should().BeTrue();
 
             var updatedEntity = 
                 await testDbContext.CopyrightRegistrations.SingleAsync(
                     x => x.Id == initialEntity.Id);
 
-            updatedEntity.RegistrationNumber.Should().
-                Be("TX-ED1-UPDATED");
-
-            updatedEntity.TypeOfWork.Should().
-                Be("AI-Generated Visual");
-
-            updatedEntity.Title.Should().
-                Be("Edited Title");
-
-            updatedEntity.YearOfCreation.Should().
-                Be(2024);
+            updatedEntity.RegistrationNumber.Should().Be("TX-ED1-UPDATED");
+            updatedEntity.TypeOfWork.Should().Be("AI-Generated Visual");
+            updatedEntity.Title.Should().Be("Edited Title");
+            updatedEntity.YearOfCreation.Should().Be(2024);
 
             updatedEntity.DateOfPublication.Should().
                 Be(new DateTime(2024, 5, 6));
 
-            updatedEntity.Owner.Should().
-                Be("Updated Owner");
-
-            updatedEntity.NationOfFirstPublication.Should().
-                Be("UK");
+            updatedEntity.Owner.Should().Be("Updated Owner");
+            updatedEntity.NationOfFirstPublication.Should().Be("UK");
         }
 
         [Test]
         public async Task EditAsync_WhenPublicIdMissing_ReturnsFalse()
         {
-            using IPNoticeHubDbContext testDbContext = 
-                InMemoryDbContextFactory.CreateTestDbContext();
+            await SetUp();
 
-            var user = new ApplicationUser { 
-                Id = "u111", 
-                UserName = "user1", 
-                Email = "newUser@test.com" };
-
-            testDbContext.Users.Add(user);
-
-            await testDbContext.SaveChangesAsync();
-
-            var copyrightEditDTO = new CopyrightEditDto
+            var dto = new CopyrightEditDto
             {
                 RegistrationNumber = "X",
                 WorkType = CopyrightWorkType.Literary,
@@ -124,37 +80,18 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.CopyrightServiceTests
                 Owner = "X"
             };
 
-            var userCopyrightRepo = 
-                new UserCopyrightRepository(testDbContext);
-
-            var copyrightRepo = 
-                new CopyrightRepository(testDbContext);
-
-            var service = new CopyrightService(
-                copyrightRepo, 
-                userCopyrightRepo);
-
-            bool entityUpdatedSuccessfully = await service.EditAsync(
+            bool result = await service.EditAsync(
                 user.Id, 
                 Guid.NewGuid(), 
-                copyrightEditDTO, CancellationToken.None);
+                dto, CancellationToken.None);
 
-            entityUpdatedSuccessfully.Should().
-                BeFalse();
+            result.Should().BeFalse();
         }
 
         [Test]
         public async Task EditAsync_WhenUserAndCopyrightEntityNotLinked_ReturnsFalse()
         {
-            using IPNoticeHubDbContext testDbContext = 
-                InMemoryDbContextFactory.CreateTestDbContext();
-
-            var user = new ApplicationUser { 
-                Id = "u111", 
-                UserName = "user1", 
-                Email = "newUser@test.com" };
-
-            testDbContext.Users.Add(user);
+            await SetUp();
 
             var copyrightEntity = 
                 InMemoryDbContextFactory.CreateCopyright(
@@ -169,17 +106,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.CopyrightServiceTests
             testDbContext.CopyrightRegistrations.Add(copyrightEntity);
             await testDbContext.SaveChangesAsync();
 
-            var userCopyrightRepo = 
-                new UserCopyrightRepository(testDbContext);
-
-            var copyrightRepo = 
-                new CopyrightRepository(testDbContext);
-
-            var service = new CopyrightService(
-                copyrightRepo, 
-                userCopyrightRepo);
-
-            var copyrightEditDTO = new CopyrightEditDto
+            var dto = new CopyrightEditDto
             {
                 RegistrationNumber = "TX-ED3",
                 WorkType = CopyrightWorkType.VisualArts,
@@ -187,27 +114,18 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.CopyrightServiceTests
                 Owner = "Edit Attempt Owner"
             };
 
-            bool entityUpdatedSuccessfully = await service.EditAsync(
+            bool result = await service.EditAsync(
                 user.Id, 
                 copyrightEntity.PublicId, 
-                copyrightEditDTO, CancellationToken.None);
+                dto, CancellationToken.None);
 
-            entityUpdatedSuccessfully.Should().
-                BeFalse();
+            result.Should().BeFalse();
         }
 
         [Test]
         public async Task EditAsync_WhenRegNumberCollides_ReturnsFalse_AndDoesNotChangeEntity()
         {
-            using IPNoticeHubDbContext testDbContext = 
-                InMemoryDbContextFactory.CreateTestDbContext();
-
-            var user = new ApplicationUser { 
-                Id = "u111", 
-                UserName = "user1", 
-                Email = "newUser@test.com" };
-
-            testDbContext.Users.Add(user);
+            await SetUp();
 
             var targetEntity = 
                 InMemoryDbContextFactory.CreateCopyright(
@@ -235,23 +153,11 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.CopyrightServiceTests
 
             await testDbContext.SaveChangesAsync();
 
-            var userCopyrightRepo = 
-                new UserCopyrightRepository(testDbContext);
-
             await userCopyrightRepo.AddOrUndeleteAsync(
                 user.Id, 
                 targetEntity.Id);
 
-            var copyrightRepo = 
-                new CopyrightRepository(testDbContext);
-
-            var service = new CopyrightService(
-                copyrightRepo, 
-                userCopyrightRepo);
-
-
-            var entityUpdatedSuccessfully = 
-                await service.EditAsync(
+            var result = await service.EditAsync(
                     user.Id, 
                     targetEntity.PublicId, 
                     new CopyrightEditDto
@@ -262,34 +168,22 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.CopyrightServiceTests
                 Owner = "New Owner (won't be applied)"
             }, CancellationToken.None);
 
-            entityUpdatedSuccessfully.Should().
-                BeFalse();
+            result.Should().BeFalse();
 
-            var targetEntityAfterEditAttempt = 
+            var entity = 
                 await testDbContext.CopyrightRegistrations.SingleAsync(
                     x => x.Id == targetEntity.Id);
 
-            targetEntityAfterEditAttempt.RegistrationNumber.Should().
-                Be("TX-ED1");
-
-            targetEntityAfterEditAttempt.Title.Should().
-                Be("Target Entity");
+            entity.RegistrationNumber.Should().Be("TX-ED1");
+            entity.Title.Should().Be("Target Entity");
         }
 
         [Test]
         public async Task EditAsync_WhenRegNumberUnchanged_UpdatesOtherFields()
         {
-            using IPNoticeHubDbContext testDbContext = 
-                InMemoryDbContextFactory.CreateTestDbContext();
+            await SetUp();
 
-            var user = new ApplicationUser { 
-                Id = "u111", 
-                UserName = "user1", 
-                Email = "newUser@test.com" };
-
-            testDbContext.Users.Add(user);
-
-            var copyrightEntity = 
+            var entity = 
                 InMemoryDbContextFactory.CreateCopyright(
                 registrationNumber: "TX-ED1",
                 title: "Initial Entity",
@@ -299,23 +193,15 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.CopyrightServiceTests
                 dateOfPublication: new DateTime(2020, 1, 2),
                 nationOfFirstPublication: "US");
 
-            var userCopyrightRepo = 
-                new UserCopyrightRepository(testDbContext);
+            testDbContext.CopyrightRegistrations.Add(entity);
 
-            testDbContext.CopyrightRegistrations.Add(copyrightEntity);
             await userCopyrightRepo.AddOrUndeleteAsync(
                 user.Id, 
-                copyrightEntity.Id);
+                entity.Id);
 
             await testDbContext.SaveChangesAsync();
-           
-            var copyrightRepo = 
-                new CopyrightRepository(testDbContext);
 
-            var service = 
-                new CopyrightService(copyrightRepo, userCopyrightRepo);
-
-            var copyrightEditDTO = new CopyrightEditDto
+            var dto = new CopyrightEditDto
             {
                 RegistrationNumber = "TX-ED1",
                 WorkType = CopyrightWorkType.PerformingArts,
@@ -323,29 +209,21 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.CopyrightServiceTests
                 Owner = "Edited Owner"
             };
 
-            bool entityUpdatedSuccessfully = await service.EditAsync(
+            bool result = await service.EditAsync(
                 user.Id, 
-                copyrightEntity.PublicId, 
-                copyrightEditDTO, CancellationToken.None);
+                entity.PublicId, 
+                dto, CancellationToken.None);
 
-            entityUpdatedSuccessfully.Should().
-                BeTrue();
+            result.Should().BeTrue();
 
             var editedEntity = 
                 await testDbContext.CopyrightRegistrations.SingleAsync(
-                    x => x.Id == copyrightEntity.Id);
+                    x => x.Id == entity.Id);
 
-            editedEntity.RegistrationNumber.Should().
-                Be("TX-ED1");
-
-            editedEntity.TypeOfWork.Should().
-                Be("PerformingArts");
-
-            editedEntity.Title.Should().
-                Be("Edited Title");
-
-            editedEntity.Owner.Should().
-                Be("Edited Owner");
+            editedEntity.RegistrationNumber.Should().Be("TX-ED1");
+            editedEntity.TypeOfWork.Should().Be("PerformingArts");
+            editedEntity.Title.Should().Be("Edited Title");
+            editedEntity.Owner.Should().Be("Edited Owner");
         }
     }
 }

@@ -87,13 +87,13 @@ namespace IPNoticeHub.Tests.UnitTests.UnitTestFactories
             };
         }
 
-        public static ApplicationUser CreateApplicationUser(string id = "user-1")
+        public static ApplicationUser CreateApplicationUser(string id = "1234567")
         {
             return new ApplicationUser
             {
                 Id = id,
-                UserName = "testerUserName",
-                Email = "tester@example.com"
+                UserName = "user1",
+                Email = "user@test.com"
             };
         }
     }
