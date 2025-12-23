@@ -6,7 +6,7 @@ using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 
 namespace IPNoticeHub.Tests.UnitTests.ServiceTests.WatchlistServiceTests
 {
-    public class StatusSnapshotTests : StatusSnapshotBase
+    public class StatusSnapshotTests : WatchlistServiceBase
     {
         [Test]
         public async Task AddAsync_WhenSnapshotExists_CallsRepoWithSnapshot()

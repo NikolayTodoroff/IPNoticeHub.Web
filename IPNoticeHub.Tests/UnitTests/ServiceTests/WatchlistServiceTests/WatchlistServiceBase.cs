@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace IPNoticeHub.Tests.UnitTests.ServiceTests.WatchlistServiceTests
 {
-    public class StatusSnapshotBase
+    public class WatchlistServiceBase
     {
         protected Mock<IWatchlistRepository> watchlistRepo = null!;
         protected Mock<ITrademarkStatusSnapshotRepository> snapshotRepo = null!;

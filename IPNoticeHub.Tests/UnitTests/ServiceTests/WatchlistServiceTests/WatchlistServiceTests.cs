@@ -1,8 +1,4 @@
 ﻿using FluentAssertions;
-using IPNoticeHub.Application.Repositories.TrademarkRepository;
-using IPNoticeHub.Application.Repositories.WatchlistRepository;
-using IPNoticeHub.Application.Services.WatchlistService.Abstractions;
-using IPNoticeHub.Application.Services.WatchlistService.Implementations;
 using IPNoticeHub.Domain.Entities.Trademarks;
 using IPNoticeHub.Domain.Entities.Watchlist;
 using Moq;
@@ -10,21 +6,12 @@ using NUnit.Framework;
 
 namespace IPNoticeHub.Tests.UnitTests.ServiceTests.WatchlistServiceTests
 {
-    public class WatchlistServiceTests
+    public class WatchlistServiceTests : WatchlistServiceBase
     {
         [Test]
         public async Task GetListByUserAsync_MapsItems_ComputesStatusChangeByCode_UsesLabelFallback()
         {
             var userId = "user-1";
-
-            var watchlistRepo = 
-                new Mock<IWatchlistRepository>(MockBehavior.Strict);
-
-            var snapshotRepo = 
-                new Mock<ITrademarkStatusSnapshotRepository>(MockBehavior.Loose);
-
-            var statusLabels = 
-                new Mock<IStatusLabelProvider>(MockBehavior.Strict);
 
             statusLabels.Setup(
                 l => l.GetStatusLabel(
@@ -106,13 +93,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.WatchlistServiceTests
                     0, 
                     200, 
                     It.IsAny<CancellationToken>())).
-                ReturnsAsync(new List<Watchlist> { linkA, linkB });
-
-            var watchlistService = 
-                new WatchlistService(
-                    watchlistRepo.Object,
-                    snapshotRepo.Object, 
-                    statusLabels.Object);
+                    ReturnsAsync(new List<Watchlist> { linkA, linkB });
 
             var items = 
                 await watchlistService.GetListByUserAsync(
@@ -122,7 +103,6 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.WatchlistServiceTests
             items.Should().HaveCount(2);
             var itemA = items[0];
             itemA.Id.Should().Be(101);
-
             itemA.RegistrationNumber.Should().Be("REG-101");
             itemA.Wordmark.Should().Be("WM1");
             itemA.Owner.Should().Be("Owner A");
@@ -163,14 +143,6 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.WatchlistServiceTests
         public async Task GetListByUserAsync_WhenCodesNull_ComputesChangeByNormalizedText()
         {
             var userId = "user-1";
-            var watchlistRepo = 
-                new Mock<IWatchlistRepository>(MockBehavior.Strict);
-
-            var snapshotRepo = 
-                new Mock<ITrademarkStatusSnapshotRepository>(MockBehavior.Loose);
-
-            var statusLabels = 
-                new Mock<IStatusLabelProvider>(MockBehavior.Strict);
 
             var linkA = new Watchlist
             {
@@ -214,13 +186,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.WatchlistServiceTests
                     0, 
                     200, 
                     It.IsAny<CancellationToken>())).
-                ReturnsAsync(new List<Watchlist> { linkA, linkB });
-
-            var watchlistService = 
-                new WatchlistService(
-                    watchlistRepo.Object,
-                    snapshotRepo.Object,
-                    statusLabels.Object);
+                    ReturnsAsync(new List<Watchlist> { linkA, linkB });
 
             var items = 
                 await watchlistService.GetListByUserAsync(
@@ -259,15 +225,6 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.WatchlistServiceTests
         [Test]
         public async Task ExistsAsync_WhenTrademarkExistsInRepository_ReturnsTrue()
         {
-            var watchlistRepo = 
-                new Mock<IWatchlistRepository>(MockBehavior.Strict);
-
-            var snapshotRepo = 
-                new Mock<ITrademarkStatusSnapshotRepository>(MockBehavior.Loose);
-
-            var statusLabels = 
-                new Mock<IStatusLabelProvider>(MockBehavior.Loose);
-
             const string userId = "user-1";
             const int trademarkId = 321;
 
@@ -275,14 +232,8 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.WatchlistServiceTests
                 r => r.ExistsAsync(
                     userId, 
                     trademarkId, 
-                    It.IsAny<CancellationToken>()))
-                .ReturnsAsync(true);
-
-            var watchlistService = 
-                new WatchlistService(
-                    watchlistRepo.Object, 
-                    snapshotRepo.Object, 
-                    statusLabels.Object);
+                    It.IsAny<CancellationToken>())).
+                    ReturnsAsync(true);
 
             var watchlistLinkExist = 
                 await watchlistService.ExistsAsync(
@@ -305,15 +256,6 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.WatchlistServiceTests
         [Test]
         public async Task ExistsAsync_WhenTrademarkDoesNotExistInRepository_ReturnsFalse()
         {
-            var watchlistRepo = 
-                new Mock<IWatchlistRepository>(MockBehavior.Strict);
-
-            var snapshotRepo = 
-                new Mock<ITrademarkStatusSnapshotRepository>(MockBehavior.Loose);
-
-            var statusLabels = 
-                new Mock<IStatusLabelProvider>(MockBehavior.Loose);
-
             const string userId = "user-2";
             const int trademarkId = 999;
 
@@ -324,14 +266,8 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.WatchlistServiceTests
                     It.IsAny<CancellationToken>())).
                 ReturnsAsync(false);
 
-            var service = 
-                new WatchlistService(
-                    watchlistRepo.Object, 
-                    snapshotRepo.Object, 
-                    statusLabels.Object);
-
             var watchlistLinkExist = 
-                await service.ExistsAsync(
+                await watchlistService.ExistsAsync(
                     userId, 
                     trademarkId, 
                     CancellationToken.None);
@@ -351,15 +287,6 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.WatchlistServiceTests
         [Test]
         public async Task RemoveAsync_CallsRepositorySoftRemove()
         {
-            var watchlistRepo = 
-                new Mock<IWatchlistRepository>(MockBehavior.Strict);
-
-            var snapshotRepo = 
-                new Mock<ITrademarkStatusSnapshotRepository>(MockBehavior.Loose);
-
-            var statusLabel = 
-                new Mock<IStatusLabelProvider>(MockBehavior.Loose);
-
             const string userId = "user-1";
             const int trademarkId = 123;
 
@@ -369,12 +296,6 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.WatchlistServiceTests
                     trademarkId, 
                     It.IsAny<CancellationToken>())).
                 Returns(Task.CompletedTask);
-
-            var watchlistService = 
-                new WatchlistService(
-                    watchlistRepo.Object, 
-                    snapshotRepo.Object, 
-                    statusLabel.Object);
 
             await watchlistService.RemoveAsync(
                 userId, 
@@ -394,15 +315,6 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.WatchlistServiceTests
         [Test]
         public async Task ToggleNotificationsAsync_CallsRepositoryWithCorrectParameters()
         {
-            var watchlistRepo = 
-                new Mock<IWatchlistRepository>(MockBehavior.Strict);
-
-            var snapshotRepo = 
-                new Mock<ITrademarkStatusSnapshotRepository>(MockBehavior.Loose);
-
-            var statusLabels = 
-                new Mock<IStatusLabelProvider>(MockBehavior.Loose);
-
             const string userId = "user-2";
             const int trademarkId = 456;
             const bool notificationsEnabled = true;
@@ -415,13 +327,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.WatchlistServiceTests
                     It.IsAny<CancellationToken>())).
                 Returns(Task.CompletedTask);
 
-            var service = 
-                new WatchlistService(
-                    watchlistRepo.Object, 
-                    snapshotRepo.Object, 
-                    statusLabels.Object);
-
-            await service.ToggleNotificationsAsync(
+            await watchlistService.ToggleNotificationsAsync(
                 userId, 
                 trademarkId, 
                 notificationsEnabled, 
@@ -442,14 +348,6 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.WatchlistServiceTests
         public async Task ComputeStatusChange_WhenBothTextsEmptyString_ReturnsFalse()
         {
             var userId = "user-1";
-            var watchlistRepo =
-                new Mock<IWatchlistRepository>(MockBehavior.Strict);
-
-            var snapshotRepo =
-                new Mock<ITrademarkStatusSnapshotRepository>(MockBehavior.Loose);
-
-            var statusLabels =
-                new Mock<IStatusLabelProvider>(MockBehavior.Loose);
 
             var link = new Watchlist
             {
@@ -476,12 +374,6 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.WatchlistServiceTests
                     200,
                     It.IsAny<CancellationToken>())).
                 ReturnsAsync(new List<Watchlist> { link });
-
-            var watchlistService =
-                new WatchlistService(
-                    watchlistRepo.Object,
-                    snapshotRepo.Object,
-                    statusLabels.Object);
 
             var items =
                 await watchlistService.GetListByUserAsync(
