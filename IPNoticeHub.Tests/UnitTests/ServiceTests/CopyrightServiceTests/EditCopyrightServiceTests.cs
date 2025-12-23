@@ -12,8 +12,6 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.CopyrightServiceTests
         [Test]
         public async Task EditAsync_WhenLinked_UpdatesFields_AndReturnsTrue()
         {
-            await SetUp();
-
             var initialEntity = 
                 InMemoryDbContextFactory.CreateCopyright(
                 registrationNumber: "TX-ED1",
@@ -70,8 +68,6 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.CopyrightServiceTests
         [Test]
         public async Task EditAsync_WhenPublicIdMissing_ReturnsFalse()
         {
-            await SetUp();
-
             var dto = new CopyrightEditDto
             {
                 RegistrationNumber = "X",
@@ -91,8 +87,6 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.CopyrightServiceTests
         [Test]
         public async Task EditAsync_WhenUserAndCopyrightEntityNotLinked_ReturnsFalse()
         {
-            await SetUp();
-
             var copyrightEntity = 
                 InMemoryDbContextFactory.CreateCopyright(
                 registrationNumber: "TX-ED1",
@@ -125,8 +119,6 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.CopyrightServiceTests
         [Test]
         public async Task EditAsync_WhenRegNumberCollides_ReturnsFalse_AndDoesNotChangeEntity()
         {
-            await SetUp();
-
             var targetEntity = 
                 InMemoryDbContextFactory.CreateCopyright(
                 registrationNumber: "TX-ED1",
@@ -181,8 +173,6 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.CopyrightServiceTests
         [Test]
         public async Task EditAsync_WhenRegNumberUnchanged_UpdatesOtherFields()
         {
-            await SetUp();
-
             var entity = 
                 InMemoryDbContextFactory.CreateCopyright(
                 registrationNumber: "TX-ED1",

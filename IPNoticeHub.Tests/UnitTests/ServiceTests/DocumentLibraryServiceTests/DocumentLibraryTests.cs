@@ -2,19 +2,15 @@
 using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Domain.Entities.LegalDocuments;
 using IPNoticeHub.Application.DTOs.DocumentLibraryDTOs;
-using IPNoticeHub.Application.Repositories.DocumentLibraryRepository;
-using IPNoticeHub.Application.Services.DocumentLibraryService.Implementations;
 using Moq;
 using NUnit.Framework;
-using IPNoticeHub.Application.Services.PdfGenerationServices.Abstractions;
 using IPNoticeHub.Application.DTOs.PdfDTOs;
 using static IPNoticeHub.Shared.Constants.DateTimeFormats.DefaultDateTimeFormat;
 using System.Globalization;
 
 namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
 {
-    [TestFixture]
-    public class DocumentLibraryTests
+    public class DocumentLibraryTests : DocumentLibraryBase
     {
         [Test]
         public async Task SaveDocumentAsync_GeneratesDefaultTitle_WhenTitleMissing()
@@ -41,25 +37,12 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
 
             var entity = (LegalDocument?)null;
 
-            var repository = 
-                new Mock<IDocumentLibraryRepository>(MockBehavior.Strict);
-
             repository.Setup(
                 r => r.AddAsync(
                     It.IsAny<LegalDocument>(), 
-                    It.IsAny<CancellationToken>()))
-                .Callback<LegalDocument, CancellationToken>((ld, _) => 
-                entity = ld).
+                    It.IsAny<CancellationToken>())).
+                    Callback<LegalDocument, CancellationToken>((ld, _) => entity = ld).
                 ReturnsAsync(42);
-
-            var pdfService = 
-                new Mock<IPdfLetterService>(MockBehavior.Loose);
-
-            var logger = 
-                new Mock<DocumentLibraryService>(MockBehavior.Loose);
-
-            var service = 
-                new DocumentLibraryService(repository.Object,pdfService.Object);
 
             var id = await service.SaveDocumentAsync(userId,dto,CancellationToken.None);
 
@@ -109,9 +92,6 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
                 "{{RegistrationNumber}}.\nSincerely,\n{{SenderName}}"
             };
 
-            var repository = 
-                new Mock<IDocumentLibraryRepository>(MockBehavior.Strict);
-
             repository.Setup(r => r.GetDocumentByIdAsync(
                 documentId, 
                 userId, 
@@ -122,8 +102,6 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
 
             LegalDocument? capturedDocument = null;
 
-            var pdfService = new Mock<IPdfLetterService>(MockBehavior.Strict);
-
             pdfService.Setup(p => p.GenerateFromSavedDocumentAsync(
                     It.IsAny<LegalDocument>(),
                     It.IsAny<CancellationToken>())).
@@ -131,11 +109,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
                     => capturedDocument = doc).
                 ReturnsAsync(generatedPdf);
 
-            var documentService = new DocumentLibraryService(
-                repository.Object, 
-                pdfService.Object);
-
-            var result = await documentService.RestoreSavedDocumentAsync(
+            var result = await service.RestoreSavedDocumentAsync(
                 documentId, 
                 userId, 
                 CancellationToken.None);
@@ -178,25 +152,13 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
             var userId = "user-123";
             var documentId = 99;
 
-            var repo = 
-                new Mock<IDocumentLibraryRepository>(MockBehavior.Strict);
-
-            repo.Setup(r => r.GetDocumentByIdAsync(
+            repository.Setup(r => r.GetDocumentByIdAsync(
                 documentId, 
                 userId, 
                 It.IsAny<CancellationToken>())).
                 ReturnsAsync((LegalDocument?)null);
 
-            var pdfService = new Mock<IPdfLetterService>(MockBehavior.Loose);
-
-            var documentService = 
-                new Mock<DocumentLibraryService>(MockBehavior.Loose);
-
-            var sut = new DocumentLibraryService(
-                repo.Object, 
-                pdfService.Object);
-
-            var result = await sut.RestoreSavedDocumentAsync(
+            var result = await service.RestoreSavedDocumentAsync(
                 documentId, 
                 userId, 
                 CancellationToken.None);
@@ -251,8 +213,6 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
         }
     };
 
-            var repository = new Mock<IDocumentLibraryRepository>(MockBehavior.Strict);
-
             repository.Setup(
                 r => r.GetUserDocumentsAsync(
                     userId, 
@@ -261,14 +221,8 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
                     It.IsAny<CancellationToken>())).
                     ReturnsAsync(docs);
 
-            var pdfService = 
-                new Mock<IPdfLetterService>(MockBehavior.Strict);
-
-            var sut = new DocumentLibraryService(
-                repository.Object, 
-                pdfService.Object);
-
-            var result = await sut.GetUserDocumentsAsync(
+            var result = 
+                await service.GetUserDocumentsAsync(
                 userId, 
                 sourceType, 
                 templateType, 
@@ -304,12 +258,6 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
         [Test]
         public async Task RenameDocumentAsync_ReturnsTrue_AndCallsRepository()
         {
-            var repository = 
-                new Mock<IDocumentLibraryRepository>(MockBehavior.Strict);
-
-            var pdfService = 
-                new Mock<IPdfLetterService>(MockBehavior.Strict);
-
             repository.Setup(
                 r => r.RenameAsync(
                     5, 
@@ -318,11 +266,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
                     It.IsAny<CancellationToken>())).
                     Returns(Task.CompletedTask);
 
-            var sut = new DocumentLibraryService(
-                repository.Object, 
-                pdfService.Object);
-
-            var result = await sut.RenameDocumentAsync(
+            var result = await service.RenameDocumentAsync(
                 5, 
                 "user-1", 
                 "New Title", 
@@ -341,12 +285,6 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
         [Test]
         public async Task DeleteDocumentAsync_ReturnsTrue_AndCallsRepository()
         {
-            var repository = 
-                new Mock<IDocumentLibraryRepository>(MockBehavior.Strict);
-
-            var pdfService = 
-                new Mock<IPdfLetterService>(MockBehavior.Strict);
-
             repository.Setup(
                 r => r.SoftDeleteAsync(
                     7, 
@@ -354,16 +292,13 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
                     It.IsAny<CancellationToken>())).
                     Returns(Task.CompletedTask);
 
-            var sut = new DocumentLibraryService(
-                repository.Object, 
-                pdfService.Object);
-
-            var result = await sut.DeleteDocumentAsync(
+            var result = await service.DeleteDocumentAsync(
                 7, 
                 "user-1", 
                 CancellationToken.None);
 
             result.Should().BeTrue();
+
             repository.Verify(
                 r => r.SoftDeleteAsync(
                     7, 
@@ -375,12 +310,6 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
         [Test]
         public async Task RestoreSavedDocumentAsync_ReturnsNull_WhenDocumentNotFound()
         {
-            var repository = 
-                new Mock<IDocumentLibraryRepository>(MockBehavior.Strict);
-
-            var pdfService = 
-                new Mock<IPdfLetterService>(MockBehavior.Strict);
-
             repository.Setup(
                 r => r.GetDocumentByIdAsync(
                     123, 
@@ -388,11 +317,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
                     It.IsAny<CancellationToken>())).
                     ReturnsAsync((LegalDocument?)null);
 
-            var sut = new DocumentLibraryService(
-                repository.Object, 
-                pdfService.Object);
-
-            var result = await sut.RestoreSavedDocumentAsync(
+            var result = await service.RestoreSavedDocumentAsync(
                 123, 
                 "user-1", 
                 CancellationToken.None);
@@ -416,12 +341,6 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
         [Test]
         public async Task RestoreSavedDocumentAsync_ReturnsFileNameAndBytes_WhenPdfGenerationSucceeds()
         {
-            var repository = 
-                new Mock<IDocumentLibraryRepository>(MockBehavior.Strict);
-
-            var pdfService = 
-                new Mock<IPdfLetterService>(MockBehavior.Strict);
-
             var created = new DateTime(
                 2025, 12, 14, 10, 30, 0, DateTimeKind.Utc);
 
@@ -449,12 +368,8 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
                     It.IsAny<CancellationToken>())).
                     ReturnsAsync(bytes);
 
-            var sut = new DocumentLibraryService(
-                repository.Object, 
-                pdfService.Object);
-
             var result = 
-                await sut.RestoreSavedDocumentAsync(
+                await service.RestoreSavedDocumentAsync(
                     10, 
                     "user-1", 
                     CancellationToken.None);
@@ -487,12 +402,6 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
         [Test]
         public async Task GetSingleDocumentByIdAsync_ReturnsDocument_WhenFound()
         {
-            var repository = 
-                new Mock<IDocumentLibraryRepository>(MockBehavior.Strict);
-
-            var pdfService = 
-                new Mock<IPdfLetterService>(MockBehavior.Strict);
-
             var document = new LegalDocument
             {
                 LegalDocumentId = 7,
@@ -510,11 +419,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
                     It.IsAny<CancellationToken>())).
                     ReturnsAsync(document);
 
-            var sut = new DocumentLibraryService(
-                repository.Object, 
-                pdfService.Object);
-
-            var result = await sut.GetSingleDocumentByIdAsync(
+            var result = await service.GetSingleDocumentByIdAsync(
                 7, 
                 "user-1", 
                 CancellationToken.None);

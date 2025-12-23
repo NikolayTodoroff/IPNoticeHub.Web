@@ -17,14 +17,14 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.CopyrightServiceTests
         protected CopyrightService service = null!;
 
         [SetUp]
-        public async Task SetUp()
+        public void SetUp()
         {
             testDbContext =
                 InMemoryDbContextFactory.CreateTestDbContext();
 
             user = InMemoryDbContextFactory.CreateApplicationUser();
             testDbContext.Users.Add(user);
-            await testDbContext.SaveChangesAsync();
+            testDbContext.SaveChangesAsync();
 
             copyrightRepo =
                 new CopyrightRepository(testDbContext);

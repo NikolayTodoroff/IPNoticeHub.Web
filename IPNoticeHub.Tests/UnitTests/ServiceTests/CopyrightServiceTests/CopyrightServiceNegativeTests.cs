@@ -9,9 +9,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.CopyrightServiceTests
         [Test]
         public async Task GetDetailsAsync_WhenPublicIdDoesNotExist_ReturnsNull()
         {
-            await SetUp();
-
-            var dto = await service.GetDetailsAsync(
+var dto = await service.GetDetailsAsync(
                 user.Id, 
                 Guid.NewGuid(), 
                 CancellationToken.None);
@@ -22,8 +20,6 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.CopyrightServiceTests
         [Test]
         public async Task GetDetailsAsync_WhenNotLinked_ReturnsNull()
         {
-            await SetUp();
-
             var copyrightEntity = 
                 InMemoryDbContextFactory.CreateCopyright(
                     "TX-E1", 
@@ -41,8 +37,6 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.CopyrightServiceTests
         [Test]
         public async Task RemoveAsync_WhenPublicIdMissing_ReturnsFalse()
         {
-            await SetUp();
-
             var result = await service.RemoveAsync(
                 user.Id, 
                 Guid.NewGuid(), 
@@ -54,8 +48,6 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.CopyrightServiceTests
         [Test]
         public async Task GetUserCollectionAsync_WhenEmpty_ReturnsEmptyPage()
         {
-            await SetUp();
-
             var pagedResult = 
                 await service.GetUserCollectionAsync(
                 userId: user.Id,

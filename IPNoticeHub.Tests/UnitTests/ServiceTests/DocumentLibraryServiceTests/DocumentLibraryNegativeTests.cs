@@ -1,9 +1,6 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Application.DTOs.DocumentLibraryDTOs;
 using static IPNoticeHub.Shared.Constants.DateTimeFormats;
-using IPNoticeHub.Application.Repositories.DocumentLibraryRepository;
-using IPNoticeHub.Application.Services.DocumentLibraryService.Implementations;
-using IPNoticeHub.Application.Services.PdfGenerationServices.Abstractions;
 using IPNoticeHub.Domain.Entities.LegalDocuments;
 using IPNoticeHub.Shared.Enums;
 using Moq;
@@ -12,7 +9,7 @@ using System.Globalization;
 
 namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
 {
-    public class DocumentLibraryExceptionsTests
+    public class DocumentLibraryNegativeTests : DocumentLibraryBase
     {
         [Test]
         public async Task SaveDocumentAsync_ThrowsArgumentException_WhenUserIdIsNullOrWhitespace()
@@ -34,21 +31,12 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
                 BodyTemplate = "Hello {{RecipientName}}"
             };
 
-            var repository =
-                new Mock<IDocumentLibraryRepository>(MockBehavior.Strict);
-
-            var pdfService = new Mock<IPdfLetterService>(MockBehavior.Strict);
-
-            var sut = new DocumentLibraryService(
-                repository.Object,
-                pdfService.Object);
-
-            var actNull = async () => await sut.SaveDocumentAsync(
+            var actNull = async () => await service.SaveDocumentAsync(
                 null!,
                 dto,
                 CancellationToken.None);
 
-            var actWhitespace = async () => await sut.SaveDocumentAsync(
+            var actWhitespace = async () => await service.SaveDocumentAsync(
                 "   ",
                 dto,
                 CancellationToken.None);
@@ -88,7 +76,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
                 RecipientAddress = "Receiver Ave",
                 LetterDate = new DateTime(
                     2025, 12, 8, 0, 0, 0, DateTimeKind.Utc),
-                BodyTemplate = null
+                BodyTemplate = null!
             };
 
             var dtoWhitespace = new DocumentCreateDto
@@ -107,22 +95,12 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
                 BodyTemplate = "   "
             };
 
-            var repository =
-                new Mock<IDocumentLibraryRepository>(MockBehavior.Strict);
-
-            var pdfService =
-                new Mock<IPdfLetterService>(MockBehavior.Strict);
-
-            var sut = new DocumentLibraryService(
-                repository.Object,
-                pdfService.Object);
-
-            var actNull = async () => await sut.SaveDocumentAsync(
+            var actNull = async () => await service.SaveDocumentAsync(
                 userId,
                 dtoNull,
                 CancellationToken.None);
 
-            var actWhitespace = async () => await sut.SaveDocumentAsync(
+            var actWhitespace = async () => await service.SaveDocumentAsync(
                 userId,
                 dtoWhitespace,
                 CancellationToken.None);
@@ -146,24 +124,14 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
         [Test]
         public async Task GetUserDocumentsAsync_ThrowsArgumentException_WhenUserIdIsNullOrWhitespace()
         {
-            var repository =
-                new Mock<IDocumentLibraryRepository>(MockBehavior.Strict);
-
-            var pdfService =
-                new Mock<IPdfLetterService>(MockBehavior.Strict);
-
-            var sut = new DocumentLibraryService(
-                repository.Object,
-                pdfService.Object);
-
             var actNull =
-                async () => await sut.GetUserDocumentsAsync(
+                async () => await service.GetUserDocumentsAsync(
                     null!,
                     null,
                     null, CancellationToken.None);
 
             var actWs =
-                async () => await sut.GetUserDocumentsAsync(
+                async () => await service.GetUserDocumentsAsync(
                     "   ",
                     null,
                     null,
@@ -185,33 +153,23 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
         [Test]
         public async Task GetSingleDocumentByIdAsync_ThrowsArgumentException_WhenUserIdIsNullOrWhitespace()
         {
-            var repository =
-                new Mock<IDocumentLibraryRepository>(MockBehavior.Strict);
-
-            var pdfService =
-                new Mock<IPdfLetterService>(MockBehavior.Strict);
-
-            var sut = new DocumentLibraryService(
-                repository.Object,
-                pdfService.Object);
-
             var actNull =
-                async () => await sut.GetSingleDocumentByIdAsync(
+                async () => await service.GetSingleDocumentByIdAsync(
                     1,
                     null!,
                     CancellationToken.None);
 
             var actWs =
-                async () => await sut.GetSingleDocumentByIdAsync(
+                async () => await service.GetSingleDocumentByIdAsync(
                     1,
                     "  ",
                     CancellationToken.None);
 
-            (await actNull.Should().ThrowAsync<ArgumentException>())
-                .Which.ParamName.Should().Be("userId");
+            (await actNull.Should().ThrowAsync<ArgumentException>()).
+                Which.ParamName.Should().Be("userId");
 
-            (await actWs.Should().ThrowAsync<ArgumentException>())
-                .Which.ParamName.Should().Be("userId");
+            (await actWs.Should().ThrowAsync<ArgumentException>()).
+                Which.ParamName.Should().Be("userId");
 
             repository.Verify(r => r.GetDocumentByIdAsync(
                 It.IsAny<int>(),
@@ -222,12 +180,6 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
         [Test]
         public async Task GetSingleDocumentByIdAsync_ThrowsInvalidOperationException_WhenDocumentNotFound()
         {
-            var repository =
-                new Mock<IDocumentLibraryRepository>(MockBehavior.Strict);
-
-            var pdfService =
-                new Mock<IPdfLetterService>(MockBehavior.Strict);
-
             repository.Setup(
                 r => r.GetDocumentByIdAsync(
                     5,
@@ -235,12 +187,8 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
                     It.IsAny<CancellationToken>()))
                 .ReturnsAsync((LegalDocument?)null);
 
-            var sut = new DocumentLibraryService(
-                repository.Object,
-                pdfService.Object);
-
             var act =
-                async () => await sut.GetSingleDocumentByIdAsync(
+                async () => await service.GetSingleDocumentByIdAsync(
                     5,
                     "user-1",
                     CancellationToken.None);
@@ -254,22 +202,12 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
         [Test]
         public async Task RestoreSavedDocumentAsync_ThrowsArgumentException_WhenUserIdIsNullOrWhitespace()
         {
-            var repository =
-                new Mock<IDocumentLibraryRepository>(MockBehavior.Strict);
-
-            var pdfService =
-                new Mock<IPdfLetterService>(MockBehavior.Strict);
-
-            var sut = new DocumentLibraryService(
-                repository.Object,
-                pdfService.Object);
-
             var actNull =
-                async () => await sut.RestoreSavedDocumentAsync(
+                async () => await service.RestoreSavedDocumentAsync(
                     1, null!, CancellationToken.None);
 
             var actWhitespace =
-                async () => await sut.RestoreSavedDocumentAsync(
+                async () => await service.RestoreSavedDocumentAsync(
                     1, "  ", CancellationToken.None);
 
             var ex1 = await actNull.
@@ -298,35 +236,25 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
         [Test]
         public async Task RenameDocumentAsync_ThrowsArgumentException_WhenUserIdIsNullOrWhitespace()
         {
-            var repository =
-                new Mock<IDocumentLibraryRepository>(MockBehavior.Strict);
-
-            var pdfService =
-                new Mock<IPdfLetterService>(MockBehavior.Strict);
-
-            var sut = new DocumentLibraryService(
-                repository.Object,
-                pdfService.Object);
-
             var actNull =
-                async () => await sut.RenameDocumentAsync(
+                async () => await service.RenameDocumentAsync(
                     1,
                     null!,
                     "New Title",
                     CancellationToken.None);
 
             var actWs =
-                async () => await sut.RenameDocumentAsync(
+                async () => await service.RenameDocumentAsync(
                     1,
                     "   ",
                     "New Title",
                     CancellationToken.None);
 
-            (await actNull.Should().ThrowAsync<ArgumentException>())
-                .Which.ParamName.Should().Be("userId");
+            (await actNull.Should().ThrowAsync<ArgumentException>()).
+                Which.ParamName.Should().Be("userId");
 
-            (await actWs.Should().ThrowAsync<ArgumentException>())
-                .Which.ParamName.Should().Be("userId");
+            (await actWs.Should().ThrowAsync<ArgumentException>()).
+                Which.ParamName.Should().Be("userId");
 
             repository.Verify(r => r.RenameAsync(
                 It.IsAny<int>(),
@@ -338,25 +266,15 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
         [Test]
         public async Task RenameDocumentAsync_ThrowsArgumentOutOfRangeException_WhenDocumentIdIsNotPositive()
         {
-            var repository =
-                new Mock<IDocumentLibraryRepository>(MockBehavior.Strict);
-
-            var pdfService =
-                new Mock<IPdfLetterService>(MockBehavior.Strict);
-
-            var sut = new DocumentLibraryService(
-                repository.Object,
-                pdfService.Object);
-
             var actZero =
-                async () => await sut.RenameDocumentAsync(
+                async () => await service.RenameDocumentAsync(
                     0,
                     "user-1",
                     "New Title",
                     CancellationToken.None);
 
             var actNegative =
-                async () => await sut.RenameDocumentAsync(
+                async () => await service.RenameDocumentAsync(
                     -1,
                     "user-1",
                     "New Title",
@@ -378,35 +296,25 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
         [Test]
         public async Task RenameDocumentAsync_ThrowsArgumentException_WhenNewTitleIsNullOrWhitespace()
         {
-            var repository =
-                new Mock<IDocumentLibraryRepository>(MockBehavior.Strict);
-
-            var pdfService =
-                new Mock<IPdfLetterService>(MockBehavior.Strict);
-
-            var sut = new DocumentLibraryService(
-                repository.Object,
-                pdfService.Object);
-
             var actNull =
-                async () => await sut.RenameDocumentAsync(
+                async () => await service.RenameDocumentAsync(
                     1,
                     "user-1",
                     null!,
                     CancellationToken.None);
 
             var actWs =
-                async () => await sut.RenameDocumentAsync(
+                async () => await service.RenameDocumentAsync(
                     1,
                     "user-1",
                     "   ",
                     CancellationToken.None);
 
-            (await actNull.Should().ThrowAsync<ArgumentException>())
-                .Which.ParamName.Should().Be("newTitle");
+            (await actNull.Should().ThrowAsync<ArgumentException>()).
+                Which.ParamName.Should().Be("newTitle");
 
-            (await actWs.Should().ThrowAsync<ArgumentException>())
-                .Which.ParamName.Should().Be("newTitle");
+            (await actWs.Should().ThrowAsync<ArgumentException>()).
+                Which.ParamName.Should().Be("newTitle");
 
             repository.Verify(r => r.RenameAsync(
                 It.IsAny<int>(),
@@ -418,33 +326,23 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
         [Test]
         public async Task DeleteDocumentAsync_ThrowsArgumentException_WhenUserIdIsNullOrWhitespace()
         {
-            var repository =
-                new Mock<IDocumentLibraryRepository>(MockBehavior.Strict);
-
-            var pdfService =
-                new Mock<IPdfLetterService>(MockBehavior.Strict);
-
-            var sut = new DocumentLibraryService(
-                repository.Object,
-                pdfService.Object);
-
             var actNull =
-                async () => await sut.DeleteDocumentAsync(
+                async () => await service.DeleteDocumentAsync(
                     1,
                     null!,
                     CancellationToken.None);
 
             var actWs =
-                async () => await sut.DeleteDocumentAsync(
+                async () => await service.DeleteDocumentAsync(
                     1,
                     "   ",
                     CancellationToken.None);
 
-            (await actNull.Should().ThrowAsync<ArgumentException>())
-                .Which.ParamName.Should().Be("userId");
+            (await actNull.Should().ThrowAsync<ArgumentException>()).
+                Which.ParamName.Should().Be("userId");
 
-            (await actWs.Should().ThrowAsync<ArgumentException>())
-                .Which.ParamName.Should().Be("userId");
+            (await actWs.Should().ThrowAsync<ArgumentException>()).
+                Which.ParamName.Should().Be("userId");
 
             repository.Verify(r => r.SoftDeleteAsync(
                 It.IsAny<int>(),
@@ -455,12 +353,6 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
         [Test]
         public async Task RestoreSavedDocumentAsync_ThrowsInvalidOperationException_WhenPdfServiceThrowsNotSupportedException()
         {
-            var repository =
-                new Mock<IDocumentLibraryRepository>(MockBehavior.Strict);
-
-            var pdfService =
-                new Mock<IPdfLetterService>(MockBehavior.Strict);
-
             var document = new LegalDocument
             {
                 LegalDocumentId = 99,
@@ -484,12 +376,8 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
                     It.IsAny<CancellationToken>())).
                     ThrowsAsync(new NotSupportedException("nope"));
 
-            var sut = new DocumentLibraryService(
-                repository.Object,
-                pdfService.Object);
-
             var act =
-                async () => await sut.RestoreSavedDocumentAsync(
+                async () => await service.RestoreSavedDocumentAsync(
                     99,
                     "user-1",
                     CancellationToken.None);
@@ -497,7 +385,8 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
             var ex = await act.
                 Should().ThrowAsync<InvalidOperationException>();
 
-            ex.Which.Message.Should().Contain("Unsupported document combination:");
+            ex.Which.Message.Should().Contain(
+                "Unsupported document combination:");
 
             ex.Which.Message.Should().Contain(
                 $"{document.SourceType}/{document.TemplateType}");
@@ -521,12 +410,6 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
         [Test]
         public async Task RestoreSavedDocumentAsync_UsesFallbackTitle_WhenSanitizedDocumentTitleIsWhitespace()
         {
-            var repository = 
-                new Mock<IDocumentLibraryRepository>(MockBehavior.Strict);
-
-            var pdfService = 
-                new Mock<IPdfLetterService>(MockBehavior.Strict);
-
             var created = new DateTime(
                 2025, 12, 14, 10, 30, 0, DateTimeKind.Utc);
 
@@ -552,11 +435,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
                     It.IsAny<CancellationToken>())).
                     ReturnsAsync(pdfBytes);
 
-            var sut = new DocumentLibraryService(
-                repository.Object, 
-                pdfService.Object);
-
-            var result = await sut.RestoreSavedDocumentAsync(
+            var result = await service.RestoreSavedDocumentAsync(
                 42, 
                 "user-1", 
                 CancellationToken.None);
@@ -564,8 +443,8 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.DocumentLibraryServiceTests
             result.Should().NotBeNull();
             result!.Value.Pdf.Should().Equal(pdfBytes);
 
-            result.Value.fileName.Should()
-                .Be($"IP Infringement Notice-" +
+            result.Value.fileName.Should().Be(
+                $"IP Infringement Notice-" +
                 $"{created.ToString(DefaultDateTimeFormat.DateTimeFormat, 
                 CultureInfo.InvariantCulture)}.pdf");
 

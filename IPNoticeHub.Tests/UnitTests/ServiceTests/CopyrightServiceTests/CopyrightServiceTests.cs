@@ -14,8 +14,6 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Copyrights
         [Test]
         public async Task CreateAsync_WithNewRegistration_CreatesEntity_AssociatesUser_AndReturnsPublicId()
         {
-            await SetUp();
-
             var dto = new CopyrightCreateDto
             {
                 RegistrationNumber = "TX-111111",
@@ -50,8 +48,6 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Copyrights
         [Test]
         public async Task CreateAsync_WhenWorkTypeOther_StoresCustomString_AndLinksUser()
         {
-            await SetUp();
-
             var dto = new CopyrightCreateDto
             {
                 RegistrationNumber = "TX-222222",
@@ -85,8 +81,6 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Copyrights
         [Test]
         public async Task CreateAsync_WithExistingRegistration_ReusesEntity_AndLinksUserWithoutDuplication()
         {
-            await SetUp();
-
             var existingCopyrightEntity = 
                 InMemoryDbContextFactory.CreateCopyright(
                     registrationNumber: "TX-333333", 
@@ -126,8 +120,6 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Copyrights
         [Test]
         public async Task GetDetailsAsync_WhenLinked_ReturnsDetailsDTO_WithStoredTypeOfWorkString()
         {
-            await SetUp();
-
             var entity = InMemoryDbContextFactory.CreateCopyright(
                 registrationNumber: "TX-444444",
                 title: "Delta Force",
@@ -156,8 +148,6 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Copyrights
         [Test]
         public async Task RemoveAsync_WhenLinked_ReturnsTrue_AndSoftDeletes()
         {
-            await SetUp();
-
             var entity = 
                 InMemoryDbContextFactory.CreateCopyright(
                     registrationNumber: "TX-555555", 
@@ -189,8 +179,6 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Copyrights
         [Test]
         public async Task GetUserCollectionAsync_WhenPageOrSizeInvalid_NormalizesAndReturnsData()
         {
-            await SetUp();
-
             var entity1 = 
                 InMemoryDbContextFactory.CreateCopyright(
                     "TX-N1", 
