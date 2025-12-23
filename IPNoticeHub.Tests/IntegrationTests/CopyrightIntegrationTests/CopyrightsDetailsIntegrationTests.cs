@@ -111,8 +111,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
             var response = await client.GetAsync(
                 $"/Copyrights/Details/{publicId}");
 
-            response.StatusCode.Should().
-                Be(HttpStatusCode.NotFound);
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
 
         [Test]

@@ -10,36 +10,18 @@ using QuestPDF.Infrastructure;
 
 namespace IPNoticeHub.Tests.UnitTests.ServiceTests.PdfServiceTests
 {
-    public class PdfLetterServiceTests
+    public class PdfLetterServiceTests : PdfLetterServiceBase
     {
-        [OneTimeSetUp]
-        public void Setup()
-        {
-            QuestPDF.Settings.License = LicenseType.Community;
-        }
-
         [Test]
         public void GeneratesNonEmptyPdf_ForSimpleTemplate()
         {
-            var letterAssembler = new Mock<ILetterAssembler>();
-
             letterAssembler.Setup(x => 
-            x.RebuildLetterInput(It.IsAny<LetterInputDto>()))
-                .Returns(new PdfLetterDto());
+            x.RebuildLetterInput(It.IsAny<LetterInputDto>())).
+            Returns(new PdfLetterDto());
 
-            var legalDocumentAssembler = 
-                new Mock<ILegalDocumentAssembler>().Object;
-
-            var pdfGenerator = new Mock<IPdfGenerator>();
-
-            pdfGenerator
-                .Setup(x => x.GenerateDocument(It.IsAny<PdfLetterDto>()))
-                .Returns(() => {return new byte[1200];});
-
-            var pdfService = new PdfLetterService(
-                letterAssembler.Object,
-                legalDocumentAssembler,
-                pdfGenerator.Object);
+            pdfGenerator.Setup(
+                x => x.GenerateDocument(It.IsAny<PdfLetterDto>())).
+                Returns(() => {return new byte[1200];});
 
             var inputDto = new LetterInputDto
             {
@@ -55,7 +37,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.PdfServiceTests
                 " Regards, {{SenderName}}"
             };
 
-            var pdf = pdfService.GenerateFromInputAsync(inputDto).Result;
+            var pdf = service.GenerateFromInputAsync(inputDto).Result;
             pdf.Should().NotBeNull();
             pdf.Length.Should().BeGreaterThan(1000);
         }
@@ -63,25 +45,13 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.PdfServiceTests
         [Test]
         public void DMCA_GeneratePdf_WithMinimalRequiredFields()
         {
-            var letterAssembler = new Mock<ILetterAssembler>();
-
             letterAssembler.Setup(x =>
-            x.RebuildLetterInput(It.IsAny<LetterInputDto>()))
-                .Returns(new PdfLetterDto());
+            x.RebuildLetterInput(It.IsAny<LetterInputDto>())).
+            Returns(new PdfLetterDto());
 
-            var legalDocumentAssembler =
-                new Mock<ILegalDocumentAssembler>().Object;
-
-            var pdfGenerator = new Mock<IPdfGenerator>();
-
-            pdfGenerator
-                .Setup(x => x.GenerateDocument(It.IsAny<PdfLetterDto>()))
-                .Returns(() => { return new byte[1200]; });
-
-            var pdfService = new PdfLetterService(
-                letterAssembler.Object,
-                legalDocumentAssembler,
-                pdfGenerator.Object);
+            pdfGenerator.Setup(
+                x => x.GenerateDocument(It.IsAny<PdfLetterDto>())).
+                Returns(() => { return new byte[1200]; });
 
             var inputDto = new LetterInputDto
             {
@@ -104,7 +74,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.PdfServiceTests
                 "The infringing URL is {{InfringingUrl}}.\n\n{{GoodFaithStatement}}\n\n{{SenderAddress}}"
             };
 
-            var pdf = pdfService.GenerateFromInputAsync(inputDto).Result;
+            var pdf = service.GenerateFromInputAsync(inputDto).Result;
             pdf.Should().NotBeNull();
             pdf.Length.Should().BeGreaterThan(1000);
         }
@@ -112,25 +82,13 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.PdfServiceTests
         [Test]
         public void GeneratePdf_WithNullAdditionalFacts_DoesNotBreakPdf()
         {
-            var letterAssembler = new Mock<ILetterAssembler>();
-
             letterAssembler.Setup(x =>
-            x.RebuildLetterInput(It.IsAny<LetterInputDto>()))
-                .Returns(new PdfLetterDto());
+            x.RebuildLetterInput(It.IsAny<LetterInputDto>())).
+            Returns(new PdfLetterDto());
 
-            var legalDocumentAssembler =
-                new Mock<ILegalDocumentAssembler>().Object;
-
-            var pdfGenerator = new Mock<IPdfGenerator>();
-
-            pdfGenerator
-                .Setup(x => x.GenerateDocument(It.IsAny<PdfLetterDto>()))
-                .Returns(() => { return new byte[1200]; });
-
-            var pdfService = new PdfLetterService(
-                letterAssembler.Object,
-                legalDocumentAssembler,
-                pdfGenerator.Object);
+            pdfGenerator.Setup(
+                x => x.GenerateDocument(It.IsAny<PdfLetterDto>())).
+                Returns(() => { return new byte[1200]; });
 
             var inputDto = new LetterInputDto
             {
@@ -146,7 +104,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.PdfServiceTests
                 "{{AdditionalFacts}}\nThanks, {{SenderName}}"
             };
 
-            var pdf = pdfService.GenerateFromInputAsync(inputDto).Result;
+            var pdf = service.GenerateFromInputAsync(inputDto).Result;
 
             pdf.Should().NotBeNull();
             pdf.Length.Should().BeGreaterThan(1000);
@@ -155,20 +113,6 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.PdfServiceTests
         [Test]
         public async Task GenerateFromSavedDocumentAsync_ShouldRebuildDto_GeneratePdf_AndReturnBytes()
         {
-            var assemblerMock =
-                new Mock<ILetterAssembler>(MockBehavior.Strict);
-
-            var legalAssemblerMock =
-                new Mock<ILegalDocumentAssembler>(MockBehavior.Strict);
-
-            var pdfGeneratorMock =
-                new Mock<IPdfGenerator>(MockBehavior.Strict);
-
-            var service = new PdfLetterService(
-                assemblerMock.Object,
-                legalAssemblerMock.Object,
-                pdfGeneratorMock.Object);
-
             var document = new LegalDocument();
 
             var rebuiltDto = new PdfLetterDto
@@ -181,13 +125,13 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.PdfServiceTests
 
             var expectedBytes = new byte[] { 1, 2, 3, 4 };
 
-            legalAssemblerMock
-                .Setup(x => x.RebuildFromSavedDocument(document))
-                .Returns(rebuiltDto);
+            legalDocumentAssembler.Setup(
+                x => x.RebuildFromSavedDocument(document)).
+                Returns(rebuiltDto);
 
-            pdfGeneratorMock
-                .Setup(x => x.GenerateDocument(rebuiltDto))
-                .Returns(expectedBytes);
+            pdfGenerator.Setup(
+                x => x.GenerateDocument(rebuiltDto)).
+                Returns(expectedBytes);
 
             var result = 
                 await service.GenerateFromSavedDocumentAsync(
@@ -196,17 +140,17 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.PdfServiceTests
 
             result.Should().BeEquivalentTo(expectedBytes);
 
-            legalAssemblerMock.Verify(
+            legalDocumentAssembler.Verify(
                 x => x.RebuildFromSavedDocument(document), 
                 Times.Once);
 
-            pdfGeneratorMock.Verify(
+            pdfGenerator.Verify(
                 x => x.GenerateDocument(rebuiltDto), 
                 Times.Once);
 
-            legalAssemblerMock.VerifyNoOtherCalls();
-            pdfGeneratorMock.VerifyNoOtherCalls();
-            assemblerMock.VerifyNoOtherCalls();
+            legalDocumentAssembler.VerifyNoOtherCalls();
+            pdfGenerator.VerifyNoOtherCalls();
+            letterAssembler.VerifyNoOtherCalls();
         }
     }
 }
