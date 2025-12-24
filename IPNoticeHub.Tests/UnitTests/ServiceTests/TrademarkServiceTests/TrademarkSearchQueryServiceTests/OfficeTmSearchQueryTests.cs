@@ -10,7 +10,7 @@ using IPNoticeHub.Infrastructure.Persistence;
 namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.TrademarkSearchQueryServiceTests
 {
     [TestFixture]
-    public class TmSearchQueryOfficeTests
+    public class OfficeTmSearchQueryTests
     {
         [Test]
         public async Task SearchAsync_WithOfficeUSPTO_FiltersOnlyUSPTO()
@@ -61,11 +61,11 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
 
             await testDbContext.SaveChangesAsync();
 
-            ITrademarkReadRepository readRepo = 
+            ITrademarkReadRepository repository = 
                 new TestReadRepository(testDbContext);
 
-            var queryService = 
-                new TrademarkSearchQueryService(readRepo);
+            var service = 
+                new TrademarkSearchQueryService(repository);
 
             var query = 
                 new TrademarkSearchQueryDto
@@ -79,7 +79,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
             };
 
             var (queryResult, total) = 
-                await queryService.SearchAsync(
+                await service.SearchAsync(
                     query, 
                     CancellationToken.None);
 

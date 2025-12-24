@@ -9,7 +9,7 @@ using IPNoticeHub.Infrastructure.Persistence;
 
 namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.TrademarkSearchQueryServiceTests
 {
-    public class TmSearchQueryPagingTests
+    public class PagingTmSearchQueryTests
     {
         [Test]
         public async Task SearchAsync_Paging_ReturnsSecondItemOnPage2_AndKeepsTotal()
@@ -52,8 +52,8 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
             testDbContext.TrademarkRegistrations.AddRange(anubisTm, horusTm, osirisTm);
             await testDbContext.SaveChangesAsync();
 
-            ITrademarkReadRepository readRepo = new TestReadRepository(testDbContext);
-            var queryService = new TrademarkSearchQueryService(readRepo);
+            ITrademarkReadRepository repository = new TestReadRepository(testDbContext);
+            var service = new TrademarkSearchQueryService(repository);
 
             var query = new TrademarkSearchQueryDto
             {
@@ -64,7 +64,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
                 PageSize = 1
             };
 
-            var (queryResult, total) = await queryService.SearchAsync(query, CancellationToken.None);
+            var (queryResult, total) = await service.SearchAsync(query, CancellationToken.None);
             total.Should().Be(3);
             queryResult.Single().RegistrationNumber.Should().Be("2222222");
         }
@@ -110,8 +110,8 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
             testDbContext.TrademarkRegistrations.AddRange(anubisTm, horusTm, osirisTm);
             await testDbContext.SaveChangesAsync();
 
-            ITrademarkReadRepository readRepo = new TestReadRepository(testDbContext);
-            var queryService = new TrademarkSearchQueryService(readRepo);
+            ITrademarkReadRepository repository = new TestReadRepository(testDbContext);
+            var service = new TrademarkSearchQueryService(repository);
 
             var query = new TrademarkSearchQueryDto
             {
@@ -122,7 +122,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
                 PageSize = 2
             };
 
-            var (queryResult, total) = await queryService.SearchAsync(query, CancellationToken.None);
+            var (queryResult, total) = await service.SearchAsync(query, CancellationToken.None);
             total.Should().Be(3);
             queryResult.Should().BeEmpty();
         }
@@ -168,8 +168,8 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
             testDbContext.TrademarkRegistrations.AddRange(anubisTm, horusTm, osirisTm);
             await testDbContext.SaveChangesAsync();
 
-            ITrademarkReadRepository readRepo = new TestReadRepository(testDbContext);
-            var queryService = new TrademarkSearchQueryService(readRepo);
+            ITrademarkReadRepository repository = new TestReadRepository(testDbContext);
+            var service = new TrademarkSearchQueryService(repository);
 
             var query = new TrademarkSearchQueryDto
             {
@@ -180,7 +180,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
                 PageSize = DefaultPageSize
             };
 
-            var (queryResult, total) = await queryService.SearchAsync(query, CancellationToken.None);
+            var (queryResult, total) = await service.SearchAsync(query, CancellationToken.None);
             total.Should().Be(3);
             queryResult.Should().HaveCount(3);
 
@@ -228,8 +228,8 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
             testDbContext.TrademarkRegistrations.AddRange(anubisTm, horusTm, osirisTm);
             await testDbContext.SaveChangesAsync();
 
-            ITrademarkReadRepository readRepo = new TestReadRepository(testDbContext);
-            var queryService = new TrademarkSearchQueryService(readRepo);
+            ITrademarkReadRepository repository = new TestReadRepository(testDbContext);
+            var service = new TrademarkSearchQueryService(repository);
 
             var query = new TrademarkSearchQueryDto
             {
@@ -240,7 +240,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
                 PageSize = 1
             };
 
-            var (queryResult, total) = await queryService.SearchAsync(query, CancellationToken.None);
+            var (queryResult, total) = await service.SearchAsync(query, CancellationToken.None);
             total.Should().Be(3);
             queryResult.Should().ContainSingle();
 
