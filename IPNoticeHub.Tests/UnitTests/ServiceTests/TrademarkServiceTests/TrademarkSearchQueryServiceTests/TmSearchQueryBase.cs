@@ -70,7 +70,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
                         statusDetail: "testStatusDetail",
                         regNumber: "1234512",
                         status: Shared.Enums.TrademarkStatusCategory.Pending,
-                        source: Shared.Enums.DataProvider.USPTO,
+                        source: Shared.Enums.DataProvider.WIPO,
                         classNumbers: new[] { 25,35 });
 
                 (osirisTm, _) =
@@ -82,7 +82,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
                         statusDetail: "testStatusDetail",
                         regNumber: "3355442",
                         status: Shared.Enums.TrademarkStatusCategory.Cancelled,
-                        source: Shared.Enums.DataProvider.USPTO,
+                        source: Shared.Enums.DataProvider.EUIPO,
                         classNumbers: new[] { 5 });
 
                 return new[] { anubisTm, horusTm, osirisTm };

@@ -10,64 +10,12 @@ using IPNoticeHub.Infrastructure.Persistence;
 namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.TrademarkSearchQueryServiceTests
 {
     [TestFixture]
-    public class OfficeTmSearchQueryTests
+    public class OfficeTmSearchQueryTests : TmSearchQueryBase
     {
         [Test]
         public async Task SearchAsync_WithOfficeUSPTO_FiltersOnlyUSPTO()
         {
-            using IPNoticeHubDbContext testDbContext = 
-                InMemoryDbContextFactory.CreateTestDbContext();
-
-            var (anubisTm, _) = 
-                InMemoryDbContextFactory.CreateTrademark(
-                wordmark: "Anubis",
-                owner: "Underworld Inc.",
-                goodsAndServices: "testGoodsAndSerices",
-                sourceId: "testSourceId",
-                statusDetail: "testStatusDetail",
-                regNumber: "1234567",
-                status: TrademarkStatusCategory.Registered,
-                source: DataProvider.USPTO,
-                classNumbers: new[] { 25 });
-
-            var (horusTm, _) = 
-                InMemoryDbContextFactory.CreateTrademark(
-                wordmark: "Horus",
-                owner: "Falcon LLC",
-                goodsAndServices: "testGoodsAndSerices",
-                sourceId: "testSourceId",
-                statusDetail: "testStatusDetail",
-                regNumber: "1122334",
-                status: TrademarkStatusCategory.Registered,
-                source: DataProvider.WIPO,
-                classNumbers: new[] { 25 });
-
-            var (osirisTm, _) = 
-                InMemoryDbContextFactory.CreateTrademark(
-                wordmark: "Osiris",
-                owner: "Afterlife Inc.",
-                goodsAndServices: "testGoodsAndSerices",
-                sourceId: "testSourceId",
-                statusDetail: "testStatusDetail",
-                regNumber: "3355442",
-                status: TrademarkStatusCategory.Registered,
-                source: DataProvider.EUIPO,
-                classNumbers: new[] { 25 });
-
-            testDbContext.TrademarkRegistrations.AddRange(
-                anubisTm, 
-                horusTm, 
-                osirisTm);
-
-            await testDbContext.SaveChangesAsync();
-
-            ITrademarkReadRepository repository = 
-                new TestReadRepository(testDbContext);
-
-            var service = 
-                new TrademarkSearchQueryService(repository);
-
-            var query = 
+            var dto = 
                 new TrademarkSearchQueryDto
             {
                 Query = "",
@@ -80,11 +28,10 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
 
             var (queryResult, total) = 
                 await service.SearchAsync(
-                    query, 
+                    dto, 
                     CancellationToken.None);
 
-            total.Should().
-                Be(1);
+            total.Should().Be(1);
 
             queryResult.Single().Wordmark.Should().
                 Be("Anubis");
