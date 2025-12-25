@@ -24,7 +24,10 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
                 InMemoryDbContextFactory.CreateTestDbContext();
 
             var testTrademarks = 
-                TestTrademarkData.CreateTestTrademarks(out anubisTm, out horusTm, out osirisTm);
+                TestTrademarkData.CreateTestTrademarks(
+                    out anubisTm, 
+                    out horusTm, out 
+                    osirisTm);
 
             testDbContext.TrademarkRegistrations.AddRange(testTrademarks);
             testDbContext.SaveChangesAsync();
