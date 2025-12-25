@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchServiceTests
 {
     [TestFixture]
-    public class TmSearchServiceFilterSemanticsTests : TmSearchServiceBase
+    public class FilterTmSearchServiceTests : TmSearchServiceBase
     {
         [Test]
         public async Task SearchAsync_WhenProviderFilterIsSet_ReturnsOnlyThatProvider()
