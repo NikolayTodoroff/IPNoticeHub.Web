@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchServiceTests
 {
     [TestFixture]
-    public class TmSearchServiceEdgeCaseTests : TmSearchServiceBase
+    public class TmSearchServiceNegativeTests : TmSearchServiceBase
     {
         [Test]
         public async Task SearchAsync_WhenSearchTermIsNullOrEmpty_ReturnsAllItems()

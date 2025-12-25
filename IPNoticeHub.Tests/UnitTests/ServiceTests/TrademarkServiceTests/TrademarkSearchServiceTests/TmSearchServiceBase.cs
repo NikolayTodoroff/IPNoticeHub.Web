@@ -63,7 +63,8 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
                 statusDetail: "testStatusDetail",
                 regNumber: "1234567",
                 status: TrademarkStatusCategory.Registered,
-                source: DataProvider.USPTO);
+                source: DataProvider.USPTO,
+                classNumbers:new[]{ 25, 35 });
 
                 (tmEntity2, _) =
                 InMemoryDbContextFactory.CreateTrademark(
@@ -73,8 +74,9 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
                 sourceId: "testSourceId",
                 statusDetail: "testStatusDetail",
                 regNumber: "7654321",
-                status: TrademarkStatusCategory.Registered,
-                source: DataProvider.EUIPO);
+                status: TrademarkStatusCategory.Cancelled,
+                source: DataProvider.EUIPO,
+                classNumbers: new[] { 15, 21 });
 
                 (tmEntity3, _) =
                 InMemoryDbContextFactory.CreateTrademark(
@@ -85,7 +87,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
                 statusDetail: "testStatusDetail",
                 regNumber: "1122334",
                 status: TrademarkStatusCategory.Pending,
-                source: DataProvider.USPTO);
+                source: DataProvider.WIPO);
 
                 return new[] { tmEntity1, tmEntity2, tmEntity3 };
             }
