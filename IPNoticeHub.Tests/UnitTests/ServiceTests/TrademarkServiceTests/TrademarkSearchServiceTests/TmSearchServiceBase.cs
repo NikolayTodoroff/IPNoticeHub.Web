@@ -58,9 +58,9 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
                 InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "AAA",
                 owner: "Owner A",
-                goodsAndServices: "testGoodsAndSerices",
-                sourceId: "testSourceId",
-                statusDetail: "testStatusDetail",
+                goodsAndServices: "testGoodsAndSerices1",
+                sourceId: "testSourceId1",
+                statusDetail: "testStatusDetail1",
                 regNumber: "1234567",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO,
@@ -70,9 +70,9 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
                 InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "BBB",
                 owner: "Owner B",
-                goodsAndServices: "testGoodsAndSerices",
-                sourceId: "testSourceId",
-                statusDetail: "testStatusDetail",
+                goodsAndServices: "testGoodsAndSerices2",
+                sourceId: "testSourceId2",
+                statusDetail: "testStatusDetail2",
                 regNumber: "7654321",
                 status: TrademarkStatusCategory.Cancelled,
                 source: DataProvider.EUIPO,
@@ -82,9 +82,9 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
                 InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "CCC",
                 owner: "Owner C",
-                goodsAndServices: "testGoodsAndSerices",
-                sourceId: "testSourceId",
-                statusDetail: "testStatusDetail",
+                goodsAndServices: "testGoodsAndSerices3",
+                sourceId: "testSourceId3",
+                statusDetail: "testStatusDetail3",
                 regNumber: "1122334",
                 status: TrademarkStatusCategory.Pending,
                 source: DataProvider.WIPO);
