@@ -6,7 +6,6 @@ using NUnit.Framework;
 
 namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchServiceTests
 {
-    [TestFixture]
     public class TmSearchServiceNegativeTests : TmSearchServiceBase
     {
         [Test]
