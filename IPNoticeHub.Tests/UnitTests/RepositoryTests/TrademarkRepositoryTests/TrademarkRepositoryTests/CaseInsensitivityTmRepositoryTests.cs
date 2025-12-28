@@ -1,22 +1,18 @@
 ﻿using FluentAssertions;
+using IPNoticeHub.Application.DTOs.TrademarkDTOs;
 using IPNoticeHub.Shared.Enums;
-using IPNoticeHub.Infrastructure.Persistence.Repositories.TrademarkRepository;
+using IPNoticeHub.Tests.UnitTests.RepositoryTests.TrademarkRepositoryTests.TrademarkRepositoryTests;
 using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 using NUnit.Framework;
-using IPNoticeHub.Infrastructure.Persistence;
-using IPNoticeHub.Application.DTOs.TrademarkDTOs;
 
 namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkRepositoryTests
 {
-    public class CaseInsensitivityTmRepositoryTests
+    public class CaseInsensitivityTmRepositoryTests : TmRepositoryBase
     {
         [Test]
         public void Query_Wordmark_ExactSearch_IsCaseInsensitive()
         {
-            using IPNoticeHubDbContext? testDbContext = 
-                InMemoryDbContextFactory.CreateTestDbContext();
-
-            var (trademarkEntity, _) = 
+            var (entity, _) = 
                 InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "ZENMARK",
                 owner: "Owner",
@@ -27,18 +23,18 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
                 TrademarkStatusCategory.Registered,
                 DataProvider.USPTO);
 
-            testDbContext.TrademarkRegistrations.Add(trademarkEntity);
+            testDbContext.TrademarkRegistrations.Add(entity);
             testDbContext.SaveChanges();
 
-            var trademarkRepository = 
-                new TrademarkRepository(testDbContext);
-
-            var queryResult = trademarkRepository.Query(new TrademarkSearchFilter
+            var queryResult = 
+                repository.Query(new TrademarkSearchFilter
             {
                 SearchBy = TrademarkSearchBy.Wordmark,
                 SearchTerm = "zEnmArk",
                 ExactMatch = true
-            }).Select(t => t.Wordmark).ToArray();
+            }).
+            Select(t => t.Wordmark).
+            ToArray();
 
             queryResult.Should().ContainSingle("ZENMARK");
         }
@@ -46,10 +42,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
         [Test]
         public void QueryRepository_FilterByWordmark_PartialSearch_IsCaseInsensitive()
         {
-            using IPNoticeHubDbContext? testDbContext = 
-                InMemoryDbContextFactory.CreateTestDbContext();
-
-            var (trademarkEntity, _) = 
+            var (entity, _) = 
                 InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "ZenithWave",
                 owner: "Owner",
@@ -60,30 +53,26 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
                 TrademarkStatusCategory.Registered,
                 DataProvider.USPTO);
 
-            testDbContext.TrademarkRegistrations.Add(trademarkEntity);
+            testDbContext.TrademarkRegistrations.Add(entity);
             testDbContext.SaveChanges();
 
-            var trademarkRepository = new TrademarkRepository(testDbContext);
-
-            var queryResult = trademarkRepository.Query(new TrademarkSearchFilter
+            var queryResult = 
+                repository.Query(new TrademarkSearchFilter
             {
                 SearchBy = TrademarkSearchBy.Wordmark,
                 SearchTerm = "wave",
                 ExactMatch = false
-            }).Select(t => t.Wordmark).
+            }).
+            Select(t => t.Wordmark).
             ToArray();
 
-            queryResult.Should().
-                ContainSingle("ZenithWave");
+            queryResult.Should().ContainSingle("ZenithWave");
         }
 
         [Test]
         public void QueryRepository_FilterByOwner_ExactSearch_IsCaseInsensitive()
         {
-            using IPNoticeHubDbContext? testDbContext = 
-                InMemoryDbContextFactory.CreateTestDbContext();
-
-            var (trademarkEntity, _) = 
+            var (entity, _) = 
                 InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "To The Moon And Back",
                 owner: "Lunar Company LTD",
@@ -94,30 +83,26 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
                 TrademarkStatusCategory.Registered,
                 DataProvider.USPTO);
 
-            testDbContext.TrademarkRegistrations.Add(trademarkEntity);
+            testDbContext.TrademarkRegistrations.Add(entity);
             testDbContext.SaveChanges();
 
-            var trademarkRepository = new TrademarkRepository(testDbContext);
-
-            var queryResult = trademarkRepository.Query(new TrademarkSearchFilter
+            var queryResult = 
+                repository.Query(new TrademarkSearchFilter
             {
                 SearchBy = TrademarkSearchBy.Owner,
                 SearchTerm = "lUnAr cOmPanY lTd",
                 ExactMatch = true
-            }).Select(t => t.Owner).
+            }).
+            Select(t => t.Owner).
             ToArray();
 
-            queryResult.Should().
-                ContainSingle("Lunar Company LTD");
+            queryResult.Should().ContainSingle("Lunar Company LTD");
         }
 
         [Test]
         public void QueryRepository_FilterByOwner_PartialSearch_IsCaseInsensitive()
         {
-            using IPNoticeHubDbContext? testDbContext = 
-                InMemoryDbContextFactory.CreateTestDbContext();
-
-            var (trademarkEntity, _) = 
+            var (entity, _) = 
                 InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "SolarWaves",
                 owner: "Solar Tech Inc",
@@ -128,22 +113,20 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
                 TrademarkStatusCategory.Registered,
                 DataProvider.USPTO);
 
-            testDbContext.TrademarkRegistrations.Add(trademarkEntity);
+            testDbContext.TrademarkRegistrations.Add(entity);
             testDbContext.SaveChanges();
 
-            var trademarkRepository = 
-                new TrademarkRepository(testDbContext);
-
-            var results = trademarkRepository.Query(new TrademarkSearchFilter
+            var results = 
+                repository.Query(new TrademarkSearchFilter
             {
                 SearchBy = TrademarkSearchBy.Owner,
                 SearchTerm = "tech",
                 ExactMatch = false
-            }).Select(t => t.Owner).ToArray();
+            }).
+            Select(t => t.Owner).
+            ToArray();
 
-            results.Should().
-                ContainSingle("Solar Tech Inc");
+            results.Should().ContainSingle("Solar Tech Inc");
         }
-
     }
 }

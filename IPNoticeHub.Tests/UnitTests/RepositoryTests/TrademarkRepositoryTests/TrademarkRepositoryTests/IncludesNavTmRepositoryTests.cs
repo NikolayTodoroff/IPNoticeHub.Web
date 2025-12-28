@@ -1,23 +1,19 @@
 ﻿using FluentAssertions;
-using IPNoticeHub.Shared.Enums;
+using IPNoticeHub.Application.DTOs.TrademarkDTOs;
 using IPNoticeHub.Infrastructure.Persistence.Repositories.TrademarkRepository;
+using IPNoticeHub.Shared.Enums;
+using IPNoticeHub.Tests.UnitTests.RepositoryTests.TrademarkRepositoryTests.TrademarkRepositoryTests;
 using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 using NUnit.Framework;
-using IPNoticeHub.Infrastructure.Persistence;
-using IPNoticeHub.Application.DTOs.TrademarkDTOs;
 
 namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkRepositoryTests
 {
-    [TestFixture]
-    public class IncludesNavTmRepositoryTests
+    public class IncludesNavTmRepositoryTests : TmRepositoryBase
     {
         [Test]
         public void QueryRepository_IncludeNav_False_DoesNotPopulateClasses()
         {
-            using IPNoticeHubDbContext? testDbContext = 
-                InMemoryDbContextFactory.CreateTestDbContext();
-
-            var (trademarkEntity, _) = 
+            var (entity, _) = 
                 InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "ALPHA",
                 owner: "Owner",
@@ -29,30 +25,28 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
                 source: DataProvider.USPTO,
                 classNumbers: new[] { 9, 25 });
 
-            testDbContext.TrademarkRegistrations.Add(trademarkEntity);
+            testDbContext.TrademarkRegistrations.Add(entity);
             testDbContext.SaveChanges();
 
-            var trademarkRepository = 
+            var repository = 
                 new TrademarkRepository(testDbContext);
 
             var result = 
-                trademarkRepository.Query(new TrademarkSearchFilter
+                repository.Query(new TrademarkSearchFilter
             {
                 SearchBy = TrademarkSearchBy.Wordmark,
                 SearchTerm = "ALPHA",
                 ExactMatch = true
             }, includeNav: false).Single();
 
-            (result.Classes == null || result.Classes.Count == 0).Should().BeTrue();
+            (result.Classes == null || result.Classes.Count == 0).
+                Should().BeTrue();
         }
 
         [Test]
         public void QueryRepository_IncludeNav_True_PopulatesClasses()
         {
-            using IPNoticeHubDbContext? testDbContext = 
-                InMemoryDbContextFactory.CreateTestDbContext();
-
-            var (firstTrademarkEntity, _) = 
+            var (entity1, _) = 
                 InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "ALPHA",
                 owner: "Owner",
@@ -64,7 +58,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
                 source: DataProvider.USPTO,
                 classNumbers: new[] { 9, 25 });
 
-            var (secondTrademarkEntity, _) = 
+            var (entity2, _) = 
                 InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "BETA",
                 owner: "OwnerB",
@@ -77,16 +71,16 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
                 classNumbers: new[] { 30 });
 
             testDbContext.TrademarkRegistrations.AddRange(
-                firstTrademarkEntity, 
-                secondTrademarkEntity);
+                entity1, 
+                entity2);
 
             testDbContext.SaveChanges();
 
-            var trademarkRepository = 
+            var repository = 
                 new TrademarkRepository(testDbContext);
 
             var queryResult = 
-                trademarkRepository.Query(new TrademarkSearchFilter
+                repository.Query(new TrademarkSearchFilter
             {
                 ClassNumbers = new[] { 25 }
             }, includeNav: true).

@@ -9,65 +9,51 @@ using NUnit.Framework;
 
 namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.CopyrightRepositoryTests
 {
-    [TestFixture]
-    public class UserCopyrightRepositoryNegativeTests
+    public class UserCopyrightRepositoryNegativeTests : UserCopyrightRepositoryBase
     {
         [Test]
         public async Task AddOrUndeleteAsync_WhenAlreadyActive_DoesNotDuplicateRow()
         {
-            using var testDbContext = 
-                InMemoryDbContextFactory.CreateTestDbContext();
-
-            var user = new ApplicationUser { 
-                Id = "user7", 
-                UserName = "user7", 
-                Email = "u7@test" };
-
-            var copyrightEntity = 
+            var entity =
                 InMemoryDbContextFactory.CreateCopyright(
-                    "TX-7", 
-                    "copyrightRegG");
+                registrationNumber: "TX-9-999-999",
+                title: "TestTitle",
+                owner: "TestOwner",
+                typeOfWork: "Software",
+                yearOfCreation: 2024);
 
             testDbContext.Users.Add(user);
-            testDbContext.CopyrightRegistrations.Add(copyrightEntity);
+            testDbContext.CopyrightRegistrations.Add(entity);
             await testDbContext.SaveChangesAsync();
 
-            IUserCopyrightRepository repository = 
-                new UserCopyrightRepository(testDbContext);
+            await repository.AddOrUndeleteAsync(
+                user.Id, 
+                entity.Id);
 
             await repository.AddOrUndeleteAsync(
                 user.Id, 
-                copyrightEntity.Id);
+                entity.Id);
 
-            await repository.AddOrUndeleteAsync(
-                user.Id, 
-                copyrightEntity.Id);
-
-            var links = 
+            var userCopyright = 
                 await testDbContext.UserCopyrights.Where(
                 x => x.ApplicationUserId == user.Id && 
-                x.CopyrightEntityId == copyrightEntity.Id).
+                x.CopyrightEntityId == entity.Id).
                 ToListAsync();
 
-            links.Should().HaveCount(1);
-            links[0].IsDeleted.Should().BeFalse();
+            userCopyright.Should().HaveCount(1);
+            userCopyright[0].IsDeleted.Should().BeFalse();
         }
 
         [Test]
         public async Task SoftRemoveAsync_WhenMissingLink_ReturnsFalse()
         {
-            using var testDbContext = 
-                InMemoryDbContextFactory.CreateTestDbContext();
-
-            var user = new ApplicationUser { 
-                Id = "u8", 
-                UserName = "user8", 
-                Email = "u8@test" };
-
-            var entity = 
+            var entity =
                 InMemoryDbContextFactory.CreateCopyright(
-                "TX-8", 
-                "H");
+                registrationNumber: "TX-9-999-999",
+                title: "TestTitle",
+                owner: "TestOwner",
+                typeOfWork: "Software",
+                yearOfCreation: 2024);
 
             testDbContext.Users.Add(user);
             testDbContext.CopyrightRegistrations.Add(entity);
@@ -91,18 +77,13 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.CopyrightRepositoryTests
         [Test]
         public async Task SoftRemoveAsync_WhenAlreadySoftDeleted_ReturnsFalse()
         {
-            using var testDbContext = 
-                InMemoryDbContextFactory.CreateTestDbContext();
-
-            var user = new ApplicationUser { 
-                Id = "u9", 
-                UserName = "user9", 
-                Email = "u9@test" };
-
-            var entity = 
+            var entity =
                 InMemoryDbContextFactory.CreateCopyright(
-                "TX-9", 
-                "I");
+                registrationNumber: "TX-9-999-999",
+                title: "TestTitle",
+                owner: "TestOwner",
+                typeOfWork: "Software",
+                yearOfCreation: 2024);
 
             testDbContext.Users.Add(user);
             testDbContext.CopyrightRegistrations.Add(entity);
@@ -129,34 +110,22 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.CopyrightRepositoryTests
         [Test]
         public async Task IsLinkedAsync_WhenLinkDoesNotExist_ReturnsFalse_ForBothIncludeSoftDeletedFlags()
         {
-            using var testDbContext = 
-                InMemoryDbContextFactory.CreateTestDbContext();
-
-            IUserCopyrightRepository repository = 
-                new UserCopyrightRepository(testDbContext);
-
-            (await repository.IsLinkedAsync(
+            var isLinkedWithoutDeleted = await repository.IsLinkedAsync(
                 "none", 
                 123, 
-                includeSoftDeleted: false)).
-                Should().BeFalse();
+                includeSoftDeleted: false);
+            isLinkedWithoutDeleted.Should().BeFalse();
 
-            (await repository.IsLinkedAsync(
+            var isLinkedWithDeleted = await repository.IsLinkedAsync(
                 "none", 
                 123, 
-                includeSoftDeleted: true)).
-                Should().BeFalse();
+                includeSoftDeleted: true);
+            isLinkedWithDeleted.Should().BeFalse();
         }
 
         [Test]
         public async Task QueryUserCollection_And_QueryUserLinks_ReturnEmpty_ForUserWithNoLinks()
         {
-            using var testDbContext = 
-                InMemoryDbContextFactory.CreateTestDbContext();
-
-            IUserCopyrightRepository repository = 
-                new UserCopyrightRepository(testDbContext);
-
             var pagedResult = 
                 await repository.GetUserCollectionPageAsync(
                 userId: "emptyUserId",
@@ -172,51 +141,46 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.CopyrightRepositoryTests
         [Test]
         public async Task GetUserCollectionPageAsync_ReturnsOnlyItemsForGivenUser()
         {
-            using var testDbContext = 
-                InMemoryDbContextFactory.CreateTestDbContext();
-
-            var user1 = new ApplicationUser { 
-                Id = "user1Id", 
-                UserName = "firstUser", 
-                Email = "userA@test.com" };
-            
             var user2 = new ApplicationUser { 
                 Id = "user2Id", 
-                UserName = "secondUser", 
-                Email = "userB@test.com" };
+                UserName = "TestUser2", 
+                Email = "user2@test.com" };
 
-            var copyrightEntity1 = 
+            var entity1 =
                 InMemoryDbContextFactory.CreateCopyright(
-                    "TX-A", 
-                    "firstCopyright");
-            
-            var copyrightEntity2 = 
-                InMemoryDbContextFactory.CreateCopyright(
-                    "TX-B", 
-                    "secondCopyright");
+                registrationNumber: "TX-9-999-999",
+                title: "First Copyright",
+                owner: "Test Owner",
+                typeOfWork: "Software",
+                yearOfCreation: 2024);
 
-            testDbContext.Users.AddRange(user1, user2);
+            var entity2 =
+                InMemoryDbContextFactory.CreateCopyright(
+                registrationNumber: "TX-1-123-333",
+                title: "Second Copyright",
+                owner: "TestOwner2",
+                typeOfWork: "Software",
+                yearOfCreation: 2025);
+
+            testDbContext.Users.Add(user2);
             
             testDbContext.CopyrightRegistrations.AddRange(
-                copyrightEntity1, 
-                copyrightEntity2);
+                entity1,
+                entity2);
             
             await testDbContext.SaveChangesAsync();
 
-            IUserCopyrightRepository repository = 
-                new UserCopyrightRepository(testDbContext);
+            await repository.AddOrUndeleteAsync(
+                user.Id,
+                entity1.Id); 
 
             await repository.AddOrUndeleteAsync(
-                user1.Id, 
-                copyrightEntity1.Id); 
-
-            await repository.AddOrUndeleteAsync(
-                user2.Id, 
-                copyrightEntity2.Id);
+                user2.Id,
+                entity2.Id);
 
             var user1PagedResult = 
                 await repository.GetUserCollectionPageAsync(
-                userId: user1.Id,
+                userId: user.Id,
                 sortBy: CollectionSortBy.DateAddedAsc,
                 page: 1,
                 resultsPerPage: 20,
@@ -230,30 +194,20 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.CopyrightRepositoryTests
                 resultsPerPage: 20,
                 cancellationToken: CancellationToken.None);
 
-            var user1Items = user1PagedResult.Results;
-            var user1Count = user1PagedResult.ResultsCount;
+            user1PagedResult.ResultsCount.Should().Be(1);
+            user2PagedResult.ResultsCount.Should().Be(1);
 
-            var user2Items = user2PagedResult.Results;
-            var user2Count = user2PagedResult.ResultsCount;
+            user1PagedResult.Results.Should().ContainSingle().
+                Which.CopyrightEntity.Title.Should().Contain("First");
 
-            var user1Titles = user1Items.
-                Select(x => x.CopyrightEntity.Title).
-                ToList();
+            user1PagedResult.Results.Select(x => x.CopyrightEntity.Title).
+                Should().NotContain("Second");
 
-            var user2Titles = user2Items.
-                Select(x => x.CopyrightEntity.Title).
-                ToList();
+            user2PagedResult.Results.Should().ContainSingle().
+                Which.CopyrightEntity.Title.Should().Contain("Second");
 
-            user1Count.Should().Be(1);
-            user2Count.Should().Be(1);
-
-            user1Titles.Should().
-                ContainSingle("firstCopyright").And.
-                NotContain("secondCopyright");
-
-            user2Titles.Should()
-                .ContainSingle("secondCopyright").And.
-                NotContain("firstCopyright");
+            user2PagedResult.Results.Select(x => x.CopyrightEntity.Title).
+                Should().NotContain("First");
         }
     }
 }

@@ -1,105 +1,90 @@
 ﻿using FluentAssertions;
-using IPNoticeHub.Application.Repositories.CopyrightRepository;
-using IPNoticeHub.Infrastructure.Identity;
-using IPNoticeHub.Infrastructure.Persistence;
-using IPNoticeHub.Infrastructure.Persistence.Repositories.CopyrightRepository;
 using IPNoticeHub.Shared.Enums;
+using IPNoticeHub.Tests.UnitTests.RepositoryTests.CopyrightRepositoryTests;
 using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 
 namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Copyrights
 {
-    [TestFixture]
-    public class UserCopyrightRepositoryTests
+    public class UserCopyrightRepositoryTests : UserCopyrightRepositoryBase
     {
         [Test]
         public async Task AddOrUndeleteAsync_NewLink_CreatesActiveRow()
         {
-            using IPNoticeHubDbContext testDbContext = 
-                InMemoryDbContextFactory.CreateTestDbContext();
-
-            var user = new ApplicationUser { 
-                Id = "u1", 
-                UserName = "user1", 
-                Email = "u1@test.com" };
-
-            var copyrightEntity = 
+            var entity =
                 InMemoryDbContextFactory.CreateCopyright(
-                    registrationNumber: "TX-1234567", 
-                    title: "Test Copyright Registration");
-            
+                registrationNumber: "TX-9-999-999",
+                title: "TestTitle",
+                owner: "TestOwner",
+                typeOfWork: "Software",
+                yearOfCreation: 2024);
+
             testDbContext.Users.Add(user);
-            testDbContext.CopyrightRegistrations.Add(copyrightEntity);
+            testDbContext.CopyrightRegistrations.Add(entity);
             await testDbContext.SaveChangesAsync();
 
-            IUserCopyrightRepository repository = 
-                new UserCopyrightRepository(testDbContext);
-
             await repository.AddOrUndeleteAsync(
-                user.Id, 
-                copyrightEntity.Id, 
+                user.Id,
+                entity.Id, 
                 CancellationToken.None);
 
-            var link = 
-                await testDbContext.UserCopyrights.SingleAsync(
-                    x => x.ApplicationUserId == user.Id && 
-                    x.CopyrightEntityId == copyrightEntity.Id);
+            var userCopyright = 
+                await testDbContext.UserCopyrights
+                    .SingleAsync(
+                        x => x.ApplicationUserId == user.Id && 
+                        x.CopyrightEntityId == entity.Id,
+                        CancellationToken.None);
 
-            link.IsDeleted.Should().BeFalse();
+            userCopyright.IsDeleted.Should().BeFalse();
         }
 
         [Test]
         public async Task AddOrUndeleteAsync_WhenSoftDeleted_UndeletesAndUpdatesDate()
         {
-            using var testDbContext = 
-                InMemoryDbContextFactory.CreateTestDbContext();
-
-            var user = new ApplicationUser { 
-                Id = "u2", 
-                UserName = "user2", 
-                Email = "user2@test" };
-
-            var copyrightEntity = 
+            var entity =
                 InMemoryDbContextFactory.CreateCopyright(
-                    registrationNumber: "TX-2123455", 
-                    title: "B Reg");
+                registrationNumber: "TX-9-999-999",
+                title: "TestTitle",
+                owner: "TestOwner",
+                typeOfWork: "Software",
+                yearOfCreation: 2024);
 
             testDbContext.Users.Add(user);
-            testDbContext.CopyrightRegistrations.Add(copyrightEntity);
+            testDbContext.CopyrightRegistrations.Add(entity);
             await testDbContext.SaveChangesAsync();
 
-            IUserCopyrightRepository repository = 
-                new UserCopyrightRepository(testDbContext);
-
             await repository.AddOrUndeleteAsync(
-                user.Id, 
-                copyrightEntity.Id);
+                user.Id,
+                entity.Id);
 
             var initialLink = 
                 await testDbContext.UserCopyrights.SingleAsync(
                     x => x.ApplicationUserId == user.Id && 
-                    x.CopyrightEntityId == copyrightEntity.Id);
+                    x.CopyrightEntityId == entity.Id);
 
             await repository.SoftRemoveAsync(
-                user.Id, 
-                copyrightEntity.Id);
+                user.Id,
+                entity.Id,
+                CancellationToken.None);
 
             var softDeletedLink = 
                 await testDbContext.UserCopyrights.SingleAsync(
                     x => x.ApplicationUserId == user.Id && 
-                    x.CopyrightEntityId == copyrightEntity.Id);
+                    x.CopyrightEntityId == entity.Id,
+                    CancellationToken.None);
 
             softDeletedLink.IsDeleted.Should().BeTrue();
 
             var initialDate = softDeletedLink.DateAdded;
-            await Task.Delay(5);
-            await repository.AddOrUndeleteAsync(user.Id, copyrightEntity.Id);
+            await Task.Delay(5, CancellationToken.None);
+            await repository.AddOrUndeleteAsync(user.Id, entity.Id, CancellationToken.None);
 
             var undeletedLink = 
                 await testDbContext.UserCopyrights.SingleAsync(
                     x => x.ApplicationUserId == user.Id && 
-                    x.CopyrightEntityId == copyrightEntity.Id);
+                    x.CopyrightEntityId == entity.Id,
+                    CancellationToken.None);
 
             undeletedLink.IsDeleted.Should().BeFalse();
             undeletedLink.DateAdded.Should().BeOnOrAfter(initialDate);
@@ -108,85 +93,74 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Copyrights
         [Test]
         public async Task IsLinkedAsync_RespectsIncludeSoftDeletedFlag()
         {
-            using var testDbContext = 
-                InMemoryDbContextFactory.CreateTestDbContext();
-
-            var user = new ApplicationUser { 
-                Id = "u3", 
-                UserName = "user3", 
-                Email = "u3@test" };
-
-            var copyrightEntity = 
+            var entity =
                 InMemoryDbContextFactory.CreateCopyright(
-                    registrationNumber: "TX-3", 
-                    title: "C");
+                registrationNumber: "TX-9-999-999",
+                title: "TestTitle",
+                owner: "TestOwner",
+                typeOfWork: "Software",
+                yearOfCreation: 2024);
 
             testDbContext.Users.Add(user);
-            testDbContext.CopyrightRegistrations.Add(copyrightEntity);
+            testDbContext.CopyrightRegistrations.Add(entity);
             await testDbContext.SaveChangesAsync();
-
-            IUserCopyrightRepository repository = 
-                new UserCopyrightRepository(testDbContext);
 
             await repository.AddOrUndeleteAsync(
                 user.Id, 
-                copyrightEntity.Id);
+                entity.Id);
 
-            (await repository.IsLinkedAsync(
+            var isLinkedActive = 
+                await repository.IsLinkedAsync(
                 user.Id, 
-                copyrightEntity.Id, 
-                includeSoftDeleted: false)).
-                Should().BeTrue();
+                entity.Id, 
+                includeSoftDeleted: false);
+            isLinkedActive.Should().BeTrue();
            
-            (await repository.IsLinkedAsync(
+            var isLinkedIncludingDeleted = 
+                await repository.IsLinkedAsync(
                 user.Id, 
-                copyrightEntity.Id, 
-                includeSoftDeleted: true)).
-                Should().BeTrue();
+                entity.Id, 
+                includeSoftDeleted: true);
+
+            isLinkedIncludingDeleted.Should().BeTrue();
 
             await repository.SoftRemoveAsync(
                 user.Id, 
-                copyrightEntity.Id);
+                entity.Id);
 
-            (await repository.IsLinkedAsync(
+            var isLinkedAfterDelete = 
+                await repository.IsLinkedAsync(
                 user.Id, 
-                copyrightEntity.Id, 
-                includeSoftDeleted: false)).
-                Should().BeFalse();
+                entity.Id, 
+                includeSoftDeleted: false);
+
+            isLinkedAfterDelete.Should().BeFalse();
            
-            (await repository.IsLinkedAsync(
+            var isLinkedIncludingDeletedAfter = 
+                await repository.IsLinkedAsync(
                 user.Id, 
-                copyrightEntity.Id, 
-                includeSoftDeleted: true)).
-                Should().BeTrue();
+                entity.Id, 
+                includeSoftDeleted: true);
+
+            isLinkedIncludingDeletedAfter.Should().BeTrue();
         }
 
         [Test]
         public async Task GetUserCollectionPageAsync_ReturnsActiveLinksWithIncludedRegistration()
         {
-            using var testDbContext = 
-                InMemoryDbContextFactory.CreateTestDbContext();
-
-            var user = new ApplicationUser
-            {
-                Id = "user5",
-                UserName = "user5",
-                Email = "u5@test"
-            };
-
-            var copyrightEntity = 
+            var entity =
                 InMemoryDbContextFactory.CreateCopyright(
-                registrationNumber: "TX-54321",
-                title: "copyrightRegE");
+                registrationNumber: "TX-9-999-999",
+                title: "TestTitle",
+                owner: "TestOwner",
+                typeOfWork: "Software",
+                yearOfCreation: 2024);
 
             testDbContext.Users.Add(user);
-            testDbContext.CopyrightRegistrations.Add(copyrightEntity);
+            testDbContext.CopyrightRegistrations.Add(entity);
             await testDbContext.SaveChangesAsync();
 
-            IUserCopyrightRepository repository =
-                new UserCopyrightRepository(testDbContext);
-
-            await repository.AddOrUndeleteAsync(user.Id, copyrightEntity.Id);
+            await repository.AddOrUndeleteAsync(user.Id, entity.Id, CancellationToken.None);
 
             var pageResult = 
                 await repository.GetUserCollectionPageAsync(
@@ -194,52 +168,47 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Copyrights
                 CollectionSortBy.DateAddedDesc,
                 page: 1,
                 resultsPerPage: 10,
-                cancellationToken: default);
+                cancellationToken: CancellationToken.None);
 
             var links = pageResult.Results;
 
             links.Should().HaveCount(1);
-            links[0].IsDeleted.Should().BeFalse();
-            links[0].CopyrightEntity.Should().NotBeNull();
-            links[0].CopyrightEntity!.Title.Should().Be("copyrightRegE");
+            var link = links[0];
+            link.IsDeleted.Should().BeFalse();
+            link.CopyrightEntity.Should().NotBeNull();
+            link.CopyrightEntity!.Title.Should().Be(entity.Title);
         }
 
         [Test]
         public async Task SoftRemoveAsync_ActiveLink_SoftDeletesAndReturnsTrue()
         {
-            using var testDbContext = 
-                InMemoryDbContextFactory.CreateTestDbContext();
-
-            var user = new ApplicationUser { 
-                Id = "u6", 
-                UserName = "user6", 
-                Email = "u6@test" };
-
-            var copyrightEntity = 
+            var entity =
                 InMemoryDbContextFactory.CreateCopyright(
-                    "TX-654321", 
-                    "copyrightRegF");
+                registrationNumber: "TX-9-999-999",
+                title: "TestTitle",
+                owner: "TestOwner",
+                typeOfWork: "Software",
+                yearOfCreation: 2024);
 
             testDbContext.Users.Add(user);
-            testDbContext.CopyrightRegistrations.Add(copyrightEntity);
+            testDbContext.CopyrightRegistrations.Add(entity);
             await testDbContext.SaveChangesAsync();
-
-            IUserCopyrightRepository repository = 
-                new UserCopyrightRepository(testDbContext);
 
             await repository.AddOrUndeleteAsync(
                 user.Id, 
-                copyrightEntity.Id);
+                entity.Id);
 
-            var removedSuccessfully = 
-                await repository.SoftRemoveAsync(user.Id, copyrightEntity.Id);
+            var removed = 
+                await repository.SoftRemoveAsync(user.Id, entity.Id);
 
-            removedSuccessfully.Should().BeTrue();
+            removed.Should().BeTrue();
 
-            (await testDbContext.UserCopyrights.SingleAsync(
-                x => x.ApplicationUserId == user.Id && 
-                x.CopyrightEntityId == copyrightEntity.Id)).IsDeleted.
-                Should().BeTrue();
+            var userCopyright = 
+                await testDbContext.UserCopyrights.SingleAsync(
+                    x => x.ApplicationUserId == user.Id && 
+                    x.CopyrightEntityId == entity.Id);
+
+            userCopyright.IsDeleted.Should().BeTrue();
         }
     }
 }

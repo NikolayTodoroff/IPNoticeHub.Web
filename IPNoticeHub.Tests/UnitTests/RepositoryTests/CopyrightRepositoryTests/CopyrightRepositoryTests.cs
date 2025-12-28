@@ -1,22 +1,16 @@
 ﻿using FluentAssertions;
-using IPNoticeHub.Application.Repositories.CopyrightRepository;
-using IPNoticeHub.Infrastructure.Persistence;
-using IPNoticeHub.Infrastructure.Persistence.Repositories.CopyrightRepository;
+using IPNoticeHub.Tests.UnitTests.RepositoryTests.CopyrightRepositoryTests;
 using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 using NUnit.Framework;
 
 namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Copyrights
 {
-    [TestFixture]
-    public class CopyrightRepositoryTests
+    public class CopyrightRepositoryTests : CopyrightRepositoryBase
     {
         [Test]
         public async Task Add_Then_GetByPublicId_ReturnsSameEntity()
         {
-            using IPNoticeHubDbContext testDbContext = 
-                InMemoryDbContextFactory.CreateTestDbContext();
-
-            var copyrightEntity = 
+            var entity = 
                 InMemoryDbContextFactory.CreateCopyright(
                 registrationNumber: "TX-9-999-999",
                 title: "Space Science",
@@ -24,78 +18,69 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Copyrights
                 typeOfWork: "Software",
                 yearOfCreation: 2024);
 
-            testDbContext.CopyrightRegistrations.Add(copyrightEntity);
+            testDbContext.CopyrightRegistrations.Add(entity);
             await testDbContext.SaveChangesAsync();
-
-            ICopyrightRepository repository = 
-                new CopyrightRepository(testDbContext);
 
             var fetchedEntity = 
                 await repository.GetByPublicIdAsync(
-                copyrightEntity.PublicId, 
+                entity.PublicId, 
                 default);
 
             fetchedEntity.Should().NotBeNull();
-            fetchedEntity!.Id.Should().Be(copyrightEntity.Id);
-            fetchedEntity.PublicId.Should().Be(copyrightEntity.PublicId);
-            fetchedEntity.Title.Should().Be("Space Science");
+            fetchedEntity!.Id.Should().Be(entity.Id);
+            fetchedEntity.PublicId.Should().Be(entity.PublicId);
+            fetchedEntity.Title.Should().Be(entity.Title);
         }
 
         [Test]
         public async Task AddAsync_Then_GetByRegistrationNumberAsync_ReturnsSameEntity()
         {
-            using var testDbContext = 
-                InMemoryDbContextFactory.CreateTestDbContext();
+            const string registrationNumber = "TX-123456";
+            const string title = "Test Copyright";
 
-            ICopyrightRepository repository = 
-                new CopyrightRepository(testDbContext);
-
-            var copyrightEntity =
+            var entity =
                 InMemoryDbContextFactory.CreateCopyright(
-                registrationNumber: "TX-123456",
-                title: "Test Copyright",
+                registrationNumber: registrationNumber,
+                title: title,
                 owner: "Captain America");
 
             await repository.AddAsync(
-                copyrightEntity, 
+                entity, 
                 CancellationToken.None);
 
             var fetchedEntity = 
                 await repository.GetByRegNumberAsync(
-                    "TX-123456",true, 
+                    registrationNumber,true, 
                     CancellationToken.None);
 
             fetchedEntity.Should().NotBeNull();
-            fetchedEntity!.RegistrationNumber.Should().Be("TX-123456");
-            fetchedEntity.Title.Should().Be("Test Copyright");
+            fetchedEntity!.RegistrationNumber.Should().Be(registrationNumber);
+            fetchedEntity.Title.Should().Be(title);
         }
 
         [Test]
         public async Task ExistsByRegNumberAsync_ReturnsTrueOnlyForExisting()
         {
-            using var testDbContext = 
-                InMemoryDbContextFactory.CreateTestDbContext();
+            const string existingRegNumber = "TX-654321";
+            const string nonExistentRegNumber = "TX-000000";
 
-            ICopyrightRepository repository = 
-                new CopyrightRepository(testDbContext);
-
-            var copyrightEntity = 
+            var entity = 
                 InMemoryDbContextFactory.CreateCopyright(
-                registrationNumber: "TX-654321",
+                registrationNumber: existingRegNumber,
                 title: "Another Copyright");
 
             await repository.AddAsync(
-                copyrightEntity, 
+                entity, 
                 CancellationToken.None);
 
             bool validRegExists = 
                 await repository.ExistsByRegNumberAsync(
-                    "TX-654321", 
+                    existingRegNumber, 
                     CancellationToken.None);
 
             bool randomRegExists = 
                 await repository.ExistsByRegNumberAsync(
-                    "TX-000000", 
+                    nonExistentRegNumber, 
                     CancellationToken.None);
 
             validRegExists.Should().BeTrue();

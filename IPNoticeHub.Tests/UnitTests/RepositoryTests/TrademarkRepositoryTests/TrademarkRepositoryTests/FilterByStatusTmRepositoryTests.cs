@@ -1,22 +1,18 @@
 ﻿using FluentAssertions;
-using IPNoticeHub.Shared.Enums;
+using IPNoticeHub.Application.DTOs.TrademarkDTOs;
 using IPNoticeHub.Domain.Entities.Trademarks;
+using IPNoticeHub.Shared.Enums;
+using IPNoticeHub.Tests.UnitTests.RepositoryTests.TrademarkRepositoryTests.TrademarkRepositoryTests;
 using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 using NUnit.Framework;
-using IPNoticeHub.Infrastructure.Persistence;
-using IPNoticeHub.Application.DTOs.TrademarkDTOs;
-using IPNoticeHub.Infrastructure.Persistence.Repositories.TrademarkRepository;
 
 namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkRepositoryTests
 {
-    public class FilterByStatusTmRepositoryTests
+    public class FilterByStatusTmRepositoryTests : TmRepositoryBase
     {
         [Test]
         public void QueryRepository_FilterByProvider_Class_Status_And_Includes_Nav()
         {
-            using IPNoticeHubDbContext? testDbContext = 
-                InMemoryDbContextFactory.CreateTestDbContext();
-
             var (matchingTrademark, _) = 
                 InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "ALPHA",
@@ -73,11 +69,8 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
 
             testDbContext.SaveChanges();
 
-            var trademarkRepository = 
-                new TrademarkRepository(testDbContext);
-
             TrademarkEntity[]? queryResult = 
-                trademarkRepository.Query(new TrademarkSearchFilter()
+                repository.Query(new TrademarkSearchFilter()
             {
                 Provider = DataProvider.USPTO,
                 Status = TrademarkStatusCategory.Registered,

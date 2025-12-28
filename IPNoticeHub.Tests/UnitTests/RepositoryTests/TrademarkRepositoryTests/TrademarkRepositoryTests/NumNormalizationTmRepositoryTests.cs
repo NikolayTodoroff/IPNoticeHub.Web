@@ -1,23 +1,19 @@
 ﻿using FluentAssertions;
+using IPNoticeHub.Application.DTOs.TrademarkDTOs;
 using IPNoticeHub.Shared.Enums;
+using IPNoticeHub.Tests.UnitTests.RepositoryTests.TrademarkRepositoryTests.TrademarkRepositoryTests;
 using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 using NUnit.Framework;
-using IPNoticeHub.Infrastructure.Persistence;
-using IPNoticeHub.Infrastructure.Persistence.Repositories.TrademarkRepository;
-using IPNoticeHub.Application.DTOs.TrademarkDTOs;
 
 namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkRepositoryTests
 {
     [TestFixture]
-    public class NumNormalizationTmRepositoryTests
+    public class NumNormalizationTmRepositoryTests : TmRepositoryBase
     {
         [Test]
         public void QueryRepository_FilterByNumber_Normalizes_RegistrationNumbers_ForExactSearch()
         {
-            using IPNoticeHubDbContext? testDbContext = 
-                InMemoryDbContextFactory.CreateTestDbContext();
-
-            var (trademarkEntity, _) = 
+            var (entity, _) = 
                 InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "Alpha & Omega",
                 owner: "John Spencer",
@@ -28,14 +24,11 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO);
 
-            testDbContext.TrademarkRegistrations.Add(trademarkEntity);
+            testDbContext.TrademarkRegistrations.Add(entity);
             testDbContext.SaveChanges();
 
-            var trademarkRepository = 
-                new TrademarkRepository(testDbContext);
-
             var queryResult = 
-                trademarkRepository.Query(new TrademarkSearchFilter
+                repository.Query(new TrademarkSearchFilter
             {
                 SearchBy = TrademarkSearchBy.Number,
                 SearchTerm = "us111abc",
@@ -50,10 +43,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
         [Test]
         public void QueryRepository_FilterByNumber_Normalizes_RegistrationNumbers_ForPartialSearch()
         {
-            using IPNoticeHubDbContext? testDbContext = 
-                InMemoryDbContextFactory.CreateTestDbContext();
-
-            var (trademarkEntity, _) = 
+            var (entity, _) = 
                 InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "Alpha & Omega",
                 owner: "John Spencer",
@@ -64,14 +54,11 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO);
 
-            testDbContext.TrademarkRegistrations.Add(trademarkEntity);
+            testDbContext.TrademarkRegistrations.Add(entity);
             testDbContext.SaveChanges();
 
-            var trademarkRepository = 
-                new TrademarkRepository(testDbContext);
-
             var queryResult = 
-                trademarkRepository.Query(new TrademarkSearchFilter
+                repository.Query(new TrademarkSearchFilter
             {
                 SearchBy = TrademarkSearchBy.Number,
                 SearchTerm = "abc",
@@ -86,10 +73,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
         [Test]
         public void QueryRepository_FilterByNumber_Normalizes_Serial_SourceId_ForExactSearch()
         {
-            using IPNoticeHubDbContext? testDbContext = 
-                InMemoryDbContextFactory.CreateTestDbContext();
-
-            var (trademarkEntity, _) = 
+            var (entity, _) = 
                 InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "Alpha & Omega",
                 owner: "John Spencer",
@@ -100,16 +84,13 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO);
 
-            trademarkEntity.SourceId = "IR 123.456_789";
+            entity.SourceId = "IR 123.456_789";
 
-            testDbContext.TrademarkRegistrations.Add(trademarkEntity);
+            testDbContext.TrademarkRegistrations.Add(entity);
             testDbContext.SaveChanges();
 
-            var trademarkRepository = 
-                new TrademarkRepository(testDbContext);
-
             var queryResult = 
-                trademarkRepository.Query(new TrademarkSearchFilter
+                repository.Query(new TrademarkSearchFilter
             {
                 SearchBy = TrademarkSearchBy.Number,
                 SearchTerm = "ir123456789",
@@ -124,10 +105,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
         [Test]
         public void QueryRepository_FilterByNumber_Normalizes_Serial_SourceId_ForPartialSearch()
         {
-            using IPNoticeHubDbContext? testDbContext = 
-                InMemoryDbContextFactory.CreateTestDbContext();
-
-            var (trademarkEntity, _) = 
+            var (entity, _) = 
                 InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "Bingo10",
                 owner: "Michael Crafter",
@@ -138,16 +116,13 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO);
 
-            trademarkEntity.SourceId = "IR 123.456_789";
+            entity.SourceId = "IR 123.456_789";
 
-            testDbContext.TrademarkRegistrations.Add(trademarkEntity);
+            testDbContext.TrademarkRegistrations.Add(entity);
             testDbContext.SaveChanges();
 
-            var trademarkRepository = 
-                new TrademarkRepository(testDbContext);
-
             var queryResult = 
-                trademarkRepository.Query(new TrademarkSearchFilter
+                repository.Query(new TrademarkSearchFilter
             {
                 SearchBy = TrademarkSearchBy.Number,
                 SearchTerm = "4567",
@@ -162,9 +137,6 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
         [Test]
         public void QueryRepository_FilterByNumber_NullSides_DoNotThrow_And_DoNotMatch()
         {
-            using IPNoticeHubDbContext? testDbContext = 
-                InMemoryDbContextFactory.CreateTestDbContext();
-
             var (regNumberEntity, _) = 
                 InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "Dead and Divine",
@@ -195,11 +167,8 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
 
             testDbContext.SaveChanges();
 
-            var trademarkRepository = 
-                new TrademarkRepository(testDbContext);
-
             var queryResult = 
-                trademarkRepository.Query(new TrademarkSearchFilter
+                repository.Query(new TrademarkSearchFilter
             {
                 SearchBy = TrademarkSearchBy.Number,
                 SearchTerm = "xyz",
@@ -214,9 +183,6 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
         [Test]
         public void QueryRepository_FilterByNumber_NoMatch_ForExactSearch()
         {
-            using IPNoticeHubDbContext? testDbContext = 
-                InMemoryDbContextFactory.CreateTestDbContext();
-
             var (regNumberEntity, _) = 
                 InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "AMZ",
@@ -234,11 +200,8 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
 
             testDbContext.SaveChanges();
 
-            var trademarkRepository = 
-                new TrademarkRepository(testDbContext);
-
             var queryResult = 
-                trademarkRepository.Query(new TrademarkSearchFilter
+                repository.Query(new TrademarkSearchFilter
             {
                 SearchBy = TrademarkSearchBy.Number,
                 SearchTerm = "abc",
@@ -252,9 +215,6 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
         [Test]
         public void QueryRepository_FilterByNumber_Match_ForPartialSearch()
         {
-            using IPNoticeHubDbContext? testDbContext = 
-                InMemoryDbContextFactory.CreateTestDbContext();
-
             var (regNumberEntity, _) = 
                 InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "AMZ",
@@ -272,11 +232,8 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
 
             testDbContext.SaveChanges();
 
-            var trademarkRepository = 
-                new TrademarkRepository(testDbContext);
-
             var queryResult = 
-                trademarkRepository.Query(new TrademarkSearchFilter
+                repository.Query(new TrademarkSearchFilter
             {
                 SearchBy = TrademarkSearchBy.Number,
                 SearchTerm = "abc",

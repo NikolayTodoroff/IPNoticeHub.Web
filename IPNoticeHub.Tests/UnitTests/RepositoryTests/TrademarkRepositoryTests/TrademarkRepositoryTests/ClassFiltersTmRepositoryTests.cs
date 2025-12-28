@@ -1,22 +1,18 @@
 ﻿using FluentAssertions;
+using IPNoticeHub.Application.DTOs.TrademarkDTOs;
 using IPNoticeHub.Shared.Enums;
-using IPNoticeHub.Infrastructure.Persistence.Repositories.TrademarkRepository;
+using IPNoticeHub.Tests.UnitTests.RepositoryTests.TrademarkRepositoryTests.TrademarkRepositoryTests;
 using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 using NUnit.Framework;
-using IPNoticeHub.Infrastructure.Persistence;
-using IPNoticeHub.Application.DTOs.TrademarkDTOs;
 
 namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkRepositoryTests
 {
-    public class ClassFiltersTmRepositoryTests
+    public class ClassFiltersTmRepositoryTests : TmRepositoryBase
     {
         [Test]
         public void QueryRepository_FilterBySingleClass_ReturnsTrademarksForThatClass()
         {
-            using IPNoticeHubDbContext? testDbContext = 
-                InMemoryDbContextFactory.CreateTestDbContext();
-
-            var (firstTestTrademark, _) = 
+            var (entity1, _) = 
                 InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "AZ1",
                 owner: "Barry Douglas",
@@ -28,7 +24,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
                 source: DataProvider.USPTO,
                 classNumbers: new[] { 25 });
 
-            var (secondTestTrademark, _) = 
+            var (entity2, _) = 
                 InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "XY2",
                 owner: "Leonard Cohen",
@@ -40,7 +36,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
                 source: DataProvider.USPTO,
                 classNumbers: new[] { 30 });
 
-            var (thirdTestTrademark, _) = 
+            var (entity3, _) = 
                 InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "NM3",
                 owner: "Denis Rodman",
@@ -53,16 +49,13 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
                 classNumbers: new[] { 9,25 });
 
             testDbContext.TrademarkRegistrations.AddRange(
-                firstTestTrademark, 
-                secondTestTrademark,
-                thirdTestTrademark);
+                entity1, 
+                entity2,
+                entity3);
 
             testDbContext.SaveChanges();
 
-            var trademarkRepository = 
-                new TrademarkRepository(testDbContext);
-
-            var queryResult = trademarkRepository.Query(
+            var queryResult = repository.Query(
                 new TrademarkSearchFilter
             {
                 ClassNumbers = new[] { 25 }
@@ -70,17 +63,13 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             Select(t => t.Wordmark).
             ToArray();
 
-            queryResult.Should().
-                BeEquivalentTo(new[] { "AZ1", "NM3" });
+            queryResult.Should().BeEquivalentTo(new[] { "AZ1", "NM3" });
         }
 
         [Test]
         public void QueryRepository_FilterByMultipleClasses_UsesOrLogic()
         {
-            using IPNoticeHubDbContext? testDbContext = 
-                InMemoryDbContextFactory.CreateTestDbContext();
-
-            var (firstTestTrademark, _) = 
+            var (entity1, _) = 
                 InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "A1",
                 owner: "user1",
@@ -92,7 +81,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
                 source: DataProvider.USPTO,
                 classNumbers: new[] { 25 });
 
-            var (secondTestTrademark, _) = 
+            var (entity2, _) = 
                 InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "B2",
                 owner: "user2",
@@ -104,7 +93,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
                 source: DataProvider.USPTO,
                 classNumbers: new[] { 30 });
 
-            var (thirdTestTrademark, _) = 
+            var (entity3, _) = 
                 InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "C3",
                 owner: "user3",
@@ -116,7 +105,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
                 source: DataProvider.USPTO,
                 classNumbers: new[] { 9 });
 
-            var (fourthTestTrademark, _) = 
+            var (entity4, _) = 
                 InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "D4",
                 owner: "user4",
@@ -129,17 +118,14 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
                 classNumbers: new[] { 9, 25 });
 
             testDbContext.TrademarkRegistrations.AddRange(
-                firstTestTrademark, 
-                secondTestTrademark, 
-                thirdTestTrademark,
-                fourthTestTrademark);
+                entity1, 
+                entity2, 
+                entity3,
+                entity4);
 
             testDbContext.SaveChanges();
 
-            var trademarkRepository = 
-                new TrademarkRepository(testDbContext);
-
-            var result = trademarkRepository.Query(
+            var result = repository.Query(
                 new TrademarkSearchFilter
             {
                 ClassNumbers = new[] { 9, 25 }
@@ -147,17 +133,13 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             Select(t => t.Wordmark).
             ToArray();
 
-            result.Should().
-                BeEquivalentTo(new[] { "A1", "C3", "D4" });
+            result.Should().BeEquivalentTo(new[] { "A1", "C3", "D4" });
         }
 
         [Test]
         public void QueryRepository_FilterByClass_DuplicateValues_BehavesLikeDistinct()
         {
-            using IPNoticeHubDbContext? testDbContext = 
-                InMemoryDbContextFactory.CreateTestDbContext();
-
-            var (firstTestTrademark, _) = 
+            var (entity1, _) = 
                 InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "A1",
                 owner: "user1",
@@ -169,7 +151,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
                 source: DataProvider.USPTO,
                 classNumbers: new[] { 25 });
 
-            var (secondTestTrademark, _) = 
+            var (entity2, _) = 
                 InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "B2",
                 owner: "user2",
@@ -181,7 +163,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
                 source: DataProvider.USPTO,
                 classNumbers: new[] { 25, 30 });
 
-            var (thirdTestTrademark, _) = 
+            var (entity3, _) = 
                 InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "C3",
                 owner: "user3",
@@ -194,16 +176,13 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
                 classNumbers: new[] { 9 });
 
             testDbContext.TrademarkRegistrations.AddRange(
-                firstTestTrademark, 
-                secondTestTrademark, 
-                thirdTestTrademark);
+                entity1, 
+                entity2, 
+                entity3);
 
             testDbContext.SaveChanges();
 
-            var trademarkRepository = 
-                new TrademarkRepository(testDbContext);
-
-            var duplicateFilterQuery = trademarkRepository.Query(
+            var duplicateFilterQuery = repository.Query(
                 new TrademarkSearchFilter
             {
                 ClassNumbers = new[] { 25, 25 }
@@ -212,7 +191,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
             OrderBy(x => x).
             ToArray();
 
-            var distinctFilterQuery = trademarkRepository.Query(
+            var distinctFilterQuery = repository.Query(
                 new TrademarkSearchFilter
             {
                 ClassNumbers = new[] { 25 }

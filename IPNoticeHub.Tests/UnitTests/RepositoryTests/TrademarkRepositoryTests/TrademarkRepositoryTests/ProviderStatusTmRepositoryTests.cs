@@ -1,23 +1,19 @@
 ﻿using FluentAssertions;
-using IPNoticeHub.Shared.Enums;
-using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
-using NUnit.Framework;
 using IPNoticeHub.Application.DTOs.TrademarkDTOs;
 using IPNoticeHub.Infrastructure.Persistence.Repositories.TrademarkRepository;
-using IPNoticeHub.Infrastructure.Persistence;
+using IPNoticeHub.Shared.Enums;
+using IPNoticeHub.Tests.UnitTests.RepositoryTests.TrademarkRepositoryTests.TrademarkRepositoryTests;
+using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
+using NUnit.Framework;
 
 namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkRepositoryTests
 {
-    [TestFixture]
-    public class ProviderStatusTmRepositoryTests
+    public class ProviderStatusTmRepositoryTests : TmRepositoryBase
     {
         [Test]
         public void QueryRepository_FilterByProviderOnly()
         {
-            using IPNoticeHubDbContext? testDbContext = 
-                InMemoryDbContextFactory.CreateTestDbContext();
-
-            var (A1, _) = 
+            var (entity1, _) = 
                 InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "ALPHA",
                 owner: "user1",
@@ -28,7 +24,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO);
 
-            var (B2, _) = 
+            var (entity2, _) = 
                 InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "BETA",
                 owner: "user2",
@@ -39,7 +35,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.EUIPO);
 
-            var (C3, _) = 
+            var (entity3, _) = 
                 InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "GAMMA", 
                 owner: "user3",
@@ -51,17 +47,17 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
                 source: DataProvider.WIPO);
 
             testDbContext.TrademarkRegistrations.AddRange(
-                A1, 
-                B2, 
-                C3);
+                entity1, 
+                entity2, 
+                entity3);
 
             testDbContext.SaveChanges();
 
-            var trademarkRepository = 
+            var repository = 
                 new TrademarkRepository(testDbContext);
 
             var usptoOnly = 
-                trademarkRepository.Query(new TrademarkSearchFilter
+                repository.Query(new TrademarkSearchFilter
             {
                 Provider = DataProvider.USPTO
             }).
@@ -74,10 +70,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
         [Test]
         public void QueryRepository_FiltersByStatusOnly()
         {
-            using IPNoticeHubDbContext? testDbContext = 
-                InMemoryDbContextFactory.CreateTestDbContext();
-
-            var (A1, _) = 
+            var (entity1, _) = 
                 InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "ALPHA",
                 owner: "user1",
@@ -88,7 +81,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO);
 
-            var (B2, _) = 
+            var (entity2, _) = 
                 InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "BETA",
                 owner: "user2",
@@ -99,7 +92,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
                 status: TrademarkStatusCategory.Pending,
                 source: DataProvider.EUIPO);
 
-            var (C3, _) = 
+            var (entity3, _) = 
                 InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "GAMMA",
                 owner: "user3",
@@ -111,16 +104,13 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
                 source: DataProvider.WIPO);
 
             testDbContext.TrademarkRegistrations.AddRange(
-                A1, 
-                B2, 
-                C3);
+                entity1, 
+                entity2, 
+                entity3);
 
             testDbContext.SaveChanges();
 
-            var trademarkRepository = 
-                new TrademarkRepository(testDbContext);
-
-            var pendingOnly = trademarkRepository.Query(
+            var pendingOnly = repository.Query(
                 new TrademarkSearchFilter
             {
                 Status = TrademarkStatusCategory.Pending
@@ -134,9 +124,6 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
         [Test]
         public void QueryRepository_FilterBy_Provider_Status_Class_UseAndLogic()
         {
-            using var dbContext = 
-                InMemoryDbContextFactory.CreateTestDbContext();
-
             var (matchingEntity, _) = 
                 InMemoryDbContextFactory.CreateTrademark(
                 wordmark: "ALPHA", 
@@ -185,16 +172,16 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
                 source: DataProvider.USPTO,
                 classNumbers: new[] { 30 });
 
-            dbContext.TrademarkRegistrations.AddRange(
+            testDbContext.TrademarkRegistrations.AddRange(
                 matchingEntity, 
                 wrongProviderEntity, 
                 wrongStatusEntity, 
                 wrongClassEntity);
-            
-            dbContext.SaveChanges();
+
+            testDbContext.SaveChanges();
 
             var trademarkRepository = 
-                new TrademarkRepository(dbContext);
+                new TrademarkRepository(testDbContext);
 
             var result = trademarkRepository.Query(
                 new TrademarkSearchFilter

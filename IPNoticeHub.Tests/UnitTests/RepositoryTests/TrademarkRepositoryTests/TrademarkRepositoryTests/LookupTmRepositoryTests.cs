@@ -1,22 +1,20 @@
 ﻿using FluentAssertions;
+using IPNoticeHub.Domain.Entities.Trademarks;
+using IPNoticeHub.Infrastructure.Persistence.Repositories.TrademarkRepository;
 using IPNoticeHub.Shared.Enums;
+using IPNoticeHub.Tests.UnitTests.RepositoryTests.TrademarkRepositoryTests.TrademarkRepositoryTests;
 using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
-using IPNoticeHub.Infrastructure.Persistence.Repositories.TrademarkRepository;
-using IPNoticeHub.Domain.Entities.Trademarks;
 
 namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkRepositoryTests
 {
-    public class LookupTmRepositoryTests
+    public class LookupTmRepositoryTests : TmRepositoryBase
     {
         [Test]
         public async Task ExistsAsync_ReturnsTrue_WhenIdExists()
         {
-            using var testDbContext = 
-                InMemoryDbContextFactory.CreateTestDbContext();
-
-            var (trademarkEntity, _) = 
+            var (entity, _) = 
                 InMemoryDbContextFactory.CreateTrademark(
                wordmark: "ALPHA",
                owner: "Owner",
@@ -27,18 +25,17 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
                TrademarkStatusCategory.Registered,
                DataProvider.USPTO);
 
-            testDbContext.TrademarkRegistrations.Add(trademarkEntity);
+            testDbContext.TrademarkRegistrations.Add(entity);
             testDbContext.SaveChanges();
 
-            var trademarkRepo = 
+            var repository = 
                 new TrademarkRepository(testDbContext);
 
-            var queryResult = await trademarkRepo.ExistsAsync(
-                trademarkEntity.Id, 
+            var queryResult = await repository.ExistsAsync(
+                entity.Id, 
                 CancellationToken.None);
 
-            queryResult.Should().
-                BeTrue();
+            queryResult.Should().BeTrue();
         }
 
         [Test]
@@ -54,8 +51,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
                 987654, 
                 CancellationToken.None);
 
-            queryResult.Should().
-                BeFalse();
+            queryResult.Should().BeFalse();
         }
 
         [Test]
@@ -97,21 +93,17 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
                     asNoTracking: false, 
                     CancellationToken.None);
 
-            queryResult.Should().
-                NotBeNull();
-
-            queryResult!.Wordmark.Should().
-                Be("ALPHA");
+            queryResult.Should().NotBeNull();
+            queryResult!.Wordmark.Should().Be("ALPHA");
 
             queryResult.Classes!.Select(
                 c => c.ClassNumber).Should().
                 BeEquivalentTo(new[] { 9, 25 });
 
-            queryResult.Events!.Should().
-                HaveCount(1);
+            queryResult.Events!.Should().HaveCount(1);
 
-            testDbContext.Entry(queryResult).State.Should().
-                Be(EntityState.Unchanged);
+            testDbContext.Entry(queryResult).State.
+                Should().Be(EntityState.Unchanged);
         }
 
         [Test]
@@ -144,11 +136,10 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
                     asNoTracking: true, 
                     CancellationToken.None);
 
-            queryResult.Should().
-                NotBeNull();
+            queryResult.Should().NotBeNull();
 
-            testDbContext.Entry(queryResult!).State.Should().
-                Be(EntityState.Detached);
+            testDbContext.Entry(queryResult!).State.
+                Should().Be(EntityState.Detached);
         }
 
         [Test]
@@ -166,8 +157,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
                     asNoTracking: true, 
                     CancellationToken.None);
 
-            queryResult.Should().
-                BeNull();
+            queryResult.Should().BeNull();
         }
 
         [Test]
@@ -215,8 +205,7 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkReposi
                     Guid.NewGuid(), 
                     CancellationToken.None);
 
-            id.Should().
-                BeNull();
+            id.Should().BeNull();
         }
 
         [Test]
