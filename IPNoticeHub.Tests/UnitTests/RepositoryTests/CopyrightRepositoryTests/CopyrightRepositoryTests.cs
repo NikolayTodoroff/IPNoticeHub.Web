@@ -14,9 +14,11 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Copyrights
                 InMemoryDbContextFactory.CreateCopyright(
                 registrationNumber: "TX-9-999-999",
                 title: "Space Science",
-                owner: "David Batty",
                 typeOfWork: "Software",
-                yearOfCreation: 2024);
+                owner: "David Batty",
+                yearOfCreation: 2024,
+                dateOfPublication: new DateTime(2020, 1, 1),
+                nationOfFirstPublication: "USA");
 
             testDbContext.CopyrightRegistrations.Add(entity);
             await testDbContext.SaveChangesAsync();
@@ -42,7 +44,11 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Copyrights
                 InMemoryDbContextFactory.CreateCopyright(
                 registrationNumber: registrationNumber,
                 title: title,
-                owner: "Captain America");
+                typeOfWork: "Software",
+                owner: "David Batty",
+                yearOfCreation: 2024,
+                dateOfPublication: new DateTime(2020, 1, 1),
+                nationOfFirstPublication: "USA");
 
             await repository.AddAsync(
                 entity, 
@@ -64,10 +70,15 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Copyrights
             const string existingRegNumber = "TX-654321";
             const string nonExistentRegNumber = "TX-000000";
 
-            var entity = 
+            var entity =
                 InMemoryDbContextFactory.CreateCopyright(
                 registrationNumber: existingRegNumber,
-                title: "Another Copyright");
+                title: "Space Science",
+                typeOfWork: "Software",
+                owner: "David Batty",
+                yearOfCreation: 2024,
+                dateOfPublication: new DateTime(2020, 1, 1),
+                nationOfFirstPublication: "USA");
 
             await repository.AddAsync(
                 entity, 

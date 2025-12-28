@@ -1,11 +1,8 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Shared.Enums;
-using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 using NUnit.Framework;
 using static IPNoticeHub.Shared.Constants.PagingConstants.DefaultPagingConstants;
 using IPNoticeHub.Application.DTOs.TrademarkDTOs;
-using IPNoticeHub.Application.Repositories.TrademarkRepository;
-using IPNoticeHub.Infrastructure.Persistence;
 
 namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.TrademarkSearchQueryServiceTests
 {
@@ -32,9 +29,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
                     CancellationToken.None);
 
             total.Should().Be(1);
-
-            queryResult.Single().Wordmark.Should().
-                Be("Anubis");
+            queryResult.Single().Wordmark.Should().Be("Anubis");
         }
     }
 }

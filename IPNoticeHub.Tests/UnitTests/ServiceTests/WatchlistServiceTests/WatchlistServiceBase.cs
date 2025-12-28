@@ -14,7 +14,6 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.WatchlistServiceTests
         protected Mock<IStatusLabelProvider> statusLabels = null!;
         protected IWatchlistService watchlistService = null!;
 
-
         [SetUp]
         public void SetUp()
         {

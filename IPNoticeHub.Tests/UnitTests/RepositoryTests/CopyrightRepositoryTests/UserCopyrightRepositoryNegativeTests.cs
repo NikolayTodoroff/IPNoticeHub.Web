@@ -17,10 +17,12 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.CopyrightRepositoryTests
             var entity =
                 InMemoryDbContextFactory.CreateCopyright(
                 registrationNumber: "TX-9-999-999",
-                title: "TestTitle",
-                owner: "TestOwner",
+                title: "Space Science",
                 typeOfWork: "Software",
-                yearOfCreation: 2024);
+                owner: "David Batty",
+                yearOfCreation: 2024,
+                dateOfPublication: new DateTime(2020, 1, 1),
+                nationOfFirstPublication: "USA");
 
             testDbContext.Users.Add(user);
             testDbContext.CopyrightRegistrations.Add(entity);
@@ -50,10 +52,12 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.CopyrightRepositoryTests
             var entity =
                 InMemoryDbContextFactory.CreateCopyright(
                 registrationNumber: "TX-9-999-999",
-                title: "TestTitle",
-                owner: "TestOwner",
+                title: "Space Science",
                 typeOfWork: "Software",
-                yearOfCreation: 2024);
+                owner: "David Batty",
+                yearOfCreation: 2024,
+                dateOfPublication: new DateTime(2020, 1, 1),
+                nationOfFirstPublication: "USA");
 
             testDbContext.Users.Add(user);
             testDbContext.CopyrightRegistrations.Add(entity);
@@ -80,10 +84,12 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.CopyrightRepositoryTests
             var entity =
                 InMemoryDbContextFactory.CreateCopyright(
                 registrationNumber: "TX-9-999-999",
-                title: "TestTitle",
-                owner: "TestOwner",
+                title: "Space Science",
                 typeOfWork: "Software",
-                yearOfCreation: 2024);
+                owner: "David Batty",
+                yearOfCreation: 2024,
+                dateOfPublication: new DateTime(2020, 1, 1),
+                nationOfFirstPublication: "USA");
 
             testDbContext.Users.Add(user);
             testDbContext.CopyrightRegistrations.Add(entity);
@@ -148,19 +154,23 @@ namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.CopyrightRepositoryTests
 
             var entity1 =
                 InMemoryDbContextFactory.CreateCopyright(
-                registrationNumber: "TX-9-999-999",
+                registrationNumber: "TX-1-222-333",
                 title: "First Copyright",
-                owner: "Test Owner",
                 typeOfWork: "Software",
-                yearOfCreation: 2024);
+                owner: "David Gordon",
+                yearOfCreation: 2021,
+                dateOfPublication: new DateTime(2021, 1, 1),
+                nationOfFirstPublication: "USA");
 
             var entity2 =
                 InMemoryDbContextFactory.CreateCopyright(
-                registrationNumber: "TX-1-123-333",
+                registrationNumber: "TX-9-999-999",
                 title: "Second Copyright",
-                owner: "TestOwner2",
                 typeOfWork: "Software",
-                yearOfCreation: 2025);
+                owner: "David Batty",
+                yearOfCreation: 2024,
+                dateOfPublication: new DateTime(2020, 1, 1),
+                nationOfFirstPublication: "USA");
 
             testDbContext.Users.Add(user2);
             

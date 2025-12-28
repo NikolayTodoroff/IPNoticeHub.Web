@@ -67,22 +67,22 @@ namespace IPNoticeHub.Tests.UnitTests.UnitTestFactories
         }
 
         public static CopyrightEntity CreateCopyright(
-            string registrationNumber = "TX-0000000",
-            string title = "Test Title",
-            string typeOfWork = "Literary Work",
-            string owner = "Test Owner",
-            int? yearOfCreation = null,
-            DateTime? dateOfPublication = null,
-            string? nationOfFirstPublication = null)
+            string registrationNumber,
+            string title,
+            string typeOfWork,
+            string owner,
+            int? yearOfCreation,
+            DateTime? dateOfPublication,
+            string? nationOfFirstPublication)
         {
             return new CopyrightEntity
             {
-                RegistrationNumber = registrationNumber ?? string.Empty,
-                TypeOfWork = typeOfWork ?? string.Empty,
-                Title = title ?? string.Empty,
+                RegistrationNumber = registrationNumber,
+                TypeOfWork = typeOfWork,
+                Title = title,
                 YearOfCreation = yearOfCreation,
                 DateOfPublication = dateOfPublication,
-                Owner = owner ?? string.Empty,
+                Owner = owner,
                 NationOfFirstPublication = nationOfFirstPublication
             };
         }
