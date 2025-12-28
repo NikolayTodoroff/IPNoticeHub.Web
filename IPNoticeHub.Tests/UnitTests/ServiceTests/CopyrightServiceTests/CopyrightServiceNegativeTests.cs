@@ -9,9 +9,9 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.CopyrightServiceTests
         [Test]
         public async Task GetDetailsAsync_WhenPublicIdDoesNotExist_ReturnsNull()
         {
-var dto = await service.GetDetailsAsync(
-                user.Id, 
-                Guid.NewGuid(), 
+            var dto = await service.GetDetailsAsync(
+                user.Id,
+                Guid.NewGuid(),
                 CancellationToken.None);
 
             dto.Should().BeNull();
@@ -20,15 +20,9 @@ var dto = await service.GetDetailsAsync(
         [Test]
         public async Task GetDetailsAsync_WhenNotLinked_ReturnsNull()
         {
-            var copyrightEntity = 
-                InMemoryDbContextFactory.CreateCopyright(
-                    "TX-E1", 
-                    "Orphan");
-
-            var result = 
-                await service.GetDetailsAsync(
-                user.Id, 
-                copyrightEntity.PublicId, 
+            var result = await service.GetDetailsAsync(
+                user.Id,
+                cpEntity1.PublicId,
                 CancellationToken.None);
 
             result.Should().BeNull();
@@ -37,9 +31,11 @@ var dto = await service.GetDetailsAsync(
         [Test]
         public async Task RemoveAsync_WhenPublicIdMissing_ReturnsFalse()
         {
+            var nonExistentId = Guid.NewGuid();
+            
             var result = await service.RemoveAsync(
                 user.Id, 
-                Guid.NewGuid(), 
+                nonExistentId, 
                 CancellationToken.None);
 
             result.Should().BeFalse();
@@ -54,7 +50,7 @@ var dto = await service.GetDetailsAsync(
                 sortBy: Shared.Enums.CollectionSortBy.DateAddedDesc,
                 page: 1,
                 resultsPerPage: 10,
-                cancellationToken: default);
+                cancellationToken: CancellationToken.None);
 
             pagedResult.ResultsCount.Should().Be(0);
             pagedResult.Results.Should().BeEmpty();

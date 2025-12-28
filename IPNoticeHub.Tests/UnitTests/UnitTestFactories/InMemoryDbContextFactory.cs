@@ -86,7 +86,6 @@ namespace IPNoticeHub.Tests.UnitTests.UnitTestFactories
                 NationOfFirstPublication = nationOfFirstPublication
             };
         }
-
         public static ApplicationUser CreateApplicationUser(string id = "1234567")
         {
             return new ApplicationUser
