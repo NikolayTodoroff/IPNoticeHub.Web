@@ -11,12 +11,12 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServi
         {
             await service.AddAsync(
                 userId: user.Id,
-                trademarkId: trademarkEntity.Id,
+                trademarkId: tmEntity1.Id,
                 cancellationToken: default);
 
             bool isInCollection = await service.IsInCollectionAsync(
-                user.Id, 
-                trademarkEntity.Id, 
+                user.Id,
+                tmEntity1.Id, 
                 includeSoftDeleted: false, 
                 cancellationToken: default);
 
@@ -25,7 +25,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServi
             var links = 
                 testDbContext.UserTrademarks.Where
                 (x => x.ApplicationUserId == user.Id && 
-                x.TrademarkEntityId == trademarkEntity.Id).
+                x.TrademarkEntityId == tmEntity1.Id).
                 ToList();
 
             links.Should().HaveCount(1);
@@ -37,18 +37,18 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServi
         {
             await service.AddAsync(
                 userId: user.Id,
-                trademarkId: trademarkEntity.Id,
+                trademarkId: tmEntity1.Id,
                 cancellationToken: default);
 
             await service.RemoveAsync(
                 userId: user.Id,
-                trademarkId: trademarkEntity.Id,
+                trademarkId: tmEntity1.Id,
                 cancellationToken: default);
 
             var userTrademark = 
                 testDbContext.UserTrademarks.Where(
                 x => x.ApplicationUserId == user.Id && 
-                x.TrademarkEntityId == trademarkEntity.Id).
+                x.TrademarkEntityId == tmEntity1.Id).
                 ToList();
 
             userTrademark.Should().HaveCount(1);
@@ -56,13 +56,13 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServi
 
             await service.AddAsync(
                userId: user.Id,
-               trademarkId: trademarkEntity.Id,
+               trademarkId: tmEntity1.Id,
                cancellationToken: default);
 
             var links = 
                 testDbContext.UserTrademarks.Where(
                 x => x.ApplicationUserId == user.Id && 
-                x.TrademarkEntityId == trademarkEntity.Id).
+                x.TrademarkEntityId == tmEntity1.Id).
                 ToList();
 
             links.Should().HaveCount(1);
@@ -70,7 +70,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServi
 
             var isInCollection = await service.IsInCollectionAsync(
                 user.Id, 
-                trademarkEntity.Id, 
+                tmEntity1.Id, 
                 includeSoftDeleted: false, 
                 cancellationToken: default);
 
@@ -95,17 +95,17 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServi
         {
             await service.AddAsync(
                 user.Id,
-                trademarkEntity.Id,
+                tmEntity1.Id,
                 default);
 
             await service.AddAsync(
                 user.Id,
-                trademarkEntity.Id,
+                tmEntity1.Id,
                 default);
 
             var links = testDbContext.UserTrademarks.
                 Where(x => x.ApplicationUserId == user.Id &&
-                x.TrademarkEntityId == trademarkEntity.Id).
+                x.TrademarkEntityId == tmEntity1.Id).
                 ToList();
 
             links.Should().HaveCount(1);

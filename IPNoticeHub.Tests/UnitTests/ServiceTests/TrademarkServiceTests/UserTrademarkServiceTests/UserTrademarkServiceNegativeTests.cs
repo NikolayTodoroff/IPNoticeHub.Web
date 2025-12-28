@@ -9,7 +9,7 @@ using IPNoticeHub.Application.Services.TrademarkService.Implementations;
 
 namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServiceTests
 {
-    public class QueryUserTrademarkServiceNegativeTests
+    public class UserTrademarkServiceNegativeTests
     {
         [Test]
         public async Task IsInCollectionAsync_WhenUserDoesNotExistInDbContext_ReturnsFalse()
