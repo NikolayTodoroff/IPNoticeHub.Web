@@ -50,8 +50,9 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.CopyrightServiceTests
             result.Should().BeTrue();
 
             var updatedEntity = 
-                await testDbContext.CopyrightRegistrations.SingleAsync(
-                    x => x.Id == initialEntity.Id);
+                await testDbContext.CopyrightRegistrations.
+                AsNoTracking().
+                SingleAsync(x => x.Id == initialEntity.Id);
 
             updatedEntity.RegistrationNumber.Should().Be("TX-ED1-UPDATED");
             updatedEntity.TypeOfWork.Should().Be("AI-Generated Visual");
@@ -68,6 +69,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.CopyrightServiceTests
         [Test]
         public async Task EditAsync_WhenPublicIdMissing_ReturnsFalse()
         {
+            var nonExistentPublicId = Guid.NewGuid();
             var dto = new CopyrightEditDto
             {
                 RegistrationNumber = "X",
@@ -78,7 +80,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.CopyrightServiceTests
 
             bool result = await service.EditAsync(
                 user.Id, 
-                Guid.NewGuid(), 
+                nonExistentPublicId, 
                 dto, CancellationToken.None);
 
             result.Should().BeFalse();
@@ -114,6 +116,15 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.CopyrightServiceTests
                 dto, CancellationToken.None);
 
             result.Should().BeFalse();
+
+            var unchangedEntity = 
+                await testDbContext.CopyrightRegistrations.
+                AsNoTracking().
+                SingleAsync(x => x.Id == copyrightEntity.Id);
+
+            unchangedEntity.RegistrationNumber.Should().Be("TX-ED1");
+            unchangedEntity.Title.Should().Be("Initial Entity");
+            unchangedEntity.Owner.Should().Be("Initial Owner");
         }
 
         [Test]
@@ -149,22 +160,26 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.CopyrightServiceTests
                 user.Id, 
                 targetEntity.Id);
 
-            var result = await service.EditAsync(
-                    user.Id, 
-                    targetEntity.PublicId, 
-                    new CopyrightEditDto
+            var dto = new CopyrightEditDto
             {
                 RegistrationNumber = "TX-ED2",
                 WorkType = CopyrightWorkType.Literary,
                 Title = "Replace Target Entity Title (won't be applied)",
                 Owner = "New Owner (won't be applied)"
-            }, CancellationToken.None);
+            };
+
+            var result = await service.EditAsync(
+                user.Id, 
+                targetEntity.PublicId, 
+                dto,
+                CancellationToken.None);
 
             result.Should().BeFalse();
 
             var entity = 
-                await testDbContext.CopyrightRegistrations.SingleAsync(
-                    x => x.Id == targetEntity.Id);
+                await testDbContext.CopyrightRegistrations.
+                AsNoTracking().
+                SingleAsync(x => x.Id == targetEntity.Id);
 
             entity.RegistrationNumber.Should().Be("TX-ED1");
             entity.Title.Should().Be("Target Entity");
@@ -184,12 +199,11 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.CopyrightServiceTests
                 nationOfFirstPublication: "US");
 
             testDbContext.CopyrightRegistrations.Add(entity);
+            await testDbContext.SaveChangesAsync();
 
             await userCopyrightRepo.AddOrUndeleteAsync(
                 user.Id, 
                 entity.Id);
-
-            await testDbContext.SaveChangesAsync();
 
             var dto = new CopyrightEditDto
             {
@@ -207,8 +221,9 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.CopyrightServiceTests
             result.Should().BeTrue();
 
             var editedEntity = 
-                await testDbContext.CopyrightRegistrations.SingleAsync(
-                    x => x.Id == entity.Id);
+                await testDbContext.CopyrightRegistrations.
+                AsNoTracking().
+                SingleAsync(x => x.Id == entity.Id);
 
             editedEntity.RegistrationNumber.Should().Be("TX-ED1");
             editedEntity.TypeOfWork.Should().Be("PerformingArts");

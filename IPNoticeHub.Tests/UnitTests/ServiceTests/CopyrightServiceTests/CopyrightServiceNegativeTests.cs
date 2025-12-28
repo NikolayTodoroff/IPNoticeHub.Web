@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 using NUnit.Framework;
 
 namespace IPNoticeHub.Tests.UnitTests.ServiceTests.CopyrightServiceTests
@@ -20,9 +19,11 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.CopyrightServiceTests
         [Test]
         public async Task GetDetailsAsync_WhenNotLinked_ReturnsNull()
         {
+            var entityPublicId = Guid.NewGuid();
+
             var result = await service.GetDetailsAsync(
                 user.Id,
-                cpEntity1.PublicId,
+                entityPublicId,
                 CancellationToken.None);
 
             result.Should().BeNull();

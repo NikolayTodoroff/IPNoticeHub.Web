@@ -1,9 +1,10 @@
 ﻿using FluentAssertions;
+using IPNoticeHub.Application.DTOs.CopyrightDTOs;
 using IPNoticeHub.Shared.Enums;
+using IPNoticeHub.Tests.UnitTests.ServiceTests.CopyrightServiceTests;
+using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
-using IPNoticeHub.Application.DTOs.CopyrightDTOs;
-using IPNoticeHub.Tests.UnitTests.ServiceTests.CopyrightServiceTests;
 
 namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Copyrights
 {
@@ -14,6 +15,8 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Copyrights
         {
             const string expectedRegistrationNumber = "TX-111111";
             const string expectedTitle = "Just Created";
+            const string ownerName = "Test Owner";
+            const string nationOfPublication = "Canada";
             
             var dto = new CopyrightCreateDto
             {
@@ -22,8 +25,8 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Copyrights
                 Title = expectedTitle,
                 YearOfCreation = 2024,
                 DateOfPublication = new DateTime(2024, 5, 1),
-                Owner = "default Owner",
-                NationOfFirstPublication = "US"
+                Owner = ownerName,
+                NationOfFirstPublication = nationOfPublication
             };
 
             Guid publicId = await service.CreateAsync(
@@ -49,13 +52,18 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Copyrights
         [Test]
         public async Task CreateAsync_WhenWorkTypeOther_StoresCustomString_AndLinksUser()
         {
+            const string expectedRegNumber = "TX-111111";
+            const string expectedTitle = "Test Title";
+            const string expectedOtherWorkType = "Test Type";
+            const string expectedOwner = "Test Owner";
+
             var dto = new CopyrightCreateDto
             {
-                RegistrationNumber = "TX-222222",
+                RegistrationNumber = expectedRegNumber,
                 WorkType = CopyrightWorkType.Other,
-                OtherWorkType = "AI-Generated Visual",
-                Title = "Custom Registration",
-                Owner = "New Owner"
+                OtherWorkType = expectedOtherWorkType,
+                Title = expectedTitle,
+                Owner = expectedOwner
             };
 
             Guid publicId = await service.CreateAsync(
@@ -65,11 +73,11 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Copyrights
 
             var entity = 
                 await testDbContext.CopyrightRegistrations.SingleAsync(
-                    c => c.RegistrationNumber == "TX-222222");
+                    c => c.RegistrationNumber == expectedRegNumber);
 
             entity.PublicId.Should().Be(publicId);
-            entity.TypeOfWork.Should().Be("AI-Generated Visual");
-            entity.Title.Should().Be("Custom Registration");
+            entity.TypeOfWork.Should().Be(expectedOtherWorkType);
+            entity.Title.Should().Be(expectedTitle);
 
             var userCopyright = 
                 await testDbContext.UserCopyrights.SingleAsync(
@@ -83,13 +91,22 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Copyrights
         [Test]
         public async Task CreateAsync_WithExistingRegistration_ReusesEntity_AndLinksUserWithoutDuplication()
         {
-            var existingEntity = 
-                await testDbContext.CopyrightRegistrations.SingleAsync(
-                    c => c.RegistrationNumber == cpEntity1.RegistrationNumber);
-            
+            var entity =
+                InMemoryDbContextFactory.CreateCopyright(
+                registrationNumber: "TX-123456",
+                title: "Test Copyright Entity",
+                typeOfWork: CopyrightWorkType.Literary.ToString(),
+                owner: "Test Owner",
+                yearOfCreation: 2020,
+                dateOfPublication: new DateTime(2020, 1, 2),
+                nationOfFirstPublication: "US");
+
+            testDbContext.CopyrightRegistrations.Add(entity);
+            await testDbContext.SaveChangesAsync();
+
             var dto = new CopyrightCreateDto
             {
-                RegistrationNumber = cpEntity1.RegistrationNumber,
+                RegistrationNumber = entity.RegistrationNumber,
                 WorkType = CopyrightWorkType.Literary,
                 Title = "Title 1",
                 Owner = "Owner 1"
@@ -102,16 +119,16 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Copyrights
 
             var registrationCount = 
                 await testDbContext.CopyrightRegistrations.CountAsync(
-                    c => c.RegistrationNumber == cpEntity1.RegistrationNumber);
+                    c => c.RegistrationNumber == entity.RegistrationNumber);
 
             registrationCount.Should().Be(1);
 
-            publicId.Should().Be(cpEntity1.PublicId);
+            publicId.Should().Be(entity.PublicId);
 
             var userCopyright = 
                 await testDbContext.UserCopyrights.SingleAsync(
                     uc => uc.ApplicationUserId == user.Id && 
-                    uc.CopyrightEntityId == cpEntity1.Id);
+                    uc.CopyrightEntityId == entity.Id);
 
             userCopyright.IsDeleted.Should().BeFalse();
         }
@@ -119,39 +136,57 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Copyrights
         [Test]
         public async Task GetDetailsAsync_WhenLinked_ReturnsDetailsDTO_WithStoredTypeOfWorkString()
         {
-            var existingEntity =
-                await testDbContext.CopyrightRegistrations.SingleAsync(
-                    c => c.RegistrationNumber == cpEntity1.RegistrationNumber);
+            var entity =
+                InMemoryDbContextFactory.CreateCopyright(
+                registrationNumber: "TX-654321",
+                title: "Test Entity",
+                typeOfWork: CopyrightWorkType.Literary.ToString(),
+                owner: "Test Copyright Owner",
+                yearOfCreation: 2022,
+                dateOfPublication: new DateTime(2023, 2, 5),
+                nationOfFirstPublication: "Canada");
+
+            testDbContext.CopyrightRegistrations.Add(entity);
+            await testDbContext.SaveChangesAsync();
 
             await userCopyrightRepo.AddOrUndeleteAsync(
                 user.Id,
-                existingEntity.Id);
+                entity.Id);
 
             var dto = 
                 await service.GetDetailsAsync(
                     user.Id,
-                    existingEntity.PublicId, 
+                    entity.PublicId, 
                     CancellationToken.None);
 
             dto.Should().NotBeNull();
-            dto!.Title.Should().Be(existingEntity.Title);
-            dto.TypeOfWork.Should().Be(existingEntity.TypeOfWork);
+            dto!.Title.Should().Be(entity.Title);
+            dto.TypeOfWork.Should().Be(entity.TypeOfWork);
         }
 
         [Test]
         public async Task RemoveAsync_WhenLinked_ReturnsTrue_AndSoftDeletes()
         {
-            var existingEntity =
-                await testDbContext.CopyrightRegistrations.SingleAsync(
-                    c => c.RegistrationNumber == cpEntity1.RegistrationNumber);
+            var entity =
+                InMemoryDbContextFactory.CreateCopyright(
+                registrationNumber: "TX-654321",
+                title: "Test Entity",
+                typeOfWork: CopyrightWorkType.Literary.ToString(),
+                owner: "Test Copyright Owner",
+                yearOfCreation: 2022,
+                dateOfPublication: new DateTime(2025, 5, 5),
+                nationOfFirstPublication: "Germany");
+
+            testDbContext.CopyrightRegistrations.Add(entity);
+            await testDbContext.SaveChangesAsync();
 
             await userCopyrightRepo.AddOrUndeleteAsync(
                 user.Id,
-                existingEntity.Id);
+                entity.Id);
 
             var isSoftRemoved = await service.RemoveAsync(
                 user.Id,
-                existingEntity.PublicId, 
+                entity.PublicId, 
                 CancellationToken.None);
 
             isSoftRemoved.Should().BeTrue();
@@ -159,7 +194,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Copyrights
             var userCopyright = 
                 await testDbContext.UserCopyrights.SingleAsync(
                     uc => uc.ApplicationUserId == user.Id && 
-                    uc.CopyrightEntityId == existingEntity.Id);
+                    uc.CopyrightEntityId == entity.Id);
 
             userCopyright.IsDeleted.Should().BeTrue();
         }
@@ -167,10 +202,45 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Copyrights
         [Test]
         public async Task GetUserCollectionAsync_WhenPageOrSizeInvalid_NormalizesAndReturnsData()
         {
+            var entity1 =
+                InMemoryDbContextFactory.CreateCopyright(
+                registrationNumber: "TX-654321",
+                title: "Test Entity",
+                typeOfWork: CopyrightWorkType.Literary.ToString(),
+                owner: "Test Copyright Owner",
+                yearOfCreation: 2022,
+                dateOfPublication: new DateTime(2025, 5, 5),
+                nationOfFirstPublication: "Germany");
+
+            var entity2 =
+                InMemoryDbContextFactory.CreateCopyright(
+                registrationNumber: "TX-1122334",
+                title: "Test Entity 2",
+                typeOfWork: CopyrightWorkType.Literary.ToString(),
+                owner: "Test Copyright Owner 2",
+                yearOfCreation: 2023,
+                dateOfPublication: new DateTime(2022, 1, 1),
+                nationOfFirstPublication: "USA");
+
+            var entity3 =
+                InMemoryDbContextFactory.CreateCopyright(
+                registrationNumber: "TX-442211",
+                title: "Test Entity 3",
+                typeOfWork: CopyrightWorkType.VisualArts.ToString(),
+                owner: "Test Copyright Owner 3",
+                yearOfCreation: 2020,
+                dateOfPublication: new DateTime(2021, 11, 15),
+                nationOfFirstPublication: "France");
+
+            testDbContext.CopyrightRegistrations.Add(entity1);
+            testDbContext.CopyrightRegistrations.Add(entity2);
+            testDbContext.CopyrightRegistrations.Add(entity3);
+            await testDbContext.SaveChangesAsync();
+
             await Task.WhenAll(
-                userCopyrightRepo.AddOrUndeleteAsync(user.Id, cpEntity1.Id),
-                userCopyrightRepo.AddOrUndeleteAsync(user.Id, cpEntity2.Id),
-                userCopyrightRepo.AddOrUndeleteAsync(user.Id, cpEntity3.Id));
+                userCopyrightRepo.AddOrUndeleteAsync(user.Id, entity1.Id),
+                userCopyrightRepo.AddOrUndeleteAsync(user.Id, entity2.Id),
+                userCopyrightRepo.AddOrUndeleteAsync(user.Id, entity3.Id));
 
             var pagedResult = 
                 await service.GetUserCollectionAsync(
