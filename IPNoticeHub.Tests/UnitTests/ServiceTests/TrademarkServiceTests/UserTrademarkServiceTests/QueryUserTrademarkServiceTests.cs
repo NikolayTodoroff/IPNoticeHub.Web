@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.UserTrademarkServiceTests;
+using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 using NUnit.Framework;
 
 namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServiceTests
@@ -10,32 +11,57 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServi
         [Test]
         public async Task IsInCollectionAsync_WithAndWithoutSoftDeleted_TogglesAsExpected()
         {
+            var entity1 =
+                InMemoryDbContextFactory.CreateTrademarkEntity(
+                wordmark: "Test Wordmark A",
+                owner: "Test Owner A",
+                goodsAndServices: "testGoodsAndSerices A",
+                sourceId: "X123AZ",
+                statusDetail: "Successfully Registered",
+                regNumber: "1234567",
+                status: TrademarkStatusCategory.Registered,
+                source: DataProvider.USPTO);
+
+            var entity2 =
+                InMemoryDbContextFactory.CreateTrademarkEntity(
+                wordmark: "Test Wordmark B",
+                owner: "Test Owner B",
+                goodsAndServices: "testGoodsAndSerices B",
+                sourceId: "C176AQ",
+                statusDetail: "Successfully Registered",
+                regNumber: "7654321",
+                status: TrademarkStatusCategory.Registered,
+                source: DataProvider.USPTO);
+
+            testDbContext.TrademarkRegistrations.AddRange(entity1,entity2);
+            await testDbContext.SaveChangesAsync();
+
             await service.AddAsync(
                 userId: user.Id,
-                trademarkId: tmEntity1.Id,
+                trademarkId: entity1.Id,
                 cancellationToken: default);
 
             await service.AddAsync(
                 userId: user.Id,
-                trademarkId: tmEntity2.Id,
+                trademarkId: entity2.Id,
                 cancellationToken: default);
 
             await service.RemoveAsync(
                 userId: user.Id,
-                trademarkId: tmEntity2.Id,
+                trademarkId: entity2.Id,
                 cancellationToken: default);
 
             bool activeTrademarkExclSoftDelete = 
                 await service.IsInCollectionAsync(
                     user.Id,
-                    tmEntity1.Id, 
+                    entity1.Id, 
                     includeSoftDeleted: false, 
                     cancellationToken: default);
 
             bool removedTrademarkExclSoftDelete = 
                 await service.IsInCollectionAsync(
                     user.Id,
-                    tmEntity2.Id, 
+                    entity2.Id, 
                     includeSoftDeleted: false, 
                     cancellationToken: default);
 
@@ -45,14 +71,14 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServi
             bool activeTrademarkInclSoftDelete = 
                 await service.IsInCollectionAsync(
                     user.Id,
-                    tmEntity1.Id, 
+                    entity1.Id, 
                     includeSoftDeleted: true, 
                     cancellationToken: default);
 
             bool removedTrademarkInclSoftDelete = 
                 await service.IsInCollectionAsync(
                     user.Id,
-                    tmEntity2.Id, 
+                    entity2.Id, 
                     includeSoftDeleted: true, 
                     cancellationToken: default);
 
@@ -63,19 +89,55 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServi
         [Test]
         public async Task GetUserCollectionAsync_ReturnsPagedResults_WithDefaultOrdering()
         {
+            var entity1 =
+                InMemoryDbContextFactory.CreateTrademarkEntity(
+                wordmark: "Test Wordmark A",
+                owner: "Test Owner A",
+                goodsAndServices: "testGoodsAndSerices A",
+                sourceId: "X123AZ",
+                statusDetail: "Successfully Registered",
+                regNumber: "1234567",
+                status: TrademarkStatusCategory.Registered,
+                source: DataProvider.USPTO);
+
+            var entity2 =
+                InMemoryDbContextFactory.CreateTrademarkEntity(
+                wordmark: "Test Wordmark B",
+                owner: "Test Owner B",
+                goodsAndServices: "testGoodsAndSerices B",
+                sourceId: "C176AQ",
+                statusDetail: "Successfully Registered",
+                regNumber: "1234567",
+                status: TrademarkStatusCategory.Registered,
+                source: DataProvider.USPTO);
+
+            var entity3 =
+                InMemoryDbContextFactory.CreateTrademarkEntity(
+                wordmark: "Test Wordmark C",
+                owner: "Test Owner C",
+                goodsAndServices: "testGoodsAndSerices C",
+                sourceId: "F876EQ",
+                statusDetail: "Successfully Registered",
+                regNumber: "22334",
+                status: TrademarkStatusCategory.Registered,
+                source: DataProvider.USPTO);
+
+            testDbContext.TrademarkRegistrations.AddRange(entity1,entity2,entity3);
+            await testDbContext.SaveChangesAsync();
+
             await service.AddAsync(
                 userId: user.Id,
-                trademarkId: tmEntity1.Id,
+                trademarkId: entity1.Id,
                 cancellationToken: default);
 
             await service.AddAsync(
                 userId: user.Id,
-                trademarkId: tmEntity2.Id,
+                trademarkId: entity2.Id,
                 cancellationToken: default);
 
             await service.AddAsync(
                 userId: user.Id,
-                trademarkId: tmEntity3.Id,
+                trademarkId: entity3.Id,
                 cancellationToken: default);
 
             var pagedResult = 
@@ -96,28 +158,64 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServi
                     r => r.PublicId).ToHashSet();
 
             publicIds.Should().BeSubsetOf(
-                new[] { tmEntity1.PublicId, 
-                    tmEntity2.PublicId, 
-                    tmEntity3.PublicId }.
+                new[] { entity1.PublicId,
+                    entity2.PublicId,
+                    entity3.PublicId }.
                     ToHashSet());
         }
 
         [Test]
         public async Task GetUserCollectionAsync_WhenSortedByWordmark_ReturnsCorrectOrderForBothDirections()
         {
+            var entity1 =
+                InMemoryDbContextFactory.CreateTrademarkEntity(
+                wordmark: "Test Wordmark A",
+                owner: "Test Owner A",
+                goodsAndServices: "testGoodsAndSerices A",
+                sourceId: "X123AZ",
+                statusDetail: "Successfully Registered",
+                regNumber: "1234567",
+                status: TrademarkStatusCategory.Registered,
+                source: DataProvider.USPTO);
+
+            var entity2 =
+                InMemoryDbContextFactory.CreateTrademarkEntity(
+                wordmark: "Test Wordmark B",
+                owner: "Test Owner B",
+                goodsAndServices: "testGoodsAndSerices B",
+                sourceId: "C176AQ",
+                statusDetail: "Successfully Registered",
+                regNumber: "1234567",
+                status: TrademarkStatusCategory.Registered,
+                source: DataProvider.USPTO);
+
+            var entity3 =
+                InMemoryDbContextFactory.CreateTrademarkEntity(
+                wordmark: "Test Wordmark C",
+                owner: "Test Owner C",
+                goodsAndServices: "testGoodsAndSerices C",
+                sourceId: "F876EQ",
+                statusDetail: "Successfully Registered",
+                regNumber: "22334",
+                status: TrademarkStatusCategory.Registered,
+                source: DataProvider.USPTO);
+
+            testDbContext.TrademarkRegistrations.AddRange(entity1, entity2, entity3);
+            await testDbContext.SaveChangesAsync();
+
             await service.AddAsync(
                 userId: user.Id,
-                trademarkId: tmEntity1.Id,
+                trademarkId: entity1.Id,
                 cancellationToken: default);
 
             await service.AddAsync(
                 userId: user.Id,
-                trademarkId: tmEntity2.Id,
+                trademarkId: entity2.Id,
                 cancellationToken: default);
 
             await service.AddAsync(
                 userId: user.Id,
-                trademarkId: tmEntity3.Id,
+                trademarkId: entity3.Id,
                 cancellationToken: default);
 
             var pagedResult = 
@@ -132,8 +230,10 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServi
                 pagedResult.Results.Select(
                     r => r.Wordmark).ToList();
 
-            wordmarksOrderedAsc.Should().
-                ContainInOrder("AAA", "BBB", "CCC");
+            wordmarksOrderedAsc.Should().ContainInOrder(
+                entity1.Wordmark, 
+                entity2.Wordmark, 
+                entity3.Wordmark);
 
             var wordmarkDescPagedResult = 
                 await service.GetUserCollectionAsync(
@@ -147,30 +247,68 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServi
                 wordmarkDescPagedResult.Results.Select(
                     r => r.Wordmark).ToList();
 
-            wordmarksOrderedDesc.Should().
-                ContainInOrder("CCC", "BBB","AAA");
+            wordmarksOrderedDesc.Should().ContainInOrder(
+                entity3.Wordmark, 
+                entity2.Wordmark, 
+                entity1.Wordmark);
         }
 
         [Test]
         public async Task GetUserCollectionAsync_WhenSortedByDateAdded_ReturnsCorrectOrderForBothDirections()
         {
+            var entity1 =
+                InMemoryDbContextFactory.CreateTrademarkEntity(
+                wordmark: "Test Wordmark A",
+                owner: "Test Owner A",
+                goodsAndServices: "testGoodsAndSerices A",
+                sourceId: "X123AZ",
+                statusDetail: "Successfully Registered",
+                regNumber: "1234567",
+                status: TrademarkStatusCategory.Registered,
+                source: DataProvider.USPTO);
+
+            var entity2 =
+                InMemoryDbContextFactory.CreateTrademarkEntity(
+                wordmark: "Test Wordmark B",
+                owner: "Test Owner B",
+                goodsAndServices: "testGoodsAndSerices B",
+                sourceId: "C176AQ",
+                statusDetail: "Successfully Registered",
+                regNumber: "1234567",
+                status: TrademarkStatusCategory.Registered,
+                source: DataProvider.USPTO);
+
+            var entity3 =
+                InMemoryDbContextFactory.CreateTrademarkEntity(
+                wordmark: "Test Wordmark C",
+                owner: "Test Owner C",
+                goodsAndServices: "testGoodsAndSerices C",
+                sourceId: "F876EQ",
+                statusDetail: "Successfully Registered",
+                regNumber: "22334",
+                status: TrademarkStatusCategory.Registered,
+                source: DataProvider.USPTO);
+
+            testDbContext.TrademarkRegistrations.AddRange(entity1, entity2, entity3);
+            await testDbContext.SaveChangesAsync();
+
             await service.AddAsync(
                 userId: user.Id,
-                trademarkId: tmEntity1.Id,
+                trademarkId: entity1.Id,
                 cancellationToken: default);
 
             await Task.Delay(5);
 
             await service.AddAsync(
                 userId: user.Id,
-                trademarkId: tmEntity2.Id,
+                trademarkId: entity2.Id,
                 cancellationToken: default);
 
             await Task.Delay(5);
 
             await service.AddAsync(
                 userId: user.Id,
-                trademarkId: tmEntity3.Id,
+                trademarkId: entity3.Id,
                 cancellationToken: default);
 
             var pagedResult = 
@@ -185,8 +323,10 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServi
                 pagedResult.Results.Select(
                     r => r.Wordmark).ToList();
 
-            datesAddedOrderedAsc.Should().
-                ContainInOrder("AAA", "BBB", "CCC");
+            datesAddedOrderedAsc.Should().ContainInOrder(
+                entity1.Wordmark, 
+                entity2.Wordmark, 
+                entity3.Wordmark);
 
             var dateAddedDescPagedResult = 
                 await service.GetUserCollectionAsync(
@@ -200,8 +340,10 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServi
                 dateAddedDescPagedResult.Results.Select(
                     r => r.Wordmark).ToList();
 
-            wordmarksOrderedDesc.Should().
-                ContainInOrder("CCC", "BBB", "AAA");
+            wordmarksOrderedDesc.Should().ContainInOrder(
+                entity3.Wordmark, 
+                entity2.Wordmark, 
+                entity1.Wordmark);
         }
     }
 }

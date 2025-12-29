@@ -1,5 +1,7 @@
 ﻿using FluentAssertions;
+using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.UserTrademarkServiceTests;
+using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 using NUnit.Framework;
 
 namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServiceTests
@@ -9,46 +11,74 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServi
         [Test]
         public async Task AddAsync_WhenNotInCollection_AddsLink_ThenIsInCollectionReturnsTrue()
         {
+            var entity =
+                InMemoryDbContextFactory.CreateTrademarkEntity(
+                wordmark: "Test Wordmark A",
+                owner: "Test Owner A",
+                goodsAndServices: "testGoodsAndSerices A",
+                sourceId: "X123AZ",
+                statusDetail: "Successfully Registered",
+                regNumber: "1234567",
+                status: TrademarkStatusCategory.Registered,
+                source: DataProvider.USPTO);
+
+            testDbContext.TrademarkRegistrations.Add(entity);
+            await testDbContext.SaveChangesAsync();
+
             await service.AddAsync(
                 userId: user.Id,
-                trademarkId: tmEntity1.Id,
+                trademarkId: entity.Id,
                 cancellationToken: default);
 
             bool isInCollection = await service.IsInCollectionAsync(
                 user.Id,
-                tmEntity1.Id, 
+                entity.Id, 
                 includeSoftDeleted: false, 
                 cancellationToken: default);
 
             isInCollection.Should().BeTrue();
 
-            var links = 
-                testDbContext.UserTrademarks.Where
-                (x => x.ApplicationUserId == user.Id && 
-                x.TrademarkEntityId == tmEntity1.Id).
-                ToList();
+            var userTrademark = 
+                testDbContext.UserTrademarks.Where(
+                    x => x.ApplicationUserId == user.Id && 
+                    x.TrademarkEntityId == entity.Id).
+                    ToList();
 
-            links.Should().HaveCount(1);
-            links[0].IsDeleted.Should().BeFalse();
+            userTrademark.Should().HaveCount(1);
+            userTrademark[0].IsDeleted.Should().BeFalse();
         }
 
         [Test]
         public async Task AddAsync_WhenPreviouslySoftDeleted_UndeletesExistingLink()
         {
+            var entity =
+                InMemoryDbContextFactory.CreateTrademarkEntity(
+                wordmark: "Test Wordmark A",
+                owner: "Test Owner A",
+                goodsAndServices: "testGoodsAndSerices A",
+                sourceId: "X123AZ",
+                statusDetail: "Successfully Registered",
+                regNumber: "1234567",
+                status: TrademarkStatusCategory.Registered,
+                source: DataProvider.USPTO);
+
+            testDbContext.TrademarkRegistrations.Add(entity);
+            await testDbContext.SaveChangesAsync();
+
             await service.AddAsync(
                 userId: user.Id,
-                trademarkId: tmEntity1.Id,
+                trademarkId: entity.Id,
                 cancellationToken: default);
 
             await service.RemoveAsync(
                 userId: user.Id,
-                trademarkId: tmEntity1.Id,
+                trademarkId: entity.Id,
                 cancellationToken: default);
 
             var userTrademark = 
                 testDbContext.UserTrademarks.Where(
                 x => x.ApplicationUserId == user.Id && 
-                x.TrademarkEntityId == tmEntity1.Id).
+                x.TrademarkEntityId == entity.Id).
                 ToList();
 
             userTrademark.Should().HaveCount(1);
@@ -56,21 +86,21 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServi
 
             await service.AddAsync(
                userId: user.Id,
-               trademarkId: tmEntity1.Id,
+               trademarkId: entity.Id,
                cancellationToken: default);
 
             var links = 
                 testDbContext.UserTrademarks.Where(
                 x => x.ApplicationUserId == user.Id && 
-                x.TrademarkEntityId == tmEntity1.Id).
+                x.TrademarkEntityId == entity.Id).
                 ToList();
 
             links.Should().HaveCount(1);
             links[index: 0].IsDeleted.Should().BeFalse();
 
             var isInCollection = await service.IsInCollectionAsync(
-                user.Id, 
-                tmEntity1.Id, 
+                user.Id,
+                entity.Id, 
                 includeSoftDeleted: false, 
                 cancellationToken: default);
 
@@ -93,19 +123,33 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServi
         [Test]
         public async Task AddAsync_WhenAlreadyLinkedInCollection_DoesNotCreateDuplicateRow()
         {
+            var entity =
+                InMemoryDbContextFactory.CreateTrademarkEntity(
+                wordmark: "Test Wordmark A",
+                owner: "Test Owner A",
+                goodsAndServices: "testGoodsAndSerices A",
+                sourceId: "X123AZ",
+                statusDetail: "Successfully Registered",
+                regNumber: "1234567",
+                status: TrademarkStatusCategory.Registered,
+                source: DataProvider.USPTO);
+
+            testDbContext.TrademarkRegistrations.Add(entity);
+            await testDbContext.SaveChangesAsync();
+
             await service.AddAsync(
                 user.Id,
-                tmEntity1.Id,
+                entity.Id,
                 default);
 
             await service.AddAsync(
                 user.Id,
-                tmEntity1.Id,
+                entity.Id,
                 default);
 
             var links = testDbContext.UserTrademarks.
                 Where(x => x.ApplicationUserId == user.Id &&
-                x.TrademarkEntityId == tmEntity1.Id).
+                x.TrademarkEntityId == entity.Id).
                 ToList();
 
             links.Should().HaveCount(1);

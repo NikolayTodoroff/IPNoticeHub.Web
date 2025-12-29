@@ -1,8 +1,4 @@
 ﻿using FluentAssertions;
-using IPNoticeHub.Application.Repositories.TrademarkRepository;
-using IPNoticeHub.Application.Services.TrademarkService.Implementations;
-using IPNoticeHub.Infrastructure.Identity;
-using IPNoticeHub.Infrastructure.Persistence.Repositories.TrademarkRepository;
 using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.UserTrademarkServiceTests;
 using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
@@ -15,9 +11,23 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServi
         [Test]
         public async Task IsInCollectionAsync_WhenUserDoesNotExistInDbContext_ReturnsFalse()
         {
+            var entity =
+               InMemoryDbContextFactory.CreateTrademarkEntity(
+               wordmark: "Test Wordmark",
+               owner: "Test Owner",
+               goodsAndServices: "testGoodsAndSerices1",
+               sourceId: "X123AZ",
+               statusDetail: "Successfully Registered",
+               regNumber: "1234567",
+               status: TrademarkStatusCategory.Registered,
+               source: DataProvider.USPTO);
+
+            testDbContext.TrademarkRegistrations.Add(entity);
+            await testDbContext.SaveChangesAsync();
+
             var linkExists = await service.IsInCollectionAsync(
                 "missing-user",
-                tmEntity1.Id, 
+                entity.Id, 
                 includeSoftDeleted: true,
                 default);
 
@@ -42,15 +52,40 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServi
 
         [Test]
         public async Task GetUserCollectionAsync_WhenPageOrSizeInvalid_NormalizesWithoutThrowing()
-        { 
+        {
+            var entity1 =
+              InMemoryDbContextFactory.CreateTrademarkEntity(
+              wordmark: "Test Wordmark A",
+              owner: "Test Owner A",
+              goodsAndServices: "testGoodsAndSerices A",
+              sourceId: "X123AZ",
+              statusDetail: "Successfully Registered",
+              regNumber: "1234567",
+              status: TrademarkStatusCategory.Registered,
+              source: DataProvider.USPTO);
+
+            var entity2 =
+              InMemoryDbContextFactory.CreateTrademarkEntity(
+              wordmark: "Test Wordmark B",
+              owner: "Test Owner B",
+              goodsAndServices: "testGoodsAndSerices B",
+              sourceId: "Z246Y",
+              statusDetail: "Successfully Registered",
+              regNumber: "1234567",
+              status: TrademarkStatusCategory.Registered,
+              source: DataProvider.USPTO);
+
+            testDbContext.TrademarkRegistrations.AddRange(entity1,entity2);
+            await testDbContext.SaveChangesAsync();
+
             await service.AddAsync(
-                user.Id, 
-                tmEntity1.Id, 
+                user.Id,
+                entity1.Id, 
                 default);
 
             await service.AddAsync(
-                user.Id, 
-                tmEntity2.Id, 
+                user.Id,
+                entity2.Id, 
                 default);
 
             var pageResult = 
