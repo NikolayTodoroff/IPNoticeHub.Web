@@ -1,11 +1,11 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Application.DTOs.CopyrightDTOs;
-using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
+using IPNoticeHub.Tests.IntegrationTests.IntegrationTestFactories;
 
-namespace IPNoticeHub.Tests.UnitTests.ServiceTests.CopyrightServiceTests
+namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests.CopyrightServiceTests
 {
     public class EditCopyrightServiceTests : CopyrightServiceBase
     {

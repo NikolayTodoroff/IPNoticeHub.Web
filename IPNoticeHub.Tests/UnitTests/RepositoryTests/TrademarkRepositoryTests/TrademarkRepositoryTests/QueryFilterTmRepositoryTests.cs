@@ -4,8 +4,8 @@ using IPNoticeHub.Domain.Entities.Trademarks;
 using IPNoticeHub.Infrastructure.Persistence;
 using IPNoticeHub.Infrastructure.Persistence.Repositories.TrademarkRepository;
 using IPNoticeHub.Shared.Enums;
+using IPNoticeHub.Tests.IntegrationTests.IntegrationTestFactories;
 using IPNoticeHub.Tests.UnitTests.RepositoryTests.TrademarkRepositoryTests.TrademarkRepositoryTests;
-using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 using NUnit.Framework;
 
 namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.TrademarkRepositoryTests

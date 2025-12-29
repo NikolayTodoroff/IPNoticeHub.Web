@@ -2,7 +2,7 @@
 using IPNoticeHub.Infrastructure.Persistence.Repositories.TrademarkRepository;
 using Moq;
 using NUnit.Framework;
-using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
+using IPNoticeHub.Tests.IntegrationTests.IntegrationTestFactories;
 
 namespace IPNoticeHub.Tests.UnitTests.ServiceTests.WatchlistServiceTests
 {

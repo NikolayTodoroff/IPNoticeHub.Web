@@ -1,17 +1,16 @@
 ﻿using IPNoticeHub.Application.Repositories.TrademarkRepository;
-using IPNoticeHub.Application.Services.TrademarkService.Implementations;
 using IPNoticeHub.Infrastructure.Persistence;
 using IPNoticeHub.Infrastructure.Persistence.Repositories.TrademarkRepository;
-using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
+using IPNoticeHub.Tests.IntegrationTests.IntegrationTestFactories;
 using NUnit.Framework;
 
-namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.TrademarkSearchServiceTests
+namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests.TrademarkServiceTests.TrademarkSearchQueryServiceTests
 {
-    public class TmSearchServiceBase
+    public class TmSearchQueryBase
     {
         protected IPNoticeHubDbContext testDbContext = null!;
-        protected ITrademarkRepository repository = null!;
-        protected TrademarkSearchService service = null!;
+        protected ITrademarkReadRepository repository = null!;
+        protected TrademarkSearchQueryService service = null!;
 
         [SetUp]
         public void SetUp()
@@ -20,10 +19,10 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
                 InMemoryDbContextFactory.CreateTestDbContext();
 
             repository =
-                new TrademarkRepository(testDbContext);
+                new TrademarkReadRepository(testDbContext);
 
             service =
-                new TrademarkSearchService(repository);
+                new TrademarkSearchQueryService(repository);
         }
 
         [TearDown]

@@ -1,10 +1,9 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Shared.Enums;
-using IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.UserTrademarkServiceTests;
-using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
+using IPNoticeHub.Tests.IntegrationTests.IntegrationTestFactories;
 using NUnit.Framework;
 
-namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.UserTrademarkServiceTests
+namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests.TrademarkServiceTests.UserTrademarkServiceTests
 {
     public class RemoveUserTrademarkServiceTests : UserTrademarkServiceBase
     {

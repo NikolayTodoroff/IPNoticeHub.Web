@@ -4,10 +4,10 @@ using IPNoticeHub.Infrastructure.Identity;
 using IPNoticeHub.Infrastructure.Persistence;
 using IPNoticeHub.Infrastructure.Persistence.Repositories.TrademarkRepository;
 using IPNoticeHub.Shared.Enums;
-using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
+using IPNoticeHub.Tests.IntegrationTests.IntegrationTestFactories;
 using NUnit.Framework;
 
-namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.UserTrademarkServiceTests
+namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests.TrademarkServiceTests.UserTrademarkServiceTests
 {
     public class UserTrademarkServiceBase
     {

@@ -1,8 +1,8 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Infrastructure.Persistence.Repositories.TrademarkRepository;
-using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 using NUnit.Framework;
+using IPNoticeHub.Tests.IntegrationTests.IntegrationTestFactories;
 
 namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Trademarks.UserTrademarkRepositoryTests
 {

@@ -3,7 +3,7 @@ using IPNoticeHub.Application.Repositories.TrademarkRepository;
 using IPNoticeHub.Application.Services.TrademarkService.Implementations;
 using IPNoticeHub.Infrastructure.Persistence;
 using IPNoticeHub.Infrastructure.Persistence.Repositories.TrademarkRepository;
-using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
+using IPNoticeHub.Tests.IntegrationTests.IntegrationTestFactories;
 using NuGet.Protocol.Core.Types;
 using NUnit.Framework;
 using System;

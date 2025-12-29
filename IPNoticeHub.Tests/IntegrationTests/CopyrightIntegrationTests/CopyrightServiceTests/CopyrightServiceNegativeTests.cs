@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
 
-namespace IPNoticeHub.Tests.UnitTests.ServiceTests.CopyrightServiceTests
+namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests.CopyrightServiceTests
 {
     public class CopyrightServiceNegativeTests : CopyrightServiceBase
     {

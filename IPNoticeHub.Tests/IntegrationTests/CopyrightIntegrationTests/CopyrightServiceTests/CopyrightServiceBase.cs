@@ -3,10 +3,10 @@ using IPNoticeHub.Application.Services.CopyrightService.Implementations;
 using IPNoticeHub.Infrastructure.Identity;
 using IPNoticeHub.Infrastructure.Persistence;
 using IPNoticeHub.Infrastructure.Persistence.Repositories.CopyrightRepository;
-using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
+using IPNoticeHub.Tests.IntegrationTests.IntegrationTestFactories;
 using NUnit.Framework;
 
-namespace IPNoticeHub.Tests.UnitTests.ServiceTests.CopyrightServiceTests
+namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests.CopyrightServiceTests
 {
     public class CopyrightServiceBase
     {

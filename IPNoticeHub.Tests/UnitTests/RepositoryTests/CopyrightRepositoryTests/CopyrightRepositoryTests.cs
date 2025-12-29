@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
+using IPNoticeHub.Tests.IntegrationTests.IntegrationTestFactories;
 using IPNoticeHub.Tests.UnitTests.RepositoryTests.CopyrightRepositoryTests;
-using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 using NUnit.Framework;
 
 namespace IPNoticeHub.Tests.UnitTests.RepositoryTests.Copyrights

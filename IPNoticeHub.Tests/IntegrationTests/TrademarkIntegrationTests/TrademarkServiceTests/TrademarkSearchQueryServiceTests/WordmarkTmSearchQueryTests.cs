@@ -1,11 +1,11 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Application.DTOs.TrademarkDTOs;
 using IPNoticeHub.Shared.Enums;
-using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
+using IPNoticeHub.Tests.IntegrationTests.IntegrationTestFactories;
 using NUnit.Framework;
 using static IPNoticeHub.Shared.Constants.PagingConstants.DefaultPagingConstants;
 
-namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.TrademarkSearchQueryServiceTests
+namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests.TrademarkServiceTests.TrademarkSearchQueryServiceTests
 {
     public class WordmarkTmSearchQueryTests : TmSearchQueryBase
     {

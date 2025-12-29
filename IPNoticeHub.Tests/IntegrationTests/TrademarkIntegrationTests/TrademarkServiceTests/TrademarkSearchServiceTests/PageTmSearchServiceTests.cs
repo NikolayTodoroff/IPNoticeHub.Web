@@ -1,113 +1,106 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Application.DTOs.TrademarkDTOs;
 using IPNoticeHub.Shared.Enums;
-using IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.TrademarkSearchServiceTests;
-using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
+using IPNoticeHub.Tests.IntegrationTests.IntegrationTestFactories;
 using NUnit.Framework;
 
-namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchServiceTests
+namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests.TrademarkServiceTests.TrademarkSearchServiceTests
 {
-    public class SearchByWordmarkTmSearchServiceTests : TmSearchServiceBase
+    public class PageTmSearchServiceTests : TmSearchServiceBase
     {
         [Test]
-        public async Task SearchAsync_WhenExactMatchTrue_ReturnsOnlyExactWordmark()
+        public async Task SearchAsync_WhenNoFiltersApplied_ReturnsPagedResultsMetadata()
         {
-            const string expectedSearchTerm = "Test Owner A : Find Me!";
-
             var entity1 =
                 InMemoryDbContextFactory.CreateTrademarkEntity(
-                wordmark: expectedSearchTerm,
-                owner: "Test Owner A",
-                goodsAndServices: "testGoodsAndSerices A",
+                wordmark: "Test Wordmark 1",
+                owner: "Test Owner 1",
+                goodsAndServices: "testGoodsAndSerices1",
                 sourceId: "X123AZ",
                 statusDetail: "Successfully Registered",
-                regNumber: "1234567",
+                regNumber: "2346532",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO);
 
             var entity2 =
                InMemoryDbContextFactory.CreateTrademarkEntity(
-               wordmark: "Wordmark B",
-               owner: "Test Owner B",
-               goodsAndServices: "testGoodsAndSerices B",
+               wordmark: "Test Wordmark 2",
+               owner: "Test Owner 2",
+               goodsAndServices: "testGoodsAndSerices2",
                sourceId: "D123AC",
                statusDetail: "Awaiting Approval",
-               regNumber: "7654321",
+               regNumber: "3322115",
                status: TrademarkStatusCategory.Pending,
-               source: DataProvider.EUIPO);
+               source: DataProvider.USPTO);
 
             var entity3 =
                InMemoryDbContextFactory.CreateTrademarkEntity(
-               wordmark: "Wordmark C",
-               owner: "Test Owner C",
-               goodsAndServices: "testGoodsAndSerices C",
-               sourceId: "G123SQ",
+               wordmark: "Test Wordmark 3",
+               owner: "Test Owner 3",
+               goodsAndServices: "testGoodsAndSerices3",
+               sourceId: "ZZZ456",
                statusDetail: "Awaiting Approval",
-               regNumber: "2233441",
+               regNumber: "3322115",
                status: TrademarkStatusCategory.Pending,
-               source: DataProvider.EUIPO);
+               source: DataProvider.USPTO);
 
-            testDbContext.TrademarkRegistrations.AddRange(entity1, entity2, entity3);
+            testDbContext.TrademarkRegistrations.AddRange(entity1, entity2,entity3);
             await testDbContext.SaveChangesAsync();
 
             var dto = new TrademarkFilterDto
             {
                 SearchBy = TrademarkSearchBy.Wordmark,
-                SearchTerm = expectedSearchTerm,
-                ExactMatch = true
+                SearchTerm = null,
+                ExactMatch = false
             };
 
-            var result = 
+            var pagedResult = 
                 await service.SearchAsync(
                 dto: dto,
                 currentPage: 1,
-                resultsPerPage: 10,
+                resultsPerPage: 2,
                 cancellationToken: default);
 
-            result.ResultsCount.Should().Be(1);
-            result.Results.Should().ContainSingle();
-
-            result.Results[0].Wordmark.
-                Should().Be(entity1.Wordmark);
+            pagedResult.ResultsCount.Should().Be(3);
+            pagedResult.CurrentPage.Should().Be(1);
+            pagedResult.ResultsCountPerPage.Should().Be(2);
         }
 
         [Test]
-        public async Task SearchAsync_WhenExactMatchFalse_ReturnsPartialMatches()
+        public async Task SearchAsync_WhenNoFiltersApplied_ReturnsPagedResultsSortedByWordmarkAndId()
         {
-            const string expectedSearchTerm = "Find Me";
-
             var entity1 =
                 InMemoryDbContextFactory.CreateTrademarkEntity(
-                wordmark: $"{expectedSearchTerm} if you can!",
+                wordmark: "Test Wordmark A",
                 owner: "Test Owner A",
-                goodsAndServices: "testGoodsAndSerices A",
+                goodsAndServices: "testGoodsAndSerices1",
                 sourceId: "X123AZ",
                 statusDetail: "Successfully Registered",
-                regNumber: "1234567",
+                regNumber: "2346532",
                 status: TrademarkStatusCategory.Registered,
                 source: DataProvider.USPTO);
 
             var entity2 =
                InMemoryDbContextFactory.CreateTrademarkEntity(
-               wordmark: "Wordmark B",
+               wordmark: "Test Wordmark B",
                owner: "Test Owner B",
-               goodsAndServices: "testGoodsAndSerices B",
+               goodsAndServices: "testGoodsAndSerices2",
                sourceId: "D123AC",
                statusDetail: "Awaiting Approval",
-               regNumber: "7654321",
+               regNumber: "3322115",
                status: TrademarkStatusCategory.Pending,
-               source: DataProvider.EUIPO);
+               source: DataProvider.USPTO);
 
             var entity3 =
                InMemoryDbContextFactory.CreateTrademarkEntity(
-               wordmark: "Wordmark C",
+               wordmark: "Test Wordmark C",
                owner: "Test Owner C",
-               goodsAndServices: "testGoodsAndSerices C",
-               sourceId: "G123SQ",
+               goodsAndServices: "testGoodsAndSerices3",
+               sourceId: "ZZZ456",
                statusDetail: "Awaiting Approval",
-               regNumber: "2233441",
+               regNumber: "3322115",
                status: TrademarkStatusCategory.Pending,
-               source: DataProvider.EUIPO);
+               source: DataProvider.USPTO);
 
             testDbContext.TrademarkRegistrations.AddRange(entity1, entity2, entity3);
             await testDbContext.SaveChangesAsync();
@@ -115,7 +108,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
             var dto = new TrademarkFilterDto
             {
                 SearchBy = TrademarkSearchBy.Wordmark,
-                SearchTerm = expectedSearchTerm,
+                SearchTerm = null,
                 ExactMatch = false
             };
 
@@ -123,13 +116,12 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
                 await service.SearchAsync(
                 dto: dto,
                 currentPage: 1,
-                resultsPerPage: 10,
+                resultsPerPage: 2,
                 cancellationToken: default);
 
-            result.ResultsCount.Should().Be(1);
-
-            result.Results[0].Wordmark.
-                Should().Be(entity1.Wordmark);
+            result.Results.Should().HaveCount(2);
+            result.Results[0].Wordmark.Should().Be(entity1.Wordmark);
+            result.Results[1].Wordmark.Should(). Be(entity2.Wordmark);
         }
     }
 }
