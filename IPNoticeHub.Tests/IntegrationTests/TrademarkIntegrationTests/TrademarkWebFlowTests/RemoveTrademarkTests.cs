@@ -15,10 +15,10 @@ using System.Text.Encodings.Web;
 using Microsoft.Extensions.Logging;
 using IPNoticeHub.Infrastructure.Persistence;
 
-namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
+namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests.TrademarkWebFlowTests
 {
     [NonParallelizable]
-    public class TrademarkRemoveIntegrationTests
+    public class RemoveTrademarkTests
     {
         private TestWebAppFactory appFactory = null!;
 

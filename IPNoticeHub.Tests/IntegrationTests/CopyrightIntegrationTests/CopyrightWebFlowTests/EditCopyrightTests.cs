@@ -7,10 +7,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
-namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
+namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests.CopyrightWebFlowTests
 {
     [NonParallelizable]
-    public class CopyrightsEditIntegrationTests
+    public class EditCopyrightTests
     {
         private TestWebAppFactory appFactory = null!;
 

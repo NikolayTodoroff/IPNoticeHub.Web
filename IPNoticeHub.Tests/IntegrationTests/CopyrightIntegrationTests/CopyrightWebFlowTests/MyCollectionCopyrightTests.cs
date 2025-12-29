@@ -1,6 +1,5 @@
 ﻿using FluentAssertions;
 using IPNoticeHub.Domain.Entities.Identity;
-using IPNoticeHub.Domain.Entities.Copyrights;
 using IPNoticeHub.Tests.IntegrationTests.IntegrationTestFactories;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.TestHost;
@@ -12,11 +11,12 @@ using System.Net;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using IPNoticeHub.Infrastructure.Persistence;
+using IPNoticeHub.Domain.Entities.Copyrights;
 
-namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
+namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests.CopyrightWebFlowTests
 {
     [NonParallelizable]
-    public class CopyrightsIndexIntegrationTests
+    public class MyCollectionCopyrightTests
     {
         private TestWebAppFactory appFactory = null!;
 
@@ -27,7 +27,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
         public void TearDown() => appFactory.Dispose();
 
         [Test]
-        public async Task Get_Index_LinkedItems_Returns200()
+        public async Task Get_MyCollection_LinkedItems_Returns200()
         {
             var userId = "u1";
             var client = appFactory.CreateClientAs(userId);
@@ -82,8 +82,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
         [Test]
         public async Task Get_MyCollection_AuthenticatedMissingNameIdentifier_Returns403()
         {
-                var layeredAppFactory = 
-                appFactory.WithWebHostBuilder(builder =>
+            var layeredAppFactory = appFactory.WithWebHostBuilder(builder =>
             {
                 builder.ConfigureTestServices(services =>
                 {
@@ -95,7 +94,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                     .AddScheme<
                         AuthenticationSchemeOptions, 
                         NoIdAuthHandler>(
-                        "NoId", 
+                        "NoId",
                         _ => { });
                 });
 
@@ -112,14 +111,15 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                 var response = await client.GetAsync(
                     "/Copyrights/MyCollection");
 
-                response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+                response.StatusCode.Should().
+                    Be(HttpStatusCode.Forbidden);
             }
         }
 
         private sealed class NoIdAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
         {
             public NoIdAuthHandler(
-                IOptionsMonitor<AuthenticationSchemeOptions> options, 
+                IOptionsMonitor<AuthenticationSchemeOptions> options,
                 ILoggerFactory logger, 
                 UrlEncoder encoder) : base(options, logger, encoder) { }
 
@@ -160,9 +160,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                     serviceScope.ServiceProvider.
                     GetRequiredService<IPNoticeHubDbContext>();
 
-                await TestDbSeeder.SeedUserAsync(
-                    testDbContext, 
-                    userId);
+                await TestDbSeeder.SeedUserAsync(testDbContext, userId);
 
                 var entity1 = 
                     await TestDbSeeder.SeedCopyrightAsync(
@@ -271,7 +269,8 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
             var userId = "u1";
             var client = appFactory.CreateClientAs(userId);
 
-            using (var serviceScope = appFactory.Services.CreateScope())
+            using (var serviceScope = 
+                appFactory.Services.CreateScope())
             {
                 var testDbContext = 
                     serviceScope.ServiceProvider.
@@ -295,7 +294,9 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                     typeOfWork: "VisualArts", 
                     title: "Bravo");
 
-                testDbContext.Set<UserCopyright>().AddRange(
+                testDbContext.
+                    Set<UserCopyright>().
+                    AddRange(
                     new UserCopyright { 
                         ApplicationUserId = userId, 
                         CopyrightEntityId = entity1.Id, 
@@ -313,8 +314,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
             var response = await client.GetAsync(
                 "/Copyrights/MyCollection?sortBy=TotallyNotAValue&currentPage=1&resultsPerPage=10");
 
-            response.StatusCode.Should().
-                Be(HttpStatusCode.OK);
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
         [Test]
@@ -348,7 +348,9 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                     typeOfWork: "VisualArts", 
                     title: "Deleted");
 
-                testDbContext.Set<UserCopyright>().AddRange(
+                testDbContext.
+                    Set<UserCopyright>().
+                    AddRange(
                     new UserCopyright { 
                         ApplicationUserId = userId, 
                         CopyrightEntityId = activeEntity.Id, 
@@ -399,6 +401,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
         [TestCase(-5)]
         public async Task Get_MyCollection_ResultsPerPage_NonPositive_Returns200(int resultsPerPage)
         {
+            // Arrange
             var userId = "u1";
             var client = appFactory.CreateClientAs(userId);
 
@@ -555,7 +558,9 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                     typeOfWork: "VisualArts", 
                     title: "Bravo");
 
-                testDbContext.Set<UserCopyright>().AddRange(
+                testDbContext.
+                    Set<UserCopyright>().
+                    AddRange(
                     new UserCopyright { 
                         ApplicationUserId = userId, 
                         CopyrightEntityId = entity1.Id, 
@@ -795,7 +800,8 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                     testDbContext, 
                     userId);
 
-                var list = new List<CopyrightEntity>(120);
+                var list = 
+                    new List<CopyrightEntity>(120);
 
                 for (int i = 0; i < 120; i++)
                 {
@@ -811,11 +817,11 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                 }
 
                 testDbContext.CopyrightRegistrations.AddRange(list);
-
                 await testDbContext.SaveChangesAsync();
 
                 testDbContext.UserCopyrights.AddRange(
-                    list.Select(uc => new UserCopyright
+                    list.Select(
+                        uc => new UserCopyright
                     {
                         ApplicationUserId = userId,
                         CopyrightEntityId = uc.Id,
@@ -823,6 +829,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
                         DateAdded = DateTime.UtcNow.AddMinutes(-uc.Id % 60)
                     })
                 );
+
                 await testDbContext.SaveChangesAsync();
             }
 

@@ -8,10 +8,10 @@ using NUnit.Framework;
 using System.Net;
 using IPNoticeHub.Infrastructure.Persistence;
 
-namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests
+namespace IPNoticeHub.Tests.IntegrationTests.CopyrightIntegrationTests.CopyrightWebFlowTests
 {
     [NonParallelizable]
-    public class CopyrightsRemoveIntegrationTests
+    public class RemoveCopyrightTests
     {
         private TestWebAppFactory appFactory = null!;
 

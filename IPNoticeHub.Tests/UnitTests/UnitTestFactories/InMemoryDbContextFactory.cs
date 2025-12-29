@@ -91,7 +91,6 @@ namespace IPNoticeHub.Tests.UnitTests.UnitTestFactories
 
             return entity;
         }
-    
 
         public static CopyrightEntity CreateCopyright(
             string registrationNumber,

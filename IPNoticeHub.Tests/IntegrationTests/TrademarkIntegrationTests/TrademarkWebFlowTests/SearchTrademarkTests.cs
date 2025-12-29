@@ -7,10 +7,10 @@ using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net;
 
-namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
+namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests.TrademarkWebFlowTests
 {
     [NonParallelizable]
-    public class TrademarkSearchIntegrationTests
+    public class SearchTrademarkTests
     {
         private TestWebAppFactory appFactory = null!;
 

@@ -9,10 +9,10 @@ using IPNoticeHub.Infrastructure.Persistence;
 using IPNoticeHub.Domain.Entities.Trademarks;
 using IPNoticeHub.Infrastructure.Identity;
 
-namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests
+namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests.TrademarkWebFlowTests
 {
     [NonParallelizable]
-    public class TrademarkDetailsIntegrationTests
+    public class DetailsTrademarkTests
     {
         private TestWebAppFactory appFactory = null!;
 
