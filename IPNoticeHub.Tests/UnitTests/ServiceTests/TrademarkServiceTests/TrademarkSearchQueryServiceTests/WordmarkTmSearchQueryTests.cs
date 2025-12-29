@@ -1,8 +1,9 @@
 ﻿using FluentAssertions;
+using IPNoticeHub.Application.DTOs.TrademarkDTOs;
 using IPNoticeHub.Shared.Enums;
+using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 using NUnit.Framework;
 using static IPNoticeHub.Shared.Constants.PagingConstants.DefaultPagingConstants;
-using IPNoticeHub.Application.DTOs.TrademarkDTOs;
 
 namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.TrademarkSearchQueryServiceTests
 {
@@ -11,35 +12,94 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
         [Test]
         public async Task SearchAsync_WhenWordmarkContainsQuery_ReturnsMatchingTrademark()
         {
+            const string searchQueryFirstHalf = "Correct";
+            const string searchQuerySecondHalf = "Entity";
+
+            var (entity, _) =
+                InMemoryDbContextFactory.CreateTrademark(
+                wordmark: $"{searchQueryFirstHalf} {searchQuerySecondHalf}",
+                owner: "Correct Test Owner",
+                goodsAndServices: "testGoodsAndSerices1",
+                sourceId: "X123AZ",
+                statusDetail: "Successfully Registered",
+                regNumber: "1234567",
+                status: TrademarkStatusCategory.Registered,
+                source: DataProvider.USPTO,
+                classNumbers: new[] { 25, 35 });
+
+            var (randomEntity, _) =
+               InMemoryDbContextFactory.CreateTrademark(
+               wordmark: "Random Test Wordmark",
+               owner: "Missing Test Owner",
+               goodsAndServices: "testGoodsAndSerices1",
+               sourceId: "D123AC",
+               statusDetail: "Awaiting Approval",
+               regNumber: "1234567",
+               status: TrademarkStatusCategory.Pending,
+               source: DataProvider.EUIPO,
+               classNumbers: new[] { 10, 15 });
+
+            testDbContext.TrademarkRegistrations.AddRange(entity, randomEntity);
+            await testDbContext.SaveChangesAsync();
+
             var dto = new TrademarkSearchQueryDto
             {
-                Query = "Osir",
+                Query = searchQueryFirstHalf,
                 SearchBy = TrademarkSearchBy.Wordmark,
                 Mode = SearchMode.Contains,
                 Page = DefaultPage,
                 PageSize = DefaultPageSize
             };
 
-            var (queryResult,total) = 
-                await service.SearchAsync(dto,CancellationToken.None);
+            var (queryResult, total) = 
+                await service.SearchAsync(dto, CancellationToken.None);
 
             queryResult.Should().ContainSingle();
             total.Should().Be(1);
 
             var queryItem = queryResult.Single();
-            queryItem.Wordmark.Should().Be("Osiris");
-            queryItem.Owner.Should().Be("Afterlife Inc.");
-            queryItem.RegistrationNumber.Should().Be("3355442");
-            queryItem.Status.Should().Be(TrademarkStatusCategory.Cancelled.ToString());
-            queryItem.Id.Should().Be(osirisTm.Id);
+            queryItem.Wordmark.Should().Be(entity.Wordmark);
+            queryItem.Owner.Should().Be(entity.Owner);
+            queryItem.RegistrationNumber.Should().Be(entity.RegistrationNumber);
+            queryItem.Status.Should().Be(entity.StatusCategory.ToString());
+            queryItem.Id.Should().Be(entity.Id);
         }
 
         [Test]
         public async Task SearchAsync_WhenWordmarkIdenticalQuery_ReturnsMatchingTrademark()
         {
+            const string expectedSearchQuery = "Find Me!";
+
+            var (entity, _) =
+                InMemoryDbContextFactory.CreateTrademark(
+                wordmark: expectedSearchQuery,
+                owner: "Correct Test Owner",
+                goodsAndServices: "testGoodsAndSerices1",
+                sourceId: "X123AZ",
+                statusDetail: "Successfully Registered",
+                regNumber: "1234567",
+                status: TrademarkStatusCategory.Registered,
+                source: DataProvider.USPTO,
+                classNumbers: new[] { 25, 35 });
+
+            var (randomEntity, _) =
+               InMemoryDbContextFactory.CreateTrademark(
+               wordmark: "Random Test Wordmark",
+               owner: "Missing Test Owner",
+               goodsAndServices: "testGoodsAndSerices1",
+               sourceId: "D123AC",
+               statusDetail: "Awaiting Approval",
+               regNumber: "1234567",
+               status: TrademarkStatusCategory.Pending,
+               source: DataProvider.EUIPO,
+               classNumbers: new[] { 10, 15 });
+
+            testDbContext.TrademarkRegistrations.AddRange(entity, randomEntity);
+            await testDbContext.SaveChangesAsync();
+
             var dto = new TrademarkSearchQueryDto
             {
-                Query = "Anubis",
+                Query = expectedSearchQuery,
                 SearchBy = TrademarkSearchBy.Wordmark,
                 Mode = SearchMode.Identical,
                 Page = DefaultPage,
@@ -53,20 +113,50 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
             total.Should().Be(1);
 
             var queryItem = queryResult.Single();
-            queryItem.Wordmark.Should().Be("Anubis");
-            queryItem.Owner.Should().Be("Underworld Inc.");
-            queryItem.RegistrationNumber.Should().Be("1234567");
-            queryItem.Status.Should().Be(TrademarkStatusCategory.Registered.ToString());
-            queryItem.Id.Should().Be(anubisTm.Id);
+            queryItem.Wordmark.Should().Be(entity.Wordmark);
+            queryItem.Owner.Should().Be(entity.Owner);
+            queryItem.RegistrationNumber.Should().Be(entity.RegistrationNumber);
+            queryItem.Status.Should().Be(entity.StatusCategory.ToString());
+            queryItem.Id.Should().Be(entity.Id);
         }
 
         [Test]
         public async Task SearchAsync_WhenOwnerContainsQuery_ReturnsMatchingOwners()
         {
-            var dto = 
-                new TrademarkSearchQueryDto
+            const string firstOwnerName = "X1Core";
+            const string secondOwnerName = "Z2Corp";
+            const string expectedSearchTerm = firstOwnerName;
+
+            var (entity1, _) =
+                InMemoryDbContextFactory.CreateTrademark(
+                wordmark: "First Wave",
+                owner: $"{firstOwnerName} {expectedSearchTerm}",
+                goodsAndServices: "testGoodsAndSerices1",
+                sourceId: "X123AZ",
+                statusDetail: "Successfully Registered",
+                regNumber: "1234567",
+                status: TrademarkStatusCategory.Registered,
+                source: DataProvider.USPTO,
+                classNumbers: new[] { 25, 35 });
+
+            var (entity2, _) =
+               InMemoryDbContextFactory.CreateTrademark(
+               wordmark: "Second Wave",
+               owner: $"{secondOwnerName} {expectedSearchTerm}",
+               goodsAndServices: "testGoodsAndSerices1",
+               sourceId: "D123AC",
+               statusDetail: "Awaiting Approval",
+               regNumber: "1234568",
+               status: TrademarkStatusCategory.Pending,
+               source: DataProvider.EUIPO,
+               classNumbers: new[] { 10, 15 });
+
+            testDbContext.TrademarkRegistrations.AddRange(entity1, entity2);
+            await testDbContext.SaveChangesAsync();
+
+            var dto = new TrademarkSearchQueryDto
             {
-                Query = "Inc",
+                Query = expectedSearchTerm,
                 SearchBy = TrademarkSearchBy.Owner,
                 Mode = SearchMode.Contains,
                 Page = DefaultPage,
@@ -78,18 +168,45 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
 
             total.Should().Be(2);
             queryResult.Select(i => i.Owner).
-                Should().BeEquivalentTo(new[] { 
-                    "Underworld Inc.", 
-                    "Afterlife Inc." });
+                Should().BeEquivalentTo(new[] { entity1.Owner, entity2.Owner });
         }
 
         [Test]
         public async Task SearchAsync_WhenOwnerIdentityQuery_ReturnsOnlyMatchingOwners()
         {
-            var dto = 
-                new TrademarkSearchQueryDto
+            const string firstOwnerName = "X1Core";
+            const string secondOwnerName = "Z2Corp";
+
+            var (entity1, _) =
+                InMemoryDbContextFactory.CreateTrademark(
+                wordmark: "First Wave",
+                owner: firstOwnerName,
+                goodsAndServices: "testGoodsAndSerices1",
+                sourceId: "X123AZ",
+                statusDetail: "Successfully Registered",
+                regNumber: "1234567",
+                status: TrademarkStatusCategory.Registered,
+                source: DataProvider.USPTO,
+                classNumbers: new[] { 25, 35 });
+
+            var (entity2, _) =
+               InMemoryDbContextFactory.CreateTrademark(
+               wordmark: "Second Wave",
+               owner: secondOwnerName,
+               goodsAndServices: "testGoodsAndSerices1",
+               sourceId: "D123AC",
+               statusDetail: "Awaiting Approval",
+               regNumber: "1234568",
+               status: TrademarkStatusCategory.Pending,
+               source: DataProvider.EUIPO,
+               classNumbers: new[] { 10, 15 });
+
+            testDbContext.TrademarkRegistrations.AddRange(entity1, entity2);
+            await testDbContext.SaveChangesAsync();
+
+            var dto = new TrademarkSearchQueryDto
             {
-                Query = "Falcon LLC",
+                Query = firstOwnerName,
                 SearchBy = TrademarkSearchBy.Owner,
                 Mode = SearchMode.Identical,
                 Page = DefaultPage,
@@ -100,15 +217,45 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
                 await service.SearchAsync(dto, CancellationToken.None);
 
             total.Should().Be(1);
-            queryResult.Single().Owner.Should().Be("Falcon LLC");
+            queryResult.Single().Owner.Should().Be(entity1.Owner);
         }
 
         [Test]
         public async Task SearchAsync_WhenNumberIdenticalQuery_MatchesOnlyExactRegistrationNumber()
         {
+            const string firstOwnerRegNum = "X123456";
+            const string secondOwnerRegNum = "Z654321";
+
+            var (entity1, _) =
+                InMemoryDbContextFactory.CreateTrademark(
+                wordmark: "First Wave",
+                owner: "Owner A",
+                goodsAndServices: "testGoodsAndSerices1",
+                sourceId: "X123AZ",
+                statusDetail: "Successfully Registered",
+                regNumber: firstOwnerRegNum,
+                status: TrademarkStatusCategory.Registered,
+                source: DataProvider.USPTO,
+                classNumbers: new[] { 25, 35 });
+
+            var (entity2, _) =
+               InMemoryDbContextFactory.CreateTrademark(
+               wordmark: "Second Wave",
+               owner: "Owner B",
+               goodsAndServices: "testGoodsAndSerices1",
+               sourceId: "D123AC",
+               statusDetail: "Awaiting Approval",
+               regNumber: secondOwnerRegNum,
+               status: TrademarkStatusCategory.Pending,
+               source: DataProvider.EUIPO,
+               classNumbers: new[] { 10, 15 });
+
+            testDbContext.TrademarkRegistrations.AddRange(entity1, entity2);
+            await testDbContext.SaveChangesAsync();
+
             var dto = new TrademarkSearchQueryDto
             {
-                Query = "1234567",
+                Query = firstOwnerRegNum,
                 SearchBy = TrademarkSearchBy.Number,
                 Mode = SearchMode.Identical,
                 Page = DefaultPage,
@@ -121,16 +268,46 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
             total.Should().Be(1);
 
             queryResult.Single().RegistrationNumber.
-                Should().Be("1234567");
+                Should().Be(entity1.RegistrationNumber);
         }
 
         [Test]
         public async Task SearchAsync_WhenNumberContainsQuery_MatchesOnlyExactRegistrationNumber()
         {
-            var dto = 
-                new TrademarkSearchQueryDto
+            const string firstOwnerRegNum = "X123456";
+            const string secondOwnerRegNum = "X123555";
+            const string expectedSearchTerm = "X123";
+
+            var (entity1, _) =
+                InMemoryDbContextFactory.CreateTrademark(
+                wordmark: "First Wave",
+                owner: "Owner A",
+                goodsAndServices: "testGoodsAndSerices1",
+                sourceId: "X123AZ",
+                statusDetail: "Successfully Registered",
+                regNumber: firstOwnerRegNum,
+                status: TrademarkStatusCategory.Registered,
+                source: DataProvider.USPTO,
+                classNumbers: new[] { 25, 35 });
+
+            var (entity2, _) =
+               InMemoryDbContextFactory.CreateTrademark(
+               wordmark: "Second Wave",
+               owner: "Owner B",
+               goodsAndServices: "testGoodsAndSerices1",
+               sourceId: "D123AC",
+               statusDetail: "Awaiting Approval",
+               regNumber: secondOwnerRegNum,
+               status: TrademarkStatusCategory.Pending,
+               source: DataProvider.EUIPO,
+               classNumbers: new[] { 10, 15 });
+
+            testDbContext.TrademarkRegistrations.AddRange(entity1, entity2);
+            await testDbContext.SaveChangesAsync();
+
+            var dto = new TrademarkSearchQueryDto
             {
-                Query = "12345",
+                Query = expectedSearchTerm,
                 SearchBy = TrademarkSearchBy.Number,
                 Mode = SearchMode.Contains,
                 Page = DefaultPage,
@@ -142,17 +319,47 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
 
             total.Should().Be(2);
 
-            queryResult.Select(q => q.RegistrationNumber).
-                Should().BeEquivalentTo(new[] { "1234567", "1234512" });
+            var registrationNumbers = 
+                queryResult.Select(q => q.RegistrationNumber).ToArray();
+
+            registrationNumbers.Should().BeEquivalentTo(new[] { 
+                entity1.RegistrationNumber,
+                entity2.RegistrationNumber });
         }
 
         [Test]
         public async Task SearchAsync_WithStatusRegistered_FiltersOnlyRegistered()
         {
-            var dto = 
-                new TrademarkSearchQueryDto
+            var (entity, _) =
+               InMemoryDbContextFactory.CreateTrademark(
+               wordmark: "Wordmark A",
+               owner: "Correct Test Owner",
+               goodsAndServices: "testGoodsAndSerices1",
+               sourceId: "X123AZ",
+               statusDetail: "Successfully Registered",
+               regNumber: "1234567",
+               status: TrademarkStatusCategory.Registered,
+               source: DataProvider.USPTO,
+               classNumbers: new[] { 25, 35 });
+
+            var (randomEntity, _) =
+               InMemoryDbContextFactory.CreateTrademark(
+               wordmark: "Wordmark B",
+               owner: "Missing Test Owner",
+               goodsAndServices: "testGoodsAndSerices1",
+               sourceId: "D123AC",
+               statusDetail: "Awaiting Approval",
+               regNumber: "7654321",
+               status: TrademarkStatusCategory.Pending,
+               source: DataProvider.EUIPO,
+               classNumbers: new[] { 10, 15 });
+
+            testDbContext.TrademarkRegistrations.AddRange(entity, randomEntity);
+            await testDbContext.SaveChangesAsync();
+
+            var dto = new TrademarkSearchQueryDto
             {
-                Query = "",
+                Query = string.Empty,
                 SearchBy = TrademarkSearchBy.Wordmark,
                 Mode = SearchMode.Contains,
                 Status = TrademarkStatusCategory.Registered,
@@ -164,17 +371,42 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
                 await service.SearchAsync(dto, CancellationToken.None);
 
             total.Should().Be(1);
-
-            queryResult.Single().Wordmark.Should().Be("Anubis");
+            queryResult.Single().Wordmark.Should().Be(entity.Wordmark);
         }
 
         [Test]
         public async Task SearchAsync_WithClass25_FiltersOnlyItemsHavingClass25()
         {
-            var dto = 
-                new TrademarkSearchQueryDto
+            var (entity1, _) =
+               InMemoryDbContextFactory.CreateTrademark(
+               wordmark: "Wordmark A",
+               owner: "Correct Test Owner",
+               goodsAndServices: "testGoodsAndSerices1",
+               sourceId: "X123AZ",
+               statusDetail: "Successfully Registered",
+               regNumber: "1234567",
+               status: TrademarkStatusCategory.Registered,
+               source: DataProvider.USPTO,
+               classNumbers: new[] { 15, 35 });
+
+            var (entity2, _) =
+               InMemoryDbContextFactory.CreateTrademark(
+               wordmark: "Wordmark B",
+               owner: "Missing Test Owner",
+               goodsAndServices: "testGoodsAndSerices1",
+               sourceId: "D123AC",
+               statusDetail: "Awaiting Approval",
+               regNumber: "7654321",
+               status: TrademarkStatusCategory.Pending,
+               source: DataProvider.EUIPO,
+               classNumbers: new[] { 10, 25 });
+
+            testDbContext.TrademarkRegistrations.AddRange(entity1, entity2);
+            await testDbContext.SaveChangesAsync();
+
+            var dto = new TrademarkSearchQueryDto
             {
-                Query = "",
+                Query = string.Empty,
                 SearchBy = TrademarkSearchBy.Wordmark,
                 Mode = SearchMode.Contains,
                 Class = (TrademarkClass)25,
@@ -185,9 +417,9 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
             var (queryResult, total) = 
                 await service.SearchAsync(dto, CancellationToken.None);
 
-            total.Should().Be(2);
-            queryResult.Select(q => q.Wordmark).
-                Should().BeEquivalentTo(new[] { "Anubis", "Horus" });
+            total.Should().Be(1);
+            queryResult.Should().ContainSingle().
+                Which.Wordmark.Should().Be(entity2.Wordmark);
         }
     }
 }

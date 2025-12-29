@@ -3,23 +3,48 @@ using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 using NUnit.Framework;
 using IPNoticeHub.Application.DTOs.TrademarkDTOs;
-using IPNoticeHub.Infrastructure.Persistence.Repositories.TrademarkRepository;
-using IPNoticeHub.Application.Services.TrademarkService.Implementations;
-using IPNoticeHub.Application.Repositories.TrademarkRepository;
 using IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.TrademarkSearchServiceTests;
 
 namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchServiceTests
 {
-    [TestFixture]
     public class SearchByNumberTmSearchServiceTests : TmSearchServiceBase
     {
         [Test]
         public async Task SearchAsync_WhenNumberExactMatchTrue_MatchesRegistrationNumber()
         {
+            const string expectedSearchTerm = "1234567";
+
+            var (entity, _) =
+                InMemoryDbContextFactory.CreateTrademark(
+                wordmark: "Test Wordmark",
+                owner: "Test Owner",
+                goodsAndServices: "testGoodsAndSerices1",
+                sourceId: "X123AZ",
+                statusDetail: "Successfully Registered",
+                regNumber: "1234567",
+                status: TrademarkStatusCategory.Registered,
+                source: DataProvider.USPTO,
+                classNumbers: new[] { 25, 35 });
+
+            var (randomEntity, _) =
+               InMemoryDbContextFactory.CreateTrademark(
+               wordmark: "Random Test Wordmark",
+               owner: "Missing Test Owner",
+               goodsAndServices: "testGoodsAndSerices1",
+               sourceId: "D123AC",
+               statusDetail: "Awaiting Approval",
+               regNumber: "1234567",
+               status: TrademarkStatusCategory.Pending,
+               source: DataProvider.USPTO,
+               classNumbers: new[] { 10, 15 });
+
+            testDbContext.TrademarkRegistrations.AddRange(entity, randomEntity);
+            await testDbContext.SaveChangesAsync();
+
             var dto = new TrademarkFilterDto
             {
                 SearchBy = TrademarkSearchBy.Number,
-                SearchTerm = "1234567",
+                SearchTerm = expectedSearchTerm,
                 ExactMatch = true
             };
 
@@ -36,17 +61,46 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
             var result = 
                 pagedResult.Results.Single();
 
-            result.Id.Should().Be(tmEntity1.Id);
-            result.Wordmark.Should().Be("AAA");
+            result.Id.Should().Be(entity.Id);
+            result.Wordmark.Should().Be("Test Wordmark");
         }
 
         [Test]
         public async Task SearchAsync_WhenNumberExactMatchTrue_MatchesSourceId()
         {
+            const string expectedSearchTerm = "X123AZ";
+
+            var (entity, _) =
+               InMemoryDbContextFactory.CreateTrademark(
+               wordmark: "Test Wordmark",
+               owner: "Test Owner",
+               goodsAndServices: "testGoodsAndSerices1",
+               sourceId: "X123AZ",
+               statusDetail: "Successfully Registered",
+               regNumber: "1234567",
+               status: TrademarkStatusCategory.Registered,
+               source: DataProvider.USPTO,
+               classNumbers: new[] { 25, 35 });
+
+            var (randomEntity, _) =
+               InMemoryDbContextFactory.CreateTrademark(
+               wordmark: "Random Test Wordmark",
+               owner: "Missing Test Owner",
+               goodsAndServices: "testGoodsAndSerices1",
+               sourceId: "D123AC",
+               statusDetail: "Awaiting Approval",
+               regNumber: "1234567",
+               status: TrademarkStatusCategory.Pending,
+               source: DataProvider.USPTO,
+               classNumbers: new[] { 10, 15 });
+
+            testDbContext.TrademarkRegistrations.AddRange(entity, randomEntity);
+            await testDbContext.SaveChangesAsync();
+
             var dto = new TrademarkFilterDto
             {
                 SearchBy = TrademarkSearchBy.Number,
-                SearchTerm = "testSourceId1",
+                SearchTerm = expectedSearchTerm,
                 ExactMatch = true
             };
 
@@ -62,17 +116,46 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
 
             var result = pagedResult.Results.Single();
 
-            result.Id.Should().Be(tmEntity1.Id);
-            result.Wordmark.Should().Be("AAA");
+            result.Id.Should().Be(entity.Id);
+            result.Wordmark.Should().Be("Test Wordmark");
         }
 
         [Test]
         public async Task SearchAsync_WhenNumberExactMatchFalse_AllowsPartialMatches()
         {
+            const string expectedSearchTerm = "123";
+
+            var (entity, _) =
+               InMemoryDbContextFactory.CreateTrademark(
+               wordmark: "Test Wordmark",
+               owner: "Test Owner",
+               goodsAndServices: "testGoodsAndSerices1",
+               sourceId: "X123AZ",
+               statusDetail: "Successfully Registered",
+               regNumber: "1234567",
+               status: TrademarkStatusCategory.Registered,
+               source: DataProvider.USPTO,
+               classNumbers: new[] { 25, 35 });
+
+            var (randomEntity, _) =
+               InMemoryDbContextFactory.CreateTrademark(
+               wordmark: "Random Test Wordmark",
+               owner: "Missing Test Owner",
+               goodsAndServices: "testGoodsAndSerices1",
+               sourceId: "D123AC",
+               statusDetail: "Awaiting Approval",
+               regNumber: "1234567",
+               status: TrademarkStatusCategory.Pending,
+               source: DataProvider.USPTO,
+               classNumbers: new[] { 10, 15 });
+
+            testDbContext.TrademarkRegistrations.AddRange(entity, randomEntity);
+            await testDbContext.SaveChangesAsync();
+
             var dto = new TrademarkFilterDto
             {
                 SearchBy = TrademarkSearchBy.Number,
-                SearchTerm = "1122",
+                SearchTerm = expectedSearchTerm,
                 ExactMatch = false
             };
 
@@ -88,8 +171,8 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
 
             var result = pagedResult.Results.Single();
 
-            result.Id.Should().Be(tmEntity3.Id);
-            result.Wordmark.Should().Be("CCC");
+            result.Id.Should().Be(entity.Id);
+            result.Wordmark.Should().Be("Test Wordmark");
         }
     }
 }
