@@ -66,6 +66,33 @@ namespace IPNoticeHub.Tests.UnitTests.UnitTestFactories
             return (trademarkEntity, trademarkClassesList);
         }
 
+        public static TrademarkEntity CreateTrademarkEntity(
+            string wordmark,
+            string owner,
+            string goodsAndServices,
+            string sourceId,
+            string statusDetail,
+            string? regNumber,
+            TrademarkStatusCategory status = TrademarkStatusCategory.Pending,
+            DataProvider source = DataProvider.USPTO,
+            DateTime? filingDate = null,
+            params int[] classNumbers)
+        {
+            var (entity, _) = CreateTrademark(
+            wordmark,
+            owner,
+            goodsAndServices,
+            sourceId,
+            statusDetail,
+            regNumber,
+            status,
+            source,
+            filingDate, classNumbers);
+
+            return entity;
+        }
+    
+
         public static CopyrightEntity CreateCopyright(
             string registrationNumber,
             string title,

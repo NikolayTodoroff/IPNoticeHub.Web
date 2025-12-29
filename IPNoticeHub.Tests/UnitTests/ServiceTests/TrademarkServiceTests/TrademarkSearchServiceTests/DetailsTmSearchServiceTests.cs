@@ -30,13 +30,13 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
             var result = 
                 await service.GetDetailsAsync(
                     entity.PublicId, 
-                    default);
+                    CancellationToken.None);
 
             result.Should().NotBeNull();
             result!.PublicId.Should().Be(entity.PublicId);
-            result.Wordmark.Should().Be("AAA");
-            result.Owner.Should().Be("Owner A");
-            result.Classes.Should().Contain(new[] { 25, 35 });
+            result.Wordmark.Should().Be(entity.Wordmark);
+            result.Owner.Should().Be(entity.Owner);
+            result.Classes.Should().BeEquivalentTo(new[] { 25, 35 });
 
             result.Provider.Should().
                 BeOneOf(
@@ -59,8 +59,14 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
         [Test]
         public async Task GetDetailsAsync_WhenTrademarkHasEvents_MapsEventsDescendingByDate()
         {
-            var (entity, _) =
-                InMemoryDbContextFactory.CreateTrademark(
+            const string firstEventCode = "Ev1";
+            const string firstEventDescription = "First Event";
+
+            const string secondEventCode = "Ev2";
+            const string secondEventDescription = "Second Event";
+
+            var entity =
+                InMemoryDbContextFactory.CreateTrademarkEntity(
                 wordmark: "Test Wordmark",
                 owner: "Test Owner",
                 goodsAndServices: "testGoodsAndSerices1",
@@ -68,25 +74,23 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
                 statusDetail: "Successfully Registered",
                 regNumber: "1234567",
                 status: TrademarkStatusCategory.Registered,
-                source: DataProvider.USPTO,
-                classNumbers: new[] { 25, 35 });
+                source: DataProvider.USPTO);
 
-            testDbContext.TrademarkRegistrations.Add(entity);
-            await testDbContext.SaveChangesAsync();
             entity.Events.Add(new TrademarkEvent
             {
                 EventDate = new DateTime(2020, 1, 1),
-                Code = "E1", 
-                Description = "First"
+                Code = firstEventCode, 
+                Description = firstEventDescription
             });
 
             entity.Events.Add(new TrademarkEvent
             {
                 EventDate = new DateTime(2021, 2, 2),
-                Code = "E2", 
-                Description = "Second"
+                Code = secondEventCode, 
+                Description = secondEventDescription
             });
 
+            testDbContext.TrademarkRegistrations.Add(entity);
             await testDbContext.SaveChangesAsync();
 
             var result = await service.GetDetailsAsync(
@@ -98,7 +102,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
 
             result.Events.Select(
                 e => e.Code).
-                Should().ContainInOrder("E2", "E1");
+                Should().ContainInOrder(secondEventCode, firstEventCode);
         }
     }
 }

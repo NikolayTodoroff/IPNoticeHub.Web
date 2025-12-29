@@ -12,8 +12,8 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
         [Test]
         public async Task SearchAsync_WithOfficeUSPTO_FiltersOnlyUSPTO()
         {
-            var (entity, _) =
-                InMemoryDbContextFactory.CreateTrademark(
+            var entity =
+                InMemoryDbContextFactory.CreateTrademarkEntity(
                 wordmark: "Test Wordmark",
                 owner: "Test Owner",
                 goodsAndServices: "testGoodsAndSerices1",
@@ -21,11 +21,10 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
                 statusDetail: "Successfully Registered",
                 regNumber: "1234567",
                 status: TrademarkStatusCategory.Registered,
-                source: DataProvider.USPTO,
-                classNumbers: new[] { 25, 35 });
+                source: DataProvider.USPTO);
 
-            var (randomEntity, _) =
-               InMemoryDbContextFactory.CreateTrademark(
+            var randomEntity =
+               InMemoryDbContextFactory.CreateTrademarkEntity(
                wordmark: "Random Test Wordmark",
                owner: "Missing Test Owner",
                goodsAndServices: "testGoodsAndSerices1",
@@ -33,8 +32,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
                statusDetail: "Awaiting Approval",
                regNumber: "1234567",
                status: TrademarkStatusCategory.Pending,
-               source: DataProvider.EUIPO,
-               classNumbers: new[] { 10, 15 });
+               source: DataProvider.EUIPO);
 
             testDbContext.TrademarkRegistrations.AddRange(entity, randomEntity);
             await testDbContext.SaveChangesAsync();

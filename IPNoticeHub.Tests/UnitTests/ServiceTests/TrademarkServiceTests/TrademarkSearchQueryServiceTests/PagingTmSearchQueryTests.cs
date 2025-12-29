@@ -12,8 +12,8 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
         [Test]
         public async Task SearchAsync_Paging_ReturnsSecondItemOnPage2_AndKeepsTotal()
         {
-            var (entity1, _) =
-                InMemoryDbContextFactory.CreateTrademark(
+            var entity1 =
+                InMemoryDbContextFactory.CreateTrademarkEntity(
                 wordmark: "Wordmark A",
                 owner: "Test Owner A",
                 goodsAndServices: "testGoodsAndSerices A",
@@ -21,11 +21,10 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
                 statusDetail: "Successfully Registered",
                 regNumber: "1234567",
                 status: TrademarkStatusCategory.Registered,
-                source: DataProvider.USPTO,
-                classNumbers: new[] { 25, 35 });
+                source: DataProvider.USPTO);
 
-            var (entity2, _) =
-               InMemoryDbContextFactory.CreateTrademark(
+            var entity2 =
+               InMemoryDbContextFactory.CreateTrademarkEntity(
                wordmark: "Wordmark B",
                owner: "Test Owner B",
                goodsAndServices: "testGoodsAndSerices B",
@@ -33,11 +32,10 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
                statusDetail: "Awaiting Approval",
                regNumber: "7654321",
                status: TrademarkStatusCategory.Pending,
-               source: DataProvider.EUIPO,
-               classNumbers: new[] { 10, 15 });
+               source: DataProvider.EUIPO);
 
-            var (entity3, _) =
-               InMemoryDbContextFactory.CreateTrademark(
+            var entity3 =
+               InMemoryDbContextFactory.CreateTrademarkEntity(
                wordmark: "Wordmark C",
                owner: "Test Owner C",
                goodsAndServices: "testGoodsAndSerices C",
@@ -45,8 +43,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
                statusDetail: "Awaiting Approval",
                regNumber: "2233441",
                status: TrademarkStatusCategory.Pending,
-               source: DataProvider.EUIPO,
-               classNumbers: new[] { 10, 15 });
+               source: DataProvider.EUIPO);
 
             testDbContext.TrademarkRegistrations.AddRange(entity1, entity2,entity3);
             await testDbContext.SaveChangesAsync();
@@ -72,8 +69,8 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
         [Test]
         public async Task SearchAsync_Paging_OutOfRange_ReturnsEmpty_AndKeepsTotal()
         {
-            var (entity1, _) =
-                InMemoryDbContextFactory.CreateTrademark(
+            var entity1 =
+                InMemoryDbContextFactory.CreateTrademarkEntity(
                 wordmark: "Wordmark A",
                 owner: "Test Owner A",
                 goodsAndServices: "testGoodsAndSerices A",
@@ -81,11 +78,10 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
                 statusDetail: "Successfully Registered",
                 regNumber: "1234567",
                 status: TrademarkStatusCategory.Registered,
-                source: DataProvider.USPTO,
-                classNumbers: new[] { 25, 35 });
+                source: DataProvider.USPTO);
 
-            var (entity2, _) =
-               InMemoryDbContextFactory.CreateTrademark(
+            var entity2 =
+               InMemoryDbContextFactory.CreateTrademarkEntity(
                wordmark: "Wordmark B",
                owner: "Test Owner B",
                goodsAndServices: "testGoodsAndSerices B",
@@ -93,11 +89,10 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
                statusDetail: "Awaiting Approval",
                regNumber: "7654321",
                status: TrademarkStatusCategory.Pending,
-               source: DataProvider.EUIPO,
-               classNumbers: new[] { 10, 15 });
+               source: DataProvider.EUIPO);
 
-            var (entity3, _) =
-               InMemoryDbContextFactory.CreateTrademark(
+            var entity3 =
+               InMemoryDbContextFactory.CreateTrademarkEntity(
                wordmark: "Wordmark C",
                owner: "Test Owner C",
                goodsAndServices: "testGoodsAndSerices C",
@@ -105,8 +100,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
                statusDetail: "Awaiting Approval",
                regNumber: "2233441",
                status: TrademarkStatusCategory.Pending,
-               source: DataProvider.EUIPO,
-               classNumbers: new[] { 10, 15 });
+               source: DataProvider.EUIPO);
 
             testDbContext.TrademarkRegistrations.AddRange(entity1, entity2, entity3);
             await testDbContext.SaveChangesAsync();
@@ -131,8 +125,8 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
         [Test]
         public async Task SearchAsync_WithEmptyQueryAndNoFilters_ReturnsAll_OrderedByRegistrationNumber()
         {
-            var (entity1, _) =
-                InMemoryDbContextFactory.CreateTrademark(
+            var entity1 =
+                InMemoryDbContextFactory.CreateTrademarkEntity(
                 wordmark: "Wordmark A",
                 owner: "Test Owner A",
                 goodsAndServices: "testGoodsAndSerices A",
@@ -140,11 +134,10 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
                 statusDetail: "Successfully Registered",
                 regNumber: "A1234567",
                 status: TrademarkStatusCategory.Registered,
-                source: DataProvider.USPTO,
-                classNumbers: new[] { 25, 35 });
+                source: DataProvider.USPTO);
 
-            var (entity2, _) =
-               InMemoryDbContextFactory.CreateTrademark(
+            var entity2 =
+               InMemoryDbContextFactory.CreateTrademarkEntity(
                wordmark: "Wordmark B",
                owner: "Test Owner B",
                goodsAndServices: "testGoodsAndSerices B",
@@ -152,11 +145,10 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
                statusDetail: "Awaiting Approval",
                regNumber: "B7654321",
                status: TrademarkStatusCategory.Pending,
-               source: DataProvider.EUIPO,
-               classNumbers: new[] { 10, 15 });
+               source: DataProvider.EUIPO);
 
-            var (entity3, _) =
-               InMemoryDbContextFactory.CreateTrademark(
+            var entity3 =
+               InMemoryDbContextFactory.CreateTrademarkEntity(
                wordmark: "Wordmark C",
                owner: "Test Owner C",
                goodsAndServices: "testGoodsAndSerices C",
@@ -164,8 +156,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
                statusDetail: "Awaiting Approval",
                regNumber: "C2233441",
                status: TrademarkStatusCategory.Pending,
-               source: DataProvider.EUIPO,
-               classNumbers: new[] { 10, 15 });
+               source: DataProvider.EUIPO);
 
             testDbContext.TrademarkRegistrations.AddRange(entity1, entity2, entity3);
             await testDbContext.SaveChangesAsync();
@@ -196,8 +187,8 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
         [Test]
         public async Task SearchAsync_WhenPageIsZero_TreatsAsPage1_ReturnsFirstSlice()
         {
-            var (entity1, _) =
-                InMemoryDbContextFactory.CreateTrademark(
+            var entity1 =
+                InMemoryDbContextFactory.CreateTrademarkEntity(
                 wordmark: "Wordmark A",
                 owner: "Test Owner A",
                 goodsAndServices: "testGoodsAndSerices A",
@@ -205,11 +196,10 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
                 statusDetail: "Successfully Registered",
                 regNumber: "A1234567",
                 status: TrademarkStatusCategory.Registered,
-                source: DataProvider.USPTO,
-                classNumbers: new[] { 25, 35 });
+                source: DataProvider.USPTO);
 
-            var (entity2, _) =
-               InMemoryDbContextFactory.CreateTrademark(
+            var entity2 =
+               InMemoryDbContextFactory.CreateTrademarkEntity(
                wordmark: "Wordmark B",
                owner: "Test Owner B",
                goodsAndServices: "testGoodsAndSerices B",
@@ -217,11 +207,10 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
                statusDetail: "Awaiting Approval",
                regNumber: "B7654321",
                status: TrademarkStatusCategory.Pending,
-               source: DataProvider.EUIPO,
-               classNumbers: new[] { 10, 15 });
+               source: DataProvider.EUIPO);
 
-            var (entity3, _) =
-               InMemoryDbContextFactory.CreateTrademark(
+            var entity3 =
+               InMemoryDbContextFactory.CreateTrademarkEntity(
                wordmark: "Wordmark C",
                owner: "Test Owner C",
                goodsAndServices: "testGoodsAndSerices C",
@@ -229,8 +218,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.Tradema
                statusDetail: "Awaiting Approval",
                regNumber: "C2233441",
                status: TrademarkStatusCategory.Pending,
-               source: DataProvider.EUIPO,
-               classNumbers: new[] { 10, 15 });
+               source: DataProvider.EUIPO);
 
             testDbContext.TrademarkRegistrations.AddRange(entity1, entity2, entity3);
             await testDbContext.SaveChangesAsync();

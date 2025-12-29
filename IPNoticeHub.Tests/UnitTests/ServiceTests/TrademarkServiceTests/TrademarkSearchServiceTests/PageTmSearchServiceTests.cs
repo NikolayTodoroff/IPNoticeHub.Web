@@ -2,6 +2,7 @@
 using IPNoticeHub.Application.DTOs.TrademarkDTOs;
 using IPNoticeHub.Shared.Enums;
 using IPNoticeHub.Tests.UnitTests.ServiceTests.TrademarkServiceTests.TrademarkSearchServiceTests;
+using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 using NUnit.Framework;
 
 namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchServiceTests
@@ -11,6 +12,42 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
         [Test]
         public async Task SearchAsync_WhenNoFiltersApplied_ReturnsPagedResultsMetadata()
         {
+            var entity1 =
+                InMemoryDbContextFactory.CreateTrademarkEntity(
+                wordmark: "Test Wordmark 1",
+                owner: "Test Owner 1",
+                goodsAndServices: "testGoodsAndSerices1",
+                sourceId: "X123AZ",
+                statusDetail: "Successfully Registered",
+                regNumber: "2346532",
+                status: TrademarkStatusCategory.Registered,
+                source: DataProvider.USPTO);
+
+            var entity2 =
+               InMemoryDbContextFactory.CreateTrademarkEntity(
+               wordmark: "Test Wordmark 2",
+               owner: "Test Owner 2",
+               goodsAndServices: "testGoodsAndSerices2",
+               sourceId: "D123AC",
+               statusDetail: "Awaiting Approval",
+               regNumber: "3322115",
+               status: TrademarkStatusCategory.Pending,
+               source: DataProvider.USPTO);
+
+            var entity3 =
+               InMemoryDbContextFactory.CreateTrademarkEntity(
+               wordmark: "Test Wordmark 3",
+               owner: "Test Owner 3",
+               goodsAndServices: "testGoodsAndSerices3",
+               sourceId: "ZZZ456",
+               statusDetail: "Awaiting Approval",
+               regNumber: "3322115",
+               status: TrademarkStatusCategory.Pending,
+               source: DataProvider.USPTO);
+
+            testDbContext.TrademarkRegistrations.AddRange(entity1, entity2,entity3);
+            await testDbContext.SaveChangesAsync();
+
             var dto = new TrademarkFilterDto
             {
                 SearchBy = TrademarkSearchBy.Wordmark,
@@ -33,6 +70,42 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
         [Test]
         public async Task SearchAsync_WhenNoFiltersApplied_ReturnsPagedResultsSortedByWordmarkAndId()
         {
+            var entity1 =
+                InMemoryDbContextFactory.CreateTrademarkEntity(
+                wordmark: "Test Wordmark A",
+                owner: "Test Owner A",
+                goodsAndServices: "testGoodsAndSerices1",
+                sourceId: "X123AZ",
+                statusDetail: "Successfully Registered",
+                regNumber: "2346532",
+                status: TrademarkStatusCategory.Registered,
+                source: DataProvider.USPTO);
+
+            var entity2 =
+               InMemoryDbContextFactory.CreateTrademarkEntity(
+               wordmark: "Test Wordmark B",
+               owner: "Test Owner B",
+               goodsAndServices: "testGoodsAndSerices2",
+               sourceId: "D123AC",
+               statusDetail: "Awaiting Approval",
+               regNumber: "3322115",
+               status: TrademarkStatusCategory.Pending,
+               source: DataProvider.USPTO);
+
+            var entity3 =
+               InMemoryDbContextFactory.CreateTrademarkEntity(
+               wordmark: "Test Wordmark C",
+               owner: "Test Owner C",
+               goodsAndServices: "testGoodsAndSerices3",
+               sourceId: "ZZZ456",
+               statusDetail: "Awaiting Approval",
+               regNumber: "3322115",
+               status: TrademarkStatusCategory.Pending,
+               source: DataProvider.USPTO);
+
+            testDbContext.TrademarkRegistrations.AddRange(entity1, entity2, entity3);
+            await testDbContext.SaveChangesAsync();
+
             var dto = new TrademarkFilterDto
             {
                 SearchBy = TrademarkSearchBy.Wordmark,
@@ -48,8 +121,8 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
                 cancellationToken: default);
 
             result.Results.Should().HaveCount(2);
-            result.Results[0].Wordmark.Should().Be("AAA");
-            result.Results[1].Wordmark.Should(). Be("BBB");
+            result.Results[0].Wordmark.Should().Be(entity1.Wordmark);
+            result.Results[1].Wordmark.Should(). Be(entity2.Wordmark);
         }
     }
 }

@@ -14,29 +14,27 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
         {
             const string expectedSearchTerm = "1234567";
 
-            var (entity, _) =
-                InMemoryDbContextFactory.CreateTrademark(
+            var entity =
+                InMemoryDbContextFactory.CreateTrademarkEntity(
                 wordmark: "Test Wordmark",
                 owner: "Test Owner",
                 goodsAndServices: "testGoodsAndSerices1",
                 sourceId: "X123AZ",
                 statusDetail: "Successfully Registered",
-                regNumber: "1234567",
+                regNumber: expectedSearchTerm,
                 status: TrademarkStatusCategory.Registered,
-                source: DataProvider.USPTO,
-                classNumbers: new[] { 25, 35 });
+                source: DataProvider.USPTO);
 
-            var (randomEntity, _) =
-               InMemoryDbContextFactory.CreateTrademark(
+            var randomEntity =
+               InMemoryDbContextFactory.CreateTrademarkEntity(
                wordmark: "Random Test Wordmark",
                owner: "Missing Test Owner",
-               goodsAndServices: "testGoodsAndSerices1",
+               goodsAndServices: "testGoodsAndSerices2",
                sourceId: "D123AC",
                statusDetail: "Awaiting Approval",
-               regNumber: "1234567",
+               regNumber: "3322115",
                status: TrademarkStatusCategory.Pending,
-               source: DataProvider.USPTO,
-               classNumbers: new[] { 10, 15 });
+               source: DataProvider.USPTO);
 
             testDbContext.TrademarkRegistrations.AddRange(entity, randomEntity);
             await testDbContext.SaveChangesAsync();
@@ -62,7 +60,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
                 pagedResult.Results.Single();
 
             result.Id.Should().Be(entity.Id);
-            result.Wordmark.Should().Be("Test Wordmark");
+            result.Wordmark.Should().Be(entity.Wordmark);
         }
 
         [Test]
@@ -70,20 +68,19 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
         {
             const string expectedSearchTerm = "X123AZ";
 
-            var (entity, _) =
-               InMemoryDbContextFactory.CreateTrademark(
+            var entity =
+               InMemoryDbContextFactory.CreateTrademarkEntity(
                wordmark: "Test Wordmark",
                owner: "Test Owner",
                goodsAndServices: "testGoodsAndSerices1",
-               sourceId: "X123AZ",
+               sourceId: expectedSearchTerm,
                statusDetail: "Successfully Registered",
                regNumber: "1234567",
                status: TrademarkStatusCategory.Registered,
-               source: DataProvider.USPTO,
-               classNumbers: new[] { 25, 35 });
+               source: DataProvider.USPTO);
 
-            var (randomEntity, _) =
-               InMemoryDbContextFactory.CreateTrademark(
+            var randomEntity =
+               InMemoryDbContextFactory.CreateTrademarkEntity(
                wordmark: "Random Test Wordmark",
                owner: "Missing Test Owner",
                goodsAndServices: "testGoodsAndSerices1",
@@ -91,8 +88,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
                statusDetail: "Awaiting Approval",
                regNumber: "1234567",
                status: TrademarkStatusCategory.Pending,
-               source: DataProvider.USPTO,
-               classNumbers: new[] { 10, 15 });
+               source: DataProvider.USPTO);
 
             testDbContext.TrademarkRegistrations.AddRange(entity, randomEntity);
             await testDbContext.SaveChangesAsync();
@@ -117,7 +113,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
             var result = pagedResult.Results.Single();
 
             result.Id.Should().Be(entity.Id);
-            result.Wordmark.Should().Be("Test Wordmark");
+            result.Wordmark.Should().Be(entity.Wordmark);
         }
 
         [Test]
@@ -125,29 +121,27 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
         {
             const string expectedSearchTerm = "123";
 
-            var (entity, _) =
-               InMemoryDbContextFactory.CreateTrademark(
+            var entity =
+               InMemoryDbContextFactory.CreateTrademarkEntity(
                wordmark: "Test Wordmark",
                owner: "Test Owner",
                goodsAndServices: "testGoodsAndSerices1",
-               sourceId: "X123AZ",
+               sourceId: "XWY125",
                statusDetail: "Successfully Registered",
-               regNumber: "1234567",
+               regNumber: $"789{expectedSearchTerm}",
                status: TrademarkStatusCategory.Registered,
-               source: DataProvider.USPTO,
-               classNumbers: new[] { 25, 35 });
+               source: DataProvider.USPTO);
 
-            var (randomEntity, _) =
-               InMemoryDbContextFactory.CreateTrademark(
+            var randomEntity =
+               InMemoryDbContextFactory.CreateTrademarkEntity(
                wordmark: "Random Test Wordmark",
                owner: "Missing Test Owner",
                goodsAndServices: "testGoodsAndSerices1",
-               sourceId: "D123AC",
+               sourceId: "WWW654",
                statusDetail: "Awaiting Approval",
-               regNumber: "1234567",
+               regNumber: "9785670",
                status: TrademarkStatusCategory.Pending,
-               source: DataProvider.USPTO,
-               classNumbers: new[] { 10, 15 });
+               source: DataProvider.USPTO);
 
             testDbContext.TrademarkRegistrations.AddRange(entity, randomEntity);
             await testDbContext.SaveChangesAsync();
@@ -172,7 +166,7 @@ namespace IPNoticeHub.Tests.UnitTests.ServiceTests.Trademarks.TrademarkSearchSer
             var result = pagedResult.Results.Single();
 
             result.Id.Should().Be(entity.Id);
-            result.Wordmark.Should().Be("Test Wordmark");
+            result.Wordmark.Should().Be(entity.Wordmark);
         }
     }
 }
