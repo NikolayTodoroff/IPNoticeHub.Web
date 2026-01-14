@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using static IPNoticeHub.Shared.Constants.IdentityConstants.AdminAccountCredentials;
+using static IPNoticeHub.Shared.Constants.IdentityConstants.DemoUserCredentials;
 using static IPNoticeHub.Shared.Support.RoleNames;
 
 namespace IPNoticeHub.Infrastructure.Identity
@@ -67,7 +68,7 @@ namespace IPNoticeHub.Infrastructure.Identity
                     return;
                 }
 
-                logger.LogInformation("Default admin user created.");
+                logger.LogInformation($"Default admin ensured (email: ${AdminEmailAddress}.");
             }
 
             else
@@ -92,7 +93,58 @@ namespace IPNoticeHub.Infrastructure.Identity
                     }
                 }
             }
+            //
+            var demoUser = await userManager.FindByEmailAsync(DemoUserEmailAddress);
 
+            if (demoUser == null)
+            {
+                demoUser = new ApplicationUser
+                {
+                    UserName = DemoUserEmailAddress,
+                    Email = DemoUserEmailAddress,
+                    EmailConfirmed = true
+                };
+
+                var createResult = await userManager.CreateAsync(
+                    demoUser,
+                    DemoUserEmailPassword);
+
+                if (!createResult.Succeeded)
+                {
+                    logger.LogCritical(
+                        "Failed to create demo user. Errors: {Errors}",
+                        string.Join("; ", createResult.Errors.Select(e => e.Description)));
+
+                    return;
+                }
+
+                logger.LogInformation($"Demo user ensured (email: ${DemoUserEmailAddress}.");
+            }
+
+            else
+            {
+                if (!demoUser.EmailConfirmed)
+                {
+                    demoUser.EmailConfirmed = true;
+                    await userManager.UpdateAsync(demoUser);
+                }
+
+                if (!await userManager.HasPasswordAsync(demoUser))
+                {
+                    var pwdResult = await userManager.AddPasswordAsync(
+                        demoUser,
+                        DemoUserEmailPassword);
+
+                    if (!pwdResult.Succeeded)
+                    {
+                        logger.LogWarning(
+                            "Failed to add password to demo user. Errors: {Errors}",
+                            string.Join("; ", pwdResult.Errors.Select(e => e.Description)));
+                    }
+                }
+            }
+
+            //
             if (!await userManager.IsInRoleAsync(adminUser, Admin))
             {
                 await userManager.AddToRoleAsync(adminUser, Admin);
@@ -107,3 +159,4 @@ namespace IPNoticeHub.Infrastructure.Identity
         }
     }
 }
+

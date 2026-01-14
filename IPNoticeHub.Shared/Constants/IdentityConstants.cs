@@ -7,10 +7,10 @@
             public const string AdminEmailAddress = "admin@ipnoticehub.com";
             public const string AdminEmailPassword = "Admin!234";
         }
-        public static class DemoAccountCredentials
+        public static class DemoUserCredentials
         {
-            public const string DemoEmailAddress = "demo@ipnoticehub.com";
-            public const string DemoEmailPassword = "Demo!234";
+            public const string DemoUserEmailAddress = "demo@ipnoticehub.com";
+            public const string DemoUserEmailPassword = "Demo!234";
         }
 
         public static class AuthRedirectPaths
