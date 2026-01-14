@@ -34,9 +34,10 @@ namespace IPNoticeHub.Infrastructure.Persistence.Seeding
                 GetRequiredService<ILoggerFactory>().
                 CreateLogger("FakeDataSeeder");
 
-            await dbContext.Database.MigrateAsync();
+            //await dbContext.Database.MigrateAsync();
 
-            var demoUser = await userManager.FindByEmailAsync(DemoUserEmailAddress);
+            var demoUser = 
+                await userManager.FindByEmailAsync(DemoUserEmailAddress);
 
             if (demoUser == null)
             {
@@ -50,7 +51,8 @@ namespace IPNoticeHub.Infrastructure.Persistence.Seeding
             Randomizer.Seed = new Random(20260101);
             var faker = new Faker("en");
 
-            var allTrademarks = await SeedTrademarkDataAsync(dbContext, logger);
+            var allTrademarks = 
+                await SeedTrademarkDataAsync(dbContext, logger);
 
             if (allTrademarks.Count == 0)
             {
@@ -115,12 +117,12 @@ namespace IPNoticeHub.Infrastructure.Persistence.Seeding
             ApplicationUser demoUser,
             List<TrademarkEntity> allTrademarks)
         {
-            var anyDemoUserTrademarkLinks =
+            var exists =
                 await dbContext.UserTrademarks.
                 AsNoTracking().
                 AnyAsync(x => x.ApplicationUserId == demoUser.Id);
 
-            if (anyDemoUserTrademarkLinks)
+            if (exists)
             {
                 logger.LogInformation(
                     "Demo user's trademark collection already contains data. Seeding skipped.");
@@ -153,12 +155,12 @@ namespace IPNoticeHub.Infrastructure.Persistence.Seeding
             ApplicationUser demoUser,
             List<TrademarkEntity> allTrademarks)
         {
-            var anyDemoWatchlistRows =
+            var exists =
                 await dbContext.Watchlists.
                 AsNoTracking().
                 AnyAsync(w => w.UserId == demoUser.Id);
 
-            if (anyDemoWatchlistRows)
+            if (exists)
             {
                 logger.LogInformation(
                     "Demo user's watchlist already contains data. Seeding skipped.");
@@ -195,12 +197,12 @@ namespace IPNoticeHub.Infrastructure.Persistence.Seeding
             Faker faker,
             ApplicationUser demoUser)
         {
-            var anyDemoCopyrightLinks =
+            var exists =
                 await dbContext.UserCopyrights.
                 AsNoTracking().
                 AnyAsync(uc => uc.ApplicationUserId == demoUser.Id);
 
-            if (anyDemoCopyrightLinks)
+            if (exists)
             {
                 logger.LogInformation(
                     "Demo user's copyright collection already contains data. Seeding skipped.");

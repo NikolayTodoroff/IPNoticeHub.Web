@@ -27,6 +27,7 @@ namespace IPNoticeHub.Web
             var app = builder.Build();
 
             await app.SeedIdentitiesAsync();
+            await app.SeedFakeDataAsync();
 
             app.UseExceptionHandling(app.Environment);
             app.UseHttpsRedirection();

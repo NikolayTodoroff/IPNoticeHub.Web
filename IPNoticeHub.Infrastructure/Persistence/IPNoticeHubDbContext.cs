@@ -5,7 +5,6 @@ using IPNoticeHub.Domain.Entities.Copyrights;
 using IPNoticeHub.Domain.Entities.Identity;
 using IPNoticeHub.Domain.Entities.LegalDocuments;
 using IPNoticeHub.Domain.Entities.Trademarks;
-using IPNoticeHub.Infrastructure.Persistence.Seeding;
 using IPNoticeHub.Domain.Entities.Watchlist;
 
 namespace IPNoticeHub.Infrastructure.Persistence
@@ -28,8 +27,6 @@ namespace IPNoticeHub.Infrastructure.Persistence
             base.OnModelCreating(builder);
 
             builder.ApplyConfigurationsFromAssembly(typeof(IPNoticeHubDbContext).Assembly);
-
-            //FakeDataSeeder.Seed(builder);
         }
     }
 }
