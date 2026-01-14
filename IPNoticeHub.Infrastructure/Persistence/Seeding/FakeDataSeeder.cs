@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using static IPNoticeHub.Infrastructure.Persistence.Seeding.GenerateTrademarkClasses;
 using static IPNoticeHub.Infrastructure.Persistence.Seeding.GenerateTrademarkEntities;
+using static IPNoticeHub.Infrastructure.Persistence.Seeding.GenerateCopyrightEntities;
 using static IPNoticeHub.Infrastructure.Persistence.Seeding.PickDistinctElement;
 using static IPNoticeHub.Shared.Constants.IdentityConstants.DemoUserCredentials;
 
@@ -26,8 +27,7 @@ namespace IPNoticeHub.Infrastructure.Persistence.Seeding
             var userManager = 
                 scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
-            var logger = 
-                scope.ServiceProvider.GetRequiredService<ILoggerFactory>().
+            var logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>().
                 CreateLogger("FakeDataSeeder");
 
             await dbContext.Database.MigrateAsync();
@@ -44,13 +44,13 @@ namespace IPNoticeHub.Infrastructure.Persistence.Seeding
 
             Randomizer.Seed = new Random(20250101);
 
-            var allTrademarks = 
-                await SeedTrademarkDataAsync(dbContext, logger);
+            var allTrademarks = await SeedTrademarkDataAsync(dbContext, logger);
 
             if (allTrademarks.Count == 0) return;
 
             await SeedDemoUserTrademarksAsync(dbContext, logger, demoUser, allTrademarks);
             await SeedDemoUserWatchlistAsync(dbContext, logger, demoUser, allTrademarks);
+            await SeedDemoUserCopyrightsAsync(dbContext, logger, demoUser);
         }
 
         private static async Task<List<TrademarkEntity>> SeedTrademarkDataAsync(
@@ -171,6 +171,49 @@ namespace IPNoticeHub.Infrastructure.Persistence.Seeding
                 logger.LogInformation("FakeDataSeeder: " +
                     "Demo user's watchlist already exists. Skipping.");
             }
+        }
+
+        private static async Task SeedDemoUserCopyrightsAsync(
+            IPNoticeHubDbContext dbContext,
+            ILogger logger,
+            ApplicationUser demoUser)
+        {
+            var demoCopyrightLinksExist = 
+                await dbContext.UserCopyrights.
+                AsNoTracking().
+                AnyAsync(uc => uc.ApplicationUserId == demoUser.Id && !uc.IsDeleted);
+
+            if (!demoCopyrightLinksExist)
+            {
+                var copyrights = GenerateCopyrights(count: 10);
+                await dbContext.CopyrightRegistrations.AddRangeAsync(copyrights);
+                await dbContext.SaveChangesAsync();
+
+                var now = DateTime.UtcNow;
+
+                var userLinks = 
+                    copyrights.Select(entity => new UserCopyright
+                {
+                    ApplicationUserId = demoUser.Id,
+                    CopyrightEntityId = entity.Id,
+                    DateAdded = now.AddDays(-Random.Shared.Next(1, 120)),
+                    IsDeleted = false
+                });
+
+                await dbContext.UserCopyrights.AddRangeAsync(userLinks);
+                await dbContext.SaveChangesAsync();
+
+                logger.LogInformation("FakeDataSeeder: " +
+                    "Seeded demo user's copyrights (10 items).");
+            }
+
+            else
+            {
+                logger.LogInformation("FakeDataSeeder: " +
+                    "Demo user's copyrights already exist. Skipping.");
+            }
+
+            logger.LogInformation("FakeDataSeeder: Done.");
         }
     }
 }
