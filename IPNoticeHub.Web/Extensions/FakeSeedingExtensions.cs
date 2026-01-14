@@ -8,14 +8,17 @@ namespace IPNoticeHub.Web.Extensions
         {
             bool enabled = app.Configuration.GetValue<bool>("Seeding:Enabled");
 
-            if (!enabled || !app.Environment.IsDevelopment()) return;
+            if (!enabled || !app.Environment.IsDevelopment())  return;
 
-            var logger = app.Services.
+            using var scope = app.Services.CreateScope();
+            var services = scope.ServiceProvider;
+
+            var logger = services.
                 GetRequiredService<ILoggerFactory>().
                 CreateLogger("FakeSeeding");
 
             logger.LogInformation("Fake seeding is enabled. Running FakeDataSeeder.");
-            await FakeDataSeeder.SeedAsync(app.Services);
+            await FakeDataSeeder.SeedAsync(services);
         }
     }
 }
