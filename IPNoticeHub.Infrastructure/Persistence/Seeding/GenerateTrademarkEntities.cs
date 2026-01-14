@@ -2,7 +2,6 @@
 using IPNoticeHub.Domain.Entities.Trademarks;
 using IPNoticeHub.Shared.Enums;
 
-
 namespace IPNoticeHub.Infrastructure.Persistence.Seeding
 {
     public static class GenerateTrademarkEntities

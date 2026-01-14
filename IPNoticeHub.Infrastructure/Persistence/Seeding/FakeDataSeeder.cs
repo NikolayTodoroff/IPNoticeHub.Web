@@ -97,6 +97,8 @@ namespace IPNoticeHub.Infrastructure.Persistence.Seeding
             ApplicationUser demoUser,
             List<TrademarkEntity> allTrademarks)
         {
+            var faker = new Faker("en");
+
             var demoUserTrademarkExists =
                 await dbContext.UserTrademarks.
                 AsNoTracking().
@@ -112,7 +114,7 @@ namespace IPNoticeHub.Infrastructure.Persistence.Seeding
                 {
                     ApplicationUserId = demoUser.Id,
                     TrademarkEntityId = entity.Id,
-                    DateAdded = now.AddDays(-Random.Shared.Next(1, 45)),
+                    DateAdded = now.AddDays(-faker.Random.Number(1, 44)),
                     IsDeleted = false
                 });
 
@@ -136,6 +138,8 @@ namespace IPNoticeHub.Infrastructure.Persistence.Seeding
             ApplicationUser demoUser,
             List<TrademarkEntity> allTrademarks)
         {
+            var faker = new Faker("en");
+
             var demoWatchlistExists = 
                 await dbContext.Watchlists.
                 AsNoTracking().
@@ -152,8 +156,8 @@ namespace IPNoticeHub.Infrastructure.Persistence.Seeding
                     UserId = demoUser.Id,
                     TrademarkId = entity.Id,
                     IsDeleted = false,
-                    NotificationsEnabled = Random.Shared.Next(0, 2) == 0,
-                    AddedOnUtc = now.AddDays(-Random.Shared.Next(1, 30)),
+                    NotificationsEnabled = faker.Random.Bool(),
+                    AddedOnUtc = now.AddDays(-faker.Random.Number(1, 30)),
                     InitialStatusCodeRaw = entity.StatusCodeRaw,
                     InitialStatusText = entity.StatusDetail,
                     InitialStatusDateUtc = entity.StatusDateUtc
@@ -178,6 +182,8 @@ namespace IPNoticeHub.Infrastructure.Persistence.Seeding
             ILogger logger,
             ApplicationUser demoUser)
         {
+            var faker = new Faker("en");
+
             var demoCopyrightLinksExist = 
                 await dbContext.UserCopyrights.
                 AsNoTracking().
@@ -196,7 +202,7 @@ namespace IPNoticeHub.Infrastructure.Persistence.Seeding
                 {
                     ApplicationUserId = demoUser.Id,
                     CopyrightEntityId = entity.Id,
-                    DateAdded = now.AddDays(-Random.Shared.Next(1, 120)),
+                    DateAdded = now.AddDays(-faker.Random.Number(1, 120)),
                     IsDeleted = false
                 });
 
