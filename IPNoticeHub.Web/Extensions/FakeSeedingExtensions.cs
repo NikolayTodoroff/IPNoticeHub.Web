@@ -6,9 +6,9 @@ namespace IPNoticeHub.Web.Extensions
     {
         public static async Task SeedFakeDataAsync(this WebApplication app)
         {
-            bool enabled = app.Configuration.GetValue<bool>("Seeding:Enabled");
+            bool seedingEnabled = app.Configuration.GetValue<bool>("Seeding:Enabled");
 
-            if (!enabled || !app.Environment.IsDevelopment())  return;
+            if (!seedingEnabled || !app.Environment.IsDevelopment())  return;
 
             using var scope = app.Services.CreateScope();
             var services = scope.ServiceProvider;

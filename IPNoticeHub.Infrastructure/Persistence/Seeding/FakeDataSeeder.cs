@@ -34,8 +34,6 @@ namespace IPNoticeHub.Infrastructure.Persistence.Seeding
                 GetRequiredService<ILoggerFactory>().
                 CreateLogger("FakeDataSeeder");
 
-            //await dbContext.Database.MigrateAsync();
-
             var demoUser = 
                 await userManager.FindByEmailAsync(DemoUserEmailAddress);
 

@@ -8,19 +8,20 @@ namespace IPNoticeHub.Infrastructure.Persistence.Seeding
     {
         public static string GetGoodsOnly(this TrademarkClass value)
         {
-            var display = value.GetDisplayName();
+            var displayName = value.GetDisplayName();
 
-            var parts = display.Split(new[] { "–", "-" }, 
+            var nameParts = displayName.Split(new[] { "–", "-" }, 
                 2, StringSplitOptions.TrimEntries);
 
-            return parts.Length == 2 ? parts[1] : display;
+            return nameParts.Length == 2 ? nameParts[1] : displayName;
         }
 
         public static string GetDisplayName(this Enum value)
         {
             var member = value.GetType().GetMember(value.ToString()).FirstOrDefault();
-            var attr = member?.GetCustomAttribute<DisplayAttribute>();
-            return attr?.Name ?? value.ToString();
+            var attribute = member?.GetCustomAttribute<DisplayAttribute>();
+
+            return attribute?.Name ?? value.ToString();
         }
     }
 }

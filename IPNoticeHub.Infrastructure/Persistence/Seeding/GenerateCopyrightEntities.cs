@@ -15,7 +15,10 @@ namespace IPNoticeHub.Infrastructure.Persistence.Seeding
                 "Visual Material",
                 "Sound Recording",
                 "Performing Arts",
-                "Computer Program"
+                "Computer Software",
+                "Motion Pictures",
+                "Audiovisual Works",
+                "Single Serial Issue"
             };
 
             return new Faker<CopyrightEntity>("en").

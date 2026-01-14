@@ -47,12 +47,12 @@ namespace IPNoticeHub.Infrastructure.Persistence.Seeding
                 {
                     var baseName = faker.PickRandom(brands);
 
-                    var variant = faker.Random.Bool(0.6f) ?
+                    var tempWordmark = faker.Random.Bool(0.6f) ?
                         baseName : $"{baseName} {faker.Random.Word().ToUpperInvariant()}";
 
-                    if (variant.Length > 200) variant = variant[..200];
+                    if (tempWordmark.Length > 200) tempWordmark = tempWordmark[..200];
 
-                    if (used.Add(variant)) return variant;
+                    if (used.Add(tempWordmark)) return tempWordmark;
                 }
 
                 return faker.Company.CompanyName();
@@ -67,13 +67,13 @@ namespace IPNoticeHub.Infrastructure.Persistence.Seeding
 
                 var status = PickStatus(faker);
 
-                var filing = faker.Date.Past(
+                var filingDate = faker.Date.Past(
                     15, DateTime.UtcNow.AddMonths(-2)).Date;
 
-                DateTime? registration = status == TrademarkStatusCategory.Registered ? 
-                    filing.AddDays(faker.Random.Int(200, 900)) : null;
+                DateTime? registrationDate = status == TrademarkStatusCategory.Registered ? 
+                    filingDate.AddDays(faker.Random.Int(200, 900)) : null;
 
-                var statusDate = faker.Date.Between(filing, DateTime.UtcNow);
+                var statusDate = faker.Date.Between(filingDate, DateTime.UtcNow);
 
                 var sourceId = "USPTO-" + faker.Random.ReplaceNumbers("########");
 
@@ -92,8 +92,8 @@ namespace IPNoticeHub.Infrastructure.Persistence.Seeding
                     StatusDetail = StatusDetail(status),
                     StatusCodeRaw = faker.Random.Bool(0.7f) ? faker.Random.Int(100, 999) : null,
                     StatusDateUtc = statusDate,
-                    FilingDate = filing,
-                    RegistrationDate = registration,
+                    FilingDate = filingDate,
+                    RegistrationDate = registrationDate,
                     MarkImageUrl = faker.Random.Bool(0.2f) ? faker.Internet.Url() : null,
                     Source = dataProvider
                 });
