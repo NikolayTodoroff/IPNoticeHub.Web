@@ -1,6 +1,7 @@
 ﻿using Bogus;
 using IPNoticeHub.Domain.Entities.Identity;
 using IPNoticeHub.Domain.Entities.Trademarks;
+using IPNoticeHub.Domain.Entities.Watchlist;
 using IPNoticeHub.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -49,6 +50,7 @@ namespace IPNoticeHub.Infrastructure.Persistence.Seeding
             if (allTrademarks.Count == 0) return;
 
             await SeedDemoUserTrademarksAsync(dbContext, logger, demoUser, allTrademarks);
+            await SeedDemoUserWatchlistAsync(dbContext, logger, demoUser, allTrademarks);
         }
 
         private static async Task<List<TrademarkEntity>> SeedTrademarkDataAsync(
@@ -105,7 +107,8 @@ namespace IPNoticeHub.Infrastructure.Persistence.Seeding
                 var picks = PickDistinct(allTrademarks, count: 6);
                 var now = DateTime.UtcNow;
 
-                var links = picks.Select(entity => new UserTrademark
+                var links = 
+                    picks.Select(entity => new UserTrademark
                 {
                     ApplicationUserId = demoUser.Id,
                     TrademarkEntityId = entity.Id,
@@ -119,10 +122,54 @@ namespace IPNoticeHub.Infrastructure.Persistence.Seeding
                 logger.LogInformation("FakeDataSeeder: " +
                     "Seeded demo user's trademark collection (6 items).");
             }
+
             else
             {
                 logger.LogInformation("FakeDataSeeder: " +
                     "Demo user's trademark collection already exists. Skipping.");
+            }
+        }
+
+        private static async Task SeedDemoUserWatchlistAsync(
+            IPNoticeHubDbContext dbContext,
+            ILogger logger,
+            ApplicationUser demoUser,
+            List<TrademarkEntity> allTrademarks)
+        {
+            var demoWatchlistExists = 
+                await dbContext.Watchlists.
+                AsNoTracking().
+                AnyAsync(w => w.UserId == demoUser.Id && !w.IsDeleted);
+
+            if (!demoWatchlistExists)
+            {
+                var picks = PickDistinct(allTrademarks, count: 3);
+                var now = DateTime.UtcNow;
+
+                var watchList = 
+                    picks.Select(entity => new Watchlist
+                {
+                    UserId = demoUser.Id,
+                    TrademarkId = entity.Id,
+                    IsDeleted = false,
+                    NotificationsEnabled = Random.Shared.Next(0, 2) == 0,
+                    AddedOnUtc = now.AddDays(-Random.Shared.Next(1, 30)),
+                    InitialStatusCodeRaw = entity.StatusCodeRaw,
+                    InitialStatusText = entity.StatusDetail,
+                    InitialStatusDateUtc = entity.StatusDateUtc
+                });
+
+                await dbContext.Watchlists.AddRangeAsync(watchList);
+                await dbContext.SaveChangesAsync();
+
+                logger.LogInformation("FakeDataSeeder: " +
+                    "Seeded demo user's watchlist (3 items).");
+            }
+
+            else
+            {
+                logger.LogInformation("FakeDataSeeder: " +
+                    "Demo user's watchlist already exists. Skipping.");
             }
         }
     }
