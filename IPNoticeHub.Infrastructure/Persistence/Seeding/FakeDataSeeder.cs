@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using static IPNoticeHub.Infrastructure.Persistence.Seeding.GenerateTrademarkClasses;
 using static IPNoticeHub.Infrastructure.Persistence.Seeding.GenerateTrademarkEntities;
+using static IPNoticeHub.Infrastructure.Persistence.Seeding.PickDistinctElement;
 using static IPNoticeHub.Shared.Constants.IdentityConstants.DemoUserCredentials;
 
 namespace IPNoticeHub.Infrastructure.Persistence.Seeding
@@ -42,6 +43,18 @@ namespace IPNoticeHub.Infrastructure.Persistence.Seeding
 
             Randomizer.Seed = new Random(20250101);
 
+            var allTrademarks = 
+                await SeedTrademarkDataAsync(dbContext, logger);
+
+            if (allTrademarks.Count == 0) return;
+
+            await SeedDemoUserTrademarksAsync(dbContext, logger, demoUser, allTrademarks);
+        }
+
+        private static async Task<List<TrademarkEntity>> SeedTrademarkDataAsync(
+            IPNoticeHubDbContext dbContext, 
+            ILogger logger)
+        {
             if (!await dbContext.TrademarkRegistrations.AsNoTracking().AnyAsync())
             {
                 var trademarks = GenerateTrademarks(count: 60);
@@ -55,7 +68,6 @@ namespace IPNoticeHub.Infrastructure.Persistence.Seeding
                 logger.LogInformation("FakeDataSeeder: Seeded {Count} global trademarks and " +
                     "class assignments.", trademarks.Count);
             }
-
             else
             {
                 logger.LogInformation("FakeDataSeeder: Global trademarks already exist. " +
@@ -72,11 +84,18 @@ namespace IPNoticeHub.Infrastructure.Persistence.Seeding
             {
                 logger.LogWarning("FakeDataSeeder: No trademarks found after seeding. " +
                     "Skipping demo links.");
-
-                return;
             }
 
-            var demoUserTrademarkExists = 
+            return allTrademarks;
+        }
+
+        private static async Task SeedDemoUserTrademarksAsync(
+            IPNoticeHubDbContext dbContext,
+            ILogger logger,
+            ApplicationUser demoUser,
+            List<TrademarkEntity> allTrademarks)
+        {
+            var demoUserTrademarkExists =
                 await dbContext.UserTrademarks.
                 AsNoTracking().
                 AnyAsync(x => x.ApplicationUserId == demoUser.Id && !x.IsDeleted);
@@ -86,10 +105,10 @@ namespace IPNoticeHub.Infrastructure.Persistence.Seeding
                 var picks = PickDistinct(allTrademarks, count: 6);
                 var now = DateTime.UtcNow;
 
-                var links = picks.Select(t => new UserTrademark
+                var links = picks.Select(entity => new UserTrademark
                 {
                     ApplicationUserId = demoUser.Id,
-                    TrademarkEntityId = t.Id,
+                    TrademarkEntityId = entity.Id,
                     DateAdded = now.AddDays(-Random.Shared.Next(1, 45)),
                     IsDeleted = false
                 });
@@ -106,9 +125,5 @@ namespace IPNoticeHub.Infrastructure.Persistence.Seeding
                     "Demo user's trademark collection already exists. Skipping.");
             }
         }
-
-        
-
-        
     }
 }
