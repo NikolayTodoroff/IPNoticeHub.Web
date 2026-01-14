@@ -3,7 +3,6 @@ using IPNoticeHub.Domain.Entities.Identity;
 using System.ComponentModel.DataAnnotations;
 using static IPNoticeHub.Shared.Constants.ValidationConstants.TrademarkRegistrationConstants;
 
-
 namespace IPNoticeHub.Domain.Entities.Trademarks
 {
     public class TrademarkEntity

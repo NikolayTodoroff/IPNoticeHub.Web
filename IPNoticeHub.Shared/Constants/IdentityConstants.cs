@@ -10,7 +10,7 @@
         public static class DemoUserCredentials
         {
             public const string DemoUserEmailAddress = "demo@ipnoticehub.com";
-            public const string DemoUserEmailPassword = "Demo!234";
+            public const string DemoUserEmailPassword = "DemoUser!234";
         }
 
         public static class AuthRedirectPaths
