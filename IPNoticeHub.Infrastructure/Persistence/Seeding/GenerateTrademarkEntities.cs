@@ -26,6 +26,7 @@ namespace IPNoticeHub.Infrastructure.Persistence.Seeding
                 if (roll <= 50) return TrademarkStatusCategory.Registered;
                 if (roll <= 70) return TrademarkStatusCategory.Pending;
                 if (roll <= 90) return TrademarkStatusCategory.Abandoned;
+
                 return TrademarkStatusCategory.Cancelled;
             }
 
@@ -69,9 +70,8 @@ namespace IPNoticeHub.Infrastructure.Persistence.Seeding
                 var filing = faker.Date.Past(
                     15, DateTime.UtcNow.AddMonths(-2)).Date;
 
-                DateTime? registration = status == TrademarkStatusCategory.Registered
-                    ? filing.AddDays(faker.Random.Int(200, 900))
-                    : null;
+                DateTime? registration = status == TrademarkStatusCategory.Registered ? 
+                    filing.AddDays(faker.Random.Int(200, 900)) : null;
 
                 var statusDate = faker.Date.Between(filing, DateTime.UtcNow);
 
