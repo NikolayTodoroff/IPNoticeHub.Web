@@ -3,12 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
-
 namespace IPNoticeHub.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class CleanArch : Migration
+    public partial class InitialM : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -70,6 +68,24 @@ namespace IPNoticeHub.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_CopyrightRegistrations", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SeedHistory",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SeedKey = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Version = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    AppliedOnUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Environment = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    AppliedBy = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    Notes = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SeedHistory", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -364,71 +380,6 @@ namespace IPNoticeHub.Infrastructure.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.InsertData(
-                table: "AspNetUsers",
-                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[,]
-                {
-                    { "2b195b12-9690-46b9-ac8e-50118a7102ea", 0, "73dd29f5-cb9c-4f43-84ae-73597cded863", "testuser1@example.com", true, false, null, "TESTUSER1@EXAMPLE.COM", "TESTUSER1@EXAMPLE.COM", "AQAAAAIAAYagAAAAEFakeHash1234567890==", null, false, "6fc62e55-dbc8-4022-84b4-cd49bdb663a3", false, "testuser1@example.com" },
-                    { "4d8f7a3e-cb13-42f4-bf61-0a8c301a3f8b", 0, "d1d41029-3bbf-4476-890a-d64104220466", "testuser2@example.com", true, false, null, "TESTUSER2@EXAMPLE.COM", "TESTUSER2@EXAMPLE.COM", "AQAAAAIAAYagFakeHash0987654321==", null, false, "abc60a70-c408-4762-be78-c7c0d1ea3b9b", false, "testuser2@example.com" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "CopyrightRegistrations",
-                columns: new[] { "Id", "DateOfPublication", "NationOfFirstPublication", "Owner", "PublicId", "RegistrationNumber", "Title", "TypeOfWork", "YearOfCreation" },
-                values: new object[,]
-                {
-                    { 1, new DateTime(2020, 4, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "United States", "Nikolay Todorov", new Guid("076d6d16-235d-40e7-b419-da5465d8ebdf"), "VA0002288838", "Astronaut Music DJ", "Visual Material", 2020 },
-                    { 2, new DateTime(2024, 6, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "United States", "IPNoticeHub Ltd.", new Guid("c1d0c5bf-0b4b-4c9a-9cc0-2a3c9b2b0f11"), "TX0009990001", "IPNoticeHub – Terms & Templates Collection", "Literary Work", 2024 },
-                    { 3, new DateTime(2024, 9, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), "United States", "IPNoticeHub Ltd.", new Guid("b7a97c4a-6ee3-4b2f-a7b2-5b3a1d1a7c77"), "TX0009990002", "IPNoticeHub – Core Services", "Computer Program", 2024 }
-                });
-
-            migrationBuilder.InsertData(
-                table: "TrademarkRegistrations",
-                columns: new[] { "Id", "FilingDate", "GoodsAndServices", "MarkImageUrl", "Owner", "PublicId", "RegistrationDate", "RegistrationNumber", "Source", "SourceId", "StatusCategory", "StatusCodeRaw", "StatusDateUtc", "StatusDetail", "Wordmark" },
-                values: new object[,]
-                {
-                    { 1, new DateTime(2010, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Clothing, footwear, headgear", null, "Nike Inc.", new Guid("4dd1f011-5362-42ff-9853-33ccbe4aa935"), new DateTime(2012, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "54321", 0, "123456", 1, null, null, "Live/Registered", "Nike" },
-                    { 2, new DateTime(2015, 5, 5, 0, 0, 0, 0, DateTimeKind.Unspecified), "Sports equipment, clothing", null, "Adidas AG", new Guid("fdb6b78f-6f5c-42ec-8b36-9a958011168b"), new DateTime(2017, 6, 6, 0, 0, 0, 0, DateTimeKind.Unspecified), "98765", 0, "654321", 1, null, null, "Live/Registered", "Adidas" },
-                    { 3, new DateTime(2023, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Software as a service (SaaS) for IP monitoring and document generation", null, "IPNoticeHub Ltd.", new Guid("7a6b6f2b-3e1d-4c44-9b4b-9aef4e4f3a10"), new DateTime(2024, 1, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), "11111", 0, "IPN-0001", 1, null, null, "Live/Registered", "IPNOTICEHUB" },
-                    { 4, new DateTime(2022, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), "Cloud security consulting and DevOps deployment services", null, "Cloud Armor Group", new Guid("2bdb1d8a-1a11-4b3a-92f7-2c56e1c6f0c2"), new DateTime(2023, 8, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), "22222", 0, "CA-2040", 1, null, null, "Live/Registered", "CLOUDARMOR" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "TrademarkClassAssignment",
-                columns: new[] { "ClassNumber", "TrademarkRegistrationId" },
-                values: new object[,]
-                {
-                    { 25, 1 },
-                    { 25, 2 },
-                    { 28, 2 },
-                    { 9, 3 },
-                    { 42, 3 },
-                    { 35, 4 },
-                    { 42, 4 }
-                });
-
-            migrationBuilder.InsertData(
-                table: "UserCopyrights",
-                columns: new[] { "ApplicationUserId", "CopyrightEntityId", "DateAdded", "IsDeleted" },
-                values: new object[,]
-                {
-                    { "2b195b12-9690-46b9-ac8e-50118a7102ea", 1, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), false },
-                    { "2b195b12-9690-46b9-ac8e-50118a7102ea", 2, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), false },
-                    { "4d8f7a3e-cb13-42f4-bf61-0a8c301a3f8b", 3, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), false }
-                });
-
-            migrationBuilder.InsertData(
-                table: "UserTrademarks",
-                columns: new[] { "ApplicationUserId", "TrademarkEntityId", "DateAdded", "IsDeleted" },
-                values: new object[,]
-                {
-                    { "2b195b12-9690-46b9-ac8e-50118a7102ea", 1, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), false },
-                    { "2b195b12-9690-46b9-ac8e-50118a7102ea", 3, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), false },
-                    { "4d8f7a3e-cb13-42f4-bf61-0a8c301a3f8b", 2, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), false },
-                    { "4d8f7a3e-cb13-42f4-bf61-0a8c301a3f8b", 4, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), false }
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -478,6 +429,12 @@ namespace IPNoticeHub.Infrastructure.Migrations
                 name: "IX_LegalDocuments_ApplicationUserId",
                 table: "LegalDocuments",
                 column: "ApplicationUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SeedHistory_SeedKey_Version",
+                table: "SeedHistory",
+                columns: new[] { "SeedKey", "Version" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_TrademarkEvents_TrademarkId",
@@ -549,6 +506,9 @@ namespace IPNoticeHub.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "LegalDocuments");
+
+            migrationBuilder.DropTable(
+                name: "SeedHistory");
 
             migrationBuilder.DropTable(
                 name: "TrademarkClassAssignment");

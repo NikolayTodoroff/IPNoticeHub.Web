@@ -70,22 +70,21 @@ namespace IPNoticeHub.Infrastructure.Persistence.Seeding
                 var filingDate = faker.Date.Past(
                     15, DateTime.UtcNow.AddMonths(-2)).Date;
 
-                DateTime? registrationDate = status == TrademarkStatusCategory.Registered ? 
-                    filingDate.AddDays(faker.Random.Int(200, 900)) : null;
+                DateTime? registrationDate = filingDate.AddDays(faker.Random.Int(200, 900));
 
                 var statusDate = faker.Date.Between(filingDate, DateTime.UtcNow);
-
-                var sourceId = "USPTO-" + faker.Random.ReplaceNumbers("########");
-
+                
                 var dataProvider = faker.PickRandom<DataProvider>();
+
+                var sourceId = faker.Random.ReplaceNumbers("########");
+
 
                 list.Add(new TrademarkEntity
                 {
                     PublicId = Guid.NewGuid(),
                     Wordmark = NextWordmark(),
                     SourceId = sourceId,
-                    RegistrationNumber = status == TrademarkStatusCategory.Registered ?
-                    faker.Random.ReplaceNumbers("########") : null,
+                    RegistrationNumber = faker.Random.ReplaceNumbers("########"),
                     GoodsAndServices = goodsAndServices,
                     Owner = faker.Company.CompanyName(),
                     StatusCategory = status,

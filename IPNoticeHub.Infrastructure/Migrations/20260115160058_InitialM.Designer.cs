@@ -12,15 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IPNoticeHub.Infrastructure.Migrations
 {
     [DbContext(typeof(IPNoticeHubDbContext))]
-    [Migration("20251212151618_CleanArch")]
-    partial class CleanArch
+    [Migration("20260115160058_InitialM")]
+    partial class InitialM
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.19")
+                .HasAnnotation("ProductVersion", "8.0.22")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -72,44 +72,6 @@ namespace IPNoticeHub.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("CopyrightRegistrations");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            DateOfPublication = new DateTime(2020, 4, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            NationOfFirstPublication = "United States",
-                            Owner = "Nikolay Todorov",
-                            PublicId = new Guid("076d6d16-235d-40e7-b419-da5465d8ebdf"),
-                            RegistrationNumber = "VA0002288838",
-                            Title = "Astronaut Music DJ",
-                            TypeOfWork = "Visual Material",
-                            YearOfCreation = 2020
-                        },
-                        new
-                        {
-                            Id = 2,
-                            DateOfPublication = new DateTime(2024, 6, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            NationOfFirstPublication = "United States",
-                            Owner = "IPNoticeHub Ltd.",
-                            PublicId = new Guid("c1d0c5bf-0b4b-4c9a-9cc0-2a3c9b2b0f11"),
-                            RegistrationNumber = "TX0009990001",
-                            Title = "IPNoticeHub – Terms & Templates Collection",
-                            TypeOfWork = "Literary Work",
-                            YearOfCreation = 2024
-                        },
-                        new
-                        {
-                            Id = 3,
-                            DateOfPublication = new DateTime(2024, 9, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            NationOfFirstPublication = "United States",
-                            Owner = "IPNoticeHub Ltd.",
-                            PublicId = new Guid("b7a97c4a-6ee3-4b2f-a7b2-5b3a1d1a7c77"),
-                            RegistrationNumber = "TX0009990002",
-                            Title = "IPNoticeHub – Core Services",
-                            TypeOfWork = "Computer Program",
-                            YearOfCreation = 2024
-                        });
                 });
 
             modelBuilder.Entity("IPNoticeHub.Domain.Entities.Identity.UserCopyright", b =>
@@ -134,29 +96,6 @@ namespace IPNoticeHub.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("UserCopyrights");
-
-                    b.HasData(
-                        new
-                        {
-                            ApplicationUserId = "2b195b12-9690-46b9-ac8e-50118a7102ea",
-                            CopyrightEntityId = 1,
-                            DateAdded = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            IsDeleted = false
-                        },
-                        new
-                        {
-                            ApplicationUserId = "2b195b12-9690-46b9-ac8e-50118a7102ea",
-                            CopyrightEntityId = 2,
-                            DateAdded = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            IsDeleted = false
-                        },
-                        new
-                        {
-                            ApplicationUserId = "4d8f7a3e-cb13-42f4-bf61-0a8c301a3f8b",
-                            CopyrightEntityId = 3,
-                            DateAdded = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            IsDeleted = false
-                        });
                 });
 
             modelBuilder.Entity("IPNoticeHub.Domain.Entities.Identity.UserTrademark", b =>
@@ -178,36 +117,6 @@ namespace IPNoticeHub.Infrastructure.Migrations
                     b.HasIndex("TrademarkEntityId");
 
                     b.ToTable("UserTrademarks");
-
-                    b.HasData(
-                        new
-                        {
-                            ApplicationUserId = "2b195b12-9690-46b9-ac8e-50118a7102ea",
-                            TrademarkEntityId = 1,
-                            DateAdded = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            IsDeleted = false
-                        },
-                        new
-                        {
-                            ApplicationUserId = "4d8f7a3e-cb13-42f4-bf61-0a8c301a3f8b",
-                            TrademarkEntityId = 2,
-                            DateAdded = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            IsDeleted = false
-                        },
-                        new
-                        {
-                            ApplicationUserId = "2b195b12-9690-46b9-ac8e-50118a7102ea",
-                            TrademarkEntityId = 3,
-                            DateAdded = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            IsDeleted = false
-                        },
-                        new
-                        {
-                            ApplicationUserId = "4d8f7a3e-cb13-42f4-bf61-0a8c301a3f8b",
-                            TrademarkEntityId = 4,
-                            DateAdded = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            IsDeleted = false
-                        });
                 });
 
             modelBuilder.Entity("IPNoticeHub.Domain.Entities.LegalDocuments.LegalDocument", b =>
@@ -325,43 +234,6 @@ namespace IPNoticeHub.Infrastructure.Migrations
                     b.HasKey("TrademarkRegistrationId", "ClassNumber");
 
                     b.ToTable("TrademarkClassAssignment");
-
-                    b.HasData(
-                        new
-                        {
-                            TrademarkRegistrationId = 1,
-                            ClassNumber = 25
-                        },
-                        new
-                        {
-                            TrademarkRegistrationId = 2,
-                            ClassNumber = 25
-                        },
-                        new
-                        {
-                            TrademarkRegistrationId = 2,
-                            ClassNumber = 28
-                        },
-                        new
-                        {
-                            TrademarkRegistrationId = 3,
-                            ClassNumber = 9
-                        },
-                        new
-                        {
-                            TrademarkRegistrationId = 3,
-                            ClassNumber = 42
-                        },
-                        new
-                        {
-                            TrademarkRegistrationId = 4,
-                            ClassNumber = 35
-                        },
-                        new
-                        {
-                            TrademarkRegistrationId = 4,
-                            ClassNumber = 42
-                        });
                 });
 
             modelBuilder.Entity("IPNoticeHub.Domain.Entities.Trademarks.TrademarkEntity", b =>
@@ -437,68 +309,6 @@ namespace IPNoticeHub.Infrastructure.Migrations
                         .HasDatabaseName("UX_Trademark_Source_SourceId");
 
                     b.ToTable("TrademarkRegistrations");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            FilingDate = new DateTime(2010, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            GoodsAndServices = "Clothing, footwear, headgear",
-                            Owner = "Nike Inc.",
-                            PublicId = new Guid("4dd1f011-5362-42ff-9853-33ccbe4aa935"),
-                            RegistrationDate = new DateTime(2012, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            RegistrationNumber = "54321",
-                            Source = 0,
-                            SourceId = "123456",
-                            StatusCategory = 1,
-                            StatusDetail = "Live/Registered",
-                            Wordmark = "Nike"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            FilingDate = new DateTime(2015, 5, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            GoodsAndServices = "Sports equipment, clothing",
-                            Owner = "Adidas AG",
-                            PublicId = new Guid("fdb6b78f-6f5c-42ec-8b36-9a958011168b"),
-                            RegistrationDate = new DateTime(2017, 6, 6, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            RegistrationNumber = "98765",
-                            Source = 0,
-                            SourceId = "654321",
-                            StatusCategory = 1,
-                            StatusDetail = "Live/Registered",
-                            Wordmark = "Adidas"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            FilingDate = new DateTime(2023, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            GoodsAndServices = "Software as a service (SaaS) for IP monitoring and document generation",
-                            Owner = "IPNoticeHub Ltd.",
-                            PublicId = new Guid("7a6b6f2b-3e1d-4c44-9b4b-9aef4e4f3a10"),
-                            RegistrationDate = new DateTime(2024, 1, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            RegistrationNumber = "11111",
-                            Source = 0,
-                            SourceId = "IPN-0001",
-                            StatusCategory = 1,
-                            StatusDetail = "Live/Registered",
-                            Wordmark = "IPNOTICEHUB"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            FilingDate = new DateTime(2022, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            GoodsAndServices = "Cloud security consulting and DevOps deployment services",
-                            Owner = "Cloud Armor Group",
-                            PublicId = new Guid("2bdb1d8a-1a11-4b3a-92f7-2c56e1c6f0c2"),
-                            RegistrationDate = new DateTime(2023, 8, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            RegistrationNumber = "22222",
-                            Source = 0,
-                            SourceId = "CA-2040",
-                            StatusCategory = 1,
-                            StatusDetail = "Live/Registered",
-                            Wordmark = "CLOUDARMOR"
-                        });
                 });
 
             modelBuilder.Entity("IPNoticeHub.Domain.Entities.Trademarks.TrademarkEvent", b =>
@@ -649,40 +459,48 @@ namespace IPNoticeHub.Infrastructure.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
 
-                    b.HasData(
-                        new
-                        {
-                            Id = "2b195b12-9690-46b9-ac8e-50118a7102ea",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "73dd29f5-cb9c-4f43-84ae-73597cded863",
-                            Email = "testuser1@example.com",
-                            EmailConfirmed = true,
-                            LockoutEnabled = false,
-                            NormalizedEmail = "TESTUSER1@EXAMPLE.COM",
-                            NormalizedUserName = "TESTUSER1@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEFakeHash1234567890==",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "6fc62e55-dbc8-4022-84b4-cd49bdb663a3",
-                            TwoFactorEnabled = false,
-                            UserName = "testuser1@example.com"
-                        },
-                        new
-                        {
-                            Id = "4d8f7a3e-cb13-42f4-bf61-0a8c301a3f8b",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "d1d41029-3bbf-4476-890a-d64104220466",
-                            Email = "testuser2@example.com",
-                            EmailConfirmed = true,
-                            LockoutEnabled = false,
-                            NormalizedEmail = "TESTUSER2@EXAMPLE.COM",
-                            NormalizedUserName = "TESTUSER2@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagFakeHash0987654321==",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "abc60a70-c408-4762-be78-c7c0d1ea3b9b",
-                            TwoFactorEnabled = false,
-                            UserName = "testuser2@example.com"
-                        });
+            modelBuilder.Entity("IPNoticeHub.Infrastructure.Persistence.Seeding.SeedHistoryEntry", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AppliedBy")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime>("AppliedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Environment")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("SeedKey")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Version")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SeedKey", "Version")
+                        .IsUnique();
+
+                    b.ToTable("SeedHistory");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
