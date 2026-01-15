@@ -8,16 +8,20 @@ namespace IPNoticeHub.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<TrademarkEntity> builder)
         {
-            builder.HasIndex(t => new { t.Source, t.SourceId }).
+            builder.
+                HasIndex(t => new { t.Source, t.SourceId }).
                 IsUnique();
 
-            builder.HasIndex(e => new { e.Source, e.SourceId }).
+            builder.
+                HasIndex(e => new { e.Source, e.SourceId }).
                 IsUnique().
                 HasDatabaseName("UX_Trademark_Source_SourceId");
 
-            builder.HasIndex(t => t.RegistrationNumber);
+            builder.
+                HasIndex(t => t.RegistrationNumber);
 
-            builder.HasIndex(t => t.SourceId);
+            builder.
+                HasIndex(t => t.SourceId);
         }
     }
 }

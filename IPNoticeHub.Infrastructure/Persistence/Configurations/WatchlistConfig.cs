@@ -8,10 +8,12 @@ namespace IPNoticeHub.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<Watchlist> builder)
         {
-            builder.Property(x => x.NotificationsEnabled).
+            builder.
+                Property(x => x.NotificationsEnabled).
                 HasDefaultValue(false);
 
-            builder.HasIndex(x => new { 
+            builder.
+                HasIndex(x => new { 
                 x.UserId, 
                 x.TrademarkId }).
                 HasFilter("[IsDeleted] = 0").

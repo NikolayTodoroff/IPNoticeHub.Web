@@ -9,22 +9,23 @@ namespace IPNoticeHub.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<UserTrademark> builder)
         {
-            builder.HasKey(ut => new { 
+            builder.
+                HasKey(ut => new { 
                 ut.ApplicationUserId, 
                 ut.TrademarkEntityId 
             });
 
-            builder
-                .HasOne<ApplicationUser>()    
-                .WithMany(u => u.UserTrademarks) 
-                .HasForeignKey(ut => ut.ApplicationUserId)
-                .OnDelete(DeleteBehavior.Restrict);
+            builder.
+                HasOne<ApplicationUser>().
+                WithMany(u => u.UserTrademarks).
+                HasForeignKey(ut => ut.ApplicationUserId).
+                OnDelete(DeleteBehavior.Restrict);
 
-            builder
-                .HasOne(ut => ut.TrademarkEntity)
-                .WithMany(t => t.UserTrademarks)
-                .HasForeignKey(ut => ut.TrademarkEntityId)
-                .OnDelete(DeleteBehavior.Restrict);
+            builder.
+                HasOne(ut => ut.TrademarkEntity).
+                WithMany(t => t.UserTrademarks).
+                HasForeignKey(ut => ut.TrademarkEntityId).
+                OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

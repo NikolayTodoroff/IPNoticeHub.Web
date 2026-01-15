@@ -8,8 +8,9 @@ namespace IPNoticeHub.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<CopyrightEntity> builder)
         {
-            builder.HasIndex(c => c.RegistrationNumber).
-               IsUnique();
+            builder.
+                HasIndex(c => c.RegistrationNumber).
+                IsUnique();
         }
     }
 }

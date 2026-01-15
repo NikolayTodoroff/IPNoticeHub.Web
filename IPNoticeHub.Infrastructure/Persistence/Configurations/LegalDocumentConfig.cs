@@ -9,12 +9,14 @@ namespace IPNoticeHub.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<LegalDocument> builder)
         {
-            builder.HasKey(ld => ld.LegalDocumentId);
+            builder.
+                HasKey(ld => ld.LegalDocumentId);
 
-            builder.HasOne<ApplicationUser>()
-                .WithMany(u => u.LegalDocuments)
-                .HasForeignKey(u => u.ApplicationUserId)
-                .OnDelete(DeleteBehavior.NoAction);
+            builder.
+                HasOne<ApplicationUser>().
+                WithMany(u => u.LegalDocuments).
+                HasForeignKey(u => u.ApplicationUserId).
+                OnDelete(DeleteBehavior.NoAction);
 
             builder.HasQueryFilter(d => !d.IsDeleted);
         }

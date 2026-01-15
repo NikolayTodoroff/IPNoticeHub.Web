@@ -8,10 +8,12 @@ namespace IPNoticeHub.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<TrademarkClassAssignment> builder)
         {
-            builder.HasKey(tc => 
-            new { tc.TrademarkRegistrationId, tc.ClassNumber });
+            builder.
+                HasKey(tc => 
+                new { tc.TrademarkRegistrationId, tc.ClassNumber });
 
-            builder.HasOne(tc => tc.TrademarkRegistration).
+            builder.
+                HasOne(tc => tc.TrademarkRegistration).
                 WithMany(t => t.Classes).
                 HasForeignKey(tc => tc.TrademarkRegistrationId);
         }

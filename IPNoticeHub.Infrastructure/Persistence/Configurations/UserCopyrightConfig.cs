@@ -10,25 +10,27 @@ namespace IPNoticeHub.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<UserCopyright> builder)
         {
             builder.
-                HasKey(uc => new { 
+                HasKey(
+                uc => new { 
                     uc.ApplicationUserId, 
                     uc.CopyrightEntityId 
                 });
 
-            builder
-                .HasOne<ApplicationUser>()
-                .WithMany(u => u.UserCopyrights)
-                .HasForeignKey(ut => ut.ApplicationUserId)
-                .OnDelete(DeleteBehavior.Restrict);
+            builder.
+                HasOne<ApplicationUser>().
+                WithMany(u => u.UserCopyrights).
+                HasForeignKey(ut => ut.ApplicationUserId).
+                OnDelete(DeleteBehavior.Restrict);
 
-            builder
-                .HasOne(uc => uc.CopyrightEntity)
-                .WithMany(ce => ce.UserCopyrights)
-                .HasForeignKey(uc => uc.CopyrightEntityId)
-                .OnDelete(DeleteBehavior.Restrict);
+            builder.
+                HasOne(uc => uc.CopyrightEntity).
+                WithMany(ce => ce.UserCopyrights).
+                HasForeignKey(uc => uc.CopyrightEntityId).
+                OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasIndex(x => 
-            new { x.ApplicationUserId, x.CopyrightEntityId }).
+            builder.
+                HasIndex(
+                x => new { x.ApplicationUserId, x.CopyrightEntityId }).
                 IsUnique();
         }
     }
