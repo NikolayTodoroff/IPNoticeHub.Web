@@ -22,15 +22,13 @@ namespace IPNoticeHub.Infrastructure.Persistence.Seeding
 
         public static async Task SeedAsync(IServiceProvider services)
         {
-            using var scope = services.CreateScope();
-
             var dbContext =
-                scope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                services.GetRequiredService<IPNoticeHubDbContext>();
 
             var userManager =
-                scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+                services.GetRequiredService<UserManager<ApplicationUser>>();
 
-            var logger = scope.ServiceProvider.
+            var logger = services.
                 GetRequiredService<ILoggerFactory>().
                 CreateLogger("FakeDataSeeder");
 
