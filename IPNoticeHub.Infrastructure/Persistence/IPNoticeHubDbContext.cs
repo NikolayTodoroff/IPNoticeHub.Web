@@ -6,6 +6,7 @@ using IPNoticeHub.Domain.Entities.Identity;
 using IPNoticeHub.Domain.Entities.LegalDocuments;
 using IPNoticeHub.Domain.Entities.Trademarks;
 using IPNoticeHub.Domain.Entities.Watchlist;
+using IPNoticeHub.Infrastructure.Persistence.Seeding;
 
 namespace IPNoticeHub.Infrastructure.Persistence
 {
@@ -21,6 +22,7 @@ namespace IPNoticeHub.Infrastructure.Persistence
         public DbSet<UserCopyright> UserCopyrights { get; set; }
         public DbSet<Watchlist> Watchlists { get; set; }
         public DbSet<LegalDocument> LegalDocuments { get; set; }
+        public DbSet<SeedHistoryEntry> SeedHistoryEntries { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
