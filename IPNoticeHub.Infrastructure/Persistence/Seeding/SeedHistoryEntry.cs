@@ -1,8 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using static IPNoticeHub.Shared.Constants.SeedHistoryConstants.SeedHistoryEntryConstants;
 
 namespace IPNoticeHub.Infrastructure.Persistence.Seeding
 {
+    [Table("SeedHistory")]
+    [Index(nameof(SeedKey), nameof(Version), IsUnique = true)]
     public class SeedHistoryEntry
     {
         [Key]
