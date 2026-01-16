@@ -33,7 +33,7 @@ param contactEmails array = [
 ]
 
 @description('The Resource Group where the shared Action Groups are deployed.')
-param alertsRgName string = 'rg-alerts-iphub-lab-weu-01'
+param alertsRgName string = 'rg-alerts-iphub-lab-weu'
 
 // --- EXISTING RESOURCE REFERENCES ---
 

@@ -14,7 +14,7 @@
 // --- PARAMETERS ---
 
 @description('Workload/application short name (e.g., iphub)')
-param workload string = 'iphub'
+param workload string = 'ipnoticehub'
 
 @description('Environment (e.g., lab, dev, prod)')
 param env string = 'lab'
