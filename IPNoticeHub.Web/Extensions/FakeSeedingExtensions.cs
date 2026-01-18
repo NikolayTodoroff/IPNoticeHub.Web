@@ -65,7 +65,7 @@ namespace IPNoticeHub.Web.Extensions
                     Environment = environmentName,
                     AppliedBy = Environment.MachineName,
                     Notes = "Fake trademarks dataset + demo user " +
-                    "trademarks and copyrights collection and trademarks watchlist seeding"
+                    "trademarks/copyrights collections and trademarks watchlist seeding"
                 });
 
                 await dbContext.SaveChangesAsync();
@@ -95,7 +95,18 @@ namespace IPNoticeHub.Web.Extensions
 
         private static bool IsUniqueSeedHistoryViolation(DbUpdateException ex)
         {
-            return ex.InnerException is SqlException { Number: 2601 or 2627 };
+            if (ex.InnerException is SqlException sqlEx)
+            {
+                // 2627: Unique constraint violation
+                // 2601: Duplicated key row error
+                return sqlEx.Number == 2627 || sqlEx.Number == 2601;
+            }
+
+            var msg = ex.InnerException?.Message ?? string.Empty;
+
+            return (msg.Contains("SeedHistory", StringComparison.OrdinalIgnoreCase) &&
+                    msg.Contains("unique", StringComparison.OrdinalIgnoreCase))
+                || msg.Contains("UNIQUE constraint failed", StringComparison.OrdinalIgnoreCase);
         }
     }
 }
