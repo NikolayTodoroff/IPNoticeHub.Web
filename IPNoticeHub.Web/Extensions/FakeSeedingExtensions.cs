@@ -104,9 +104,9 @@ namespace IPNoticeHub.Web.Extensions
 
             var msg = ex.InnerException?.Message ?? string.Empty;
 
-            return (msg.Contains("SeedHistory", StringComparison.OrdinalIgnoreCase) &&
-                    msg.Contains("unique", StringComparison.OrdinalIgnoreCase))
-                || msg.Contains("UNIQUE constraint failed", StringComparison.OrdinalIgnoreCase);
+            return (msg.Contains("SeedHistory", StringComparison.OrdinalIgnoreCase) && 
+                msg.Contains("unique", StringComparison.OrdinalIgnoreCase)) ||
+                msg.Contains("UNIQUE constraint failed", StringComparison.OrdinalIgnoreCase);
         }
     }
 }
