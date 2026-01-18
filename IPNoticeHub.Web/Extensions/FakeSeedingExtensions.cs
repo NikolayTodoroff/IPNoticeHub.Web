@@ -11,35 +11,49 @@ namespace IPNoticeHub.Web.Extensions
         {
             bool seedingEnabled = app.Configuration.GetValue<bool>("Seeding:Enabled");
 
-            if (!seedingEnabled || !app.Environment.IsDevelopment())  return;
+            if (!seedingEnabled || !app.Environment.IsDevelopment())
+            {
+                return;
+            }
 
             using var scope = app.Services.CreateScope();
-            var services = scope.ServiceProvider;
 
-            var logger = services.
+            await SeedFakeDataAsync(
+                scopedServices: scope.ServiceProvider,
+                environmentName: app.Environment.EnvironmentName,
+                seedingEnabled: seedingEnabled,
+                seedAction: FakeDataSeeder.SeedAsync
+            );
+        }
+
+        public static async Task SeedFakeDataAsync(
+            IServiceProvider scopedServices,
+            string environmentName,
+            bool seedingEnabled,
+            Func<IServiceProvider, Task>? seedAction = null)
+        {
+            if (!seedingEnabled || !string.Equals(
+                environmentName,
+                "Development", 
+                StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            seedAction ??= FakeDataSeeder.SeedAsync;
+
+            var logger = scopedServices.
                 GetRequiredService<ILoggerFactory>().
                 CreateLogger("FakeSeeding");
 
-            var dbContext = services.GetRequiredService<IPNoticeHubDbContext>();
+            var dbContext = 
+                scopedServices.GetRequiredService<IPNoticeHubDbContext>();
 
             const string seedKey = "FakeData";
             const string seedVersion = "1";
 
-            bool alreadySeededDb = 
-                await dbContext.Set<SeedHistoryEntry>().
-                AsNoTracking().
-                AnyAsync(x => x.SeedKey == seedKey && x.Version == seedVersion);
-
-            if (alreadySeededDb)
-            {
-                logger.LogInformation(
-                    "Fake seeding skipped: SeedHistory marker exists ({SeedKey}, v{Version}).",
-                    seedKey, seedVersion);
-
-                return;
-            }
-
-            await using var tx = await dbContext.Database.BeginTransactionAsync();
+            await using var transaction = 
+                await dbContext.Database.BeginTransactionAsync();
 
             try
             {
@@ -48,48 +62,39 @@ namespace IPNoticeHub.Web.Extensions
                     SeedKey = seedKey,
                     Version = seedVersion,
                     AppliedOnUtc = DateTime.UtcNow,
-                    Environment = app.Environment.EnvironmentName,
+                    Environment = environmentName,
                     AppliedBy = Environment.MachineName,
-                    Notes = "Bogus fake dataset + demo user collection/watchlist seeding"
+                    Notes = "Fake trademarks dataset + demo user " +
+                    "trademarks and copyrights collection and trademarks watchlist seeding"
                 });
 
                 await dbContext.SaveChangesAsync();
 
-                logger.LogInformation(
-                    "Fake seeding started: applying ({SeedKey}, v{Version}).",
-                    seedKey, seedVersion);
+                logger.LogInformation("Fake seeding started: " +
+                    "claimed marker ({SeedKey}, v{Version}).", seedKey, seedVersion);
 
-                await FakeDataSeeder.SeedAsync(services);
+                await seedAction(scopedServices);
 
                 await dbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
 
-                await tx.CommitAsync();
-
-                logger.LogInformation(
-                    "Fake seeding completed: marker saved ({SeedKey}, v{Version}).",
-                    seedKey, seedVersion);
+                logger.LogInformation("Fake seeding completed: " +
+                    "committed ({SeedKey}, v{Version}).", seedKey, seedVersion);
             }
-
             catch (DbUpdateException ex) when (IsUniqueSeedHistoryViolation(ex))
             {
-                logger.LogInformation(
-                    "Fake seeding skipped: " +
-                    "marker was inserted concurrently ({SeedKey}, v{Version}).",
-                    seedKey, seedVersion);
+                logger.LogInformation("Fake seeding skipped: " +
+                    "marker already exists ({SeedKey}, v{Version}).", seedKey, seedVersion);
             }
-
             catch
             {
-                await tx.RollbackAsync();
+                await transaction.RollbackAsync();
                 throw;
             }
         }
 
         private static bool IsUniqueSeedHistoryViolation(DbUpdateException ex)
         {
-            // SQL Server unique constraint violation numbers:
-            // 2601 = Cannot insert duplicate key row in object with unique index
-            // 2627 = Violation of UNIQUE KEY constraint
             return ex.InnerException is SqlException { Number: 2601 or 2627 };
         }
     }

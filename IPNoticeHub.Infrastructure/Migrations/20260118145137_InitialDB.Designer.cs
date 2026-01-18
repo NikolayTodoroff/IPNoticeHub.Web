@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IPNoticeHub.Infrastructure.Migrations
 {
     [DbContext(typeof(IPNoticeHubDbContext))]
-    [Migration("20260115160058_InitialM")]
-    partial class InitialM
+    [Migration("20260118145137_InitialDB")]
+    partial class InitialDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
