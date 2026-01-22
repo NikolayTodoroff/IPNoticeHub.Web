@@ -1,104 +1,135 @@
-/* PROJECT: IPNoticeHub - Secure SQL Database
-  STANDARD: 2026 Cloud-Native (Express VA + Entra Only)
+/*
+  SQL Database Deployment
+
+  Purpose:
+  Deploys an Azure SQL database with Entra ID-only authentication
+  and security features (Advanced Threat Protection and Express Vulnerability Assessment).
+
+  Key features:
+  - Entra ID (Azure AD) authentication only - no SQL logins
+  - Minimum TLS 1.2 enforcement
+  - Advanced Threat Protection (Microsoft Defender for SQL)
+  - Express Vulnerability Assessment (no storage account required)
+  - Configurable SKU, capacity, and high availability options
+  - Zone redundancy and availability zone placement support
+
+  Scope:
+  Resource Group
 */
 
-// --- PARAMETERS ---
+@description('Existing SQL logical server name (must already exist).')
 param serverName string
+
+@description('SQL database name.')
 param databaseName string
-param serverLocation string = resourceGroup().location
+
+@description('Location for the database (usually same as server).')
+param location string = resourceGroup().location
+
+@description('Tags to apply to the database.')
+param tags object = {}
+
+// Database properties
+@description('SKU name. Example: GP_S_Gen5 (serverless), GP_Gen5 (provisioned), Basic.')
+param skuName string = 'GP_S_Gen5'
+
+@description('SKU tier. Example: GeneralPurpose, Basic.')
+param skuTier string = 'GeneralPurpose'
+
+@description('SKU family (Gen5 for many SQL offerings). Leave empty for Basic.')
+param skuFamily string = 'Gen5'
+
+@description('vCores for vCore model (1 is what your snapshot shows). Not used for Basic in practice.')
+param skuCapacity int = 1
+
+// Database properties
 param collation string = 'SQL_Latin1_General_CP1_CI_AS'
-param skuName string = 'Basic'
-param tier string = 'Basic'
-param maxSizeBytes int = 2147483648
-param sampleName string = ''
+
+@description('Max DB size in bytes. Snapshot used 34359738368 (32 GiB).')
+param maxSizeBytes int = 34359738368
+
+@description('Enable zone redundancy (if supported by SKU/region).')
 param zoneRedundant bool = false
-param licenseType string = ''
-param readScaleOut string = 'Disabled'
-param numberOfReplicas int = 0
-param minCapacity string = ''
-param autoPauseDelay int = 0
-param databaseTags object = {}
-param enableADS bool = true
-param enableVA bool = true
+
+@description('Read scale setting.')
+@allowed([
+  'Disabled'
+  'Enabled'
+])
+param readScale string = 'Disabled'
+
+@description('Serverless: auto pause delay in minutes. Use 60 like your snapshot; use -1 to disable autopause.')
+param autoPauseDelay int = 60
+
+@description('Serverless: minimum vCores. Snapshot used 0.5.')
+param minCapacity string = '0.5'
+
+@description('Requested backup storage redundancy. Snapshot used Local.')
+@allowed([
+  'Local'
+  'Zone'
+  'Geo'
+  'GeoZone'
+])
+param requestedBackupStorageRedundancy string = 'Local'
+
+@description('Maintenance configuration resource ID (optional). If empty, Azure default applies.')
+param maintenanceConfigurationId string = ''
+
+@description('Availability zone preference (usually NoPreference).')
 param availabilityZone string = 'NoPreference'
-param useFreeLimit bool = false
-param freeLimitExhaustionBehavior string = ''
 
-@description('Admin email for Entra ID login')
-param entraAdminName string
+// Security
+@description('Toggle database Advanced Threat Protection (Defender for SQL signals). Note: full Defender is controlled by Defender for Cloud plan too.')
+param enableDbThreatProtection bool = false
 
-@description('Object ID of the Entra ID Admin')
-param entraAdminObjectId string
-
-// --- LOGICAL SERVER ---
-resource server 'Microsoft.Sql/servers@2023-05-01-preview' = {
+// Existing SQL Server
+resource sqlServer 'Microsoft.Sql/servers@2024-05-01-preview' existing = {
   name: serverName
-  location: serverLocation
-  properties: {
-    version: '12.0'
-    minimalTlsVersion: '1.2'
-    administrators: {
-      administratorType: 'ActiveDirectory'
-      principalType: 'User'
-      login: entraAdminName
-      sid: entraAdminObjectId
-      tenantId: subscription().tenantId
-      azureADOnlyAuthentication: true
-    }
-  }
 }
 
-// --- SQL DATABASE ---
-resource database 'Microsoft.Sql/servers/databases@2023-05-01-preview' = {
-  parent: server
+// Database resource
+resource sqlDb 'Microsoft.Sql/servers/databases@2024-05-01-preview' = {
+  parent: sqlServer
   name: databaseName
-  location: serverLocation
-  tags: databaseTags
+  location: location
+  tags: tags
+
   sku: {
     name: skuName
-    tier: tier
+    tier: skuTier
+
+    family: empty(skuFamily) ? null : skuFamily
+    capacity: skuCapacity
   }
+
   properties: {
     collation: collation
     maxSizeBytes: maxSizeBytes
-    sampleName: sampleName
     zoneRedundant: zoneRedundant
-    licenseType: licenseType
-    readScale: readScaleOut
-    highAvailabilityReplicaCount: numberOfReplicas
-    minCapacity: minCapacity
+    readScale: readScale
+
+    // Serverless knobs
     autoPauseDelay: autoPauseDelay
+
+    minCapacity: json(minCapacity)
+    requestedBackupStorageRedundancy: requestedBackupStorageRedundancy
+
     isLedgerOn: false
     availabilityZone: availabilityZone
+
+    maintenanceConfigurationId: empty(maintenanceConfigurationId) ? null : maintenanceConfigurationId
   }
 }
 
-// --- SECURITY: MODERN EXPRESS CONFIGURATION (No Storage Needed) ---
-
-// 1. Advanced Threat Protection (ADS)
-resource threatProtection 'Microsoft.Sql/servers/advancedThreatProtectionSettings@2023-05-01-preview' = if (enableADS) {
-  parent: server
+// Db Advanced Threat Protection
+resource dbAtp 'Microsoft.Sql/servers/databases/advancedThreatProtectionSettings@2024-05-01-preview' = if (enableDbThreatProtection) {
+  parent: sqlDb
   name: 'Default'
   properties: {
     state: 'Enabled'
   }
 }
 
-// 2. Express Vulnerability Assessment (VA)
-resource expressVA 'Microsoft.Sql/servers/sqlVulnerabilityAssessments@2023-05-01-preview' = if (enableVA) {
-  parent: server
-  name: 'default'
-  properties: {
-    state: 'Enabled'
-  }
-}
+output databaseId string = sqlDb.id
 
-/* --- DEPRECATED: CLASSIC STORAGE-BASED VA ---
-  The resources below are commented out as they are no longer recommended for 2026 deployments.
-  Using 'Express VA' (above) avoids the $ / complexity of a Storage Account.
-
-  resource storage 'Microsoft.Storage/storageAccounts@2023-01-01' = if (false) { ... }
-  resource classicVA 'Microsoft.Sql/servers/vulnerabilityAssessments@2018-06-01-preview' = if (false) { ... }
-*/
-
-output sqlServerFqdn string = server.properties.fullyQualifiedDomainName

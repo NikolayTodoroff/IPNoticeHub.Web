@@ -1,24 +1,35 @@
-/* SCOPE: Resource Group
-   PROJECT: IPNoticeHub Lab
-   DESCRIPTION: Secure SQL Server & DB using Entra ID, Express VA, and ATP.
-   AUTHORS: Nikolay & AI Thought Partner
+/*
+  SQL Server Deployment
+
+  Purpose:
+  Deploys a SQL Server logical instance and database with Entra ID-only authentication,
+  Microsoft Defender for SQL, and Express Vulnerability Assessment for security compliance.
+
+  Key features:
+  - Entra ID-only authentication (no SQL logins)
+  - TLS 1.2 minimum encryption
+  - Microsoft Defender for SQL (Advanced Threat Protection)
+  - Express Vulnerability Assessment (no storage account required)
+  - Firewall rules for Azure services and optional client IP access
+
+  Scope:
+  Resource Group
 */
 
-// --- PARAMETERS ---
 @description('The name of the SQL Logical Server')
 param serverName string
 
-@description('The name of the SQL Database')
-param sqlDbName string
-
 @description('Location for all resources')
 param location string = resourceGroup().location
+
+@description('Tags to apply to the database.')
+param tags object = {}
 
 @description('Your local public IP address to allow DB access (e.g., from SSMS)')
 param clientIpAddress string = ''
 
 @description('Toggle for Microsoft Defender for SQL (Advanced Threat Protection)')
-param enableDefender bool = true
+param enableDefender bool = false
 
 @description('Microsoft Entra Admin Name (e.g., your email or name)')
 param entraAdminName string
@@ -26,42 +37,40 @@ param entraAdminName string
 @description('The Object ID of your Entra ID user/group for Admin access')
 param entraAdminObjectId string
 
-// --- LOGICAL SQL SERVER ---
-resource sqlServer 'Microsoft.Sql/servers@2023-05-01-preview' = {
+resource sqlServer 'Microsoft.Sql/servers@2024-05-01-preview' = {
   name: serverName
   location: location
+  tags: tags
   properties: {
     version: '12.0'
     minimalTlsVersion: '1.2'
     publicNetworkAccess: 'Enabled'
-    // ENTRA-ONLY AUTH: No SQL passwords allowed
-    administrators: {
-      administratorType: 'ActiveDirectory'
-      principalType: 'User'
-      login: entraAdminName
-      sid: entraAdminObjectId
-      tenantId: subscription().tenantId
-      azureADOnlyAuthentication: true 
-    }
   }
 }
 
-// --- SQL DATABASE ---
-resource sqlDatabase 'Microsoft.Sql/servers/databases@2023-05-01-preview' = {
+// Entra Admin
+resource entraAdmin 'Microsoft.Sql/servers/administrators@2024-05-01-preview' = {
   parent: sqlServer
-  name: sqlDbName
-  location: location
-  sku: {
-    name: 'Basic' // Budget-friendly for lab/learning
-    tier: 'Basic'
-    capacity: 5
+  name: 'ActiveDirectory'
+  properties: {
+    administratorType: 'ActiveDirectory'
+    login: entraAdminName
+    sid: entraAdminObjectId
+    tenantId: subscription().tenantId
   }
 }
 
-// --- FIREWALL RULES ---
+// Entra-only authentication (matches snapshot pattern)
+resource aadOnly 'Microsoft.Sql/servers/azureADOnlyAuthentications@2024-05-01-preview' = {
+  parent: sqlServer
+  name: 'Default'
+  properties: {
+    azureADOnlyAuthentication: true
+  }
+}
 
-// Rule 1: Allow Azure Services (Required for Container Apps)
-resource allowAzureServices 'Microsoft.Sql/servers/firewallRules@2023-05-01-preview' = {
+// Firewall rules
+resource allowAzureServices 'Microsoft.Sql/servers/firewallRules@2024-05-01-preview' = {
   parent: sqlServer
   name: 'AllowAllWindowsAzureIps'
   properties: {
@@ -70,8 +79,7 @@ resource allowAzureServices 'Microsoft.Sql/servers/firewallRules@2023-05-01-prev
   }
 }
 
-// Rule 2: Allow Your Local Machine (Only if IP is provided)
-resource allowClientIP 'Microsoft.Sql/servers/firewallRules@2023-05-01-preview' = if (!empty(clientIpAddress)) {
+resource allowClientIP 'Microsoft.Sql/servers/firewallRules@2024-05-01-preview' = if (!empty(clientIpAddress)) {
   parent: sqlServer
   name: 'AllowLocalClient'
   properties: {
@@ -80,10 +88,7 @@ resource allowClientIP 'Microsoft.Sql/servers/firewallRules@2023-05-01-preview' 
   }
 }
 
-// --- SECURITY: DEFENDER & EXPRESS VA ---
-
-// Microsoft Defender for SQL (Advanced Threat Protection)
-resource threatProtection 'Microsoft.Sql/servers/advancedThreatProtectionSettings@2023-05-01-preview' = if (enableDefender) {
+resource threatProtection 'Microsoft.Sql/servers/advancedThreatProtectionSettings@2024-05-01-preview' = if (enableDefender) {
   parent: sqlServer
   name: 'Default'
   properties: {
@@ -91,10 +96,9 @@ resource threatProtection 'Microsoft.Sql/servers/advancedThreatProtectionSetting
   }
 }
 
-// Express Vulnerability Assessment (No Storage Account Needed)
-resource expressVA 'Microsoft.Sql/servers/sqlVulnerabilityAssessments@2023-05-01-preview' = if (enableDefender) {
+resource expressVA 'Microsoft.Sql/servers/sqlVulnerabilityAssessments@2024-05-01-preview' = if (enableDefender) {
   parent: sqlServer
-  name: 'default'
+  name: 'Default'
   properties: {
     state: 'Enabled'
   }
