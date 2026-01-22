@@ -16,25 +16,12 @@
   Resource Group
 */
 
-@description('The name of the SQL Logical Server')
 param serverName string
-
-@description('Location for all resources')
 param location string = resourceGroup().location
-
-@description('Tags to apply to the database.')
 param tags object = {}
-
-@description('Your local public IP address to allow DB access (e.g., from SSMS)')
 param clientIpAddress string = ''
-
-@description('Toggle for Microsoft Defender for SQL (Advanced Threat Protection)')
 param enableDefender bool = false
-
-@description('Microsoft Entra Admin Name (e.g., your email or name)')
 param entraAdminName string
-
-@description('The Object ID of your Entra ID user/group for Admin access')
 param entraAdminObjectId string
 
 resource sqlServer 'Microsoft.Sql/servers@2024-05-01-preview' = {

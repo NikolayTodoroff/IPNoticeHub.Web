@@ -1,26 +1,21 @@
-/* SCOPE: Resource Group
-   PROJECT: IPNoticeHub
-   DESCRIPTION: Centralized logging store for system metrics and application logs.
+/*
+  Log Analytics Workspace
+
+  Purpose:
+  Centralized logging store for system metrics and application logs.
+
+  Scope:
+  Resource Group
 */
 
-@description('The name of the Log Analytics workspace')
-param name string = 'log-ipnoticehub-lab-weu'
+targetScope = 'resourceGroup'
 
-@description('The location for the workspace')
+param name string
 param location string = resourceGroup().location
-
-@description('The pricing tier of the workspace')
-@allowed([
-  'PerGB2018'
-  'Free'
-  'Standalone'
-])
 param sku string = 'PerGB2018'
+param retentionInDays int = 30
+param tags object = {}
 
-@description('The resource tags')
-param tags object
-
-// --- LOG ANALYTICS WORKSPACE DEFINITION ---
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
   name: name
   location: location
@@ -29,10 +24,8 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09
     sku: {
       name: sku
     }
-  
-    retentionInDays: 30
+    retentionInDays: retentionInDays
     features: {
-
       enableLogAccessUsingOnlyResourcePermissions: true
     }
   }

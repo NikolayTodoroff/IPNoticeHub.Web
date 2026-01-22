@@ -1,0 +1,103 @@
+{
+  "amount": "100.0",
+  "category": "Cost",
+  "currentSpend": {
+    "amount": "5.5026949333209645",
+    "unit": "EUR"
+  },
+  "eTag": "\"1dc83cd0f3c8ddd\"",
+  "id": "/subscriptions/bcaf1056-6646-4069-8a85-c154fe786b07/providers/Microsoft.Consumption/budgets/bud-iphub-sub-lab",
+  "name": "bud-iphub-sub-lab",
+  "notifications": {
+    "actual_GreaterThan_100_Percent": {
+      "contactEmails": [
+        "everflowing555@gmail.com"
+      ],
+      "contactGroups": [
+        "/subscriptions/BCAF1056-6646-4069-8A85-C154FE786B07/resourceGroups/rg-alerts-iphub-lab-weu-01/providers/microsoft.insights/actionGroups/ag-cost-crit-lab"
+      ],
+      "contactRoles": [],
+      "enabled": true,
+      "operator": "GreaterThan",
+      "threshold": "100.0"
+    },
+    "actual_GreaterThan_25_Percent": {
+      "contactEmails": [
+        "everflowing555@gmail.com"
+      ],
+      "contactGroups": [
+        "/subscriptions/BCAF1056-6646-4069-8A85-C154FE786B07/resourceGroups/rg-alerts-iphub-lab-weu-01/providers/microsoft.insights/actionGroups/ag-cost-info-lab"
+      ],
+      "contactRoles": [],
+      "enabled": true,
+      "operator": "GreaterThan",
+      "threshold": "25.0"
+    },
+    "actual_GreaterThan_50_Percent": {
+      "contactEmails": [
+        "everflowing555@gmail.com"
+      ],
+      "contactGroups": [
+        "/subscriptions/BCAF1056-6646-4069-8A85-C154FE786B07/resourceGroups/rg-alerts-iphub-lab-weu-01/providers/microsoft.insights/actionGroups/ag-cost-info-lab"
+      ],
+      "contactRoles": [],
+      "enabled": true,
+      "operator": "GreaterThan",
+      "threshold": "50.0"
+    },
+    "actual_GreaterThan_75_Percent": {
+      "contactEmails": [
+        "everflowing555@gmail.com"
+      ],
+      "contactGroups": [
+        "/subscriptions/BCAF1056-6646-4069-8A85-C154FE786B07/resourceGroups/rg-alerts-iphub-lab-weu-01/providers/microsoft.insights/actionGroups/ag-cost-warn-lab"
+      ],
+      "contactRoles": [],
+      "enabled": true,
+      "operator": "GreaterThan",
+      "threshold": "75.0"
+    },
+    "forecasted_GreaterThan_30_Percent": {
+      "contactEmails": [
+        "everflowing555@gmail.com"
+      ],
+      "contactGroups": [
+        "/subscriptions/BCAF1056-6646-4069-8A85-C154FE786B07/resourceGroups/rg-alerts-iphub-lab-weu-01/providers/microsoft.insights/actionGroups/ag-cost-info-lab"
+      ],
+      "contactRoles": [],
+      "enabled": true,
+      "operator": "GreaterThan",
+      "threshold": "30.0"
+    },
+    "forecasted_GreaterThan_60_Percent": {
+      "contactEmails": [
+        "everflowing555@gmail.com"
+      ],
+      "contactGroups": [
+        "/subscriptions/BCAF1056-6646-4069-8A85-C154FE786B07/resourceGroups/rg-alerts-iphub-lab-weu-01/providers/microsoft.insights/actionGroups/ag-cost-warn-lab"
+      ],
+      "contactRoles": [],
+      "enabled": true,
+      "operator": "GreaterThan",
+      "threshold": "60.0"
+    },
+    "forecasted_GreaterThan_90_Percent": {
+      "contactEmails": [
+        "everflowing555@gmail.com"
+      ],
+      "contactGroups": [
+        "/subscriptions/BCAF1056-6646-4069-8A85-C154FE786B07/resourceGroups/rg-alerts-iphub-lab-weu-01/providers/microsoft.insights/actionGroups/ag-cost-crit-lab"
+      ],
+      "contactRoles": [],
+      "enabled": true,
+      "operator": "GreaterThan",
+      "threshold": "90.0"
+    }
+  },
+  "timeGrain": "Monthly",
+  "timePeriod": {
+    "endDate": "2027-12-31T00:00:00Z",
+    "startDate": "2026-01-01T00:00:00Z"
+  },
+  "type": "Microsoft.Consumption/budgets"
+}

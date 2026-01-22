@@ -1,50 +1,49 @@
-/* SCOPE: Resource Group
-   PROJECT: IPNoticeHub
-   DESCRIPTION: Application Performance Management (APM) telemetry for the C# app.
+/*
+  Application Insights Resource
+
+  Purpose:
+   - Provides application performance monitoring (APM) and telemetry for web applications
+   - Enables real-time diagnostics, performance tracking, and usage analytics
+   - Workspace-based configuration linked to Log Analytics
+
+  Scope:
+  - Resource Group
 */
 
-@description('The name of the Application Insights resource')
-param name string = 'appi-ipnoticehub-lab-weu'
+targetScope = 'resourceGroup'
 
-@description('The type of application being monitored')
-param type string = 'web'
-
-@description('The Azure region for the resource')
-param regionId string = resourceGroup().location
-
-@description('The resource tags')
-param tagsArray object
-
-@description('Describes what tool created this component')
-param requestSource string = 'rest'
-
-@description('The resource ID of the Log Analytics workspace to link with')
+param name string
+param location string = resourceGroup().location
 param workspaceResourceId string
+param tags object = {}
 
-// --- APPLICATION INSIGHTS DEFINITION ---
+@allowed([
+  'Enabled'
+  'Disabled'
+])
+param publicNetworkAccessForIngestion string = 'Enabled'
+
+@allowed([
+  'Enabled'
+  'Disabled'
+])
+param publicNetworkAccessForQuery string = 'Enabled'
+
 resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
   name: name
-  location: regionId
-  tags: tagsArray
+  location: location
+  tags: tags
   kind: 'web'
   properties: {
-    ApplicationId: name
-    Application_Type: type
-    
-    // 'Redfield' is the internal engine type used for workspace-based components
-    Flow_Type: 'Redfield' 
-    
-    // Identifies the deployment source (e.g., 'rest', 'Visual Studio', 'IbizaAIExtension')
-    Request_Source: requestSource
-    
-    // Links App Insights to Log Analytics [Mandatory for modern deployments]
+    Application_Type: 'web'
     WorkspaceResourceId: workspaceResourceId
-    
-    // Security: Restrict access to ingestion/query if needed (Defaulting to Enabled)
-    publicNetworkAccessForIngestion: 'Enabled'
-    publicNetworkAccessForQuery: 'Enabled'
+
+    publicNetworkAccessForIngestion: publicNetworkAccessForIngestion
+    publicNetworkAccessForQuery: publicNetworkAccessForQuery
   }
 }
 
+output appInsightsId string = appInsights.id
 output instrumentationKey string = appInsights.properties.InstrumentationKey
 output connectionString string = appInsights.properties.ConnectionString
+
