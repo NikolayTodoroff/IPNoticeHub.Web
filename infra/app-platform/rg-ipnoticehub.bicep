@@ -1,25 +1,25 @@
-/* SCOPE: Subscription
-   PROJECT: IPNoticeHub
-   DESCRIPTION: Main Resource Group for application services.
+/*
+  Main App Resource Group
+
+  Purpose:
+  - Main resource group for application services.
+
+  Scope:
+  - Subscription (IPHub-Portfolio-Sub)
 */
 
 targetScope = 'subscription'
 
-@description('The name of the resource group')
 param rgName string = 'rg-ipnoticehub-lab-weu'
-
-@description('The location for the resource group metadata')
 param location string = 'westeurope'
+param tags object = {}
 
 resource mainRG 'Microsoft.Resources/resourceGroups@2024-03-01' = {
   name: rgName
   location: location
-  tags: {
-    workload: 'ipnoticehub'
-    env: 'lab'
-    region: 'weu'
-    owner: 'nikolay'
-  }
+  tags: union(tags, { purpose: 'rg' })
 }
 
 output rgId string = mainRG.id
+output rgNameOut string = mainRG.name
+output rgLocation string = mainRG.location

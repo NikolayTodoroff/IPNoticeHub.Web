@@ -1,148 +1,146 @@
-/* RESOURCE MODULE: Advanced Azure Storage Account
-   PROJECT: IPNoticeHub
-   DATE: 2026-01-15
-   
-   DESCRIPTION: 
-   A comprehensive storage definition including Blob and File services. 
-   Implements Soft-Delete protection and specific Security/Networking ACLs.
-   
-   GOVERNANCE: 
-   Supports tagging and mandatory TLS 1.2+ for compliance.
+/*
+  Storage Account 
+
+  Purpose:
+  - A comprehensive storage definition including Blob and File services. 
+  - Implements Soft-Delete protection and specific Security/Networking ACLs.
+
+  Scope:
+  - Resource Group
 */
 
-// --- PARAMETERS ---
+targetScope = 'resourceGroup'
 
-@description('Target region for the storage account.')
-param location string = resourceGroup().location
-
-@description('Global unique name: stipnoticehubdocslabweu')
 param storageAccountName string = 'stipnoticehubdocslabweu'
+param location string = resourceGroup().location
+param tags object = {}
 
-@description('SKU Tier (e.g., Standard_LRS, Standard_GRS)')
-param accountType string = 'Standard_LRS'
+@allowed([
+  'Standard_LRS'
+  'Standard_ZRS'
+  'Standard_GRS'
+  'Standard_RAGRS'
+])
+param skuName string = 'Standard_LRS'
 
-@description('Storage Kind (v2 is standard for modern apps)')
+@allowed([
+  'StorageV2'
+])
 param kind string = 'StorageV2'
 
-@description('Access Tier (Hot for active data, Cool for backups)')
-param accessTier string = 'Hot'
+@allowed([
+  'Hot'
+  'Cool'
+])
+param accessTier string = 'Cool'
 
-// Security Parameters
+// Security defaults
 param minimumTlsVersion string = 'TLS1_2'
-param supportsHttpsTrafficOnly bool = true
 param allowBlobPublicAccess bool = false
 param allowSharedKeyAccess bool = true
-param defaultOAuth bool = true
+param defaultToOAuthAuthentication bool = true
 
-// Networking Parameters
+// Networking defaults (lab-friendly; later you can lock down)
+@allowed([
+  'Enabled'
+  'Disabled'
+])
 param publicNetworkAccess string = 'Enabled'
-param networkAclsBypass string = 'AzureServices'
-param networkAclsDefaultAction string = 'Allow'
-param networkAclsIpRules array = []
-param networkAclsIpv6Rules array = []
 
-// Soft Delete / Protection Parameters
-param isBlobSoftDeleteEnabled bool = true
-param blobSoftDeleteRetentionDays int = 7
-param isContainerSoftDeleteEnabled bool = true
-param containerSoftDeleteRetentionDays int = 7
-param isShareSoftDeleteEnabled bool = true
-param shareSoftDeleteRetentionDays int = 7
+@allowed([
+  'Allow'
+  'Deny'
+])
+param networkDefaultAction string = 'Allow'
 
-// Encryption / Advanced Parameters
-param encryptionEnabled bool = true
-param infrastructureEncryptionEnabled bool = false
-param keySource string = 'Microsoft.Storage'
-param dnsEndpointType string = 'Standard'
-param publishIpv6Endpoint bool = false
-param largeFileSharesState string = 'Disabled'
-param allowCrossTenantReplication bool = false
+@allowed([
+  'None'
+  'AzureServices'
+])
+param networkBypass string = 'AzureServices'
 
-// --- RESOURCES ---
+param ipRules array = []
 
-@description('Main Storage Account Resource')
-resource storageAccount 'Microsoft.Storage/storageAccounts@2025-06-01' = {
-  name: storageAccountName
-  location: location
-  tags: {
-    workload: 'ipnoticehub'
-    env: 'lab'
-    region: 'weu'
-    owner: 'nikolay'
-    purpose: 'storage'
-  }
-  sku: {
-    name: accountType
-  }
-  kind: kind
-  properties: {
-    minimumTlsVersion: minimumTlsVersion
-    supportsHttpsTrafficOnly: supportsHttpsTrafficOnly
-    allowBlobPublicAccess: allowBlobPublicAccess
-    allowSharedKeyAccess: allowSharedKeyAccess
-    defaultToOAuthAuthentication: defaultOAuth
-    accessTier: accessTier
-    publicNetworkAccess: publicNetworkAccess
-    allowCrossTenantReplication: allowCrossTenantReplication
-    networkAcls: {
-      bypass: networkAclsBypass
-      defaultAction: networkAclsDefaultAction
-      ipRules: networkAclsIpRules
-      ipv6Rules: networkAclsIpv6Rules
-    }
-    dualStackEndpointPreference: {
-      publishIpv6Endpoint: publishIpv6Endpoint
-    }
-    dnsEndpointType: dnsEndpointType
-    largeFileSharesState: largeFileSharesState
-    encryption: {
-      keySource: keySource
-      services: {
-        blob: { enabled: encryptionEnabled }
-        file: { enabled: encryptionEnabled }
-        table: { enabled: encryptionEnabled }
-        queue: { enabled: encryptionEnabled }
-      }
-      requireInfrastructureEncryption: infrastructureEncryptionEnabled
-    }
-  }
-}
+// Soft delete defaults
+param blobSoftDeleteDays int = 7
+param containerSoftDeleteDays int = 7
+param shareSoftDeleteDays int = 7
 
-@description('Blob Service configuration including data protection (Soft Delete)')
-resource blobServices 'Microsoft.Storage/storageAccounts/blobServices@2025-06-01' = {
-  parent: storageAccount
-  name: 'default'
-  properties: {
-    deleteRetentionPolicy: {
-      enabled: isBlobSoftDeleteEnabled
-      days: blobSoftDeleteRetentionDays
-    }
-    containerDeleteRetentionPolicy: {
-      enabled: isContainerSoftDeleteEnabled
-      days: containerSoftDeleteRetentionDays
-    }
-  }
-}
-
-@description('File Service configuration for SMB/File shares')
-resource fileServices 'Microsoft.Storage/storageAccounts/fileServices@2025-06-01' = {
-  parent: storageAccount
-  name: 'default'
-  properties: {
-    shareDeleteRetentionPolicy: {
-      enabled: isShareSoftDeleteEnabled
-      days: shareSoftDeleteRetentionDays
-    }
-  }
-}
-
-var containerNames = [
+// Containers
+param containerNames array = [
   'legal-notices'
   'exports'
   'app-assets'
 ]
 
-resource containers 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-01-01' = [for name in containerNames: {
-  // Name pattern: <AccountName>/default/<ContainerName>
-  name: '${storageAccount.name}/default/${name}'
+resource storage 'Microsoft.Storage/storageAccounts@2024-01-01' = {
+  name: storageAccountName
+  location: location
+  tags: union(tags, { purpose: 'storage' })
+  sku: {
+    name: skuName
+  }
+  kind: kind
+  properties: {
+    accessTier: accessTier
+    minimumTlsVersion: minimumTlsVersion
+    supportsHttpsTrafficOnly: true
+    allowBlobPublicAccess: allowBlobPublicAccess
+    allowSharedKeyAccess: allowSharedKeyAccess
+    defaultToOAuthAuthentication: defaultToOAuthAuthentication
+    publicNetworkAccess: publicNetworkAccess
+    allowCrossTenantReplication: false
+
+    networkAcls: {
+      bypass: networkBypass
+      defaultAction: networkDefaultAction
+      ipRules: ipRules
+    }
+
+    encryption: {
+      keySource: 'Microsoft.Storage'
+      services: {
+        blob: { enabled: true }
+        file: { enabled: true }
+        queue: { enabled: true }
+        table: { enabled: true }
+      }
+      requireInfrastructureEncryption: false
+    }
+  }
+}
+
+resource blobService 'Microsoft.Storage/storageAccounts/blobServices@2024-01-01' = {
+  parent: storage
+  name: 'default'
+  properties: {
+    deleteRetentionPolicy: {
+      enabled: true
+      days: blobSoftDeleteDays
+    }
+    containerDeleteRetentionPolicy: {
+      enabled: true
+      days: containerSoftDeleteDays
+    }
+  }
+}
+
+resource fileService 'Microsoft.Storage/storageAccounts/fileServices@2024-01-01' = {
+  parent: storage
+  name: 'default'
+  properties: {
+    shareDeleteRetentionPolicy: {
+      enabled: true
+      days: shareSoftDeleteDays
+    }
+  }
+}
+
+resource containers 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-01-01' = [for c in containerNames: {
+  parent: blobService
+  name: c
 }]
+
+output storageAccountId string = storage.id
+output storageAccountNameOut string = storage.name
+output blobEndpoint string = storage.properties.primaryEndpoints.blob

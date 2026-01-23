@@ -1,128 +1,103 @@
-//
-// Project: IPNoticeHub
-// Purpose: Deploys the App Service and Hosting Plan (lab environment)
-// Owner: Nikolay
-//
+/*
+  App Service (Web App) + App Service Plan
 
-@description('The Azure Subscription ID where the resources will be deployed.')
-param subscriptionId string
+  Purpose:
+  - Creates an App Service Plan and a Windows Web App
+  - Applies baseline security settings (HTTPS only, disables basic publishing creds for FTP/SCM)
+  - Allows runtime/siteConfig customization via siteConfigOverrides
 
-@description('The name of the Resource Group for the App Service.')
-param resourceGroupName string
+  Scope:
+  - Resource Group
+*/
 
-@description('The name of the App Service (Web App).')
-param name string
+targetScope = 'resourceGroup'
 
-@description('The Azure Region for all resources (e.g., westeurope).')
-param location string
-
-@description('The name of the App Service Plan (Hosting Plan).')
+param appName string
 param hostingPlanName string
+param location string = resourceGroup().location
+param tags object = {}
 
-@description('The Resource Group where the Hosting Plan resides.')
-param serverFarmResourceGroup string
+param skuName string
+param skuTier string
+param capacity int = 1
+param alwaysOn bool = true
 
-@description('If true, keeps the app loaded even when there is no traffic (Requires Basic tier or higher).')
-param alwaysOn bool
+@allowed([
+  'AllAllowed'
+  'Disabled'
+  'FtpsOnly'
+])
 
-@description('The state of FTPS encryption. Recommended: FtpsOnly.')
-param ftpsState string
+param ftpsState string = 'Disabled'
+param systemAssignedIdentityEnabled bool = true
+param currentStack string = 'dotnet'
+param siteConfigOverrides object = {}
 
-@description('The pricing tier of the App Service Plan (e.g., Basic, Standard).')
-param sku string
-
-@description('The specific SKU code.')
-param skuCode string
-
-@description('The size of the workers.')
-param workerSize string
-
-@description('The ID associated with the worker size.')
-param workerSizeId string
-
-@description('The number of instances for the App Service Plan.')
-param numberOfWorkers string
-
-@description('The runtime stack of the app (e.g., dotnet, php, node).')
-param currentStack string
-
-@description('The version of PHP if applicable.')
-param phpVersion string
-
-@description('The .NET Framework version if applicable.')
-param netFrameworkVersion string
-
-@description('Metadata for the configured stacks in Windows environments.')
-param windowsConfiguredStacks array
-
-// --- 1. APP SERVICE PLAN (Hosting Plan) ---
+// App Service Plan
 resource hostingPlan 'Microsoft.Web/serverfarms@2024-11-01' = {
   name: hostingPlanName
   location: location
-  tags: {
-    workload: 'ipnoticehub'
-    env: 'lab'
-    region: 'weu'
-    owner: 'nikolay'
-    purpose: 'app-service-plan'
-  }
+  tags: union(tags, { purpose: 'web' })
+
   sku: {
-    tier: sku
-    name: skuCode
+    name: skuName
+    tier: skuTier
+    capacity: capacity
   }
+  
   properties: {
-    workerSize: workerSize
-    workerSizeId: workerSizeId
-    numberOfWorkers: int(numberOfWorkers)
     zoneRedundant: false
   }
 }
 
-// --- 2. APP SERVICE (Web App) ---
-resource name_resource 'Microsoft.Web/sites@2022-03-01' = {
-  name: name
-  location: location
-  tags: {
-    workload: 'ipnoticehub'
-    env: 'lab'
-    region: 'weu'
-    owner: 'nikolay'
-    purpose: 'web-app'
-  }
-  properties: {
-    siteConfig: {
-      metadata: [
-        {
-          name: 'CURRENT_STACK'
-          value: currentStack
-        }
-      ]
-      phpVersion: phpVersion
-      netFrameworkVersion: netFrameworkVersion
-      windowsConfiguredStacks: windowsConfiguredStacks
-      alwaysOn: alwaysOn
-      ftpsState: ftpsState
+// Web App
+var baseSiteConfig = {
+  alwaysOn: alwaysOn
+  ftpsState: ftpsState
+
+  metadata: [
+    {
+      name: 'CURRENT_STACK'
+      value: currentStack
     }
+  ]
+}
+
+resource webApp 'Microsoft.Web/sites@2024-11-01' = {
+  name: appName
+  location: location
+  tags: tags
+
+  identity: systemAssignedIdentityEnabled ? {
+    type: 'SystemAssigned'
+  } : null
+  properties: {
     serverFarmId: hostingPlan.id
-    clientAffinityEnabled: true
     httpsOnly: true
+    clientAffinityEnabled: true
     publicNetworkAccess: 'Enabled'
+    siteConfig: union(baseSiteConfig, siteConfigOverrides)
   }
 }
 
-// --- 3. SECURITY POLICIES (Disabling Basic Auth) ---
-resource name_scm 'Microsoft.Web/sites/basicPublishingCredentialsPolicies@2022-09-01' = {
-  parent: name_resource
+// Security Enhancements: Disabled Basic Publishing Credentials for FTP and SCM
+resource basicCredsScm 'Microsoft.Web/sites/basicPublishingCredentialsPolicies@2022-09-01' = {
+  parent: webApp
   name: 'scm'
   properties: {
     allow: false
   }
 }
 
-resource name_ftp 'Microsoft.Web/sites/basicPublishingCredentialsPolicies@2022-09-01' = {
-  parent: name_resource
+resource basicCredsFtp 'Microsoft.Web/sites/basicPublishingCredentialsPolicies@2022-09-01' = {
+  parent: webApp
   name: 'ftp'
   properties: {
     allow: false
   }
 }
+
+output webAppName string = webApp.name
+output webAppId string = webApp.id
+output hostingPlanId string = hostingPlan.id
+output principalId string = systemAssignedIdentityEnabled ? webApp.identity.principalId : ''

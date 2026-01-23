@@ -69,7 +69,7 @@ resource sqlDb 'Microsoft.Sql/servers/databases@2024-05-01-preview' = {
   parent: sqlServer
   name: databaseName
   location: location
-  tags: tags
+  tags: union(tags, { purpose: 'storage' })
 
   sku: {
     name: skuName

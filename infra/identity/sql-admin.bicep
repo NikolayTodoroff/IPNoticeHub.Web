@@ -1,48 +1,40 @@
-/* SQL ADMIN CONFIGURATION (2026 Standard)
-    - Sets up an Entra ID admin for the SQL Server
-    - Enforces Entra ID-only authentication
+/*
+  SQL Admin Configuration
+
+  Purpose:
+  - Sets up an Entra ID admin for the SQL Server and enforces Entra ID-only authentication
+
+  Scope:
+  - Resource Group
 */
 
-param serverName string = 'sql-ipnoticehub-lab'
-param location string = resourceGroup().location
+targetScope = 'resourceGroup'
 
-// 1. The Entra ID Admin Details
-@description('The display name or UPN of the Entra admin (e.g., your email)')
-param entraAdminName string = 'nikolay.todorov@ipnoticehub.com'
+param serverName string
+param entraAdminLogin string
+param entraAdminObjectId string
 
-@description('The Object ID from the Entra ID portal for your user')
-param entraAdminObjectId string // Paste your GUID here
-
-// --- SQL SERVER ---
-resource sqlServer 'Microsoft.Sql/servers@2023-05-01-preview' = {
+resource sqlServer 'Microsoft.Sql/servers@2023-05-01-preview' existing = {
   name: serverName
-  location: location
-  properties: {
-    version: '12.0'
-    minimalTlsVersion: '1.2'
-    // This blocks all SQL passwords globally on this server
-    publicNetworkAccess: 'Enabled' 
-  }
 }
 
-// --- ENTRA ADMIN ASSIGNMENT ---
 resource sqlAdmin 'Microsoft.Sql/servers/administrators@2023-05-01-preview' = {
   parent: sqlServer
-  name: 'ActiveDirectory' // This must be exactly 'ActiveDirectory'
+  name: 'ActiveDirectory'
   properties: {
     administratorType: 'ActiveDirectory'
-    login: entraAdminName
+    login: entraAdminLogin
     sid: entraAdminObjectId
     tenantId: subscription().tenantId
-    principalType: 'User' //
   }
 }
 
-// --- ENFORCE ENTRA-ONLY AUTH ---
 resource entraOnly 'Microsoft.Sql/servers/azureADOnlyAuthentications@2023-05-01-preview' = {
   parent: sqlServer
   name: 'Default'
   properties: {
-    azureADOnlyAuthentication: true // Disables SQL login entirely
+    azureADOnlyAuthentication: true
   }
 }
+
+

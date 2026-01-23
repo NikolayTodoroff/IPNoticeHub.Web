@@ -19,7 +19,7 @@ param tags object = {}
 resource mainRG 'Microsoft.Resources/resourceGroups@2024-03-01' = {
   name: name
   location: location
-  tags: tags
+  tags: union(tags, { purpose: 'alerts' })
 }
 
 output rgId string = mainRG.id

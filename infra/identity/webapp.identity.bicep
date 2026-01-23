@@ -1,29 +1,26 @@
-//
-// Project: IPNoticeHub
-// Purpose: Enable System-Assigned Managed Identity for the Web App
-// 
+/*
+  Web App - Enable System Assigned Managed Identity (SMI)
 
-@description('Name of the existing Web App')
+  Purpose:
+  - Enables SystemAssigned identity on an existing Web App
+  - Outputs principalId for downstream RBAC (Key Vault, etc.)
+
+  Scope:
+  - Resource Group
+*/
+
+targetScope = 'resourceGroup'
+
 param webAppName string
+param location string
 
-@description('Location of the Web App')
-param location string = 'westeurope'
-
-@description('Resource group where the Web App exists')
-param resourceGroupName string
-
-// --- WEB APP RESOURCE UPDATE ---
-
-resource webApp 'Microsoft.Web/sites@2023-01-01' = {
+resource webAppIdentity 'Microsoft.Web/sites@2024-11-01' = {
   name: webAppName
   location: location
   identity: {
     type: 'SystemAssigned'
   }
-  properties: {}
 }
 
-// --- OUTPUTS ---
-
-@description('The Principal ID of the newly created Managed Identity. Use this for RBAC assignments.')
-output webAppMSIPrincipalId string = webApp.identity.principalId
+output webAppPrincipalId string = webAppIdentity.identity.principalId
+output webAppResourceId string = webAppIdentity.id

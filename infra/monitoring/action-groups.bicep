@@ -37,7 +37,7 @@ var actionGroups = [
 resource ag 'Microsoft.Insights/actionGroups@2023-01-01' = [for agDef in actionGroups: {
   name: agDef.name
   location: location
-  tags: tags
+  tags: union(tags, { purpose: 'alerts' })
   properties: {
     groupShortName: agDef.shortName
     enabled: true

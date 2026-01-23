@@ -19,7 +19,7 @@ param tags object = {}
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
   name: name
   location: location
-  tags: tags
+  tags: union(tags, { purpose: 'analytics' })
   properties: {
     sku: {
       name: sku

@@ -5,16 +5,16 @@ Environment: LAB
 Owner: Nikolay
 */
 
-PRINT 'Processing permissions for Entra User: sql-admin@ipnoticehub.com';
+PRINT 'Processing permissions for Entra User: sql.admin@ipnoticehub.com';
 
 IF NOT EXISTS (
     SELECT 1 
     FROM sys.database_principals 
-    WHERE name = 'sql-admin@ipnoticehub.com'
+    WHERE name = 'sql.admin@ipnoticehub.com'
 )
 BEGIN
     PRINT 'User does not exist. Creating.';
-    CREATE USER [sql-admin@ipnoticehub.com] FROM EXTERNAL PROVIDER;
+    CREATE USER [sql.admin@ipnoticehub.com] FROM EXTERNAL PROVIDER;
 END
 ELSE
 BEGIN
@@ -30,10 +30,10 @@ IF NOT EXISTS (
     JOIN sys.database_principals u
         ON drm.member_principal_id = u.principal_id
     WHERE r.name = 'db_owner'
-      AND u.name = 'sql-admin@ipnoticehub.com'
+      AND u.name = 'sql.admin@ipnoticehub.com'
 )
 BEGIN
-    ALTER ROLE db_owner ADD MEMBER [sql-admin@ipnoticehub.com];
+    ALTER ROLE db_owner ADD MEMBER [sql.admin@ipnoticehub.com];
 END
 GO
 

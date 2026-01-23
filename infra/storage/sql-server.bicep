@@ -21,29 +21,15 @@ param location string = resourceGroup().location
 param tags object = {}
 param clientIpAddress string = ''
 param enableDefender bool = false
-param entraAdminName string
-param entraAdminObjectId string
 
 resource sqlServer 'Microsoft.Sql/servers@2024-05-01-preview' = {
   name: serverName
   location: location
-  tags: tags
+  tags: union(tags, { purpose: 'storage' })
   properties: {
     version: '12.0'
     minimalTlsVersion: '1.2'
     publicNetworkAccess: 'Enabled'
-  }
-}
-
-// Entra Admin
-resource entraAdmin 'Microsoft.Sql/servers/administrators@2024-05-01-preview' = {
-  parent: sqlServer
-  name: 'ActiveDirectory'
-  properties: {
-    administratorType: 'ActiveDirectory'
-    login: entraAdminName
-    sid: entraAdminObjectId
-    tenantId: subscription().tenantId
   }
 }
 
@@ -90,3 +76,6 @@ resource expressVA 'Microsoft.Sql/servers/sqlVulnerabilityAssessments@2024-05-01
     state: 'Enabled'
   }
 }
+
+output serverName string = sqlServer.name
+output serverId string = sqlServer.id

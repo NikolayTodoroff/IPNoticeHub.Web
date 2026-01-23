@@ -1,58 +1,72 @@
-/* SCOPE: Resource Group
-   PROJECT: IPNoticeHub
-   DESCRIPTION: Central security vault for managing application secrets and keys.
+/*
+  Key Vault
+
+  Purpose:
+  - Central vault for secrets/keys/certs (RBAC mode)
+
+  Scope:
+  - Resource Group
 */
 
-@description('The name of the Key Vault')
-param vaults_kv_name string = 'kv-ipnoticehub-dev-weu'
+targetScope = 'resourceGroup'
 
-@description('The location for the resource')
-param location string = 'westeurope'
+param name string = 'kv-ipnoticehub-dev-weu'
+param location string = resourceGroup().location
+param tags object = {}
 
-// --- KEY VAULT DEFINITION ---
+@allowed([
+  'Enabled'
+  'Disabled'
+])
+param publicNetworkAccess string = 'Enabled'
+
+@allowed([
+  'Allow'
+  'Deny'
+])
+param defaultAction string = 'Allow'
+
+@allowed([
+  'None'
+  'AzureServices'
+])
+param bypass string = 'AzureServices'
 
 resource keyVault 'Microsoft.KeyVault/vaults@2024-12-01-preview' = {
-  name: vaults_kv_name
+  name: name
   location: location
-  tags: {
-    workload: 'ipnoticehub'
-    env: 'lab'
-    region: 'weu'
-    owner: 'nikolay'
-  }
+  tags: union(tags, { purpose: 'security' })
   properties: {
+    tenantId: subscription().tenantId
+
     sku: {
       family: 'A'
-      name: 'Standard'
+      name: 'standard'
     }
-    tenantId: '227c0e16-85bf-4c81-a620-0ce328414830'
-    
-    // --- NETWORK SECURITY ---
+
+    enableRbacAuthorization: true
+
+    // Network access
+    publicNetworkAccess: publicNetworkAccess
     networkAcls: {
-      bypass: 'None'
-      defaultAction: 'Allow'
+      bypass: bypass
+      defaultAction: defaultAction
       ipRules: []
       virtualNetworkRules: []
     }
-    
-    // --- ACCESS & AUTHORIZATION ---
-    accessPolicies: [] // Empty because we are using RBAC (Best Practice)
-    enableRbacAuthorization: true // Modern authorization model [Az500 standard]
-    
-    // --- PROTECTION & RECOVERY ---
-    enableSoftDelete: true
+
+    // Soft delete & purge protection
     softDeleteRetentionInDays: 90
-    enablePurgeProtection: true // Prevents permanent deletion during retention
-    
-    // --- INTEGRATION SETTINGS ---
+    enablePurgeProtection: true
+
+    // App integrations
     enabledForDeployment: false
     enabledForDiskEncryption: false
     enabledForTemplateDeployment: false
-    
-    publicNetworkAccess: 'Enabled'
-    vaultUri: 'https://${vaults_kv_name}.vault.azure.net/'
   }
 }
 
 output kvId string = keyVault.id
+output kvName string = keyVault.name
 output kvUri string = keyVault.properties.vaultUri
+
