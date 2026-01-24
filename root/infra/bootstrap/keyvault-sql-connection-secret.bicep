@@ -1,4 +1,6 @@
 /*
+  BOOTSTRAP ONLY – NOT PART OF REGULAR DEPLOYMENTS
+
   Key Vault Connection String Secret Deployment
 
   Purpose:

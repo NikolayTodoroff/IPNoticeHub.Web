@@ -8,37 +8,30 @@
   Policy behavior:
   - If a resource is created/updated without one of the required tags (workload, env, owner, region), 
     the policy automatically adds it with the specified default value
-  - Uses 'modify' effect to remediate resources (both new and existing via remediation tasks)
+  - Uses 'Modify' effect to remediate resources (both new and existing via remediation tasks)
   - Excludes Azure SQL 'master' database (system resource that doesn't support tagging)
 
   Scope:
   Subscription (IPHub-Portfolio-Sub)
 */
 
-
 targetScope = 'subscription'
 
-@description('Location for the policy assignment managed identity.')
-param location string = 'westeurope'
+param initiativeName string
+param assignmentName string
+param location string
 
-@description('Tag values to enforce (defaults for lab).')
-param workloadTagValue string = 'ipnoticehub'
-param environmentTagValue string = 'lab'
-param regionTagValue string = 'weu'
-param ownerTagValue string = 'nikolay'
+param workload string
+param env string
+param region string
+param owner string
 
-@description('Names (override per environment if needed).')
-param initiativeName string = 'init-tagging-iphub-lab-weu'
-param assignmentName string = 'assign-tagging-governance'
-
-// Built-in Role: Tag Contributor
-// GUID: 4a9ae827-6dc8-4573-8ac7-8239d42aa03f
 var tagContributorRoleDefinitionId = subscriptionResourceId(
   'Microsoft.Authorization/roleDefinitions',
   '4a9ae827-6dc8-4573-8ac7-8239d42aa03f'
 )
 
-// Exclude Azure SQL logical server system database "master" (not taggable)
+// Exclude Azure SQL logical server system database "master"
 var excludeSqlMasterDb = {
   not: {
     allOf: [
@@ -48,7 +41,7 @@ var excludeSqlMasterDb = {
   }
 }
 
-// --- 1) POLICY DEFINITIONS ---
+// Policy Definitions
 resource addWorkloadTagPolicy 'Microsoft.Authorization/policyDefinitions@2021-06-01' = {
   name: 'pol-add-tag-workload-if-missing'
   properties: {
@@ -66,7 +59,7 @@ resource addWorkloadTagPolicy 'Microsoft.Authorization/policyDefinitions@2021-06
         ]
       }
       then: {
-        effect: 'modify'
+        effect: 'Modify'
         details: {
           roleDefinitionIds: [
             tagContributorRoleDefinitionId
@@ -101,7 +94,7 @@ resource addEnvTagPolicy 'Microsoft.Authorization/policyDefinitions@2021-06-01' 
         ]
       }
       then: {
-        effect: 'modify'
+        effect: 'Modify'
         details: {
           roleDefinitionIds: [
             tagContributorRoleDefinitionId
@@ -136,7 +129,7 @@ resource addOwnerTagPolicy 'Microsoft.Authorization/policyDefinitions@2021-06-01
         ]
       }
       then: {
-        effect: 'modify'
+        effect: 'Modify'
         details: {
           roleDefinitionIds: [
             tagContributorRoleDefinitionId
@@ -171,7 +164,7 @@ resource addRegionTagPolicy 'Microsoft.Authorization/policyDefinitions@2021-06-0
         ]
       }
       then: {
-        effect: 'modify'
+        effect: 'Modify'
         details: {
           roleDefinitionIds: [
             tagContributorRoleDefinitionId
@@ -189,7 +182,7 @@ resource addRegionTagPolicy 'Microsoft.Authorization/policyDefinitions@2021-06-0
   }
 }
 
-// --- 2) INITIATIVE (POLICY SET) ---
+// Initiative Definition: Tagging Governance
 resource taggingInitiative 'Microsoft.Authorization/policySetDefinitions@2021-06-01' = {
   name: initiativeName
   properties: {
@@ -224,7 +217,7 @@ resource taggingInitiative 'Microsoft.Authorization/policySetDefinitions@2021-06
   }
 }
 
-// --- 3) ASSIGNMENT ---
+// Assign the Tagging Governance Initiative
 resource initiativeAssignment 'Microsoft.Authorization/policyAssignments@2021-06-01' = {
   name: assignmentName
   location: location
@@ -235,17 +228,18 @@ resource initiativeAssignment 'Microsoft.Authorization/policyAssignments@2021-06
     displayName: 'Assignment: Tagging Governance Initiative'
     policyDefinitionId: taggingInitiative.id
     parameters: {
-      workloadVal: { value: workloadTagValue }
-      envVal: { value: environmentTagValue }
-      ownerVal: { value: ownerTagValue }
-      regionVal: { value: regionTagValue }
+      workloadVal: { value: workload }
+      envVal: { value: env }
+      ownerVal: { value: owner }
+      regionVal: { value: region }
     }
   }
 }
 
-// --- 4) PERMISSIONS (Modify effect needs this role on the assignment identity) ---
+// Role Assignment: Grant Tag Contributor role to the Initiative's Managed Identity
 resource tagContributorRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(initiativeAssignment.id, tagContributorRoleDefinitionId)
+  name: guid(subscription().id, initiativeAssignment.name, tagContributorRoleDefinitionId)
+  scope: subscription()
   properties: {
     principalId: initiativeAssignment.identity.principalId
     roleDefinitionId: tagContributorRoleDefinitionId

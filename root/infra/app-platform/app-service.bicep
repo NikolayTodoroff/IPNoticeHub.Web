@@ -27,8 +27,8 @@ param alwaysOn bool = true
   'Disabled'
   'FtpsOnly'
 ])
-
 param ftpsState string = 'Disabled'
+
 param systemAssignedIdentityEnabled bool = true
 param currentStack string = 'dotnet'
 param siteConfigOverrides object = {}
