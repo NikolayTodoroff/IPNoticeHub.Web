@@ -3,11 +3,10 @@
 
   Purpose:
    - Restricts resource deployment to approved locations to enforce
-  regional governance and reduce accidental multi-region sprawl.
+     regional governance and reduce accidental multi-region sprawl.
    - Effect: Deny
-    - Allowed locations:
-      - westeurope
-      - global (required for non-regional/global resources)
+   - Allowed locations westeurope and global
+   - Uses Indexed mode to avoid sub-resources without locations.
 
   Scope:
   Subscription
@@ -21,21 +20,50 @@ param allowedLocations array = [
   'global'
 ]
 
+// Policy Definition (Indexed)
+resource locationPolicyDefinition 'Microsoft.Authorization/policyDefinitions@2025-03-01' = {
+  name: 'restrict-locations-indexed'
+  properties: {
+    displayName: 'Governance: Restrict Allowed Locations (Indexed)'
+    description: 'Restricts deployments to approved locations for regional resources. Uses Indexed mode to avoid sub-resources without locations.'
+    policyType: 'Custom'
+    mode: 'Indexed'
+    parameters: {
+      allowedLocations: {
+        type: 'Array'
+        metadata: {
+          displayName: 'Allowed Locations'
+          description: 'The list of allowed locations for resources.'
+        }
+      }
+    }
+    policyRule: {
+      if: {
+        allOf: [
+          { field: 'location', exists: 'true' }
+          { field: 'location', notIn: '[parameters(\'allowedLocations\')]' }
+        ]
+      }
+      then: {
+        effect: 'Deny'
+      }
+    }
+  }
+}
+
+// Policy Assignment
 resource allowDeploymentLocations 'Microsoft.Authorization/policyAssignments@2025-03-01' = {
   name: assignmentName
   properties: {
     displayName: 'Governance: Restrict Allowed Locations (West Europe)'
-    description: 'Restricts resource deployment to West Europe for the IPHub lab subscription. Global is allowed for non-regional resources.'
-    policyDefinitionId: '/subscriptions/bcaf1056-6646-4069-8a85-c154fe786b07/providers/Microsoft.Authorization/policyDefinitions/930c3f8b772c4bb99adde19b'
-
+    description: 'Restricts resource deployment to West Europe and Global using Indexed mode.'
+    policyDefinitionId: locationPolicyDefinition.id
     parameters: {
       allowedLocations: {
         value: allowedLocations
       }
     }
-
     enforcementMode: 'Default'
-
     nonComplianceMessages: [
       {
         message: 'Deployment denied. This subscription allows resource deployment only in West Europe (westeurope) and global. Choose an approved location or request a governance exception.'

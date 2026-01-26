@@ -6,7 +6,7 @@
   - Follows Principle of Least Privilege (Read and write access to secrets).
 
   Scope:
-  - Resource Group
+  - Key Vault 
 */
 
 targetScope = 'resourceGroup'

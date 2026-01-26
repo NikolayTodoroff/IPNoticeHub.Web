@@ -99,3 +99,4 @@ module sqlMinTls './sql-min-tls-policy.bicep' = {
     minTlsVersion: '1.2'
   }
 }
+

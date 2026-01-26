@@ -30,7 +30,7 @@ param skuCapacity int = 1
 
 // Database properties
 param collation string = 'SQL_Latin1_General_CP1_CI_AS'
-param maxSizeBytes int = 34359738368
+param maxSizeBytes int = 5368709120
 param zoneRedundant bool = false
 
 @description('Read scale setting.')
@@ -40,7 +40,6 @@ param zoneRedundant bool = false
 ])
 
 param readScale string = 'Disabled'
-param autoPauseDelay int = 60
 param minCapacity string = '0.5'
 
 @description('Requested backup storage redundancy. Snapshot used Local.')
@@ -85,7 +84,7 @@ resource sqlDb 'Microsoft.Sql/servers/databases@2024-05-01-preview' = {
     zoneRedundant: zoneRedundant
     readScale: readScale
 
-    autoPauseDelay: autoPauseDelay
+    autoPauseDelay: -1
     minCapacity: json(minCapacity)
     requestedBackupStorageRedundancy: requestedBackupStorageRedundancy
 
@@ -105,5 +104,6 @@ resource dbAtp 'Microsoft.Sql/servers/databases/advancedThreatProtectionSettings
   }
 }
 
+output databaseName string = sqlDb.name
 output databaseId string = sqlDb.id
 

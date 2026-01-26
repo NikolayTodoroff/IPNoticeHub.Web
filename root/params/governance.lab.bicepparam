@@ -6,6 +6,7 @@ param location = 'westeurope'
 param actionGroupInfoName = 'ag-cost-info-lab'
 param actionGroupWarnName = 'ag-cost-warn-lab'
 param actionGroupCritName = 'ag-cost-crit-lab'
+
 param alertsRgName = 'rg-alerts-iphub-lab-weu'
 
 param env = 'lab'

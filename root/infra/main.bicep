@@ -3,6 +3,15 @@ var alertsRgName = 'rg-alerts-${workload}-${env}-${region}'
 param location string
 param alertEmail string
 
+param keyVaultName string
+param sqlDatabaseName string
+param sqlServerName string
+param storageAccountName string
+
+param sqlMonitoringAssignmentName string
+param sqlMonitoringInitiativeName string
+param policyRemediationUamiResourceId string
+
 param env string 
 param owner string
 param region string
@@ -54,16 +63,16 @@ module webApp 'app-platform/app-service.bicep' = {
 module storageAcc 'app-platform/storage-acc.bicep' = {
   name: 'storageAcc'
   params: {
-    storageAccountName: 'stipnoticehubdocslabweu'
+    storageAccountName: storageAccountName
     location: resourceGroup().location
     tags: globalTags
   }
 }
 
-module sqlServer 'storage/sql-server.bicep' = {
+module sqlServer 'storage/sql-db-server.bicep' = {
   name: 'sqlServer'
   params: {
-    serverName: 'sql-ipnoticehub-dev'
+    serverName: sqlServerName
     location: resourceGroup().location
     tags: globalTags
   }
@@ -73,7 +82,7 @@ module sqlDatabase 'storage/sql-db.bicep' = {
   name: 'sqlDatabase'
   params: {
     serverName: sqlServer.outputs.serverName
-    databaseName: 'ipnoticehub-db'
+    databaseName: sqlDatabaseName
     location: resourceGroup().location
     tags: globalTags
   }
@@ -123,7 +132,7 @@ module actionGroups 'monitoring/action-groups.bicep' = {
 module keyVault 'app-platform/key-vault.bicep' = {
   name: 'keyVault'
   params: {
-    name: 'kv-ipnoticehub-dev-weu'
+    name: keyVaultName
     location: resourceGroup().location
     tags: globalTags
     publicNetworkAccess: 'Enabled'
@@ -132,4 +141,22 @@ module keyVault 'app-platform/key-vault.bicep' = {
   }
 }
 
+module sqlDbBackupRetention './storage/sql-db-backup-retention.bicep' = {
+  name: 'sqlDbBackupRetention'
+  params: {
+    sqlServerName: sqlServer.outputs.serverName
+    sqlDatabaseName: sqlDatabase.outputs.databaseName
+  }
+}
 
+module sqlMonitoring './governance/sql-monitoring-init.bicep' = {
+  name: 'sqlMonitoring'
+  scope: subscription()
+  params: {
+    location: location
+    policyRemediationUamiResourceId: policyRemediationUamiResourceId
+    initiativeName: sqlMonitoringInitiativeName
+    assignmentName: sqlMonitoringAssignmentName
+    logAnalyticsWorkspaceResourceId: logAnalyticsWorkspace.outputs.workspaceId
+  }
+}
