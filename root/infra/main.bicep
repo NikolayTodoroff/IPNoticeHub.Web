@@ -10,6 +10,11 @@ param storageAccountName string
 
 param sqlMonitoringAssignmentName string
 param sqlMonitoringInitiativeName string
+param storageAccMonitoringAssignmentName string
+param storageAccMonitoringInitiativeName string
+param coreSvsMonitoringAssignmentName string
+param coreSvsMonitoringInitiativeName string
+
 param policyRemediationUamiResourceId string
 
 param env string 
@@ -157,6 +162,39 @@ module sqlMonitoring './governance/sql-monitoring-init.bicep' = {
     policyRemediationUamiResourceId: policyRemediationUamiResourceId
     initiativeName: sqlMonitoringInitiativeName
     assignmentName: sqlMonitoringAssignmentName
-    logAnalyticsWorkspaceResourceId: logAnalyticsWorkspace.outputs.workspaceId
+    logAnalytics: logAnalyticsWorkspace.outputs.workspaceId
+  }
+}
+
+module appServiceDiagPolicy './governance/app-service-diag-settings-policy.bicep' = {
+  name: 'appServiceDiagPolicy'
+  scope: subscription()
+  params: {
+    logAnalytics: logAnalyticsWorkspace.outputs.workspaceId
+  }
+}
+
+module coreSvsMonitoring './governance/core-services-monitoring-init.bicep' = {
+  name: 'coreSvsMonitoring'
+  scope: subscription()
+  params: {
+    location: location
+    policyRemediationUamiResourceId: policyRemediationUamiResourceId
+    initiativeName: coreSvsMonitoringInitiativeName
+    assignmentName: coreSvsMonitoringAssignmentName
+    logAnalytics: logAnalyticsWorkspace.outputs.workspaceId
+    appServicePolicyDefinitionId: appServiceDiagPolicy.outputs.appServicePolicyId
+  }
+}
+
+module storageAccMonitoring './governance/storage-acc-monitoring-init.bicep' = {
+  name: 'storageAccMonitoring'
+  scope: subscription()
+  params: {
+    location: location
+    initiativeName: storageAccMonitoringInitiativeName
+    assignmentName: storageAccMonitoringAssignmentName
+    logAnalytics: logAnalyticsWorkspace.outputs.workspaceId
+    policyRemediationUamiResourceId: policyRemediationUamiResourceId
   }
 }

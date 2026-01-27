@@ -24,7 +24,7 @@ param effect string = 'DeployIfNotExists'
 param profileName string = 'fileServicesDiagnosticsLogsToWorkspace'
 
 @description('Resource ID of the Log Analytics workspace that will receive File Service metrics.')
-param logAnalyticsWorkspaceResourceId string
+param logAnalytics string
 
 @description('Whether to enable metrics streaming to Log Analytics for File Services.')
 param metricsEnabled bool = true
@@ -42,7 +42,7 @@ resource fileServDiagAssignment 'Microsoft.Authorization/policyAssignments@2025-
     parameters: {
       effect: { value: effect }
       profileName: { value: profileName }
-      logAnalytics: { value: logAnalyticsWorkspaceResourceId }
+      logAnalytics: { value: logAnalytics }
       metricsEnabled: { value: metricsEnabled }
       logsEnabled: { value: logsEnabled }
   }

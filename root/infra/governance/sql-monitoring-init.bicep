@@ -6,10 +6,10 @@
   auditing configured to send logs/metrics to a specified Log Analytics workspace.
 
   Includes:
-  - Built-in: SQL Database diagnostics -> Log Analytics
+  - Built-in: SQL Database diagnostics to Log Analytics Workspace
     /providers/Microsoft.Authorization/policyDefinitions/b79fa14e-238a-4c2d-b376-442ce508fc84
 
-  - Built-in: SQL Server auditing + SQLSecurityAuditEvents -> Log Analytics
+  - Built-in: SQL Server auditing + SQLSecurityAuditEvents to Log Analytics Workspace
     /providers/Microsoft.Authorization/policyDefinitions/7ea8a143-05e3-4553-abfe-f56bef8b0b70
 
   Scope:
@@ -19,24 +19,16 @@
 targetScope = 'subscription'
 
 param location string
-
-@description('Initiative (policy set) name at subscription scope.')
 param initiativeName string
-
-@description('Initiative assignment name at subscription scope.')
 param assignmentName string
 
 @description('Resource ID of the Log Analytics workspace to receive SQL logs/metrics.')
-param logAnalyticsWorkspaceResourceId string
+param logAnalytics string
 
 @description('Resource ID of the User Assigned Managed Identity used for Azure Policy remediation.')
 param policyRemediationUamiResourceId string
 
-
-@allowed([
-  'DeployIfNotExists'
-  'Disabled'
-])
+@allowed(['DeployIfNotExists','Disabled'])
 @description('Enable/disable the initiative.')
 param effect string = 'DeployIfNotExists'
 
@@ -58,54 +50,42 @@ resource sqlMonitoringInitiative 'Microsoft.Authorization/policySetDefinitions@2
     parameters: {
       effect: {
         type: 'String'
-        allowedValues: [
-          'DeployIfNotExists'
-          'Disabled'
-        ]
+        allowedValues: [ 'DeployIfNotExists','Disabled']
         defaultValue: 'DeployIfNotExists'
-        metadata: {
-          displayName: 'Effect'
-          description: 'Enable or disable policy enforcement.'
-        }
+        metadata: {displayName: 'Effect', description: 'Enable or disable policy enforcement.'}
       }
 
-      logAnalyticsWorkspaceResourceId: {
+      logAnalytics: {
         type: 'String'
-        metadata: {
-          displayName: 'Log Analytics workspace'
-          description: 'Resource ID of the Log Analytics workspace.'
-        }
+        metadata: {displayName: 'Log Analytics workspace', description: 'Resource ID of the Log Analytics workspace.'}
       }
 
       sqlDbDiagnosticsSettingNameToUse: {
         type: 'String'
         defaultValue: 'SQLDatabaseDiagnosticsLogsToWorkspace'
-        metadata: {
-          displayName: 'SQL DB diagnostic setting name'
-          description: 'Name of the diagnostic settings created on each SQL Database.'
-        }
+        metadata: {displayName: 'SQL DB diagnostic setting name', description: 'Name of the diagnostic settings created on each SQL Database.'}
       }
     }
 
     policyDefinitions: [
-      // SQL Databases diagnostics -> Log Analytics
+      // SQL Databases diagnostics to Log Analytics Workspace
       {
         policyDefinitionId: sqlDbPolicyDefinitionId
         policyDefinitionReferenceId: 'sql-db-diag'
         parameters: {
           effect: { value: '[parameters(\'effect\')]' }
-          logAnalytics: { value: '[parameters(\'logAnalyticsWorkspaceResourceId\')]' }
+          logAnalytics: { value: '[parameters(\'logAnalytics\')]' }
           diagnosticsSettingNameToUse: { value: '[parameters(\'sqlDbDiagnosticsSettingNameToUse\')]' }
         }
       }
 
-      // SQL Servers auditing -> Log Analytics
+      // SQL Servers auditing to Log Analytics Workspace
       {
         policyDefinitionId: sqlServerPolicyDefinitionId
         policyDefinitionReferenceId: 'sql-server-audit'
         parameters: {
           effect: { value: '[parameters(\'effect\')]' }
-          logAnalyticsWorkspaceId: { value: '[parameters(\'logAnalyticsWorkspaceResourceId\')]' }
+          logAnalytics: { value: '[parameters(\'logAnalytics\')]' }
         }
       }
     ]
@@ -131,7 +111,7 @@ resource sqlMonitoringAssignment 'Microsoft.Authorization/policyAssignments@2025
     enforcementMode: 'Default'
     parameters: {
       effect: { value: effect }
-      logAnalyticsWorkspaceResourceId: { value: logAnalyticsWorkspaceResourceId }
+      logAnalytics: { value: logAnalytics }
       sqlDbDiagnosticsSettingNameToUse: { value: sqlDbDiagnosticsSettingNameToUse }
     }
   }

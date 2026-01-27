@@ -24,7 +24,7 @@ param effect string = 'DeployIfNotExists'
 param profileName string = 'storageAccountsDiagnosticsLogsToWorkspace'
 
 @description('Resource ID of the Log Analytics workspace that will receive Storage Account metrics.')
-param logAnalyticsWorkspaceResourceId string
+param logAnalytics string
 
 @description('Whether to enable metrics streaming to Log Analytics for Storage Accounts.')
 param metricsEnabled bool = true
@@ -39,7 +39,7 @@ resource storageDiagAssignment 'Microsoft.Authorization/policyAssignments@2025-0
     parameters: {
       effect: { value: effect }
       profileName: { value: profileName }
-      logAnalytics: { value: logAnalyticsWorkspaceResourceId }
+      logAnalytics: { value: logAnalytics }
       metricsEnabled: { value: metricsEnabled }
     }
   }
