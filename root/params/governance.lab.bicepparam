@@ -8,8 +8,11 @@ param actionGroupWarnName = 'ag-cost-warn-lab'
 param actionGroupCritName = 'ag-cost-crit-lab'
 
 param alertsRgName = 'rg-alerts-iphub-lab-weu'
+param mainRgName = 'rg-ipnoticehub-lab-weu'
+param appServiceName = 'ipnoticehub-web-lab'
 
 param env = 'lab'
 param owner = 'nikolay'
 param region = 'weu'
 param workload = 'ipnoticehub'
+

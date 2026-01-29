@@ -3,7 +3,7 @@ targetScope = 'subscription'
 var stAccSkuPolicyAssignName = 'assign-storage-allowed-skus-${workload}-${env}-${region}'
 var allowedLocationsPolicyAssignName = 'assign-allowed-locations-${workload}-${env}-${region}'
 var taggingInitAssignName = 'assign-tagging-governance-${workload}-${env}-${region}'
-var taggingEnforceInitName = 'init-tagging-governance'
+var appServiceAuthInitAssignName = 'assign-appservice-auth-init-${workload}-${env}-${region}'
 
 var appServiceHttpsPolAssignName = 'assign-appservice-https-only-${workload}-${env}-${region}'
 var stHttpsAssignPolName = 'assign-storage-https-only-${workload}-${env}-${region}'
@@ -14,6 +14,9 @@ var actionGroupWarnId = resourceId(subscription().subscriptionId, alertsRgName, 
 var actionGroupCritId = resourceId(subscription().subscriptionId, alertsRgName, 'Microsoft.Insights/actionGroups', actionGroupCritName)
 
 param alertsRgName string
+param mainRgName string
+param appServiceName string
+
 param actionGroupInfoName string
 param actionGroupWarnName string
 param actionGroupCritName string
@@ -63,7 +66,7 @@ module taggingGovernanceInit './tagging-governance-init.bicep' = {
   scope: subscription()
   params: {
     assignmentName: taggingInitAssignName
-    initiativeName: taggingEnforceInitName
+    initiativeName: 'init-tagging-governance'
     location: location
 
     workload: workload
@@ -100,3 +103,39 @@ module sqlMinTls './sql-min-tls-policy.bicep' = {
   }
 }
 
+module appServiceManagedIdentity './app-service-managed-identity-policy.bicep' = {
+  name: 'appServiceManagedIdentity'
+  scope: subscription()
+  params: {
+    assignmentName: 'app-service-managed-identity-policy-assignment'
+    effect: 'AuditIfNotExists'
+  }
+}
+
+module keyVaultRbac './kv-rbac-policy.bicep' = {
+  name: 'keyVaultRbac'
+  scope: subscription()
+  params: {
+    assignmentName: 'key-vault-rbac-policy-assignment'
+    effect: 'Audit'
+  }
+}
+
+module appServiceAuthConfig './app-service-auth-disabled-config.bicep' = {
+  name: 'appServiceAuthConfig'
+  scope: resourceGroup(mainRgName)
+  params: {
+    appServiceName: appServiceName
+  }
+}
+
+module appServiceAuthInit './app-service-auth-init.bicep' = {
+  name: 'appServiceAuthInit'
+  scope: subscription()
+  params: {
+    location: location
+    initiativeName: 'app-service-auth-init-initiative'
+    assignmentName: appServiceAuthInitAssignName
+    effect: 'AuditIfNotExists'
+  }
+}
