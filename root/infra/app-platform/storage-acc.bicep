@@ -15,23 +15,13 @@ param storageAccountName string = 'stipnoticehubdocslabweu'
 param location string = resourceGroup().location
 param tags object = {}
 
-@allowed([
-  'Standard_LRS'
-  'Standard_ZRS'
-  'Standard_GRS'
-  'Standard_RAGRS'
-])
+@allowed(['Standard_LRS', 'Standard_ZRS', 'Standard_GRS', 'Standard_RAGRS'])
 param skuName string = 'Standard_LRS'
 
-@allowed([
-  'StorageV2'
-])
+@allowed(['StorageV2'])
 param kind string = 'StorageV2'
 
-@allowed([
-  'Hot'
-  'Cool'
-])
+@allowed(['Hot', 'Cool'])
 param accessTier string = 'Cool'
 
 // Security defaults
@@ -41,22 +31,13 @@ param allowSharedKeyAccess bool = true
 param defaultToOAuthAuthentication bool = true
 
 // Networking defaults (lab-friendly; later you can lock down)
-@allowed([
-  'Enabled'
-  'Disabled'
-])
+@allowed(['Enabled', 'Disabled'])
 param publicNetworkAccess string = 'Enabled'
 
-@allowed([
-  'Allow'
-  'Deny'
-])
+@allowed(['Allow', 'Deny'])
 param networkDefaultAction string = 'Allow'
 
-@allowed([
-  'None'
-  'AzureServices'
-])
+@allowed(['None', 'AzureServices'])
 param networkBypass string = 'AzureServices'
 
 param ipRules array = []

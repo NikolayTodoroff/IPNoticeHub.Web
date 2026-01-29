@@ -53,6 +53,16 @@ module networkRg 'app-platform/rg-network.bicep' = {
   }
 }
 
+module alertsRg 'app-platform/rg-alerts.bicep' = {
+  name: 'alertsRg'
+  scope: subscription()
+  params: {
+    name: alertsRgName
+    location: location
+    tags: globalTags
+  }
+}
+
 resource alertsRgExisting 'Microsoft.Resources/resourceGroups@2022-09-01' existing = {
   scope: subscription()
   name: alertsRgName
@@ -69,7 +79,6 @@ module webApp 'app-platform/app-service.bicep' = {
     skuName: 'B1'
     skuTier: 'Basic'
     capacity: 1
-
     alwaysOn: true
     ftpsState: 'Disabled'
 
@@ -105,16 +114,6 @@ module sqlDatabase 'storage/sql-db.bicep' = {
     serverName: sqlServer.outputs.serverName
     databaseName: sqlDatabaseName
     location: resourceGroup().location
-    tags: globalTags
-  }
-}
-
-module alertsRg 'monitoring/rg-alerts.bicep' = {
-  name: 'alertsRg'
-  scope: subscription()
-  params: {
-    name: alertsRgName
-    location: location
     tags: globalTags
   }
 }
