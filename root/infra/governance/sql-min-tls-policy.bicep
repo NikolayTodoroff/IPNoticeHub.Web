@@ -13,18 +13,10 @@ targetScope = 'subscription'
 param assignmentName string
 param policyName string = 'pol-sql-min-tls'
 
-@allowed([
-  'Deny'
-  'Audit'
-  'Disabled'
-])
+@allowed(['Deny','Audit','Disabled'])
 param effect string = 'Audit'
 
-@allowed([
-  '1.0'
-  '1.1'
-  '1.2'
-])
+@allowed(['1.0','1.1','1.2'])
 param minTlsVersion string = '1.2'
 
 resource sqlMinTlsDef 'Microsoft.Authorization/policyDefinitions@2021-06-01' = {
@@ -40,20 +32,12 @@ resource sqlMinTlsDef 'Microsoft.Authorization/policyDefinitions@2021-06-01' = {
     parameters: {
       effect: {
         type: 'String'
-        allowedValues: [
-          'Deny'
-          'Audit'
-          'Disabled'
-        ]
+        allowedValues: ['Deny','Audit','Disabled']    
         defaultValue: effect
       }
       minTlsVersion: {
         type: 'String'
-        allowedValues: [
-          '1.0'
-          '1.1'
-          '1.2'
-        ]
+        allowedValues: ['1.0','1.1','1.2']
         defaultValue: minTlsVersion
       }
     }

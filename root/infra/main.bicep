@@ -1,4 +1,8 @@
-var alertsRgName = 'rg-alerts-${workload}-${env}-${region}'
+var alertsRgName = 'rg-alerts-${env}-${region}'
+var mainRgName = 'rg-ipnoticehub-${env}-${region}'
+var networkRgName = 'rg-network-${env}-${region}'
+var appInsightsName = 'appi-ipnoticehub-${env}-${region}'
+var logAnalyticsName = 'log-ipnoticehub-${env}-${region}'
 
 param location string
 param alertEmail string
@@ -29,17 +33,29 @@ var globalTags = {
   workload: workload
 }
 
-resource alertsRgExisting 'Microsoft.Resources/resourceGroups@2022-09-01' existing = {
-  scope: subscription()
-  name: alertsRgName
-}
-
 module mainRg 'app-platform/rg-ipnoticehub.bicep' = {
   name: 'mainRg'
   scope: subscription()
   params: {
+    location: location
+    rgName: mainRgName
     tags: globalTags
   }
+}
+
+module networkRg 'app-platform/rg-network.bicep' = {
+  name: 'networkRg'
+  scope: subscription()
+  params: {
+    location: location
+    rgName: networkRgName
+    tags: globalTags
+  }
+}
+
+resource alertsRgExisting 'Microsoft.Resources/resourceGroups@2022-09-01' existing = {
+  scope: subscription()
+  name: alertsRgName
 }
 
 module webApp 'app-platform/app-service.bicep' = {
@@ -97,7 +113,7 @@ module alertsRg 'monitoring/rg-alerts.bicep' = {
   name: 'alertsRg'
   scope: subscription()
   params: {
-    name: 'rg-alerts-${workload}-${env}-${region}'
+    name: alertsRgName
     location: location
     tags: globalTags
   }
@@ -106,7 +122,7 @@ module alertsRg 'monitoring/rg-alerts.bicep' = {
 module logAnalyticsWorkspace 'monitoring/log-analytics.bicep' = {
   name: 'logAnalyticsWorkspace'
   params: {
-    name: 'log-ipnoticehub-${env}-${region}'
+    name: logAnalyticsName
     location: resourceGroup().location
     tags: globalTags
   }
@@ -115,7 +131,7 @@ module logAnalyticsWorkspace 'monitoring/log-analytics.bicep' = {
 module appInsights 'monitoring/app-insights.bicep' = {
   name: 'appInsights'
   params: {
-    name: 'appi-ipnoticehub-${env}-${region}'
+    name: appInsightsName
     location: resourceGroup().location
     workspaceResourceId: logAnalyticsWorkspace.outputs.workspaceId
     tags: globalTags

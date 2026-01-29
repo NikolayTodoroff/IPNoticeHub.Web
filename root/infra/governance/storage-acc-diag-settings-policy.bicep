@@ -13,11 +13,7 @@ targetScope = 'subscription'
 @description('Unique assignment name at this scope.')
 param assignmentName string = 'assign-storage-diag-iphub-lab-weu'
 
-@allowed([
-  'DeployIfNotExists'
-  'AuditIfNotExists'
-  'Disabled'
-])
+@allowed(['DeployIfNotExists','AuditIfNotExists','Disabled'])
 param effect string = 'DeployIfNotExists'
 
 @description('Diagnostic settings profile name that will be created on each Storage Account.')

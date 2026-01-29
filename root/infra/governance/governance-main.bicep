@@ -4,6 +4,7 @@ var stAccSkuPolicyAssignName = 'assign-storage-allowed-skus-${workload}-${env}-$
 var allowedLocationsPolicyAssignName = 'assign-allowed-locations-${workload}-${env}-${region}'
 var taggingInitAssignName = 'assign-tagging-governance-${workload}-${env}-${region}'
 var appServiceAuthInitAssignName = 'assign-appservice-auth-init-${workload}-${env}-${region}'
+var appServiceTlsAssignName = 'assign-appservice-tls-${workload}-${env}-${region}'
 
 var appServiceHttpsPolAssignName = 'assign-appservice-https-only-${workload}-${env}-${region}'
 var stHttpsAssignPolName = 'assign-storage-https-only-${workload}-${env}-${region}'
@@ -136,6 +137,15 @@ module appServiceAuthInit './app-service-auth-init.bicep' = {
     location: location
     initiativeName: 'app-service-auth-init-initiative'
     assignmentName: appServiceAuthInitAssignName
+    effect: 'AuditIfNotExists'
+  }
+}
+
+module appServiceTls './app-service-tls-policy.bicep' = {
+  name: 'appServiceTls'
+  scope: subscription()
+  params: {
+    assignmentName: appServiceTlsAssignName
     effect: 'AuditIfNotExists'
   }
 }

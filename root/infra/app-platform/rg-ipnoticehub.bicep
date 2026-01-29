@@ -5,13 +5,13 @@
   - Main resource group for application services.
 
   Scope:
-  - Subscription (IPHub-Portfolio-Sub)
+  - Subscription
 */
 
 targetScope = 'subscription'
 
-param rgName string = 'rg-ipnoticehub-lab-weu'
-param location string = 'westeurope'
+param rgName string
+param location string
 param tags object = {}
 
 resource mainRG 'Microsoft.Resources/resourceGroups@2024-03-01' = {

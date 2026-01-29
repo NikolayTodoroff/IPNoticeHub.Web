@@ -13,11 +13,7 @@ targetScope = 'subscription'
 param assignmentName string
 param policyName string = 'pol-appservice-https-only'
 
-@allowed([
-  'Deny'
-  'Audit'
-  'Disabled'
-])
+@allowed(['Deny','Audit','Disabled'])
 param effect string = 'Audit'
 
 resource appServiceHttpsOnlyDef 'Microsoft.Authorization/policyDefinitions@2021-06-01' = {
@@ -33,11 +29,7 @@ resource appServiceHttpsOnlyDef 'Microsoft.Authorization/policyDefinitions@2021-
     parameters: {
       effect: {
         type: 'String'
-        allowedValues: [
-          'Deny'
-          'Audit'
-          'Disabled'
-        ]
+        allowedValues: ['Deny','Audit','Disabled']
         defaultValue: effect
       }
     }
