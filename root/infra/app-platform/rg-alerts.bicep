@@ -10,12 +10,12 @@
 
 targetScope = 'subscription'
 
-param rgName string
+param name string
 param location string
 param tags object = {}
 
 resource alertsRG 'Microsoft.Resources/resourceGroups@2024-03-01' = {
-  name: rgName
+  name: name
   location: location
   tags: union(tags, { purpose: 'rg' })
 }

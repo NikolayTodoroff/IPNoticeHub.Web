@@ -4,22 +4,9 @@ var networkRgName = 'rg-network-${env}-${region}'
 var appInsightsName = 'appi-ipnoticehub-${env}-${region}'
 var logAnalyticsName = 'log-ipnoticehub-${env}-${region}'
 
+param policyRemediationUamiResourceId string
 param location string
 param alertEmail string
-
-param keyVaultName string
-param sqlDatabaseName string
-param sqlServerName string
-param storageAccountName string
-
-param sqlMonitoringAssignmentName string
-param sqlMonitoringInitiativeName string
-param storageAccMonitoringAssignmentName string
-param storageAccMonitoringInitiativeName string
-param coreSvsMonitoringAssignmentName string
-param coreSvsMonitoringInitiativeName string
-
-param policyRemediationUamiResourceId string
 
 param env string 
 param owner string
@@ -33,12 +20,25 @@ var globalTags = {
   workload: workload
 }
 
+param keyVaultName string
+param sqlDatabaseName string
+param sqlServerName string
+param storageAccountName string
+param appServiceName string
+
+param sqlMonitoringAssignmentName string
+param sqlMonitoringInitiativeName string
+param storageAccMonitoringAssignmentName string
+param storageAccMonitoringInitiativeName string
+param coreSvsMonitoringAssignmentName string
+param coreSvsMonitoringInitiativeName string
+
 module mainRg 'app-platform/rg-ipnoticehub.bicep' = {
   name: 'mainRg'
   scope: subscription()
   params: {
     location: location
-    rgName: mainRgName
+    name: mainRgName
     tags: globalTags
   }
 }
@@ -48,7 +48,7 @@ module networkRg 'app-platform/rg-network.bicep' = {
   scope: subscription()
   params: {
     location: location
-    rgName: networkRgName
+    name: networkRgName
     tags: globalTags
   }
 }
@@ -71,7 +71,7 @@ resource alertsRgExisting 'Microsoft.Resources/resourceGroups@2022-09-01' existi
 module webApp 'app-platform/app-service.bicep' = {
   name: 'webApp'
   params: {
-    appName: 'ipnoticehub-web-lab'
+    appName: appServiceName
     hostingPlanName: 'asp-iphub-lab-weu'
     location: resourceGroup().location
     tags: globalTags
@@ -213,3 +213,4 @@ module storageAccMonitoring './governance/storage-acc-monitoring-init.bicep' = {
     policyRemediationUamiResourceId: policyRemediationUamiResourceId
   }
 }
+

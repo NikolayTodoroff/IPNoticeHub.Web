@@ -1,4 +1,4 @@
-using '../infra/governance/governance-main.bicep'
+using '../infra/governance/governance.bicep'
 
 param contactEmail = 'everflowing555@gmail.com'
 param location = 'westeurope'

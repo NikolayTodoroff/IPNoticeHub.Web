@@ -22,11 +22,7 @@ param skuTier string
 param capacity int = 1
 param alwaysOn bool = true
 
-@allowed([
-  'AllAllowed'
-  'Disabled'
-  'FtpsOnly'
-])
+@allowed(['AllAllowed','Disabled','FtpsOnly'])
 param ftpsState string = 'Disabled'
 
 param systemAssignedIdentityEnabled bool = true
