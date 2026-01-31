@@ -39,7 +39,7 @@ param sqlDbDiagnosticsSettingNameToUse string = 'SQLDatabaseDiagnosticsLogsToWor
 var sqlDbPolicyDefinitionId = '/providers/Microsoft.Authorization/policyDefinitions/b79fa14e-238a-4c2d-b376-442ce508fc84'
 var sqlServerPolicyDefinitionId = '/providers/Microsoft.Authorization/policyDefinitions/7ea8a143-05e3-4553-abfe-f56bef8b0b70'
 
-// Create the initiative (policy set)
+// SQL Monitoring Initiative Definition
 resource sqlMonitoringInitiative 'Microsoft.Authorization/policySetDefinitions@2025-03-01' = {
   name: initiativeName
   properties: {
@@ -52,18 +52,24 @@ resource sqlMonitoringInitiative 'Microsoft.Authorization/policySetDefinitions@2
         type: 'String'
         allowedValues: [ 'DeployIfNotExists','Disabled']
         defaultValue: 'DeployIfNotExists'
-        metadata: {displayName: 'Effect', description: 'Enable or disable policy enforcement.'}
+        metadata: {
+          displayName: 'Effect'
+          description: 'Enable or disable policy enforcement.'}
       }
 
       logAnalytics: {
         type: 'String'
-        metadata: {displayName: 'Log Analytics workspace', description: 'Resource ID of the Log Analytics workspace.'}
+        metadata: {
+          displayName: 'Log Analytics workspace'
+          description: 'Resource ID of the Log Analytics workspace.'}
       }
 
       sqlDbDiagnosticsSettingNameToUse: {
         type: 'String'
         defaultValue: 'SQLDatabaseDiagnosticsLogsToWorkspace'
-        metadata: {displayName: 'SQL DB diagnostic setting name', description: 'Name of the diagnostic settings created on each SQL Database.'}
+        metadata: {
+          displayName: 'SQL DB diagnostic setting name'
+          description: 'Name of the diagnostic settings created on each SQL Database.'}
       }
     }
 
@@ -92,7 +98,7 @@ resource sqlMonitoringInitiative 'Microsoft.Authorization/policySetDefinitions@2
   }
 }
 
-// Assign the initiative at subscription scope
+// SQL Monitoring Initiative Assignment
 resource sqlMonitoringAssignment 'Microsoft.Authorization/policyAssignments@2025-03-01' = {
   name: assignmentName
   location: location

@@ -1,18 +1,14 @@
 /*
-  Azure Policy Assignment – Storage Account SKU Governance
+  Tagging Governance Initiative Assignment
 
   Purpose:
-  Enforces required tagging standards by automatically adding missing tags (workload, env, owner, region) 
+   - Enforces required tagging standards by automatically adding missing tags (workload, env, owner, region) 
   to Azure resources with predefined default values.
-
-  Policy behavior:
-  - If a resource is created/updated without one of the required tags (workload, env, owner, region), 
-    the policy automatically adds it with the specified default value
-  - Uses 'Modify' effect to remediate resources (both new and existing via remediation tasks)
-  - Excludes Azure SQL 'master' database (system resource that doesn't support tagging)
+  - Excludes Azure SQL logical server system database "master" from tagging enforcement.
+  - Assigns a Managed Identity to the initiative for secure operations.
 
   Scope:
-  Subscription (IPHub-Portfolio-Sub)
+  Subscription
 */
 
 targetScope = 'subscription'
@@ -26,12 +22,10 @@ param env string
 param region string
 param owner string
 
-var tagContributorRoleDefinitionId = subscriptionResourceId(
-  'Microsoft.Authorization/roleDefinitions',
-  '4a9ae827-6dc8-4573-8ac7-8239d42aa03f'
-)
+@description('Role Definition ID for Tag Contributor role')
+var tagContributorRoleDefinitionId = subscriptionResourceId('Microsoft.Authorization/roleDefinitions','4a9ae827-6dc8-4573-8ac7-8239d42aa03f')
 
-// Exclude Azure SQL logical server system database "master"
+// Excluding Azure SQL Server system database "master"
 var excludeSqlMasterDb = {
   not: {
     allOf: [
@@ -41,7 +35,7 @@ var excludeSqlMasterDb = {
   }
 }
 
-// Policy Definitions
+// Workload Tag Policy Definition
 resource addWorkloadTagPolicy 'Microsoft.Authorization/policyDefinitions@2021-06-01' = {
   name: 'pol-add-tag-workload-if-missing'
   properties: {
@@ -77,6 +71,7 @@ resource addWorkloadTagPolicy 'Microsoft.Authorization/policyDefinitions@2021-06
   }
 }
 
+// Env Tag Policy Definition
 resource addEnvTagPolicy 'Microsoft.Authorization/policyDefinitions@2021-06-01' = {
   name: 'pol-add-tag-env-if-missing'
   properties: {
@@ -112,6 +107,7 @@ resource addEnvTagPolicy 'Microsoft.Authorization/policyDefinitions@2021-06-01' 
   }
 }
 
+// Owner Tag Policy Definition
 resource addOwnerTagPolicy 'Microsoft.Authorization/policyDefinitions@2021-06-01' = {
   name: 'pol-add-tag-owner-if-missing'
   properties: {
@@ -147,6 +143,7 @@ resource addOwnerTagPolicy 'Microsoft.Authorization/policyDefinitions@2021-06-01
   }
 }
 
+// Region Tag Policy Definition
 resource addRegionTagPolicy 'Microsoft.Authorization/policyDefinitions@2021-06-01' = {
   name: 'pol-add-tag-region-if-missing'
   properties: {
@@ -182,7 +179,7 @@ resource addRegionTagPolicy 'Microsoft.Authorization/policyDefinitions@2021-06-0
   }
 }
 
-// Initiative Definition: Tagging Governance
+// Tagging Governance Initiative Definition
 resource taggingInitiative 'Microsoft.Authorization/policySetDefinitions@2021-06-01' = {
   name: initiativeName
   properties: {
@@ -217,7 +214,7 @@ resource taggingInitiative 'Microsoft.Authorization/policySetDefinitions@2021-06
   }
 }
 
-// Assign the Tagging Governance Initiative
+// Tagging Governance Initiative Definition Assignment
 resource initiativeAssignment 'Microsoft.Authorization/policyAssignments@2021-06-01' = {
   name: assignmentName
   location: location

@@ -36,7 +36,7 @@ param logAnalytics string
 @description('Enable/disable the initiative.')
 param effect string = 'DeployIfNotExists'
 
-// Create the initiative (policy set)
+// Core Services Monitoring Initiative Definition
 resource coreSvsMonitoringInitiative 'Microsoft.Authorization/policySetDefinitions@2025-03-01' = {
   name: initiativeName
   properties: {
@@ -101,7 +101,7 @@ resource coreSvsMonitoringInitiative 'Microsoft.Authorization/policySetDefinitio
   }
 }
 
-// Assign the initiative at subscription scope
+// Core Services Monitoring Initiative Assignment
 resource coreSvsMonitoringAssignment 'Microsoft.Authorization/policyAssignments@2025-03-01' = {
   name: assignmentName
   location: location

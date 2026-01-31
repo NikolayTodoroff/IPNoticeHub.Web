@@ -1,26 +1,23 @@
 /*
-  Azure Policy Assignment – Restrict Allowed Locations (IPHub Lab)
+  Allowed Locations Policy Assignment
 
   Purpose:
-   - Restricts resource deployment to approved locations to enforce
-     regional governance and reduce accidental multi-region sprawl.
-   - Effect: Deny
+   - Restricts resource deployment to approved locations to enforce regional governance and reduce accidental multi-region sprawl.
    - Allowed locations westeurope and global
    - Uses Indexed mode to avoid sub-resources without locations.
 
   Scope:
-  Subscription
+  - Subscription
 */
 
 targetScope = 'subscription'
 
 param assignmentName string
-param allowedLocations array = [
-  'westeurope'
-  'global'
-]
 
-// Policy Definition (Indexed)
+@description('The list of allowed locations for resource deployment.')
+param allowedLocations array = ['westeurope','global']
+
+// Allowed Locations Policy Definition
 resource locationPolicyDefinition 'Microsoft.Authorization/policyDefinitions@2025-03-01' = {
   name: 'restrict-locations-indexed'
   properties: {
@@ -51,7 +48,7 @@ resource locationPolicyDefinition 'Microsoft.Authorization/policyDefinitions@202
   }
 }
 
-// Policy Assignment
+// Allowed Locations Policy Definition Assignment
 resource allowDeploymentLocations 'Microsoft.Authorization/policyAssignments@2025-03-01' = {
   name: assignmentName
   properties: {

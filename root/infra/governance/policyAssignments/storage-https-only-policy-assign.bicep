@@ -1,5 +1,5 @@
 /*
-  Policy Assignment — Storage Accounts HTTPS-only
+  Storage Accounts HTTPS-only Policy Assignment
 
   Purpose:
   - Enforces HTTPS (secure transfer) for Azure Storage Accounts.
@@ -13,10 +13,7 @@ targetScope = 'subscription'
 
 param assignmentName string
 
-@allowed([
-  'Default'
-  'DoNotEnforce'
-])
+@allowed(['Default','DoNotEnforce'])
 param enforcementMode string = 'Default'
 
 var policyDefinitionId = '/providers/Microsoft.Authorization/policyDefinitions/404c3081-a854-4457-ae30-26a93ef643f9'

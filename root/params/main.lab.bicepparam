@@ -15,9 +15,5 @@ param storageAccountName = 'stipnoticehubdocslabweu'
 param appServiceName = 'ipnoticehub-web-lab'
 
 param policyRemediationUamiResourceId = '/subscriptions/bcaf1056-6646-4069-8a85-c154fe786b07/resourcegroups/rg-ipnoticehub-lab-weu/providers/Microsoft.ManagedIdentity/userAssignedIdentities/uami-iphub-policy-remediation'
-param sqlMonitoringAssignmentName = 'assign-sql-monitoring-init-iphub-lab-weu'
-param sqlMonitoringInitiativeName = 'sql-monitoring-init-iphub-lab-weu'
-param storageAccMonitoringAssignmentName = 'assign-storage-monitoring-init-iphub-lab-weu'
-param storageAccMonitoringInitiativeName = 'storage-monitoring-init-iphub-lab-weu'
-param coreSvsMonitoringAssignmentName = 'assign-core-svs-monitoring-init-iphub-lab-weu'
-param coreSvsMonitoringInitiativeName = 'core-svs-monitoring-init-iphub-lab-weu'
+
+

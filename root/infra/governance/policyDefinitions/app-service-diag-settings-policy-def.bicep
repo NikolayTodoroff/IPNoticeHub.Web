@@ -1,5 +1,5 @@
 /*
-  App Service Diagnostic Settings Policy Definition Assignment
+  App Service Diagnostic Settings Policy Definition
 
   Purpose:
   - Assigns a policy that ensures App Services have diagnostic settings configured to send metrics to a specified Log Analytics workspace.
@@ -33,7 +33,7 @@ param metricsEnabled string = 'True'
 @description('If true, require workspaceId to match the selected workspace.')
 param matchWorkspace bool = true
 
-// Policy definition to deploy App Service diagnostic settings
+// App Service Diagnostic Settings Policy Definition
 resource appServiceDiagPolicy 'Microsoft.Authorization/policyDefinitions@2025-01-01' = {
   name: policyDefinitionName
   properties: {

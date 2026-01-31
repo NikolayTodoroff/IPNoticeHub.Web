@@ -16,10 +16,7 @@ param assignmentName string = 'assign-sqldb-diag-iphub-lab-weu'
 @description('Resource ID of the Log Analytics workspace that will receive SQL Database logs/metrics.')
 param logAnalyticsWorkspaceResourceId string
 
-@allowed([
-  'DeployIfNotExists'
-  'Disabled'
-])
+@allowed(['DeployIfNotExists','Disabled'])
 param effect string = 'DeployIfNotExists'
 
 @description('Diagnostic settings name that will be created on each SQL Database.')

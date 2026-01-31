@@ -1,8 +1,8 @@
 /*
-  Azure Policy Assignment — SQL Server Minimum TLS
+  SQL Server Minimum TLS Version Policy Assignment
 
   Purpose:
-  - Enforces a minimum TLS version for Azure SQL logical servers.
+  - Enforces a minimum TLS version('1.0','1.1','1.2') for Azure SQL logical servers.
 
   Scope:
   - Subscription
@@ -11,14 +11,18 @@
 targetScope = 'subscription'
 
 param assignmentName string
+
+@description('The name of the policy definition.')
 param policyName string = 'pol-sql-min-tls'
 
 @allowed(['Deny','Audit','Disabled'])
 param effect string = 'Audit'
 
 @allowed(['1.0','1.1','1.2'])
+@description('The minimum TLS version to enforce.')
 param minTlsVersion string = '1.2'
 
+// SQL Server Minimum TLS Policy Definition
 resource sqlMinTlsDef 'Microsoft.Authorization/policyDefinitions@2021-06-01' = {
   name: policyName
   properties: {
@@ -55,6 +59,7 @@ resource sqlMinTlsDef 'Microsoft.Authorization/policyDefinitions@2021-06-01' = {
   }
 }
 
+// SQL Server Minimum TLS Policy Assignment
 resource sqlMinTlsAssign 'Microsoft.Authorization/policyAssignments@2025-03-01' = {
   name: assignmentName
   properties: {

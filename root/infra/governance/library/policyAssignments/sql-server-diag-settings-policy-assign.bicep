@@ -16,10 +16,7 @@ param assignmentName string = 'assign-sqlserver-diag-iphub-lab-weu'
 @description('Resource ID of the Log Analytics workspace that will receive SQL Server logs/metrics.')
 param logAnalyticsWorkspaceId string
 
-@allowed([
-  'DeployIfNotExists'
-  'Disabled'
-])
+@allowed(['DeployIfNotExists','Disabled'])
 param effect string = 'DeployIfNotExists'
 
 resource sqlServerDiagAssignment 'Microsoft.Authorization/policyAssignments@2025-03-01' = {

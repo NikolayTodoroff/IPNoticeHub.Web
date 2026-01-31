@@ -26,12 +26,23 @@ param sqlServerName string
 param storageAccountName string
 param appServiceName string
 
-param sqlMonitoringAssignmentName string
-param sqlMonitoringInitiativeName string
-param storageAccMonitoringAssignmentName string
-param storageAccMonitoringInitiativeName string
-param coreSvsMonitoringAssignmentName string
-param coreSvsMonitoringInitiativeName string
+module governance './governance/governance.bicep' = {
+  name: 'deploy-governance'
+  params: {
+    contactEmail: alertEmail
+    location: location
+    keyVaultName: keyVaultName
+    logAnalyticsWorkspaceId: logAnalyticsWorkspace.outputs.workspaceId
+    policyRemediationUamiResourceId: policyRemediationUamiResourceId
+    alertsRgName: alertsRgName
+    mainRgName: mainRgName
+    appServiceName: appServiceName
+    workload: workload
+    env: env
+    region: region
+    owner: owner
+  }
+}
 
 module mainRg 'app-platform/rg-ipnoticehub.bicep' = {
   name: 'mainRg'
@@ -169,48 +180,6 @@ module sqlDbBackupRetention './storage/sql-db-backup-retention.bicep' = {
   }
 }
 
-module sqlMonitoring './governance/sql-monitoring-init.bicep' = {
-  name: 'sqlMonitoring'
-  scope: subscription()
-  params: {
-    location: location
-    policyRemediationUamiResourceId: policyRemediationUamiResourceId
-    initiativeName: sqlMonitoringInitiativeName
-    assignmentName: sqlMonitoringAssignmentName
-    logAnalytics: logAnalyticsWorkspace.outputs.workspaceId
-  }
-}
 
-module appServiceDiagPolicy './governance/app-service-diag-settings-policy.bicep' = {
-  name: 'appServiceDiagPolicy'
-  scope: subscription()
-  params: {
-    logAnalytics: logAnalyticsWorkspace.outputs.workspaceId
-  }
-}
 
-module coreSvsMonitoring './governance/core-services-monitoring-init.bicep' = {
-  name: 'coreSvsMonitoring'
-  scope: subscription()
-  params: {
-    location: location
-    policyRemediationUamiResourceId: policyRemediationUamiResourceId
-    initiativeName: coreSvsMonitoringInitiativeName
-    assignmentName: coreSvsMonitoringAssignmentName
-    logAnalytics: logAnalyticsWorkspace.outputs.workspaceId
-    appServicePolicyDefinitionId: appServiceDiagPolicy.outputs.appServicePolicyId
-  }
-}
-
-module storageAccMonitoring './governance/storage-acc-monitoring-init.bicep' = {
-  name: 'storageAccMonitoring'
-  scope: subscription()
-  params: {
-    location: location
-    initiativeName: storageAccMonitoringInitiativeName
-    assignmentName: storageAccMonitoringAssignmentName
-    logAnalytics: logAnalyticsWorkspace.outputs.workspaceId
-    policyRemediationUamiResourceId: policyRemediationUamiResourceId
-  }
-}
 

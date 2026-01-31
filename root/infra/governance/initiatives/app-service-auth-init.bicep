@@ -31,7 +31,7 @@ param scmAuthPolicyDefinitionId string ='/providers/Microsoft.Authorization/poli
 @allowed(['AuditIfNotExists','Disabled'])
 param effect string = 'AuditIfNotExists'
 
-// Create the initiative (policy set)
+// App Service Auth Disabled Initiative Definition
 resource appServiceAuthInit 'Microsoft.Authorization/policySetDefinitions@2025-03-01' = {
   name: initiativeName
   properties: {
@@ -74,7 +74,7 @@ resource appServiceAuthInit 'Microsoft.Authorization/policySetDefinitions@2025-0
   }
 }
 
-// Assign the initiative at subscription scope
+// App Service Auth Disabled Initiative Assignment
 resource appServiceAuthInitAssignment 'Microsoft.Authorization/policyAssignments@2025-03-01' = {
   name: assignmentName
   location: location

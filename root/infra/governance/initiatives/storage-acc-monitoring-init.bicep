@@ -31,11 +31,7 @@ param logAnalytics string
 @description('Resource ID of the User Assigned Managed Identity used for Azure Policy remediation.')
 param policyRemediationUamiResourceId string
 
-@allowed([
-  'DeployIfNotExists'
-  'AuditIfNotExists'
-  'Disabled'
-])
+@allowed(['DeployIfNotExists','AuditIfNotExists','Disabled'])
 @description('Enable/disable the initiative.')
 param effect string = 'DeployIfNotExists'
 
@@ -59,6 +55,7 @@ var storageAccPolicyDefinitionId = '/providers/Microsoft.Authorization/policyDef
 var blobSvsPolicyDefinitionId    = '/providers/Microsoft.Authorization/policyDefinitions/b4fe1a3b-0715-4c6c-a5ea-ffc33cf823cb'
 var fileSvsPolicyDefinitionId    = '/providers/Microsoft.Authorization/policyDefinitions/25a70cc8-2bd4-47f1-90b6-1478e4662c96'
 
+// Storage Account Monitoring Initiative Definition
 resource storAccMonitoringInitiative 'Microsoft.Authorization/policySetDefinitions@2025-03-01' = {
   name: initiativeName
   properties: {
@@ -148,7 +145,7 @@ resource storAccMonitoringInitiative 'Microsoft.Authorization/policySetDefinitio
   }
 }
 
-// Assign the initiative at subscription scope
+// Storage Account Monitoring Initiative Assignment
 resource storAccMonitoringAssignment 'Microsoft.Authorization/policyAssignments@2025-03-01' = {
   name: assignmentName
   location: location
@@ -174,4 +171,7 @@ resource storAccMonitoringAssignment 'Microsoft.Authorization/policyAssignments@
     }
   }
 }
+
+output storageAccMonitoringInitiativeId string = storAccMonitoringInitiative.id
+output storageAccMonitoringAssignmentId string = storAccMonitoringAssignment.id
 

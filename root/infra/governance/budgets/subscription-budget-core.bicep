@@ -1,5 +1,5 @@
 /*
-  Subscription Budget
+  Subscription Budget Definition
 
   Purpose:
    - Establishes a monthly cost control boundary at the subscription level to prevent budget overruns.
@@ -12,7 +12,7 @@
    - Integration with centralized Action Groups for escalated responses
 
   Scope:
-  - Subscription (IPHub-Portfolio-Sub)
+  - Subscription
 */
 
 targetScope = 'subscription'
@@ -47,7 +47,6 @@ resource budget 'Microsoft.Consumption/budgets@2024-08-01' = {
         thresholdType: 'Actual'
         contactEmails: contactEmails
         contactGroups: [ actionGroupInfoId ]
-        contactRoles: []
       }
       actual_GreaterThan_50_Percent: {
         enabled: true
@@ -56,7 +55,6 @@ resource budget 'Microsoft.Consumption/budgets@2024-08-01' = {
         thresholdType: 'Actual'
         contactEmails: contactEmails
         contactGroups: [ actionGroupInfoId ]
-        contactRoles: []
       }
       actual_GreaterThan_75_Percent: {
         enabled: true
@@ -65,7 +63,6 @@ resource budget 'Microsoft.Consumption/budgets@2024-08-01' = {
         thresholdType: 'Actual'
         contactEmails: contactEmails
         contactGroups: [ actionGroupWarnId ]
-        contactRoles: []
       }
       actual_GreaterThan_100_Percent: {
         enabled: true
@@ -74,7 +71,6 @@ resource budget 'Microsoft.Consumption/budgets@2024-08-01' = {
         thresholdType: 'Actual'
         contactEmails: contactEmails
         contactGroups: [ actionGroupCritId ]
-        contactRoles: []
       }
       forecasted_GreaterThan_30_Percent: {
         enabled: true
@@ -83,7 +79,6 @@ resource budget 'Microsoft.Consumption/budgets@2024-08-01' = {
         thresholdType: 'Forecasted'
         contactEmails: contactEmails
         contactGroups: [ actionGroupInfoId ]
-        contactRoles: []
       }
       forecasted_GreaterThan_60_Percent: {
         enabled: true
@@ -92,7 +87,6 @@ resource budget 'Microsoft.Consumption/budgets@2024-08-01' = {
         thresholdType: 'Forecasted'
         contactEmails: contactEmails
         contactGroups: [ actionGroupWarnId ]
-        contactRoles: []
       }
       forecasted_GreaterThan_90_Percent: {
         enabled: true
@@ -101,7 +95,6 @@ resource budget 'Microsoft.Consumption/budgets@2024-08-01' = {
         thresholdType: 'Forecasted'
         contactEmails: contactEmails
         contactGroups: [ actionGroupCritId ]
-        contactRoles: []
       }
     }
   }

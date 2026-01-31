@@ -21,7 +21,10 @@ param kvPrivateDnsName string
 param blobPrivateDnsName string
 param sqlServerResourceId string
 param keyVaultResourceId string
+
 param storageAccountResourceId string
+param appServicePlanResourceId string
+param appServiceName string
 
 module vNet 'vnet-subnets.bicep' = {
   name: 'vNet'
@@ -87,3 +90,14 @@ module blobPrivateEndpoint 'private-endpoint-vn.bicep' = {
     groupIds:['blob']
   }
 }
+
+module appVnet './app-service-vn-integration.bicep' = {
+  name: 'appservice-vnet-integration'
+  params: {
+    appServiceName: appServiceName
+    subnetId: vNet.outputs.appSvcSubnetId
+    enableRouteAll: false
+  }
+}
+
+

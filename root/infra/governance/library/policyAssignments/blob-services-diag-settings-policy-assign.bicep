@@ -13,11 +13,7 @@ targetScope = 'subscription'
 @description('Unique assignment name at this scope.')
 param assignmentName string = 'assign-blob-services-diag-iphub-lab-weu'
 
-@allowed([
-  'DeployIfNotExists'
-  'AuditIfNotExists'
-  'Disabled'
-])
+@allowed(['DeployIfNotExists','AuditIfNotExists','Disabled'])
 param effect string = 'DeployIfNotExists'
 
 @description('Diagnostic settings profile name that will be created on each Blob Service.')
@@ -46,5 +42,6 @@ resource blobServDiagAssignment 'Microsoft.Authorization/policyAssignments@2025-
       metricsEnabled: { value: metricsEnabled }
       logsEnabled: { value: logsEnabled }
   }
+  }
 }
-}
+

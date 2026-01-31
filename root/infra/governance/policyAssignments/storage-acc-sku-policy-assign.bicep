@@ -1,5 +1,5 @@
 /*
-  Azure Policy Assignment – Storage Account SKU Governance
+  Storage Account SKU Governance Policy Assignment
 
   Purpose:
   - Enforces allowed storage account SKUs at the subscription scope to ensure
@@ -23,7 +23,7 @@ param allowedSkus array = [
 resource storageSkuPolicyAssignment 'Microsoft.Authorization/policyAssignments@2025-03-01' = {
   name: assignmentName
   properties: {
-    displayName: 'Limiting Allowed Storage Accounts SKUs'
+    displayName: 'Storage Account SKU Governance'
     description: 'Restricts storage account deployments to approved SKUs to ensure cost-effective and predictable storage usage.\nThis policy prevents the creation of storage accounts using non-approved SKUs, helping avoid unexpected cost increases and enforcing consistent storage standards across the subscription.'
     policyDefinitionId: '/providers/Microsoft.Authorization/policyDefinitions/7433c107-6db4-4ad1-b57a-a76dce0154a1'
 
