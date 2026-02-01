@@ -16,4 +16,6 @@ param appServiceName = 'ipnoticehub-web-lab'
 
 param policyRemediationUamiResourceId = '/subscriptions/bcaf1056-6646-4069-8a85-c154fe786b07/resourcegroups/rg-ipnoticehub-lab-weu/providers/Microsoft.ManagedIdentity/userAssignedIdentities/uami-iphub-policy-remediation'
 
-
+param dbPrivateDnsName = 'privatelink.database.windows.net'
+param kvPrivateDnsName = 'privatelink.vaultcore.azure.net'
+param blobPrivateDnsName = 'privatelink.blob.core.windows.net'

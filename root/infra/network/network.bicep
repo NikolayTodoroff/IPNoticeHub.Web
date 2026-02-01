@@ -1,4 +1,7 @@
 var vnetName = 'vn-${workload}-${env}-${region}'
+var appSvcSubnetName = 'snet-appsvc-${workload}-${env}-${region}'
+var peSubnetName = 'snet-pe-${workload}-${env}-${region}'
+var mgmtSubnetName = 'snet-mgmt-${workload}-${env}-${region}'
 
 param env string 
 param owner string
@@ -13,18 +16,16 @@ var globalTags = {
   workload: workload
 }
 
-param appSvcSubnetName string
-param peSubnetName string
-param mgmtSubnetName string
 param dbPrivateDnsName string
 param kvPrivateDnsName string
 param blobPrivateDnsName string
 param sqlServerResourceId string
 param keyVaultResourceId string
+param appServicePlanName string
 
 param storageAccountResourceId string
-param appServicePlanResourceId string
 param appServiceName string
+
 
 module vNet 'vnet-subnets.bicep' = {
   name: 'vNet'
@@ -100,4 +101,9 @@ module appVnet './app-service-vn-integration.bicep' = {
   }
 }
 
-
+module appServiceIpRestrict './app-service-ip-restrict-config.bicep' = {
+  name: 'appservice-ip-restriction'
+  params: {
+    appServiceName: appServiceName
+  }
+}

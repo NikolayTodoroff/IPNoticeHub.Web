@@ -95,5 +95,8 @@ resource basicCredsFtp 'Microsoft.Web/sites/basicPublishingCredentialsPolicies@2
 
 output webAppName string = webApp.name
 output webAppId string = webApp.id
-output hostingPlanId string = hostingPlan.id
+
+output appServicePlanId string = hostingPlan.id
+output appServicePlanName string = hostingPlan.name
+
 output principalId string = systemAssignedIdentityEnabled ? webApp.identity.principalId : ''

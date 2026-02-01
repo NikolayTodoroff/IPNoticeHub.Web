@@ -8,6 +8,10 @@ param policyRemediationUamiResourceId string
 param location string
 param alertEmail string
 
+param dbPrivateDnsName string
+param kvPrivateDnsName string
+param blobPrivateDnsName string
+
 param env string 
 param owner string
 param region string
@@ -37,6 +41,28 @@ module governance './governance/governance.bicep' = {
     alertsRgName: alertsRgName
     mainRgName: mainRgName
     appServiceName: appServiceName
+    
+    workload: workload
+    env: env
+    region: region
+    owner: owner
+  }
+}
+
+module network './network/network.bicep' = {
+  name: 'deploy-network'
+  params: {
+    location: location
+    sqlServerResourceId: sqlServer.outputs.serverId
+    keyVaultResourceId: keyVault.outputs.keyVaultId
+    storageAccountResourceId: storageAcc.outputs.storageAccountId
+    appServiceName: appServiceName
+    appServicePlanName: webApp.outputs.appServicePlanName
+    dbPrivateDnsName: dbPrivateDnsName
+    kvPrivateDnsName: kvPrivateDnsName
+    blobPrivateDnsName: blobPrivateDnsName
+
+
     workload: workload
     env: env
     region: region

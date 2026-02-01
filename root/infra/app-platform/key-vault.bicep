@@ -66,7 +66,6 @@ resource keyVault 'Microsoft.KeyVault/vaults@2024-12-01-preview' = {
   }
 }
 
-output kvId string = keyVault.id
-output kvName string = keyVault.name
-output kvUri string = keyVault.properties.vaultUri
-
+output keyVaultId string = keyVault.id
+output keyVaultName string = keyVault.name
+output keyVaultUri string = keyVault.properties.vaultUri

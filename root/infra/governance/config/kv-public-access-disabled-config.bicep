@@ -1,11 +1,12 @@
 /*
-  Key Vault Public Access Disabled Configuration
+  Restrict Access to App Service Advanced Tool Site (Kudu) - Configuration
 
   Purpose:
-  - Configure Key Vault to disable public network access for enhanced security.
+  - Allow personal public IP addresses to access Kudu site for App Services with Priority 100.
+  - Deny all other public access to Kudu site for App Services with Priority 200.
 
   Scope:
-  - Key Vault 
+  - App Service 
 */
 
 targetScope = 'resourceGroup'
