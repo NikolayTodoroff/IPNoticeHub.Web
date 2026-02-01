@@ -41,7 +41,7 @@ module governance './governance/governance.bicep' = {
     alertsRgName: alertsRgName
     mainRgName: mainRgName
     appServiceName: appServiceName
-    
+
     workload: workload
     env: env
     region: region
@@ -206,6 +206,28 @@ module sqlDbBackupRetention './storage/sql-db-backup-retention.bicep' = {
   }
 }
 
+module rgNetworkDeleteLock './app-platform/rg-delete-lock.bicep' = {
+  name: 'rgNetworkDeleteLock'
+  params: {
+    lockLevel: 'CanNotDelete'
+    lockName: 'lock-rg-cannotdelete-network'
+  }
+}
 
+module kvDeleteLock './app-platform/kv-delete-lock.bicep' = {
+  name: 'kvDeleteLock'
+  params: {
+    lockLevel: 'CanNotDelete'
+    lockName: 'lock-kv-cannotdelete'
+    keyVaultName: keyVaultName
+  }
+}
 
-
+module sqlServerDeleteLock './app-platform/sql-server-delete-lock.bicep' = {
+  name: 'sqlServerDeleteLock'
+  params: {
+    lockLevel: 'CanNotDelete'
+    lockName: 'lock-sqlserver-cannotdelete'
+    sqlServerName: sqlServerName
+  }
+}

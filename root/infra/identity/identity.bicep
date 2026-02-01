@@ -6,6 +6,7 @@ var monitoringContributorRole = '749f88d5-cbae-40b8-bcfc-e573ddc772fa'
 var sqlSecurityManagerRole = '056cd41c-7e88-42e1-933e-88ba6a50c9c3'
 var logAnalyticsContributorRole = '92aaf0da-9dab-42b6-94a3-d43ce8d16293'
 var storageAccountContributorRole = '17d1049b-9a84-46fb-8f53-869881c3d3ab'
+var sqlServerContributorRole = '6d8ee4ec-f05a-4a1d-8b00-a9b17e38b437'
 
 param keyVaultName string
 param globalAdminObjectId string
@@ -88,6 +89,16 @@ module uamiRgSqlSecurityManager './rg-rbac-uami.bicep' = {
     principalType: 'ServicePrincipal'
     roleDefinitionGuid: sqlSecurityManagerRole
     assignmentKey: 'sql-security-manager-rbac-uami-assign'
+  }
+}
+
+module uamiRgSqlServerContributor './rg-sql-server-contr-rbac-uami.bicep' = {
+  name: 'uami-rg-sql-server-contributor'
+  params: {
+    principalId: uamiPolRemediation.outputs.principalId
+    principalType: 'ServicePrincipal'
+    roleDefinitionGuid: sqlServerContributorRole
+    assignmentKey: 'sql-server-contributor-rbac-uami-assign'
   }
 }
 

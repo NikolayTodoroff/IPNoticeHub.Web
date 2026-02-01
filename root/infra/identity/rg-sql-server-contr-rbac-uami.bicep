@@ -21,7 +21,7 @@ param principalId string
 param principalType string = 'ServicePrincipal'
 
 @description('SQL Server Contributor Role definition GUID.')
-param roleDefinitionGuid string = '6d8ee4ec-f05a-4a1d-8b00-a9b17e38b437'
+param roleDefinitionGuid string
 
 @description('Stable key used to create deterministic role assignment name.')
 param assignmentKey string
