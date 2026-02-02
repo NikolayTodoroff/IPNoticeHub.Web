@@ -13,23 +13,19 @@ targetScope = 'resourceGroup'
 @description('The object ID of the Managed Identity.')
 param principalId string
 
-@allowed([
-  'ServicePrincipal'
-  'User'
-  'Group'
-])
+@allowed(['ServicePrincipal','User','Group'])
 param principalType string = 'ServicePrincipal'
 
 @description('Role definition GUID.')
 param roleDefinitionGuid string
 
 @description('A unique key to ensure the GUID name is deterministic.')
-param assignmentKey string
+param assignmentName string
 
 var roleDefinitionId = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', roleDefinitionGuid)
 
 resource ra 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-    name: guid(resourceGroup().id, principalId, roleDefinitionGuid, assignmentKey)
+    name: guid(resourceGroup().id, principalId, roleDefinitionGuid, assignmentName)
     scope: resourceGroup()
   properties: {
     roleDefinitionId: roleDefinitionId

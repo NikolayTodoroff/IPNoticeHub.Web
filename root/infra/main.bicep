@@ -3,10 +3,20 @@ var mainRgName = 'rg-ipnoticehub-${env}-${region}'
 var networkRgName = 'rg-network-${env}-${region}'
 var appInsightsName = 'appi-ipnoticehub-${env}-${region}'
 var logAnalyticsName = 'log-ipnoticehub-${env}-${region}'
+var uamiPolRemediationName= 'uami-iphub-policy-remediation-${env}-${region}'
 
-param policyRemediationUamiResourceId string
 param location string
 param alertEmail string
+
+param policyRemediationUamiResourceId string
+param globalAdminObjectId string
+param adminSecurityGroupName string
+param userSecurityGroupName string
+
+param breakGlassUpn string
+param globalAdminUpn string
+param sqlAdminUpn string
+param testUserUpn string
 
 param dbPrivateDnsName string
 param kvPrivateDnsName string
@@ -29,6 +39,23 @@ param sqlDatabaseName string
 param sqlServerName string
 param storageAccountName string
 param appServiceName string
+
+module identity './identity/identity.bicep' = {
+  name: 'deploy-identity'
+  params: {
+    keyVaultName: keyVaultName
+    webAppName: appServiceName
+    sqlServerName: sqlServerName
+    uamiPolRemediationName: uamiPolRemediationName
+    logAnalyticsWorkspaceName: logAnalyticsName
+    globalAdminObjectId: globalAdminObjectId
+
+    breakGlassUpn: breakGlassUpn
+    globalAdminUpn: globalAdminUpn
+    sqlAdminUpn: sqlAdminUpn
+    testUserUpn: testUserUpn
+  }
+}
 
 module governance './governance/governance.bicep' = {
   name: 'deploy-governance'
@@ -103,6 +130,15 @@ module alertsRg 'app-platform/rg-alerts.bicep' = {
 resource alertsRgExisting 'Microsoft.Resources/resourceGroups@2022-09-01' existing = {
   scope: subscription()
   name: alertsRgName
+}
+
+module securityGroupsRegistry './app-platform/security-groups-registry.bicep' = {
+  name: 'securityGroupsRegistry'
+  scope: tenant()
+  params: {
+    adminSecurityGroupName: adminSecurityGroupName
+    userSecurityGroupName: userSecurityGroupName
+  }
 }
 
 module webApp 'app-platform/app-service.bicep' = {

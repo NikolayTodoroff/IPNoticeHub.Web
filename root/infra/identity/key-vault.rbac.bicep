@@ -14,27 +14,20 @@ targetScope = 'resourceGroup'
 param keyVaultName string
 param principalId string
 
-@allowed([
-  'User'
-  'Group'
-  'ServicePrincipal'
-])
+@allowed(['User','Group','ServicePrincipal'])
 param principalType string
 
 param roleDefinitionGuid string
-param assignmentKey string
+param assignmentName string
 
 resource keyVault 'Microsoft.KeyVault/vaults@2023-02-01' existing = {
   name: keyVaultName
 }
 
-var roleDefinitionId = subscriptionResourceId(
-  'Microsoft.Authorization/roleDefinitions',
-  roleDefinitionGuid
-)
+var roleDefinitionId = subscriptionResourceId('Microsoft.Authorization/roleDefinitions',roleDefinitionGuid)
 
-resource ra 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(keyVault.id, principalId, assignmentKey)
+resource kvRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(keyVault.id, principalId, assignmentName)
   scope: keyVault
   properties: {
     roleDefinitionId: roleDefinitionId
@@ -43,5 +36,6 @@ resource ra 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   }
 }
 
-output assignmentId string = ra.id
+output assignmentId string = kvRoleAssignment.id
+
 

@@ -11,10 +11,10 @@
 targetScope = 'tenant'
 extension microsoftGraphV1
 
-param breakGlassUpn string = 'emergency.admin@everflowing555gmail.onmicrosoft.com'
-param globalAdminUpn string =  'nikolay.todorov@ipnoticehub.com'
-param sqlAdminUpn string = 'sql.admin@ipnoticehub.com'
-param testUserUpn string = 'test.user@ipnoticehub.com'
+param breakGlassUpn string
+param globalAdminUpn string
+param sqlAdminUpn string
+param testUserUpn string
 
 resource breakGlassAdmin 'Microsoft.Graph/users@v1.0' existing = {
   userPrincipalName: breakGlassUpn

@@ -9,20 +9,26 @@ var storageAccountContributorRole = '17d1049b-9a84-46fb-8f53-869881c3d3ab'
 var sqlServerContributorRole = '6d8ee4ec-f05a-4a1d-8b00-a9b17e38b437'
 
 param keyVaultName string
-param globalAdminObjectId string
-param sqlServerName string
 param webAppName string
+param sqlServerName string
 param uamiPolRemediationName string
 param logAnalyticsWorkspaceName string
+param globalAdminObjectId string
+
+param breakGlassUpn string
+param globalAdminUpn string
+param sqlAdminUpn string
+param testUserUpn string
 
 module identityRegistry './identity-registry.bicep' = {
   name: 'identityRegistry'
   scope: tenant()
-}
-
-module securityGroupsRegistry './security-groups-registry.bicep' = {
-  name: 'securityGroupsRegistry'
-  scope: tenant()
+  params: {
+    breakGlassUpn: breakGlassUpn
+    globalAdminUpn: globalAdminUpn
+    sqlAdminUpn: sqlAdminUpn
+    testUserUpn: testUserUpn
+  }
 }
 
 module webAppIdentity './webapp.identity.bicep' = {
@@ -40,7 +46,7 @@ module kvRbacSecretUser './key-vault.rbac.bicep' = {
     principalId: webAppIdentity.outputs.webAppPrincipalId
     principalType: 'ServicePrincipal'
     roleDefinitionGuid: keyVaultSecretsUserRole
-    assignmentKey: 'kv-secrets-user'
+    assignmentName: 'kv-secrets-user'
   }
 }
 
@@ -51,7 +57,7 @@ module kvRbacSecretOfficer './key-vault.rbac.bicep' = {
     principalId: globalAdminObjectId
     principalType: 'User'
     roleDefinitionGuid: keyVaultSecretsOfficerRole
-    assignmentKey: 'kv-secrets-officer'
+    assignmentName: 'kv-secrets-officer'
   }
 }
 
@@ -72,43 +78,43 @@ module uamiPolRemediation './policy-remediation-uami.bicep' = {
   }
 }
 
-module uamiRgMonitoringContributor './rg-rbac-uami.bicep' = {
+module uamiRgMonitoringContributor './rbac-uami-rg-assign.bicep' = {
   name: 'uami-rg-monitoring-contributor'
   params: {
     principalId: uamiPolRemediation.outputs.principalId
     principalType: 'ServicePrincipal'
     roleDefinitionGuid: monitoringContributorRole
-    assignmentKey: 'monitoring-contrib-rbac-uami-assign'
+    assignmentName: 'monitoring-contrib-rbac-uami-assign'
   }
 }
 
-module uamiRgSqlSecurityManager './rg-rbac-uami.bicep' = {
+module uamiRgSqlSecurityManager './rbac-uami-rg-assign.bicep' = {
   name: 'uami-rg-sql-security-manager'
   params: {
     principalId: uamiPolRemediation.outputs.principalId
     principalType: 'ServicePrincipal'
     roleDefinitionGuid: sqlSecurityManagerRole
-    assignmentKey: 'sql-security-manager-rbac-uami-assign'
+    assignmentName: 'sql-security-manager-rbac-uami-assign'
   }
 }
 
-module uamiRgSqlServerContributor './rg-sql-server-contr-rbac-uami.bicep' = {
-  name: 'uami-rg-sql-server-contributor'
-  params: {
-    principalId: uamiPolRemediation.outputs.principalId
-    principalType: 'ServicePrincipal'
-    roleDefinitionGuid: sqlServerContributorRole
-    assignmentKey: 'sql-server-contributor-rbac-uami-assign'
-  }
-}
-
-module uamiRgStorageAccountContributor './rg-rbac-uami.bicep' = {
+module uamiRgStorageAccountContributor './rbac-uami-rg-assign.bicep' = {
   name: 'uami-rg-storage-account-contributor'
   params: {
     principalId: uamiPolRemediation.outputs.principalId
     principalType: 'ServicePrincipal'
     roleDefinitionGuid: storageAccountContributorRole
-    assignmentKey: 'storage-account-contributor-rbac-uami-assign'
+    assignmentName: 'storage-account-contributor-rbac-uami-assign'
+  }
+}
+
+module uamiRgSqlServerContributor './rbac-uami-rg-assign.bicep' = {
+  name: 'uami-rg-sql-server-contributor'
+  params: {
+    principalId: uamiPolRemediation.outputs.principalId
+    principalType: 'ServicePrincipal'
+    roleDefinitionGuid: sqlServerContributorRole
+    assignmentName: 'sql-server-contributor-rbac-uami-assign'
   }
 }
 
@@ -119,7 +125,7 @@ module uamiWorkspaceLogAnalyticsContributor './log-analytics-contrib-rbac-uami.b
     principalId: uamiPolRemediation.outputs.principalId
     principalType: 'ServicePrincipal'
     roleDefinitionGuid: logAnalyticsContributorRole
-    assignmentKey: 'log-analytics-contrib-rbac-uami-assign'
+    assignmentName: 'log-analytics-contrib-rbac-uami-assign'
   }
 }
 

@@ -16,18 +16,14 @@ param logAnalyticsWorkspaceName string
 @description('Principal (object) ID of the managed identity / service principal.')
 param principalId string
 
-@allowed([
-  'ServicePrincipal'
-  'User'
-  'Group'
-])
+@allowed(['ServicePrincipal','User','Group'])
 param principalType string = 'ServicePrincipal'
 
 @description('Role definition GUID (not full resource ID).')
 param roleDefinitionGuid string
 
 @description('Stable key used to create deterministic role assignment name.')
-param assignmentKey string
+param assignmentName string
 
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2020-08-01' existing = {
   name: logAnalyticsWorkspaceName
@@ -35,8 +31,8 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2020-08
 
 var roleDefinitionId = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', roleDefinitionGuid)
 
-resource ra 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(logAnalyticsWorkspace.id, principalId, assignmentKey, roleDefinitionGuid)
+resource logAnalyticsRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(logAnalyticsWorkspace.id, principalId, assignmentName, roleDefinitionGuid)
   scope:logAnalyticsWorkspace
   properties: {
     roleDefinitionId: roleDefinitionId
@@ -45,4 +41,4 @@ resource ra 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   }
 }
 
-output assignmentId string = ra.id
+output assignmentId string = logAnalyticsRoleAssignment.id

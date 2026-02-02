@@ -13,18 +13,14 @@ targetScope = 'resourceGroup'
 @description('Principal (object) ID of the identity / user / SPN.')
 param principalId string
 
-@allowed([
-  'ServicePrincipal'
-  'User'
-  'Group'
-])
+@allowed(['ServicePrincipal','User','Group'])
 param principalType string = 'ServicePrincipal'
 
 @description('Role definition GUID (not full resource ID).')
 param roleDefinitionGuid string
 
 @description('Stable key used to create deterministic role assignment name.')
-param assignmentKey string
+param assignmentName string
 
 @description('Scope resource ID to bind the role assignment to. Defaults to the resource group.')
 param scopeResourceId string = resourceGroup().id
@@ -32,7 +28,7 @@ param scopeResourceId string = resourceGroup().id
 var roleDefinitionId = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', roleDefinitionGuid)
 
 resource ra 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(scopeResourceId, principalId, assignmentKey, roleDefinitionGuid)
+  name: guid(scopeResourceId, principalId, assignmentName, roleDefinitionGuid)
   properties: {
     roleDefinitionId: roleDefinitionId
     principalId: principalId
