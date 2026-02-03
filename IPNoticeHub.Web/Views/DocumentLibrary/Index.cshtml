@@ -33,7 +33,10 @@
 
         <div class="alert alert-info">
             Your document library is currently empty.
-            Add items from your <a asp-controller="Trademarks" asp-action="MyCollection" class="link-primary">Trademark Collection</a> or <a asp-controller="Copyrights" asp-action="MyCollection" class="link-primary">Copyright Collection</a> to generate a DMCA or Cease & Desist Notice.
+            Add items from your <a asp-controller="Trademarks" 
+            asp-action="MyCollection" class="link-primary link-empty-state">Trademark Collection</a> or 
+            <a asp-controller="Copyrights" asp-action="MyCollection" 
+            class="link-primary link-empty-state">Copyright Collection</a> to generate a DMCA or Cease & Desist Notice.
         </div>
     }
     else

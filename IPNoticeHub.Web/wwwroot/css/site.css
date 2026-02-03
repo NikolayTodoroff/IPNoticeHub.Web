@@ -19,6 +19,8 @@
     --accent-hover: #aaaaaa;
     --focus-ring: rgba(37, 99, 235, 0.25);
     --links: #363d47;
+    --secondary-link: #fff;
+    --secondary-link-hover: #fff0d6;
 }
 
 html {
@@ -161,6 +163,14 @@ a,
     background-color: #9a34a3 !important;
 }
 
+.link-empty-state {
+    color: var(--secondary-link) !important;
+    font-weight: 600;
+}
+
+    .link-empty-state:hover {
+        color: var(--secondary-link-hover) !important;
+    }
 
 .btn:focus,
 .btn:active:focus,
