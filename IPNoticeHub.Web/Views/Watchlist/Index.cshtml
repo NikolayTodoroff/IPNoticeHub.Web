@@ -84,7 +84,7 @@ else
                             </form>
 
                             <!-- Trademark Details -->
-                            <a class="btn btn-outline-primary btn-sm"
+                            <a class="btn btn-secondary btn-sm"
                                asp-controller="Trademarks"
                                asp-action="Details"
                                asp-route-id="@item.PublicId"
@@ -100,7 +100,7 @@ else
                                 @Html.AntiForgeryToken()
                                 <input type="hidden" name="trademarkId" value="@item.Id" />
                                 <input type="hidden" name="returnUrl" value="@currentUrl" />
-                                <button type="submit" class="btn btn-outline-primary btn-sm"
+                                <button type="submit" class="btn btn-outline-danger btn-sm"
                                         onclick="return confirm('Remove this trademark from your watchlist?');">
                                     Remove
                                 </button>
