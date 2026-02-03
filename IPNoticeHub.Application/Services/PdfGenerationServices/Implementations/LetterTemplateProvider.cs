@@ -79,12 +79,12 @@ namespace IPNoticeHub.Application.Services.PdfGenerationService.Implementations
                 I am the rights holder (or authorized agent) for the work titled “{WorkTitle}” ({RegistrationNumber}). 
                 I request immediate removal of the infringing material at: {InfringingUrl}
 
-                **Work Details:**
+                ** Work Details: **
                 • Title: {WorkTitle} | Registration: {RegistrationNumber}
                 • Created: {YearOfCreation}
                 • Published: {DateOfPublication} ({NationOfFirstPublication})
 
-                **Contact Information:**
+                ** Contact Information: **
                 • Name: {SenderName} | Email: {SenderEmail}
                 • Address: {SenderAddress}
                 • CC: {RecipientEmail}

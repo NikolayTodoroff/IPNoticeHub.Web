@@ -192,3 +192,12 @@ a,
     line-height: 1.6;
     color: #111;
 }
+
+.letter-actions {
+    max-width: 210mm;
+    margin: 1rem auto 0;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}

@@ -12,44 +12,45 @@
         </div>
     </div>
 
+    <div class="letter-actions mt-4">
+        <form asp-controller="CopyrightCad"
+              asp-action="CeaseDesist"
+              asp-route-publicId="@Model.PublicId"
+              method="post"
+              class="d-inline">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="PublicId" />
+            <input type="hidden" asp-for="SenderName" />
+            <input type="hidden" asp-for="SenderAddress" />
+            <input type="hidden" asp-for="SenderEmail" />
+            <input type="hidden" asp-for="RecipientName" />
+            <input type="hidden" asp-for="RecipientAddress" />
+            <input type="hidden" asp-for="RecipientEmail" />
+            <input type="hidden" asp-for="InfringingUrl" />
+            <input type="hidden" asp-for="WorkTitle" />
+            <input type="hidden" asp-for="RegistrationNumber" />
+            <input type="hidden" asp-for="AdditionalFacts" />
+            <input type="hidden" asp-for="BodyTemplate" />
+            <button type="submit" class="btn btn-secondary">Generate PDF</button>
+        </form>
 
-    <form asp-controller="CopyrightCad"
-          asp-action="CeaseDesist"
-          asp-route-publicId="@Model.PublicId"
-          method="post"
-          class="d-inline">
-        @Html.AntiForgeryToken()
-        <input type="hidden" asp-for="PublicId" />
-        <input type="hidden" asp-for="SenderName" />
-        <input type="hidden" asp-for="SenderAddress" />
-        <input type="hidden" asp-for="SenderEmail" />
-        <input type="hidden" asp-for="RecipientName" />
-        <input type="hidden" asp-for="RecipientAddress" />
-        <input type="hidden" asp-for="RecipientEmail" />
-        <input type="hidden" asp-for="InfringingUrl" />
-        <input type="hidden" asp-for="WorkTitle" />
-        <input type="hidden" asp-for="RegistrationNumber" />
-        <input type="hidden" asp-for="AdditionalFacts" />
-        <input type="hidden" asp-for="BodyTemplate" />
-        <button type="submit" class="btn btn-secondary">Generate PDF</button>
-    </form>
-
-    <form asp-action="CeaseDesistEdit" method="post" class="d-inline ms-2">
-        @Html.AntiForgeryToken()
-        <input type="hidden" asp-for="PublicId" />
-        <input type="hidden" asp-for="SenderName" />
-        <input type="hidden" asp-for="SenderAddress" />
-        <input type="hidden" asp-for="SenderEmail" />
-        <input type="hidden" asp-for="RecipientName" />
-        <input type="hidden" asp-for="RecipientAddress" />
-        <input type="hidden" asp-for="RecipientEmail" />
-        <input type="hidden" asp-for="InfringingUrl" />
-        <input type="hidden" asp-for="WorkTitle" />
-        <input type="hidden" asp-for="RegistrationNumber" />
-        <input type="hidden" asp-for="AdditionalFacts" />
-        <input type="hidden" asp-for="BodyTemplate" />
-        <button type="submit" class="btn btn-outline-primary">Edit</button>
-    </form>
-
-    <partial name="_BackButton" />
+        <form asp-action="CeaseDesistEdit" method="post" class="d-inline ms-2">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="PublicId" />
+            <input type="hidden" asp-for="SenderName" />
+            <input type="hidden" asp-for="SenderAddress" />
+            <input type="hidden" asp-for="SenderEmail" />
+            <input type="hidden" asp-for="RecipientName" />
+            <input type="hidden" asp-for="RecipientAddress" />
+            <input type="hidden" asp-for="RecipientEmail" />
+            <input type="hidden" asp-for="InfringingUrl" />
+            <input type="hidden" asp-for="WorkTitle" />
+            <input type="hidden" asp-for="RegistrationNumber" />
+            <input type="hidden" asp-for="AdditionalFacts" />
+            <input type="hidden" asp-for="BodyTemplate" />
+            <button type="submit" class="btn btn-outline-primary">Edit</button>
+        </form>
+        <partial name="_BackButton" />     
+    </div>
+    
 </div>
