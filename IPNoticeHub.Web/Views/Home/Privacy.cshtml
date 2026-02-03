@@ -1,6 +1,65 @@
 ﻿@{
     ViewData["Title"] = "Privacy Policy";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-9 mx-auto">
+            <h1 class="display-4 mb-4 border-bottom pb-2">@ViewData["Title"]</h1>
+
+            <div class="alert alert-info shadow-sm mb-5" role="alert">
+                <h4 class="alert-heading">Portfolio Disclosure</h4>
+                <p class="mb-0">
+                    <strong>IPNoticeHub</strong> is an educational demonstration project created for professional portfolio purposes.
+                    This policy outlines how data is handled during your interaction with this technical showcase.
+                </p>
+            </div>
+
+            <section class="mb-5">
+                <h2 class="h3"><i class="bi bi-person-badge me-2"></i>1. Information Collection</h2>
+                <p>
+                    To demonstrate authentication and user-specific data management, we collect minimal personally identifiable information (PII) including:
+                </p>
+                <ul>
+                    <li><strong>Account Credentials:</strong> Email address and username provided during registration.</li>
+                    <li><strong>Application Data:</strong> Information explicitly entered by the user to generate documents or manage notices.</li>
+                </ul>
+            </section>
+
+            <section class="mb-5">
+                <h2 class="h3"><i class="bi bi-gear-fill me-2"></i>2. Purpose of Processing</h2>
+                <p>Your data is processed strictly for the following functional requirements:</p>
+                <ul>
+                    <li>User authentication and session management.</li>
+                    <li>Personalization of document templates and system alerts.</li>
+                    <li>Demonstrating CRUD (Create, Read, Update, Delete) operations.</li>
+                </ul>
+            </section>
+
+            <section class="mb-5">
+                <h2 class="h3"><i class="bi bi-cookie me-2"></i>3. Data Security & Storage</h2>
+                <ul>
+                    <li><strong>Encryption at Rest:</strong> Industry-standard cryptographic hashing is used to protect user credentials.</li>
+                    <li><strong>Controlled Access:</strong> Database connectivity is strictly limited to authorized application components using <strong>identity-based access controls</strong> and private network routing.</li>
+                    <li><strong>Zero Trust Architecture:</strong> We follow a "Least Privilege" model to ensure that resources only have the minimum access required to function.</li>
+                </ul>
+                <p class="mb-0">
+                    We do not sell, trade, or share your data with external third parties.
+                </p>
+            </section>
+
+            <section class="mb-5">
+                <h2 class="h3"><i class="bi bi-cookie me-2"></i>4. Third-Party Services & Tracking</h2>
+                <p>
+                    This application values privacy by design. We do <strong>not</strong> use third-party trackers, advertising networks,
+                    or external analytics services (e.g., Google Analytics). Cookies are used solely for essential session persistence.
+                </p>
+            </section>
+
+            <footer class="mt-5 pt-4 border-top text-muted small">
+                <p>Last updated: February 2026</p>
+                <p>&copy; 2026 IPNoticeHub &middot; Dedicated to Secure Cloud Engineering</p>
+            </footer>
+        </div>
+    </div>
+</div>
