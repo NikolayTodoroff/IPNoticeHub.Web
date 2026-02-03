@@ -5,11 +5,14 @@
 }
 
 <div class="container py-4">
-    <h2>Preview DMCA Notice</h2>
+    <h2 class="text-center">Preview DMCA Notice</h2>
 
-    <div class="mb-3 p-3 border rounded bg-light">
-        <pre class="mb-0" style="white-space: pre-wrap;">@Model.BodyTemplate</pre>
+    <div class="letter-preview-wrapper">
+        <div class="letter-preview">
+            <pre class="letter-preview__content mb-0">@Model.BodyTemplate</pre>
+        </div>
     </div>
+
 
     <form asp-controller="CopyrightDmca"
           asp-action="Dmca"

@@ -164,3 +164,31 @@ a,
     border-color: var(--primary) !important;
     box-shadow: 0 0 0 0.2rem var(--focus-ring) !important;
 }
+
+.letter-preview-wrapper {
+    max-height: none; /* remove the 70vh clamp */
+    overflow: visible; /* let the page scroll normally */
+    padding: 1rem 0;
+}
+
+.letter-preview {
+    max-width: 210mm;
+    min-height: 297mm;
+    margin: 0 auto;
+    padding: 20mm;
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+    overflow: hidden;
+}
+
+.letter-preview__content {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 12pt;
+    line-height: 1.6;
+    color: #111;
+}

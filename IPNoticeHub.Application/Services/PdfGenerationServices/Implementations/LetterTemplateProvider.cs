@@ -73,37 +73,28 @@ namespace IPNoticeHub.Application.Services.PdfGenerationService.Implementations
                 {{RecipientName}}
                 {{RecipientAddress}}
 
-                **Subject:** DMCA Takedown Notice – “{{WorkTitle}}” ({{RegistrationNumber}})
+                Subject: DMCA Takedown Notice – “{{WorkTitle}}” ({{RegistrationNumber}})
 
                 To the Designated DMCA Agent,
+                I am the rights holder (or authorized agent) for the work titled “{WorkTitle}” ({RegistrationNumber}). 
+                I request immediate removal of the infringing material at: {InfringingUrl}
 
-                I am the rights holder (or authorized agent) for the copyrighted work titled “{{WorkTitle}}” (registration: {{RegistrationNumber}}).  
-                I request **immediate removal or disabling of access** to material that infringes my rights, identified at the following URL or location under your control:  
-                {{InfringingUrl}} 
+                **Work Details:**
+                • Title: {WorkTitle} | Registration: {RegistrationNumber}
+                • Created: {YearOfCreation}
+                • Published: {DateOfPublication} ({NationOfFirstPublication})
 
-                **Work information:**
-                • Title: {{WorkTitle}}  
-                • Registration Number: {{RegistrationNumber}}  
-                • Year of Creation: {{YearOfCreation}}  
-                • Date of Publication: {{DateOfPublication}}  
-                • Nation of First Publication: {{NationOfFirstPublication}}
+                **Contact Information:**
+                • Name: {SenderName} | Email: {SenderEmail}
+                • Address: {SenderAddress}
+                • CC: {RecipientEmail}
 
-                **Contact information for this notice:**
-                • Name: {{SenderName}}  
-                • Email: {{SenderEmail}}  
-                • Address: {{SenderAddress}}  
-                • Additional recipient email (if applicable): {{RecipientEmail}}
+                **Good-faith Statement:** {GoodFaithStatement}
 
-                **Good-faith statement:**  
-                {{GoodFaithStatement}}
+                I state under penalty of perjury that I am the copyright owner (or authorized agent), and the information in this notice is accurate. Please notify me once the material is removed.
 
-                I state under **penalty of perjury** that I am the copyright owner or authorized to act on the owner’s behalf, and that the information in this notice is accurate.
-
-                Please notify me when the material has been removed or disabled.  
-                Thank you for your prompt attention.
-
-                **Sincerely,**  
-                {{SenderName}}  
+                Sincerely,
+                {{SenderName}}
                 {{SenderAddress}}")
         };
 
