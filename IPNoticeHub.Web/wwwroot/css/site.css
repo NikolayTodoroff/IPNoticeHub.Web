@@ -39,7 +39,6 @@ body {
     margin-bottom: 0;
 }
 
-
 .btn {
     border-radius: 8px !important;
     padding: 12px 24px !important;
@@ -65,40 +64,33 @@ body {
     box-shadow: 0 3px 8px rgba(0,0,0,.15);
 }
 
-
-
 .btn-primary {
     background-color: var(--primary) !important;
     border-color: var(--primary-border) !important;
     color: #fff !important;
 }
-
     .btn-primary:hover {
         background-color: var(--primary-hover) !important;
         border-color: var(--primary-border) !important;
         color: #fff !important;
     }
 
-
 .btn-secondary {
     background-color: var(--secondary) !important;
     border-color: var(--warning-border) !important;
     color: #fff !important;
 }
-
     .btn-secondary:hover {
         background-color: var(--secondary-hover) !important;
         border-color: var(--secondary-border) !important;
         color: #fff !important;
     }
 
-
 .btn-outline-primary {
     background-color: var(--outline-primary) !important;
     border-color: var(--outline-primary-border) !important;
     color: #fff !important;
 }
-
     .btn-outline-primary:hover {
         background-color: var(--outline-primary-hover) !important;
         border-color: var(--outline-primary) !important;
@@ -109,34 +101,28 @@ body {
     color: var(--primary) !important;
     border-color: var(--primary) !important;
 }
-
     .btn-outline-secondary:hover {
         background-color: var(--primary) !important;
         color: #fff !important;
     }
 
-
 a,
 .link-primary {
     color: var(--links) !important;
 }
-
     a:hover,
     .link-primary:hover {
         color: var(--primary-hover) !important;
     }
-
 
 .alert-info {
     --bs-alert-color: #fff;
     --bs-alert-bg: var(--warning) !important;
     --bs-alert-border-color: var(--warning-border) !important;
 }
-
     .alert-info .alert-link {
         color: #006366;
     }
-
 
 .badge.text-bg-success {
     background-color: var(--success) !important;
@@ -167,7 +153,6 @@ a,
     color: var(--secondary-link) !important;
     font-weight: 600;
 }
-
     .link-empty-state:hover {
         color: var(--secondary-link-hover) !important;
     }
