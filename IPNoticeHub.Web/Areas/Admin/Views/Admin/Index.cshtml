@@ -3,53 +3,155 @@
     ViewData["Title"] = "Admin Dashboard";
 }
 
-<h1>Admin Dashboard</h1>
-<p>Welcome, Admin. More features coming...</p>
+<div class="container py-4">
 
-<h2>System Stats</h2>
-<ul>
-    <li>Total users: @Model.TotalUsers</li>
-    <li>Total trademarks: @Model.TrademarksAdded</li>
-    <li>Total copyrights: @Model.CopyrightsAdded</li>
-    <li>Watchlist items: @Model.WatchlistedItems</li>
-</ul>
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2 mb-4">
+        <div>
+            <h1 class="h3 mb-1">
+                Admin Dashboard
+                <span class="text-muted fw-normal ms-2">(More features planned)</span>
+            </h1>
 
-<h2>Recent Registrations</h2>
+            <p class="text-muted mb-0">Welcome, Admin. More features coming soon.</p>
+        </div>
+        <span class="badge text-bg-light border">IPNoticeHub Admin</span>
+    </div>
 
-@if (Model.RecentRegistrations.Any())
-{
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Email</th>
-                <th>User Name</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var user in Model.RecentRegistrations)
-            {
-                <tr>
-                    <td>@user.Email</td>
-                    <td>@user.UserName</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-else
-{
-    <p>No recent users found.</p>
-}
+    <!-- Quick stats (tiles) -->
+    <div class="row g-3 mb-3">
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="text-muted small">Total users</div>
+                        <span class="badge text-bg-primary">Users</span>
+                    </div>
+                    <div class="display-6 mb-0">@Model.TotalUsers</div>
+                </div>
+            </div>
+        </div>
 
-<h2>Database Sync</h2>
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="text-muted small">Trademarks added</div>
+                        <span class="badge text-bg-info">TM</span>
+                    </div>
+                    <div class="display-6 mb-0">@Model.TrademarksAdded</div>
+                </div>
+            </div>
+        </div>
 
-<form asp-area="Admin" asp-controller="Admin" asp-action="Sync" method="post">
-    @Html.AntiForgeryToken()
-    <button type="submit" class="btn btn-primary">
-        Start Manual Sync
-    </button>
-</form>
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="text-muted small">Copyrights added</div>
+                        <span class="badge text-bg-secondary">CR</span>
+                    </div>
+                    <div class="display-6 mb-0">@Model.CopyrightsAdded</div>
+                </div>
+            </div>
+        </div>
 
-<p class="text-muted mt-2">
-    *Manual sync will trigger USPTO/EUIPO/WIPO updates and watchlist checks once implemented.
-</p>
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="text-muted small">Watchlist items</div>
+                        <span class="badge text-bg-warning">WL</span>
+                    </div>
+                    <div class="display-6 mb-0">@Model.WatchlistedItems</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main panels -->
+    <div class="row g-3">
+        <!-- System Stats (compact list) -->
+        <div class="col-12 col-lg-5">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-light d-flex align-items-center justify-content-between">
+                    <h2 class="h6 mb-0">System Stats</h2>
+                    <span class="text-muted small">Overview</span>
+                </div>
+
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="text-muted">Total users</span>
+                            <span class="fw-semibold">@Model.TotalUsers</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="text-muted">Total trademarks</span>
+                            <span class="fw-semibold">@Model.TrademarksAdded</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="text-muted">Total copyrights</span>
+                            <span class="fw-semibold">@Model.CopyrightsAdded</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="text-muted">Watchlist items</span>
+                            <span class="fw-semibold">@Model.WatchlistedItems</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="card-footer bg-white text-muted small">
+                    Counts reflect seeded demo data and user activity.
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent registrations -->
+        <div class="col-12 col-lg-7">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-light d-flex align-items-center justify-content-between">
+                    <h2 class="h6 mb-0">Recent Registrations</h2>
+                    <span class="text-muted small">Latest users</span>
+                </div>
+
+                <div class="card-body">
+                    @if (Model.RecentRegistrations == null || !Model.RecentRegistrations.Any())
+                    {
+                        <div class="alert alert-info mb-0">
+                            No recent registrations found yet.
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-sm align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Email</th>
+                                        <th>User Name</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var u in Model.RecentRegistrations)
+                                    {
+                                        <tr>
+                                            <td class="text-truncate" style="max-width: 320px;">
+                                                @u.Email
+                                            </td>
+                                            <td>@u.UserName</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+
+                <div class="card-footer bg-white text-muted small">
+                    This section is for demo/admin visibility only.
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
