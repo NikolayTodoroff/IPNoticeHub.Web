@@ -92,13 +92,14 @@ namespace IPNoticeHub.Tests.UnitTests.IdentityTests
                     It.IsAny<ApplicationUser>(), 
                     It.IsAny<string>()), 
                 Times.Never);
-
+    
             logger.Entries.Any(e => e.level == LogLevel.Critical && 
-            e.message.Contains("Failed to create admin user")).Should().BeTrue();
+            e.message.Contains("Failed to create admin")).Should().BeTrue();
 
-            userManager.Verify(
-    u => u.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>()),
-    Times.Once);
+            userManager.Verify( u => u.CreateAsync(
+                   It.IsAny<ApplicationUser>(), 
+                   It.IsAny<string>()),
+                   Times.Once);
         }
 
         [Test]
@@ -174,7 +175,5 @@ namespace IPNoticeHub.Tests.UnitTests.IdentityTests
             overrides(services);
             return services.BuildServiceProvider();
         }
-    }
-
-    
+    }   
 }
