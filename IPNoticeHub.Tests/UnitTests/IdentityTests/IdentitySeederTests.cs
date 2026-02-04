@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using static IPNoticeHub.Shared.Constants.IdentityConstants.AdminAccountCredentials;
+using static IPNoticeHub.Shared.Constants.IdentityConstants.DemoUserCredentials;
 using static IPNoticeHub.Shared.Support.RoleNames;
 using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 
@@ -181,8 +182,9 @@ namespace IPNoticeHub.Tests.UnitTests.IdentityTests
             await IdentitySeeder.SeedIdentitiesAsync(scope.ServiceProvider);
 
             var allUsersAfter = await userManager.Users.ToListAsync();
-            allUsersAfter.Should().HaveCount(1);
-            allUsersAfter.Single().Email.Should().Be(AdminEmailAddress);
+            allUsersAfter.Should().HaveCount(2);
+            allUsersAfter.Should().Contain(u => u.Email == AdminEmailAddress);
+            allUsersAfter.Should().Contain(u => u.Email == DemoUserEmailAddress);
         }
 
         [Test]
