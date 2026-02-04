@@ -207,5 +207,25 @@ namespace IPNoticeHub.Tests.UnitTests.IdentityTests
 
             admin.Email.Should().Be(AdminEmailAddress);
         }
+
+        [Test]
+        public async Task Should_Seed_Admin_And_Demo_Users_When_No_Users_Exist()
+        {
+            using var host = new IdentityTestHost();
+            using var scope = host.CreateScope();
+
+            var userManager =
+                scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+            var allUsersBefore = await userManager.Users.ToListAsync();
+            allUsersBefore.Should().BeEmpty();
+
+            await IdentitySeeder.SeedIdentitiesAsync(scope.ServiceProvider);
+
+            var allUsersAfter = await userManager.Users.ToListAsync();
+            allUsersAfter.Should().HaveCount(2);
+            allUsersAfter.Should().Contain(u => u.Email == AdminEmailAddress);
+            allUsersAfter.Should().Contain(u => u.Email == DemoUserEmailAddress);
+        }
     }
 }
