@@ -578,6 +578,7 @@ namespace IPNoticeHub.Tests.IntegrationTests.TrademarkIntegrationTests.Trademark
                     var linkCount = 
                         await testDbContext.UserTrademarks.
                         AsNoTracking().
+                        Where(ut => ut.TrademarkEntityId == entityId).
                         CountAsync();
 
                     linkCount.Should().
