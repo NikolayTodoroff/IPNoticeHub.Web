@@ -1,144 +1,136 @@
 ﻿@model IPNoticeHub.Web.Models.AdminDashboard.AdminDashboardViewModel
 @{
     ViewData["Title"] = "Admin Dashboard";
+
+    var stats = new[]
+    {
+        new { Title = "Registered Users", Value = Model.TotalUsers,      Icon = "bi-people-fill",   Accent = "primary",   Badge = "Total",   Invert = true  },
+        new { Title = "Trademarks",       Value = Model.TrademarksAdded, Icon = "bi-trademark",     Accent = "info",      Badge = "Assets",  Invert = false },
+        new { Title = "Copyrights",       Value = Model.CopyrightsAdded, Icon = "bi-c-circle",      Accent = "secondary", Badge = "Assets",  Invert = false },
+        new { Title = "Watchlist Total",  Value = Model.WatchlistedItems,Icon = "bi-eye-fill",      Accent = "warning",   Badge = "Active",  Invert = false },
+    };
+
+    var infra = new[]
+    {
+        new { Label = "Database Engine", Value = "Secured SQL Cluster", Icon = "bi-database-check",    Accent = "success" },
+        new { Label = "Authentication",  Value = "Identity-based RBAC", Icon = "bi-shield-lock-fill", Accent = "primary" },
+    };
 }
 
-<div class="container py-4">
+<div class="container py-5">
 
-    <!-- Header -->
-    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2 mb-4">
+    <div class="d-flex flex-wrap align-items-start justify-content-between gap-3 mb-4">
         <div>
-            <h1 class="h3 mb-1">
-                Admin Dashboard
-                <span class="text-muted fw-normal ms-2">(More features planned)</span>
-            </h1>
+            <nav aria-label="breadcrumb" class="mb-2">
+                <ol class="breadcrumb mb-0 small">
+                    <li class="breadcrumb-item fw-semibold text-primary">System</li>
+                    <li class="breadcrumb-item active">Management</li>
+                </ol>
+            </nav>
 
-            <p class="text-muted mb-0">Welcome, Admin. More features coming soon.</p>
-        </div>
-        <span class="badge text-bg-light border">IPNoticeHub Admin</span>
-    </div>
-
-    <!-- Quick stats (tiles) -->
-    <div class="row g-3 mb-3">
-        <div class="col-12 col-sm-6 col-lg-3">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div class="text-muted small">Total users</div>
-                        <span class="badge text-bg-primary">Users</span>
-                    </div>
-                    <div class="display-6 mb-0">@Model.TotalUsers</div>
-                </div>
-            </div>
+            <h1 class="h3 fw-bold mb-1">Control Panel</h1>
+            <p class="text-muted mb-0">Operational overview of the IPNoticeHub ecosystem.</p>
         </div>
 
-        <div class="col-12 col-sm-6 col-lg-3">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div class="text-muted small">Trademarks added</div>
-                        <span class="badge text-bg-info">TM</span>
-                    </div>
-                    <div class="display-6 mb-0">@Model.TrademarksAdded</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-12 col-sm-6 col-lg-3">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div class="text-muted small">Copyrights added</div>
-                        <span class="badge text-bg-secondary">CR</span>
-                    </div>
-                    <div class="display-6 mb-0">@Model.CopyrightsAdded</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-12 col-sm-6 col-lg-3">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div class="text-muted small">Watchlist items</div>
-                        <span class="badge text-bg-warning">WL</span>
-                    </div>
-                    <div class="display-6 mb-0">@Model.WatchlistedItems</div>
-                </div>
-            </div>
+        <div class="d-inline-flex align-items-center bg-light border rounded-pill px-3 py-2">
+            <span class="status-dot me-2" aria-hidden="true"></span>
+            <span class="small fw-semibold">Live Demo Environment</span>
         </div>
     </div>
 
-    <!-- Main panels -->
+    <div class="row g-3 mb-4">
+        @foreach (var s in stats)
+        {
+            var cardClass = s.Invert ? $"bg-{s.Accent} text-white" : "bg-white";
+            var badgeClass = s.Invert ? $"bg-white text-{s.Accent}" : "bg-light text-muted";
+
+            <div class="col-12 col-sm-6 col-lg-3">
+                <div class="card border-0 shadow-sm h-100 hover-lift @cardClass">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <i class="bi @s.Icon fs-4 @(s.Invert ? "" : $"text-{s.Accent}")"></i>
+                            <span class="badge rounded-pill @badgeClass">@s.Badge</span>
+                        </div>
+
+                        <div class="text-muted small @(s.Invert ? "text-white-50" : "")">@s.Title</div>
+                        <div class="display-6 fw-bold mb-0">@s.Value</div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
     <div class="row g-3">
-        <!-- System Stats (compact list) -->
-        <div class="col-12 col-lg-5">
-            <div class="card shadow-sm h-100">
-                <div class="card-header bg-light d-flex align-items-center justify-content-between">
-                    <h2 class="h6 mb-0">System Stats</h2>
-                    <span class="text-muted small">Overview</span>
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm hover-lift">
+                <div class="card-header bg-white border-0 py-3">
+                    <h2 class="h6 mb-0 fw-bold">Infrastructure Details</h2>
                 </div>
 
-                <div class="card-body p-0">
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <span class="text-muted">Total users</span>
-                            <span class="fw-semibold">@Model.TotalUsers</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <span class="text-muted">Total trademarks</span>
-                            <span class="fw-semibold">@Model.TrademarksAdded</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <span class="text-muted">Total copyrights</span>
-                            <span class="fw-semibold">@Model.CopyrightsAdded</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <span class="text-muted">Watchlist items</span>
-                            <span class="fw-semibold">@Model.WatchlistedItems</span>
-                        </li>
-                    </ul>
-                </div>
+                <div class="card-body pt-0">
+                    @foreach (var item in infra)
+                    {
+                        <div class="d-flex align-items-center py-3 border-bottom">
+                            <div class="icon-tile">
+                                <i class="bi @item.Icon text-@item.Accent"></i>
+                            </div>
+                            <div class="ms-3">
+                                <div class="small text-muted">@item.Label</div>
+                                <div class="fw-semibold">@item.Value</div>
+                            </div>
+                        </div>
+                    }
 
-                <div class="card-footer bg-white text-muted small">
-                    Counts reflect seeded demo data and user activity.
+                    <p class="text-muted small mt-3 mb-0">
+                        Current data represents seeded demo accounts and test activity within the sandbox environment.
+                    </p>
                 </div>
             </div>
         </div>
 
-        <!-- Recent registrations -->
-        <div class="col-12 col-lg-7">
-            <div class="card shadow-sm h-100">
-                <div class="card-header bg-light d-flex align-items-center justify-content-between">
-                    <h2 class="h6 mb-0">Recent Registrations</h2>
-                    <span class="text-muted small">Latest users</span>
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm hover-lift">
+                <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
+                    <h2 class="h6 mb-0 fw-bold">Recent User Activity</h2>
+                    <a class="btn btn-sm btn-outline-primary rounded-pill px-3" href="#" aria-disabled="true">
+                        View Full Audit
+                    </a>
                 </div>
 
                 <div class="card-body">
                     @if (Model.RecentRegistrations == null || !Model.RecentRegistrations.Any())
                     {
-                        <div class="alert alert-info mb-0">
-                            No recent registrations found yet.
+                        <div class="text-center py-5">
+                            <i class="bi bi-inbox text-muted fs-1"></i>
+                            <p class="mt-2 text-muted mb-0">No recent registrations detected.</p>
                         </div>
                     }
                     else
                     {
                         <div class="table-responsive">
-                            <table class="table table-sm align-middle mb-0">
+                            <table class="table table-hover align-middle mb-0">
                                 <thead class="table-light">
-                                    <tr>
-                                        <th>Email</th>
-                                        <th>User Name</th>
+                                    <tr class="small text-uppercase text-muted">
+                                        <th class="border-0">Account</th>
+                                        <th class="border-0 text-end">Identifier</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach (var u in Model.RecentRegistrations)
                                     {
+                                        var initial = u.UserName?.Substring(0, 1).ToUpper() ?? "U";
+
                                         <tr>
-                                            <td class="text-truncate" style="max-width: 320px;">
-                                                @u.Email
+                                            <td class="py-3">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar me-3">@initial</div>
+                                                    <div>
+                                                        <div class="fw-semibold">@u.Email</div>
+                                                        <div class="text-muted small">Standard User</div>
+                                                    </div>
+                                                </div>
                                             </td>
-                                            <td>@u.UserName</td>
+                                            <td class="text-end text-muted font-monospace small">@u.UserName</td>
                                         </tr>
                                     }
                                 </tbody>
@@ -146,12 +138,48 @@
                         </div>
                     }
                 </div>
-
-                <div class="card-footer bg-white text-muted small">
-                    This section is for demo/admin visibility only.
-                </div>
             </div>
         </div>
     </div>
-
 </div>
+
+@section Styles {
+    <style>
+        .hover-lift {
+            transition: transform .15s ease, box-shadow .15s ease;
+        }
+
+            .hover-lift:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 .5rem 1.25rem rgba(0,0,0,.08) !important;
+            }
+
+        .status-dot {
+            width: .55rem;
+            height: .55rem;
+            border-radius: 50%;
+            background: var(--bs-success);
+            box-shadow: 0 0 0 .25rem rgba(var(--bs-success-rgb), .15);
+        }
+
+        .icon-tile {
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            background: var(--bs-light);
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            color: #fff;
+            background: var(--bs-primary);
+            font-weight: 700;
+        }
+    </style>
+}
