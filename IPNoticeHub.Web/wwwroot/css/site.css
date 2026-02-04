@@ -166,8 +166,8 @@ a,
 }
 
 .letter-preview-wrapper {
-    max-height: none; /* remove the 70vh clamp */
-    overflow: visible; /* let the page scroll normally */
+    max-height: none;
+    overflow: visible;
     padding: 1rem 0;
 }
 
