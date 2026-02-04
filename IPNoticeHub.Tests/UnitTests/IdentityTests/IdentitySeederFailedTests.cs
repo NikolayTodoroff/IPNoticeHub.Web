@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using static IPNoticeHub.Shared.Constants.IdentityConstants.AdminAccountCredentials;
+using static IPNoticeHub.Shared.Constants.IdentityConstants.DemoUserCredentials;
 using IPNoticeHub.Tests.UnitTests.UnitTestFactories;
 
 namespace IPNoticeHub.Tests.UnitTests.IdentityTests
@@ -111,12 +112,18 @@ namespace IPNoticeHub.Tests.UnitTests.IdentityTests
             var userManager =
                 IdentityManagerMocksFactory.MockUserManager();
 
-            roleManager.Setup(r => r.RoleExistsAsync(It.IsAny<string>()))
-                       .ReturnsAsync(true);
+            roleManager.Setup(
+                r => r.RoleExistsAsync(It.IsAny<string>())).
+                ReturnsAsync(true);
 
             var existingAdmin = new ApplicationUser { 
                 Email = AdminEmailAddress, 
                 UserName = AdminEmailAddress, 
+                EmailConfirmed = true };
+
+            var existingDemoUser = new ApplicationUser { 
+                Email = DemoUserEmailAddress, 
+                UserName = DemoUserEmailAddress, 
                 EmailConfirmed = true };
 
             userManager.Setup(
@@ -124,8 +131,16 @@ namespace IPNoticeHub.Tests.UnitTests.IdentityTests
                 ReturnsAsync(existingAdmin);
 
             userManager.Setup(
+                u => u.FindByEmailAsync(DemoUserEmailAddress)).
+                ReturnsAsync(existingDemoUser);
+
+            userManager.Setup(
                 u => u.HasPasswordAsync(existingAdmin)).
                 ReturnsAsync(false);
+
+            userManager.Setup(
+                u => u.HasPasswordAsync(existingDemoUser)).
+                ReturnsAsync(true);
 
             userManager.Setup(
                 u => u.AddPasswordAsync(existingAdmin, It.IsAny<string>())).
@@ -137,7 +152,15 @@ namespace IPNoticeHub.Tests.UnitTests.IdentityTests
                 ReturnsAsync(false);
 
             userManager.Setup(
+                u => u.IsInRoleAsync(existingDemoUser, It.IsAny<string>())).
+                ReturnsAsync(false);
+
+            userManager.Setup(
                 u => u.AddToRoleAsync(existingAdmin, It.IsAny<string>())).
+                ReturnsAsync(IdentityResult.Success);
+
+            userManager.Setup(
+                u => u.AddToRoleAsync(existingDemoUser, It.IsAny<string>())).
                 ReturnsAsync(IdentityResult.Success);
 
             var logger = new TestLogger<IdentitySeeder>();
