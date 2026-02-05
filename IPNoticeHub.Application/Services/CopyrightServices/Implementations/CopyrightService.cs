@@ -1,5 +1,4 @@
 ﻿using IPNoticeHub.Shared.Enums;
-using IPNoticeHub.Domain.Entities.Identity;
 using IPNoticeHub.Domain.Entities.Copyrights;
 using IPNoticeHub.Application.Repositories.CopyrightRepository;
 using IPNoticeHub.Shared.Support;

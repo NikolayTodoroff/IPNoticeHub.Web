@@ -62,7 +62,6 @@ namespace IPNoticeHub.Web.Controllers
                 TrademarksMapping.MapCollectionDtoToViewModel(dto);
 
             ViewBag.SortBy = sortBy;
-
             return View(viewModel);
         }
 

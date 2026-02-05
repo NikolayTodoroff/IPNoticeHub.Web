@@ -61,29 +61,37 @@
                                         <a asp-controller="CopyrightCad"
                                             asp-action="CeaseDesist"
                                            asp-route-publicId="@item.PublicId"
-                                           class="btn btn-primary">
+                                           class="btn btn-sm btn-primary">
                                             Cease &amp; Desist
                                         </a>
 
                                         <a asp-controller="CopyrightDmca" 
                                            asp-action="Dmca"
                                            asp-route-publicId="@item.PublicId"
-                                           class="btn btn-primary">
-                                            DMCA Notice
+                                           class="btn btn-sm btn-primary">
+                                           DMCA Notice
                                         </a>
 
-                                        <a class="btn btn-secondary btn-sm"
-                                           asp-controller="Copyrights"
+                                        <a asp-controller="Copyrights"
                                            asp-action="Details"
                                            asp-route-id="@item.PublicId"
-                                           asp-route-returnUrl="@currentUrl">
-                                            Details
+                                           asp-route-returnUrl="@currentUrl"
+                                           class="btn btn-sm btn-secondary">
+                                           Details
                                         </a>
-                                        <a class="btn btn-outline-primary" asp-action="Edit" asp-route-id="@item.PublicId">Edit</a>
-                                        <form asp-action="Remove" asp-route-id="@item.PublicId" method="post" class="d-inline">
+
+                                        <a asp-action="Edit" 
+                                           asp-route-id="@item.PublicId"
+                                           class="btn btn-sm btn-outline-primary">
+                                           Edit
+                                        </a>
+
+                                        <form asp-action="Remove" 
+                                           asp-route-id="@item.PublicId" 
+                                           method="post" class="d-inline">
                                             @Html.AntiForgeryToken()
                                             <input type="hidden" name="returnUrl" value="@Url.Action("MyCollection", "Copyrights")" />
-                                            <button type="submit" class="btn btn-outline-danger"
+                                            <button type="submit" class="btn btn-sm btn-outline-danger"
                                                     onclick="return confirm('Remove this copyright from your collection?');">
                                                 Remove
                                             </button>
@@ -97,7 +105,7 @@
             </table>
         </div>
 
-        @* --- Pager --- *@
+@* --- Pagination --- *@
 @if (totalPages > 1)
 {
     <nav aria-label="Pagination">
