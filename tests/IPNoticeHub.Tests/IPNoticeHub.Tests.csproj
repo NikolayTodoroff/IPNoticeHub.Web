@@ -24,11 +24,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\IPNoticeHub.Application\IPNoticeHub.Application.csproj" />
-    <ProjectReference Include="..\IPNoticeHub.Domain\IPNoticeHub.Domain.csproj" />
-    <ProjectReference Include="..\IPNoticeHub.Infrastructure\IPNoticeHub.Infrastructure.csproj" />
-    <ProjectReference Include="..\IPNoticeHub.Shared\IPNoticeHub.Shared.csproj" />
-    <ProjectReference Include="..\IPNoticeHub.Web\IPNoticeHub.Web.csproj" />
+    <ProjectReference Include="..\..\src\IPNoticeHub.Application\IPNoticeHub.Application.csproj" />
+    <ProjectReference Include="..\..\src\IPNoticeHub.Domain\IPNoticeHub.Domain.csproj" />
+    <ProjectReference Include="..\..\src\IPNoticeHub.Infrastructure\IPNoticeHub.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\IPNoticeHub.Shared\IPNoticeHub.Shared.csproj" />
+    <ProjectReference Include="..\..\src\IPNoticeHub.Web\IPNoticeHub.Web.csproj" />
   </ItemGroup>
 
 </Project>

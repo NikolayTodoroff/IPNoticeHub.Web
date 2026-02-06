@@ -67,43 +67,57 @@ The environment is fully provisioned via **Bicep (Infrastructure as Code)**, emp
 ---
 
 ## 📸 Infrastructure Preview
-> <details> <summary>🌐 <b>Networking (Click to Expand)</b></summary>
+<details><summary>🌐 <b>Networking (Click to Expand)</b></summary>
+
+<img src="docs/Networking.png" width="800" />
+ 
+The internal network is segmented into dedicated subnets for App Service integration and Private Link endpoints.
+
+</details> 
 
 
-VNet Topology & Subnet Isolation: The internal network is segmented into dedicated subnets for App Service integration and Private Link endpoints. 
+<details><summary>🗺️ <b>DNS (Click to Expand)</b></summary>
 
-
-> <details> <summary>🗺️ <b>DNS (Click to Expand)</b></summary>
-
+<img src="docs/DNS.png" width="800" />
 
 PaaS services are isolated within a private backbone, removing them from the public internet.
 
+</details>
 
-> <details> <summary>🔑 <b>KeyVault (Click to Expand)</b></summary>
 
+<details> <summary>🔑 <b>KeyVault (Click to Expand)</b></summary>
+
+<img src="docs/KeyVault.png" width="800" />
 
 Hardened Key Vault Networking: Public access is explicitly disabled, with communication restricted solely to private endpoint connections.
 
+</details>
 
-> <details> <summary>⚖️ <b>Compliance (Click to Expand)</b></summary>
+<details> <summary>⚖️ <b>Compliance (Click to Expand)</b></summary>
 
+<img src="docs/Compliance.png" width="800" />
 
 Policy Compliance The environment is audited against custom Initiatives, ensuring 100% compliance for TLS settings, HTTPS enforcement, and location tagging.
 
+</details>
 
-> <details> <summary>🔐 <b>Locks (Click to Expand)</b></summary>
+<details> <summary>🔐 <b>Locks (Click to Expand)</b></summary>
 
+<img src="docs/Locks.png" width="800" />
 
 Resource & Resource Group Locks Implementation of CanNotDelete locks on critical infrastructure to protect the Network, SQL, and Key Vault from accidental deletion.
 
+</details>
 
-> <details> <summary>🆔 <b>Identity (Click to Expand)</b></summary>
+<details> <summary>🆔 <b>Identity (Click to Expand)</b></summary>
 
+<img src="docs/Identity.png" width="800" />
 
 Managed Identity & Role Assignments Utilizing User-Assigned Managed Identities (UAMI) for specific tasks such as tagging governance and policy remediation.
+
+</details>
 
 ---
 
 ## 👨‍💻 Author
-**Full Stack Developer & Aspiring Azure Cloud Engineer**
-*Pursuing AZ-900, AZ-204, AZ-400, and AZ-500 Certifications.*
+**Full Stack Student & Aspiring Azure Cloud Engineer**
