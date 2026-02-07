@@ -68,6 +68,7 @@ module governance './governance/governance.bicep' = {
     alertsRgName: alertsRgName
     mainRgName: mainRgName
     appServiceName: appServiceName
+    storageAccountName: storageAccountName
 
     workload: workload
     env: env

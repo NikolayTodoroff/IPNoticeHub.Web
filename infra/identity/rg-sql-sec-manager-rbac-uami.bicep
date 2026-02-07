@@ -28,7 +28,7 @@ param assignmentKey string
 
 var roleDefinitionId = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', roleDefinitionGuid)
 
-resource ra 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+resource sqlSecurityManagerRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   name: guid(resourceGroup().id, principalId, assignmentKey, roleDefinitionGuid)
   properties: {
     roleDefinitionId: roleDefinitionId
@@ -37,4 +37,4 @@ resource ra 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   }
 }
 
-output assignmentId string = ra.id
+output assignmentId string = sqlSecurityManagerRoleAssignment.id

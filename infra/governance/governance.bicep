@@ -32,6 +32,8 @@ var gov = {
     sqlDbTlsAssignName: 'assign-sql-db-tls-audit-${suffix}'
     privateEndpointOnlyInitiativeName: 'init-private-endpoint-only-${suffix}'
     privateEndpointOnlyAssignmentName: 'assign-private-endpoint-only-${suffix}'
+    blobsLifecycleMngmtPolAssignName: 'assign-blobs-lifecycle-management-${suffix}'
+    blobsVersioningAssignmentName: 'assign-blobs-versioning-${suffix}'
   }
 }
 
@@ -47,6 +49,7 @@ param appServiceName string
 param logAnalyticsWorkspaceId string
 param policyRemediationUamiResourceId string
 param keyVaultName string
+param storageAccountName string
 
 param contactEmail string
 param location string
@@ -251,5 +254,24 @@ module kvPublicAccessDisabled './config/kv-public-access-disabled-config.bicep' 
   params: {
     location: location
     keyVaultName: keyVaultName
+  }
+}
+
+module blobsLifecycleManagementPolicy './policyAssignments/blobs-lifecycle-management-policy-assign.bicep' = {
+  name: 'blobsLifecycleManagementPolicy'
+  scope: resourceGroup(mainRgName)
+  params: {
+    storageAccountName: storageAccountName
+  }
+}
+
+module blobsVersioningPolicy './policyAssignments/blobs-versioning-policy-assign.bicep' = {
+  name: 'blobsVersioningPolicy'
+  scope: subscription()
+  params: {
+    location: location
+    policyRemediationUamiResourceId: policyRemediationUamiResourceId
+    assignmentName: gov.assignments.blobsVersioningAssignmentName
+    effect: 'Modify'
   }
 }
