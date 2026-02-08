@@ -173,6 +173,22 @@ module storageAcc 'app-platform/storage-acc.bicep' = {
   }
 }
 
+module blobsDataProtectionConfig './governance/config/blobs-data-protection-config.bicep' = {
+  name: 'blobsDataProtectionConfig'
+  params: {
+    storageAccountName: storageAccountName
+    enableVersioning: true
+    enableChangeFeed: true
+    changeFeedRetentionInDays: 7
+    enableBlobSoftDelete: true
+    blobSoftDeleteDays: 7
+    enableContainerSoftDelete: true
+    containerSoftDeleteDays: 7
+    allowPermanentDelete: false
+    enableLastAccessTimeTracking: false
+  }
+}
+
 module sqlServer 'storage/sql-db-server.bicep' = {
   name: 'sqlServer'
   params: {

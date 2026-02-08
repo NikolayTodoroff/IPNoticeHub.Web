@@ -1,4 +1,4 @@
-using '../infra/main.bicep'
+using '../main.bicep'
 
 param location = 'westeurope'
 param alertEmail = 'everflowing555@gmail.com'
