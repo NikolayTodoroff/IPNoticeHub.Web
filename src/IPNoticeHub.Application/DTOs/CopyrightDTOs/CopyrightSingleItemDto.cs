@@ -6,7 +6,6 @@ namespace IPNoticeHub.Application.DTOs.CopyrightDTOs
     public sealed class CopyrightSingleItemDto
     {
         public int Id { get; init; }
-
         public Guid PublicId { get; init; }
 
         [Required, MaxLength(RegistrationNumberMaxLength)]

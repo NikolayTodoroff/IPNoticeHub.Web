@@ -13,7 +13,6 @@ namespace IPNoticeHub.Application.DTOs.CopyrightDTOs
         [Required, MaxLength(RegistrationNumberMaxLength)]
         public string RegistrationNumber { get; init; } = string.Empty;
 
-
         [Required, MaxLength(WorkTypeMaxLength)]
         public string TypeOfWork { get; init; } = string.Empty;
 

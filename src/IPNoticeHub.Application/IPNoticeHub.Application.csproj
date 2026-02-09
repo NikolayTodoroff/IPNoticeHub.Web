@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Mappings\**" />
+    <EmbeddedResource Remove="Mappings\**" />
+    <None Remove="Mappings\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\IPNoticeHub.Domain\IPNoticeHub.Domain.csproj" />
     <ProjectReference Include="..\IPNoticeHub.Shared\IPNoticeHub.Shared.csproj" />
   </ItemGroup>
@@ -14,10 +20,6 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.*" />
 		<PackageReference Include="QuestPDF" Version="2025.7.3" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Mappings\" />
 	</ItemGroup>	
 	
 </Project>

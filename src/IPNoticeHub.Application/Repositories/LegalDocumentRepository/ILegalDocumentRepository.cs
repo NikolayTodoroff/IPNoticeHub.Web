@@ -7,6 +7,6 @@ namespace IPNoticeHub.Application.Repositories.LegalDocumentRepository
         Task<LegalDocument?> GetByPublicIdAsync(
             Guid publicId, 
             string userId, 
-            CancellationToken ct = default);
+            CancellationToken cancellationToken = default);
     }
 }
