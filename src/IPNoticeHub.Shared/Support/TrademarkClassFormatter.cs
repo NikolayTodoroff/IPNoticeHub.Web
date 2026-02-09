@@ -8,11 +8,11 @@ namespace IPNoticeHub.Shared.Support
     {
         private static string GetTrademarkDisplayName(Enum enumValue)
         {
-            return enumValue.GetType()
-            .GetMember(enumValue.ToString())
-            .First()
-            .GetCustomAttribute<DisplayAttribute>()?
-            .Name ?? enumValue.ToString();
+            return enumValue.
+                GetType().
+                GetMember(enumValue.ToString()).
+                First().
+                GetCustomAttribute<DisplayAttribute>() ?.Name ?? enumValue.ToString();
         }
 
         public static string FormatTrademarkClasses(IEnumerable<int> classes)
@@ -20,9 +20,8 @@ namespace IPNoticeHub.Shared.Support
             if (classes == null || !classes.Any())
                 return string.Empty;
 
-            return string.Join(", ", classes
-                .OrderBy(c => c)
-                .Select(c => GetTrademarkDisplayName((TrademarkClass)c)));
+            return string.Join(", ", classes.OrderBy(c => c).
+                Select(c => GetTrademarkDisplayName((TrademarkClass)c)));
         }
     }
 }

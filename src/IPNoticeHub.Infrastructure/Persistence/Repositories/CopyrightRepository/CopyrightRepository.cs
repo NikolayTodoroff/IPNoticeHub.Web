@@ -13,7 +13,9 @@ public sealed class CopyrightRepository : ICopyrightRepository
         this.dbContext = context;
     }
 
-    public async Task AddAsync(CopyrightEntity entity, CancellationToken cancellationToken = default)
+    public async Task AddAsync(
+        CopyrightEntity entity, 
+        CancellationToken cancellationToken = default)
     {
         entity.RegistrationNumber = NormalizeReg(entity.RegistrationNumber);
 
@@ -21,46 +23,51 @@ public sealed class CopyrightRepository : ICopyrightRepository
         await dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public Task UpdateAsync(CopyrightEntity entity, CancellationToken cancellationToken = default)
+    public Task UpdateAsync(
+        CopyrightEntity entity, 
+        CancellationToken cancellationToken = default)
     {
         dbContext.CopyrightRegistrations.Update(entity);
         return dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public Task<bool> ExistsByRegNumberAsync(string registrationNumber, CancellationToken cancellationToken = default)
+    public Task<bool> ExistsByRegNumberAsync(
+        string registrationNumber, 
+        CancellationToken cancellationToken = default)
     {
         var regNumber = NormalizeReg(registrationNumber);
-        return dbContext.Set<CopyrightEntity>()
-                 .AnyAsync(c => c.RegistrationNumber == regNumber, cancellationToken);
+        return dbContext.Set<CopyrightEntity>().
+            AnyAsync(c => c.RegistrationNumber == regNumber, cancellationToken);
     }
 
-    public Task<CopyrightEntity?> GetByPublicIdAsync(Guid publicId, bool asNoTracking = true, CancellationToken cancellationToken = default)
+    public Task<CopyrightEntity?> GetByPublicIdAsync(
+        Guid publicId, 
+        bool asNoTracking = true, 
+        CancellationToken cancellationToken = default)
     {
         var query = dbContext.Set<CopyrightEntity>().
             Where(c => c.PublicId == publicId);
 
-        if (asNoTracking)
-        {
-            query = query.AsNoTracking();
-        } 
+        if (asNoTracking) query = query.AsNoTracking();
 
         return query.SingleOrDefaultAsync(cancellationToken);
     }
 
-    public Task<CopyrightEntity?> GetByRegNumberAsync(string registrationNumber, bool asNoTracking = true,CancellationToken cancellationToken = default)
+    public Task<CopyrightEntity?> GetByRegNumberAsync(
+        string registrationNumber, 
+        bool asNoTracking = true,
+        CancellationToken cancellationToken = default)
     {
         var regNumber = NormalizeReg(registrationNumber);
 
         var query = dbContext.Set<CopyrightEntity>().
             Where(c => c.RegistrationNumber == regNumber);
 
-        if (asNoTracking)
-        {
-            query = query.AsNoTracking();
-        } 
+        if (asNoTracking) query = query.AsNoTracking();
 
         return query.SingleOrDefaultAsync(cancellationToken);
     }
 
-    private static string NormalizeReg(string input) => (input ?? string.Empty).Trim().ToUpperInvariant();
+    private static string NormalizeReg(string input) => 
+        (input ?? string.Empty).Trim().ToUpperInvariant();
 }

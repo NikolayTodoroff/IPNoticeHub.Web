@@ -3,7 +3,10 @@
 namespace IPNoticeHub.Web.WebHelpers;
 public static class YearOptionsProvider
 {
-    public static IEnumerable<SelectListItem> BuildYearOptions(int startYear = 1900, int? endYear = null, int? selected = null)
+    public static IEnumerable<SelectListItem> BuildYearOptions(
+        int startYear = 1900, 
+        int? endYear = null, 
+        int? selected = null)
     {
         int last = endYear ?? DateTime.UtcNow.Year;
 

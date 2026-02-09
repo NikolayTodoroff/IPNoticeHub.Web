@@ -11,11 +11,7 @@ namespace IPNoticeHub.Infrastructure.Persistence.Seeding
             if (count <= 0) return new List<T>();
             if (count >= source.Count) return source.ToList();
 
-            
-            return faker.Random.
-                Shuffle(source).
-                Take(count).
-                ToList();
+            return faker.Random.Shuffle(source).Take(count).ToList();
         }
     }
 }

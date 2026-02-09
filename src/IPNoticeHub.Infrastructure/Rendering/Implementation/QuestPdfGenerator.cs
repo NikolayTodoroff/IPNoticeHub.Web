@@ -42,16 +42,15 @@ public sealed class QuestPdfGenerator : IPdfGenerator
                     if (!string.IsNullOrWhiteSpace(dto.RecipientName) ||
                         !string.IsNullOrWhiteSpace(dto.RecipientAddress))
                     {
-                        col.Item()
-                            .PaddingBottom(8)
-                            .Text($"{dto.RecipientName}\n{dto.RecipientAddress}".Trim());
+                        col.Item().PaddingBottom(8).
+                        Text($"{dto.RecipientName}\n{dto.RecipientAddress}".Trim());
                     }
 
                     col.Item().Text(letterTemplate).AlignLeft().LineHeight(1.4f);
                 });
 
-                page.Footer().AlignRight().Text("Generated with IPNoticeHub").
-                FontSize(9);
+                page.Footer().AlignRight().
+                Text("Generated with IPNoticeHub").FontSize(9);
             });
         }).GeneratePdf();
 

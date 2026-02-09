@@ -103,8 +103,8 @@ namespace IPNoticeHub.Application.Services.DocumentLibraryService.Implementation
                     IpTitle = d.IpTitle,
                     RegistrationNumber = d.RegistrationNumber,
                     CreatedOn = d.CreatedOn
-                })
-                .ToList();
+                }).
+                ToList();
         }
 
         public async Task<LegalDocument> GetSingleDocumentByIdAsync(int documentId, string userId, CancellationToken cancellationToken = default)

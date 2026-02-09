@@ -19,7 +19,8 @@ namespace IPNoticeHub.Infrastructure.Persistence.Configurations
                 HasFilter("[IsDeleted] = 0").
                 IsUnique();
 
-            builder.HasQueryFilter(x => !x.IsDeleted);
+            builder.
+                HasQueryFilter(x => !x.IsDeleted);
         }
     }
 }

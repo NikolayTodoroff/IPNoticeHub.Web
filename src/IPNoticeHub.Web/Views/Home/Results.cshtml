@@ -5,12 +5,10 @@
     ViewData["Title"] = "Search Results";
     Layout = "_Layout";
 
-    // So action links (Details) can navigate back to this exact query
     var returnUrl = Context.Request.Path + Context.Request.QueryString;
 }
 
 <main class="py-4">
-    <!-- Search UI (hero + filters) -->
     @await Html.PartialAsync("_TrademarkSearch")
 
     <div class="container mt-4">

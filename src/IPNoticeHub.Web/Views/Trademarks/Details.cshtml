@@ -7,10 +7,8 @@
     ViewData["Title"] = "Trademark Details";
     Layout = "_Layout";
 
-    // Set by the controller ONLY if local. Used for the Back button.
     var returnUrl = ViewBag.ReturnUrl as string;
 
-    // Always come back to THIS page after POSTs.
     var selfUrl = (Context?.Request?.Path + Context?.Request?.QueryString)
                   ?? Url.Action("Details", "Trademarks", new { id = Model.PublicId })!;
 }
@@ -21,7 +19,7 @@
         <div class="d-flex align-items-center gap-2">
             <h2 class="mb-0">Trademark Details</h2>
 
-            @* State badges *@
+            @*-- State badges --*@
             @if (Model?.IsInCollection == true)
             {
                 <span class="badge text-bg-success">In Collection</span>
@@ -32,7 +30,7 @@
             }
         </div>
 
-        @* Back button *@
+        @*-- Back button --*@
         @if (!string.IsNullOrWhiteSpace(returnUrl))
         {
             <a class="btn btn-outline-secondary" href="@returnUrl">Back</a>
@@ -45,7 +43,7 @@
         }
     </div>
 
-    @* -------- Details card -------- *@
+    @*-- Details --*@
     <div class="card shadow-sm">
         <div class="card-body">
             <dl class="row mb-0">
@@ -100,7 +98,7 @@
         </div>
     </div>
     
-    @* -------- Actions -------- *@
+    @*-- Actions --*@
     <div class="mt-3 d-flex gap-2">
 
         @if (Model?.IsAuthenticated == true)

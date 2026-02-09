@@ -6,8 +6,7 @@ namespace IPNoticeHub.Shared.Support
     {
         public static string NormalizeSearchNumber(string? input)
         {
-            if (string.IsNullOrWhiteSpace(input))
-                return string.Empty;
+            if (string.IsNullOrWhiteSpace(input)) return string.Empty;
 
             StringBuilder? stringOutput = new StringBuilder(input.Length);
 

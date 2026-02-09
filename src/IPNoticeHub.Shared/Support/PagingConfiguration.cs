@@ -8,15 +8,9 @@ namespace IPNoticeHub.Shared.Support
         {
             page = page < DefaultPage ? DefaultPage : page;
 
-            if (resultsPerPage < 1)
-            {
-                resultsPerPage = DefaultPageSize;
-            }
+            if (resultsPerPage < 1) resultsPerPage = DefaultPageSize;
 
-            else if (resultsPerPage > MaxPageSize)
-            {
-                resultsPerPage = MaxPageSize;
-            }
+            else if (resultsPerPage > MaxPageSize) resultsPerPage = MaxPageSize;
 
             return (page, resultsPerPage);
         }

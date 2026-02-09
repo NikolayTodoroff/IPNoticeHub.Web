@@ -121,7 +121,8 @@ namespace IPNoticeHub.Infrastructure.Persistence.Seeding
             if (exists)
             {
                 logger.LogInformation(
-                    "Demo user's trademark collection already contains data. Seeding skipped.");
+                    "Demo user's trademark collection already contains data. " +
+                    "Seeding skipped.");
 
                 return;
             }
@@ -201,7 +202,8 @@ namespace IPNoticeHub.Infrastructure.Persistence.Seeding
             if (exists)
             {
                 logger.LogInformation(
-                    "Demo user's copyright collection already contains data. Seeding skipped.");
+                    "Demo user's copyright collection already contains data. " +
+                    "Seeding skipped.");
 
                 return;
             }

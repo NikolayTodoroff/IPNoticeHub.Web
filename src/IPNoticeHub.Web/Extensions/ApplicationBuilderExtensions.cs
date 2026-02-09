@@ -9,7 +9,9 @@ namespace IPNoticeHub.Web.Extensions
             await IdentitySeeder.SeedIdentitiesAsync(app.Services);
         }
 
-        public static IApplicationBuilder UseExceptionHandling(this IApplicationBuilder app, IWebHostEnvironment env)
+        public static IApplicationBuilder UseExceptionHandling(
+            this IApplicationBuilder app, 
+            IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {

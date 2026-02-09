@@ -97,8 +97,6 @@ namespace IPNoticeHub.Web.Extensions
         {
             if (ex.InnerException is SqlException sqlEx)
             {
-                // 2627: Unique constraint violation
-                // 2601: Duplicated key row error
                 return sqlEx.Number == 2627 || sqlEx.Number == 2601;
             }
 
