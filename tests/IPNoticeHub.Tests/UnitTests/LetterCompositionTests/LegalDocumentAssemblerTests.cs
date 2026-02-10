@@ -141,7 +141,7 @@ namespace IPNoticeHub.Tests.UnitTests.LetterCompositionTests
                 TemplateType = LetterTemplateType.CeaseAndDesist,
                 DocumentTitle = "Doc Title",
                 IpTitle = "IP",
-                BodyTemplate = null,
+                BodyTemplate = null!,
                 SenderName = "Alice",
                 RecipientName = "Bob",
                 LetterDate = new DateTime(

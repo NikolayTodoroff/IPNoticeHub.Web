@@ -12,15 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IPNoticeHub.Infrastructure.Migrations
 {
     [DbContext(typeof(IPNoticeHubDbContext))]
-    [Migration("20260118145137_InitialDB")]
-    partial class InitialDB
+    [Migration("20260210204036_add-migration Initial")]
+    partial class addmigrationInitial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.22")
+                .HasAnnotation("ProductVersion", "10.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);

@@ -8,7 +8,11 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using IPNoticeHub.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Identity;
+using IPNoticeHub.Infrastructure.Identity;
 
 namespace IPNoticeHub.Tests.IntegrationTests.IntegrationTestFactories
 {
@@ -29,34 +33,22 @@ namespace IPNoticeHub.Tests.IntegrationTests.IntegrationTestFactories
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
-            builder.ConfigureTestServices(services =>
+            builder.UseEnvironment("Test");
+
+            builder.ConfigureServices(services =>
             {
-                var descriptor = services.SingleOrDefault(
-                    s => s.ServiceType == typeof(DbContextOptions<IPNoticeHubDbContext>));
-
-                if (descriptor is not null)
-                {
-                    services.Remove(descriptor);
-                }
-
-                activeSQLiteConnection = 
-                new SqliteConnection("DataSource=:memory:");
-
+                // Register SQLite DbContext for testing BEFORE Program.Main runs
+                activeSQLiteConnection = new SqliteConnection("DataSource=:memory:");
                 activeSQLiteConnection.Open();
 
-                services.AddDbContext<IPNoticeHubDbContext>(optionsBuilder =>
-                {
-                    optionsBuilder.UseSqlite(activeSQLiteConnection);
-                });
+                services.AddDbContext<IPNoticeHubDbContext>(options =>
+                    options.UseSqlite(activeSQLiteConnection));
+            });
 
-                using (var serviceScope = 
-                services.BuildServiceProvider().CreateScope())
-                {
-                    var testDbContext = 
-                    serviceScope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
-
-                    testDbContext.Database.EnsureCreated();
-                }
+            builder.ConfigureTestServices(services =>
+            {
+                // Add a hosted service to ensure database is created at startup
+                services.AddHostedService<DatabaseInitializerService>();
 
                 services.AddSingleton(
                     new TestWebAppFactoryAccessor { Factory = this });
@@ -84,6 +76,26 @@ namespace IPNoticeHub.Tests.IntegrationTests.IntegrationTestFactories
             builder.UseSetting(
                 "Authentication:DefaultScheme", 
                 "TestAuth");
+        }
+
+        private class DatabaseInitializerService : IHostedService
+        {
+            private readonly IServiceProvider _services;
+
+            public DatabaseInitializerService(IServiceProvider services)
+            {
+                _services = services;
+            }
+
+            public Task StartAsync(CancellationToken cancellationToken)
+            {
+                using var scope = _services.CreateScope();
+                var dbContext = scope.ServiceProvider.GetRequiredService<IPNoticeHubDbContext>();
+                dbContext.Database.EnsureCreated();
+                return Task.CompletedTask;
+            }
+
+            public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
         }
 
         internal string? GetCurrentUserId() => currentUserId;

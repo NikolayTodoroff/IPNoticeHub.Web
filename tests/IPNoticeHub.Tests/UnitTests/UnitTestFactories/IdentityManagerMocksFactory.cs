@@ -26,7 +26,7 @@ namespace IPNoticeHub.Tests.UnitTests.UnitTestFactories
                 Array.Empty<IPasswordValidator<ApplicationUser>>(),
                 new UpperInvariantLookupNormalizer(),
                 new IdentityErrorDescriber(),
-                null,
+                new Mock<IServiceProvider>().Object,
                 new Mock<ILogger<UserManager<ApplicationUser>>>().Object);
         }
 

@@ -9,7 +9,7 @@ namespace IPNoticeHub.Web
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddDatabase(builder.Configuration);
+            builder.Services.AddDatabase(builder.Configuration, builder.Environment);
             builder.Services.AddIdentityModule();
             builder.Services.AddUserRegistration();
             builder.Services.AddAuthorizationPolicies();
@@ -26,8 +26,11 @@ namespace IPNoticeHub.Web
 
             var app = builder.Build();
 
-            await app.SeedIdentitiesAsync();
-            await app.SeedFakeDataAsync();
+            if (!app.Environment.IsEnvironment("Test"))
+            {
+                await app.SeedIdentitiesAsync();
+                await app.SeedFakeDataAsync();
+            }
 
             app.UseExceptionHandling(app.Environment);
             app.UseHttpsRedirection();
