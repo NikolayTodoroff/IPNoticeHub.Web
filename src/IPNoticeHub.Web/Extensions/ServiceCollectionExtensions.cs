@@ -1,6 +1,5 @@
 ﻿using IPNoticeHub.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
 
 namespace IPNoticeHub.Web.Extensions
 {
@@ -11,15 +10,16 @@ namespace IPNoticeHub.Web.Extensions
         IConfiguration configuration,
         IHostEnvironment environment)
         {
-            // Skip database registration in test environment - tests will configure their own database
+            // Database registration is skipped in test environment (tests configure their own database)
             if (environment.IsEnvironment("Test"))
             {
                 return services;
             }
 
-            // Skip database registration if already configured (e.g., in tests)
-            if (services.Any(s => s.ServiceType == typeof(DbContextOptions<IPNoticeHubDbContext>) ||
-                                 s.ServiceType == typeof(IPNoticeHubDbContext)))
+            // Database registration is skipped if it's already configured (in tests)
+            if (services.Any(
+                s => s.ServiceType == typeof(DbContextOptions<IPNoticeHubDbContext>) ||
+                s.ServiceType == typeof(IPNoticeHubDbContext)))
             {
                 return services;
             }

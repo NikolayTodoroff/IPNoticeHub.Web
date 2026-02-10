@@ -8,11 +8,8 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using IPNoticeHub.Infrastructure.Persistence;
-using Microsoft.AspNetCore.Identity;
-using IPNoticeHub.Infrastructure.Identity;
 
 namespace IPNoticeHub.Tests.IntegrationTests.IntegrationTestFactories
 {
@@ -57,8 +54,8 @@ namespace IPNoticeHub.Tests.IntegrationTests.IntegrationTestFactories
                 {
                     options.DefaultAuthenticateScheme = "TestAuth";
                     options.DefaultChallengeScheme = "TestAuth";
-                })
-                .AddScheme<
+                }).
+                AddScheme<
                     AuthenticationSchemeOptions, 
                     TestAuthHandler>(
                     "TestAuth", 

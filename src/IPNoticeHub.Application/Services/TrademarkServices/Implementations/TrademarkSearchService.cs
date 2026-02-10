@@ -45,7 +45,7 @@ namespace IPNoticeHub.Application.Services.TrademarkService.Implementations
                     ToList(),
                 Events = entity.Events.
                     OrderByDescending(e => e.EventDate).
-                    Select(e => (e.EventDate, e.Code, e.Description)).
+                    Select(e => (e.EventDate, e.Code, e?.Description)).
                     ToList()
             };
         }
