@@ -3,7 +3,7 @@
 
 * **IPNoticeHub** is a web application designed to help content creators, online sellers, musicians and brand owners manage their intellectual property registrations and efficiently generate legal documents such as DMCA takedown notices and Cease & Desist letters.
 
-The project is built as a production-oriented portfolio application, combining a cleanly structured .NET backend with a secure, policy-driven Azure infrastructure deployed via Infrastructure as Code (IaC).
+The project is built as a production-oriented portfolio application, combining a cleanly structured .NET backend with a secure, policy-driven Azure infrastructure, and planned deployment via Infrastructure as Code (IaC).
 
 ---
 
@@ -15,19 +15,20 @@ The project is built as a production-oriented portfolio application, combining a
 3. Run the project.
 
 * **Demo Accounts:**
+
 Admin:
-email: admin@ipnoticehub.com
+email: admin@ipnoticehub.com |
 password: Admin!234
 
 Demo User:
-email: demo@ipnoticehub.com
+email: demo@ipnoticehub.com |
 password: DemoUser!234
 
 * **First Steps Inside the App:**
 
-To try the Trademark Search from the home page, enter the name of any of the pre-seeded marks such as Google, Apple, LG, Spotify, or others.
+To use the Trademark Search from the Home page, enter the name of any of the pre-seeded marks such as Google, Apple, LG, Spotify, or others.
 
-For a comprehensive view of the system's capabilities, sign in with the Demo User account. This profile already contains trademarks in the user collection and watchlist, as well as sample copyright registrations, allowing the main workflows to be explored immediately.
+For a comprehensive view of the system's capabilities, sign in with the Demo User account. This profile already contains sample trademarks in the user collection and watchlist, as well as sample copyright registrations, allowing the main workflows to be explored immediately.
 
 ---
 
@@ -44,12 +45,12 @@ IPNoticeHub addresses these challenges by centralizing registrations, document g
 * **IP Collection** Centralized management for personal Trademarks and Copyrights. 
 * **Automated Enforcement** Generation of DMCA takedown notices and Cease & Desist letters. 
 * **Document Library** Secure storage and versioning of generated legal documents. 
-* **Proactive Monitoring** Watchlist functionality with status change notifications.
+* **Proactive Monitoring** Watchlist functionality with status change notifications (planned).
 
 ---
 
 ### 🛠️ Application Architecture
-The backend is built on **.NET 8.0** following **Clean Architecture** principles to ensure scalability and maintainability.
+The backend is built on **.NET 10.0** following **Clean Architecture** principles to ensure scalability and maintainability.
 
 * **Core Layers:** Strict separation of Domain, Application, Infrastructure, and Presentation (Web) layers.
 * **Data Persistence:** Entity Framework Core with Code-First migrations and explicit entity configurations.
