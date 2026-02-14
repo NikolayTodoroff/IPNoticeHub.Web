@@ -1,13 +1,37 @@
 # IPNoticeHub 🛡️
 ### IP Management & Automated Enforcement
 
-**IPNoticeHub** is a web application designed to help content creators, online sellers, musicians and brand owners manage their intellectual property registrations and efficiently generate legal documents such as DMCA takedown notices and Cease & Desist letters.
+* **IPNoticeHub** is a web application designed to help content creators, online sellers, musicians and brand owners manage their intellectual property registrations and efficiently generate legal documents such as DMCA takedown notices and Cease & Desist letters.
 
 The project is built as a production-oriented portfolio application, combining a cleanly structured .NET backend with a secure, policy-driven Azure infrastructure deployed via Infrastructure as Code (IaC).
 
 ---
 
-## 🚀 Problem Statement
+### 📩 Getting Started / Demo Accounts
+
+* **Getting Started:**
+1. Update the DefaultConnection string in appsettings.json.
+2. Update-Database.
+3. Run the project.
+
+* **Demo Accounts:**
+Admin:
+email: admin@ipnoticehub.com
+password: Admin!234
+
+Demo User:
+email: demo@ipnoticehub.com
+password: DemoUser!234
+
+* **First Steps Inside the App:**
+
+To try the Trademark Search from the home page, enter the name of any of the pre-seeded marks such as Google, Apple, LG, Spotify, or others.
+
+For a comprehensive view of the system's capabilities, sign in with the Demo User account. This profile already contains trademarks in the user collection and watchlist, as well as sample copyright registrations, allowing the main workflows to be explored immediately.
+
+---
+
+### 🚀 Problem Statement
 Online sellers, content creators and brand owners often face unauthorized use of their work across marketplaces, websites, and social platforms.
 Enforcement usually requires submitting formal legal documents, which are repetitive to create and difficult to manage over time.
 
@@ -15,18 +39,16 @@ IPNoticeHub addresses these challenges by centralizing registrations, document g
 
 ---
 
-## 📋 Core Features
-| Feature | Description |
-| :--- | :--- |
-| **Global Search** | Explore trademark registrations using multiple parameters. |
-| **IP Collection** | Centralized management for personal Trademarks and Copyrights. |
-| **Automated Enforcement** | Generation of DMCA takedown notices and Cease & Desist letters. |
-| **Document Library** | Secure storage and versioning of generated legal documents. |
-| **Proactive Monitoring** | Watchlist functionality with status change notifications. |
+### 📋 Core Features
+* **Global Search** Explore trademark registrations using multiple parameters. 
+* **IP Collection** Centralized management for personal Trademarks and Copyrights. 
+* **Automated Enforcement** Generation of DMCA takedown notices and Cease & Desist letters. 
+* **Document Library** Secure storage and versioning of generated legal documents. 
+* **Proactive Monitoring** Watchlist functionality with status change notifications.
 
 ---
 
-## 🛠️ Application Architecture
+### 🛠️ Application Architecture
 The backend is built on **.NET 8.0** following **Clean Architecture** principles to ensure scalability and maintainability.
 
 * **Core Layers:** Strict separation of Domain, Application, Infrastructure, and Presentation (Web) layers.
@@ -37,7 +59,7 @@ The backend is built on **.NET 8.0** following **Clean Architecture** principles
 
 ---
 
-## ☁️ Azure Infrastructure & Security (IaC)
+### ☁️ Azure Infrastructure & Security (IaC)
 The environment is fully provisioned via **Bicep (Infrastructure as Code)**, emphasizing a **Zero-Trust** security model.
 
 ### 🔒 Networking & Connectivity
@@ -57,7 +79,7 @@ The environment is fully provisioned via **Bicep (Infrastructure as Code)**, emp
 
 ---
 
-## 🗺️ Roadmap & Current Status
+### 🗺️ Roadmap & Current Status
 - ✅ **Phase 1:** Core Application Logic & Clean Architecture.
 - ✅ **Phase 2:** Azure Bicep Modules & Infrastructure Provisioning.
 - ✅ **Phase 3:** Security Hardening (Private Endpoints & RBAC).
@@ -66,7 +88,7 @@ The environment is fully provisioned via **Bicep (Infrastructure as Code)**, emp
 
 ---
 
-## 📸 Infrastructure Preview
+### 📸 Infrastructure Preview
 <details><summary>🌐 <b>Networking (Click to Expand)</b></summary>
 
 <img src="docs/Networking.png" width="800" />
@@ -119,5 +141,5 @@ Managed Identity & Role Assignments Utilizing User-Assigned Managed Identities (
 
 ---
 
-## 👨‍💻 Author
-**Full Stack Student & Aspiring Azure Cloud Engineer**
+### 👨‍💻 Author
+* **Nikolay Todorov**
