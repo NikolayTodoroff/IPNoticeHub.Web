@@ -4,6 +4,7 @@ var networkRgName = 'rg-network-${env}-${region}'
 var appInsightsName = 'appi-ipnoticehub-${env}-${region}'
 var logAnalyticsName = 'log-ipnoticehub-${env}-${region}'
 var uamiPolRemediationName= 'uami-iphub-policy-remediation-${env}-${region}'
+var uamiAppServiceName = 'uami-iphub-app-service-${env}-${region}'
 
 param location string
 param alertEmail string
@@ -47,6 +48,7 @@ module identity './identity/identity.bicep' = {
     webAppName: appServiceName
     sqlServerName: sqlServerName
     uamiPolRemediationName: uamiPolRemediationName
+    uamiAppServiceName: uamiAppServiceName
     logAnalyticsWorkspaceName: logAnalyticsName
     globalAdminObjectId: globalAdminObjectId
 

@@ -12,6 +12,7 @@ param keyVaultName string
 param webAppName string
 param sqlServerName string
 param uamiPolRemediationName string
+param uamiAppServiceName string
 param logAnalyticsWorkspaceName string
 param globalAdminObjectId string
 
@@ -74,6 +75,14 @@ module uamiPolRemediation './policy-remediation-uami.bicep' = {
   name: 'uamiPolRemediation'
   params: {
     name: uamiPolRemediationName  
+    location: resourceGroup().location
+  }
+}
+
+module uamiAppService './app-service-uami.bicep' = {
+  name: 'uamiAppService'
+  params: {
+    name: uamiAppServiceName
     location: resourceGroup().location
   }
 }
