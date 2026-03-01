@@ -34,6 +34,7 @@ var gov = {
     privateEndpointOnlyAssignmentName: 'assign-private-endpoint-only-${suffix}'
     blobsLifecycleMngmtPolAssignName: 'assign-blobs-lifecycle-management-${suffix}'
     blobsVersioningAssignmentName: 'assign-blobs-versioning-${suffix}'
+    vmUpdatesCheckAssignmentName: 'assign-vm-updates-check-${suffix}'
   }
 }
 
@@ -273,5 +274,15 @@ module blobsVersioningPolicy './policyAssignments/blobs-versioning-policy-assign
     policyRemediationUamiResourceId: policyRemediationUamiResourceId
     assignmentName: gov.assignments.blobsVersioningAssignmentName
     effect: 'Modify'
+  }
+}
+
+module vmUpdatesCheckPolicy './policyAssignments/vm-updates-check-policy-assign.bicep' = {
+  name: 'vmUpdatesCheckPolicy'
+  scope: subscription()
+  params: {
+    location: location
+    assignmentName: gov.assignments.vmUpdatesCheckAssignmentName
+    effect: 'Audit'
   }
 }

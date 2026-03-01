@@ -286,3 +286,11 @@ module sqlServerDeleteLock './app-platform/sql-server-delete-lock.bicep' = {
     sqlServerName: sqlServerName
   }
 }
+
+module vmLinuxOs './app-platform/vm.bicep' = {
+  name: 'vmLinuxOs'
+  params: {
+    tags: globalTags
+    sshPublicKey: ''
+  }
+}
