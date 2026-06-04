@@ -23,6 +23,7 @@ namespace IPNoticeHub.Web
             builder.Services.AddDocumentLibraryModule();
             builder.Services.AddPdfGeneration();
             builder.Services.AddSingleton<IEmailSender, NoOpEmailSender>();
+            builder.Services.AddHealthChecks();
 
             var app = builder.Build();
 
@@ -36,6 +37,8 @@ namespace IPNoticeHub.Web
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
+            app.MapHealthChecks("/health");
+
             app.UseAuthentication();
             app.UseAuthorization();
 
