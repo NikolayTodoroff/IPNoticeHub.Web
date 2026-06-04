@@ -37,7 +37,7 @@ namespace IPNoticeHub.Web
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
-            app.MapHealthChecks("/health");
+            app.MapHealthChecks("/health").AllowAnonymous();
 
             app.UseAuthentication();
             app.UseAuthorization();
