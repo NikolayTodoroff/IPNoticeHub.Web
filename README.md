@@ -1,6 +1,5 @@
 # IPNoticeHub 🛡️
-🌐 **Live Application:** https://ipnoticehub.com/
-🔐 Production-ready ASP.NET Core app deployed on Azure App Service with custom domain and secure infrastructure.
+Production-ready ASP.NET Core app deployed on Azure App Service with custom domain and secure infrastructure.
 
 ---
 
@@ -12,7 +11,7 @@ The project is built as a production-oriented portfolio application, combining a
 
 ---
 
-### 📩 Getting Started / Demo Accounts
+### Getting Started / Demo Accounts
 
 * **Getting Started:**
 1. Update the DefaultConnection string in appsettings.json.
@@ -37,7 +36,7 @@ For a comprehensive view of the system's capabilities, sign in with the Demo Use
 
 ---
 
-### 🚀 Problem Statement
+### Problem Statement
 Online sellers, content creators and brand owners often face unauthorized use of their work across marketplaces, websites, and social platforms.
 Enforcement usually requires submitting formal legal documents, which are repetitive to create and difficult to manage over time.
 
@@ -45,7 +44,7 @@ IPNoticeHub addresses these challenges by centralizing registrations, document g
 
 ---
 
-### 📋 Core Features
+### Core Features
 * **Global Search** Explore trademark registrations using multiple parameters. 
 * **IP Collection** Centralized management for personal Trademarks and Copyrights. 
 * **Automated Enforcement** Generation of DMCA takedown notices and Cease & Desist letters. 
@@ -53,7 +52,7 @@ IPNoticeHub addresses these challenges by centralizing registrations, document g
 
 ---
 
-### 🛠️ Application Architecture & Hosting
+### Application Architecture & Hosting
 The backend is built on **.NET 10.0** following **Clean Architecture** principles to ensure scalability and maintainability.
 
 * **Core Layers:** Strict separation of Domain, Application, Infrastructure, and Presentation (Web) layers.
@@ -65,27 +64,27 @@ The backend is built on **.NET 10.0** following **Clean Architecture** principle
 
 ---
 
-### ☁️ Azure Infrastructure & Security (IaC)
+### Azure Infrastructure & Security (IaC)
 The environment is fully provisioned via **Bicep (Infrastructure as Code)**, emphasizing a **Zero-Trust** security model.
 
-### 🔗 Networking & Connectivity
+### Networking & Connectivity
 * **VNet Isolation:** Dedicated Virtual Network with dedicated subnets for App Service Integration and Private Endpoints.
 * **Private Link Service:** PaaS services (SQL, Key Vault, Storage) have **Public Access Disabled**. All service-to-service communication is restricted to the Azure backbone via **Private Endpoints**.
 * **DNS Governance:** Private DNS Zones linked to the VNet for secure, internal name resolution.
 * **Secure Administrative Access:** A Linux VM is deployed inside the VNet and accessed via **Azure Bastion**, enabling secure management and troubleshooting of private resources without exposing SSH/RDP to the public internet.
 
-### 🛡️ Identity & Cyber Security
+### Identity & Cyber Security
 * **Keyless Architecture:** Utilizes **User-Assigned Managed Identities** and **Azure RBAC**. No secrets or connection strings are stored in app settings.
 * **Secrets Management:** Sensitive configurations are vaulted in **Azure Key Vault** with RBAC-only access.
 * **Access Control:** App Service SCM restricted via IP-based Access Restrictions (Home Office IP Allow-listing).
 * **Zero Secret Exposure:** No credentials stored in code or configuration — all access is handled via Managed Identities.
 
-### 📊 Governance & Observability
+### Governance & Observability
 * **Azure Policy:** Enforced initiatives for HTTPS-only, TLS 1.2+ requirements, and resource location compliance.
 * **Operational Excellence:** Log Analytics workspace integration with diagnostic settings enabled for all major services.
 * **Cost Management:** Budget alerts and **Resource Delete Locks** applied to critical infrastructure.
 
-### 🔐 Access & Security Model
+### Access & Security Model
 * No public **DB** access
 * **Private endpoints** only
 * **Bastion** entry point
@@ -93,7 +92,7 @@ The environment is fully provisioned via **Bicep (Infrastructure as Code)**, emp
 
 ---
 
-### 📸 Infrastructure Preview
+### Infrastructure Preview
 <details><summary>🌐 <b>Networking (Click to Expand)</b></summary>
 
 <img src="docs/Networking.png" width="800" />
