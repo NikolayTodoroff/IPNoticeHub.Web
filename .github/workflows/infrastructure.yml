@@ -1,0 +1,174 @@
+name: Infrastructure
+
+on:
+  push:
+    branches:
+      - main
+    paths: 
+      - 'ops/infra/**'
+      - '.github/workflows/infrastructure.yml'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - prod
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.inputs.environment || 'dev' }}
+  cancel-in-progress: false
+
+env:
+  TF_VERSION: '1.15.5'
+  WORKING_DIRECTORY: 'ops/infra/main'
+  ENVIRONMENT: ${{ github.event.inputs.environment || 'dev' }}
+    
+jobs:
+  validate:
+    name: 'Terraform Validate'
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'dev' }}
+    outputs:
+      environment: ${{ steps.set-env.outputs.environment }}
+      backend_rg: ${{ steps.set-env.outputs.backend_rg }}
+      backend_sa: ${{ steps.set-env.outputs.backend_sa }}
+      backend_key: ${{ steps.set-env.outputs.backend_key }}
+      tf_vars_file: ${{ steps.set-env.outputs.tf_vars_file }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set environment variables
+        id: set-env
+        run: |
+          ENV=${{ github.event.inputs.environment || 'dev' }}
+          echo "environment=$ENV" >> $GITHUB_OUTPUT
+          echo "backend_rg=rg-tfstate-$ENV" >> $GITHUB_OUTPUT
+          echo "backend_sa=stipnoticehub$ENV" >> $GITHUB_OUTPUT
+          echo "backend_key=ipnoticehub-$ENV.tfstate" >> $GITHUB_OUTPUT
+          echo "tf_vars_file=ops/infra/env/$ENV.tfvars" >> $GITHUB_OUTPUT
+
+      - name: Terraform Setup
+        uses: ./.github/actions/terraform-setup
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          tf-version: ${{ env.TF_VERSION }}
+          working-directory: ${{ env.WORKING_DIRECTORY }}
+          backend-rg: ${{ steps.set-env.outputs.backend_rg }}
+          backend-sa: ${{ steps.set-env.outputs.backend_sa }}
+          backend-key: ${{ steps.set-env.outputs.backend_key }}
+
+      - name: Terraform Validate
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        run: terraform validate
+
+      - name: Install TFLint
+        run: |
+          curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
+
+      - name: Run TFLint
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        run: |
+          tflint --init --config=${{ github.workspace }}/ops/infra/.tflint.hcl
+          tflint --config=${{ github.workspace }}/ops/infra/.tflint.hcl
+
+      - name: Checkov Scan
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: ops/infra/
+          output_format: sarif
+          output_file_path: checkov.sarif
+          config_file: .checkov.yml
+          soft_fail: true
+
+      - name: Upload Checkov SARIF
+        uses: github/codeql-action/upload-sarif@v4
+        if: always()
+        with:
+          sarif_file: checkov.sarif
+
+  plan:
+    name: 'Terraform Plan'
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'dev' }}
+    needs: validate
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Terraform Setup
+        uses: ./.github/actions/terraform-setup
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          tf-version: ${{ env.TF_VERSION }}
+          working-directory: ${{ env.WORKING_DIRECTORY }}
+          backend-rg: ${{ needs.validate.outputs.backend_rg }}
+          backend-sa: ${{ needs.validate.outputs.backend_sa }}
+          backend-key: ${{ needs.validate.outputs.backend_key }}
+
+      - name: Terraform Plan
+        id: plan
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        run: |
+          terraform plan \
+            -var-file="${{ github.workspace }}/${{ needs.validate.outputs.tf_vars_file }}" \
+            -out=tfplan
+        env:
+          TF_VAR_local_ip_address: ${{ secrets.LOCAL_IP_ADDRESS }}
+          TF_VAR_sql_admin_login: ${{ secrets.SQL_ADMIN_LOGIN }}
+          TF_VAR_pipeline_sp_object_id: ${{ secrets.PIPELINE_SP_OBJECT_ID }}
+          TF_VAR_current_user_object_id: ${{ secrets.CURRENT_USER_OBJECT_ID }}
+
+      - name: Upload plan artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: tfplan
+          path: ${{ env.WORKING_DIRECTORY }}/tfplan
+
+  apply:
+    name: 'Terraform Apply'
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'dev' }}
+    needs: [validate, plan]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Terraform Setup
+        uses: ./.github/actions/terraform-setup
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          tf-version: ${{ env.TF_VERSION }}
+          working-directory: ${{ env.WORKING_DIRECTORY }}
+          backend-rg: ${{ needs.validate.outputs.backend_rg }}
+          backend-sa: ${{ needs.validate.outputs.backend_sa }}
+          backend-key: ${{ needs.validate.outputs.backend_key }}
+
+      - name: Download plan artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: tfplan
+          path: ${{ env.WORKING_DIRECTORY }}
+
+      - name: Terraform Apply
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        run: terraform apply -auto-approve tfplan
+        env:
+          TF_VAR_local_ip_address: ${{ secrets.LOCAL_IP_ADDRESS }}
+          TF_VAR_sql_admin_login: ${{ secrets.SQL_ADMIN_LOGIN }}
+          TF_VAR_pipeline_sp_object_id: ${{ secrets.PIPELINE_SP_OBJECT_ID }}
+          TF_VAR_current_user_object_id: ${{ secrets.CURRENT_USER_OBJECT_ID }}
