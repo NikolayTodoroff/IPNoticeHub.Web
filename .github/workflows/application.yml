@@ -1,0 +1,178 @@
+name: Application
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - prod
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.inputs.environment || 'dev' }}
+  cancel-in-progress: false
+
+env:
+  DOTNET_VERSION: '10.x'
+  BUILD_CONFIGURATION: 'Release'
+  APP_SERVICE_NAME: 'app-ipnoticehub-${{ github.event.inputs.environment }}'
+  KEY_VAULT_NAME: 'kv-ipnoticehub-${{ github.event.inputs.environment }}'
+  RESOURCE_GROUP: 'rg-main-ipnoticehub-${{ github.event.inputs.environment }}'
+  ASPNETCORE_ENVIRONMENT: ${{ github.event.inputs.environment == 'prod' && 'Production' || 'Development' }}
+
+jobs:
+  build:
+    name: 'Build Application'
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+    steps:
+      - name: Checkout infra repo
+        uses: actions/checkout@v6
+
+      - name: Checkout application repo
+        uses: actions/checkout@v6
+        with:
+          repository: 'NikolayTodoroff/IPNoticeHub.Web'
+          ref: 'master'
+          path: app
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore NuGet packages
+        working-directory: app
+        run: dotnet restore IPNoticeHub.Web.sln
+
+      - name: Build solution
+        working-directory: app
+        run: dotnet build IPNoticeHub.Web.sln --configuration ${{ env.BUILD_CONFIGURATION }} --no-restore
+
+      - name: Run tests
+        working-directory: app
+        run: dotnet test IPNoticeHub.Web.sln --configuration ${{ env.BUILD_CONFIGURATION }} --no-build --no-restore --collect:"XPlat Code Coverage" --results-directory coverage
+
+      - name: Generate coverage report
+        working-directory: app
+        run: |
+          dotnet tool install --global dotnet-reportgenerator-globaltool
+          reportgenerator -reports:coverage/**/coverage.cobertura.xml -targetdir:coveragereport -reporttypes:HtmlInline_AzurePipelines
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-report
+          path: app/coveragereport
+
+      - name: Publish application
+        working-directory: app
+        run: dotnet publish src/IPNoticeHub.Web/IPNoticeHub.Web.csproj --configuration ${{ env.BUILD_CONFIGURATION }} --no-build --output publish
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: drop
+          path: app/publish
+
+  deploy:
+    name: 'Deploy Application'
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+    needs: build
+    steps:
+      - name: Checkout infra repo
+        uses: actions/checkout@v6
+
+      - name: Checkout application repo
+        uses: actions/checkout@v6
+        with:
+          repository: 'NikolayTodoroff/IPNoticeHub.Web'
+          ref: 'master'
+          path: app
+
+      - name: Azure Login
+        uses: azure/login@v3
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Download artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: drop
+          path: publish
+
+      - name: Get connection string from Key Vault
+        id: keyvault
+        run: |
+          CONNECTION_STRING=$(az keyvault secret show \
+            --vault-name ${{ env.KEY_VAULT_NAME }} \
+            --name "ConnectionStrings--DefaultConnection" \
+            --query value -o tsv)
+
+          echo "::add-mask::$CONNECTION_STRING"
+          echo "ConnectionStrings__DefaultConnection=$CONNECTION_STRING" >> $GITHUB_ENV
+
+      - name: Restore NuGet packages
+        working-directory: app
+        run: dotnet restore IPNoticeHub.Web.sln
+
+      - name: Run EF migrations
+        working-directory: app
+        run: |
+          dotnet tool install --global dotnet-ef
+          export PATH="$PATH:$HOME/.dotnet/tools"
+          dotnet ef database update \
+            --project src/IPNoticeHub.Infrastructure/IPNoticeHub.Infrastructure.csproj \
+            --startup-project src/IPNoticeHub.Web/IPNoticeHub.Web.csproj
+      
+      - name: Set App Service environment
+        run: |
+          az webapp config appsettings set \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --name ${{ env.APP_SERVICE_NAME }} \
+            --slot staging \
+            --settings ASPNETCORE_ENVIRONMENT=${{ env.ASPNETCORE_ENVIRONMENT }}
+
+      - name: Deploy to staging slot
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ env.APP_SERVICE_NAME }}
+          slot-name: staging
+          package: publish
+
+      - name: Smoke test staging slot
+        run: |
+          echo "Waiting for staging slot to warm up..."
+          sleep 30
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://${{ env.APP_SERVICE_NAME }}-staging.azurewebsites.net/health)
+          echo "Health check status: $STATUS"
+          if [ "$STATUS" != "200" ]; then
+            echo "Smoke test failed - staging slot returned $STATUS"
+            exit 1
+          fi
+          echo "Smoke test passed"
+
+      - name: Swap staging to production
+        run: |
+          az webapp deployment slot swap \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --name ${{ env.APP_SERVICE_NAME }} \
+            --slot staging \
+            --target-slot production          
+          
