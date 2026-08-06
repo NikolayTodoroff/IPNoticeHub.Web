@@ -1,0 +1,53 @@
+name: 'Terraform Setup'
+description: 'Authenticate to Azure and initialize Terraform'
+
+inputs:
+  client-id:
+    description: 'Azure client ID'
+    required: true
+  tenant-id:
+    description: 'Azure tenant ID'
+    required: true
+  subscription-id:
+    description: 'Azure subscription ID'
+    required: true
+  tf-version:
+    description: 'Terraform version'
+    required: true
+  working-directory:
+    description: 'Working directory for Terraform'
+    required: true
+  backend-rg:
+    description: 'Backend resource group name'
+    required: true
+  backend-sa:
+    description: 'Backend storage account name'
+    required: true
+  backend-key:
+    description: 'Backend storage key'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Azure Login
+      uses: azure/login@v3
+      with:
+        client-id: ${{ inputs.client-id }}
+        tenant-id: ${{ inputs.tenant-id }}
+        subscription-id: ${{ inputs.subscription-id }}
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v4
+      with:
+        terraform_version: ${{ inputs.tf-version }}
+
+    - name: Terraform Init
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        terraform init \
+          -backend-config="resource_group_name=${{ inputs.backend-rg }}" \
+          -backend-config="storage_account_name=${{ inputs.backend-sa }}" \
+          -backend-config="container_name=tfstate" \
+          -backend-config="key=${{ inputs.backend-key }}"    
