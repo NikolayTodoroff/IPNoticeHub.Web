@@ -11,7 +11,8 @@ $scope = "/subscriptions/$SubscriptionId"
 $roles = @(
     "Contributor",
     "Storage Blob Data Contributor",
-    "User Access Administrator"
+    "User Access Administrator",
+    "Key Vault Secrets Officer"
 )
 
 foreach ($role in $roles) {
