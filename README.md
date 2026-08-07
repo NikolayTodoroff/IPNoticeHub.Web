@@ -1,149 +1,116 @@
-# IPNoticeHub 🛡️
-Production-ready ASP.NET Core app deployed on Azure App Service with custom domain and secure infrastructure.
+# IPNoticeHub
+
+ASP.NET Core application for intellectual property management and automated legal document generation, deployed to Azure App Service with Terraform infrastructure and GitHub Actions CI/CD across dev and prod environments. Authentication to Azure uses OIDC federated credentials — no secrets stored anywhere.
 
 ---
 
-### IP Management & Automated Enforcement
+## What It Does
 
-* **IPNoticeHub** is a web application designed to help content creators, online sellers, musicians and brand owners manage their intellectual property registrations and efficiently generate legal documents such as DMCA takedown notices and Cease & Desist letters.
+IPNoticeHub helps content creators, online sellers, and brand owners manage intellectual property registrations and generate legal documents like DMCA takedown notices and Cease & Desist letters. Built as a production-oriented portfolio application combining a cleanly structured .NET backend with secure, automated Azure infrastructure.
 
-The project is built as a production-oriented portfolio application, combining a cleanly structured .NET backend with a secure, policy-driven Azure infrastructure, and deployed via Infrastructure as Code (IaC).
-
----
-
-### Getting Started / Demo Accounts
-
-* **Getting Started:**
-1. Update the DefaultConnection string in appsettings.json.
-2. Update-Database.
-3. Run the project.
-
-* **Demo Accounts:**
-
-Admin:
-email: admin@ipnoticehub.com |
-password: Admin!234
-
-Demo User:
-email: demo@ipnoticehub.com |
-password: DemoUser!234
-
-* **First Steps Inside the App:**
-
-To use the Trademark Search from the Home page, enter the name of any of the pre-seeded marks such as Google, Apple, LG, Spotify, or others.
-
-For a comprehensive view of the system's capabilities, sign in with the Demo User account. This profile already contains sample trademarks in the user collection and watchlist, as well as sample copyright registrations, allowing the main workflows to be explored immediately.
+**Core features:** global trademark search, centralized IP collection management, automated DMCA/C&D document generation via QuestPDF, and a document library with versioning.
 
 ---
 
-### Problem Statement
-Online sellers, content creators and brand owners often face unauthorized use of their work across marketplaces, websites, and social platforms.
-Enforcement usually requires submitting formal legal documents, which are repetitive to create and difficult to manage over time.
+## Application Preview
 
-IPNoticeHub addresses these challenges by centralizing registrations, document generation, and monitoring in one system.
-
----
-
-### Core Features
-* **Global Search** Explore trademark registrations using multiple parameters. 
-* **IP Collection** Centralized management for personal Trademarks and Copyrights. 
-* **Automated Enforcement** Generation of DMCA takedown notices and Cease & Desist letters. 
-* **Document Library** Secure storage and versioning of generated legal documents. 
+![Trademark Search](./docs/images/trademark_search.png)
+![IP Collection](./docs/images/trademark_collection.png)
+![Trademark Watchlist](./docs/images/watchlist.png)
 
 ---
 
-### Application Architecture & Hosting
-The backend is built on **.NET 10.0** following **Clean Architecture** principles to ensure scalability and maintainability.
+## What It Deploys
 
-* **Core Layers:** Strict separation of Domain, Application, Infrastructure, and Presentation (Web) layers.
-* **Data Persistence:** Entity Framework Core with Code-First migrations and explicit entity configurations.
-* **Synthetic Data:** Integrated **Bogus** library for generating realistic trademark/user data for UAT and load testing.
-* **Document Engine:** Quick PDF generation via **QuestPDF** for legally formatted notices.
-* **Quality Assurance:** Automated testing suite using **FluentAssertions** and **SQLite** for isolated, fast execution.
-* **Hosting:** Deployed on **Azure App Service (Linux)** with custom domain and HTTPS enforcement.
+Two identical environments (`dev` and `prod`), each with:
 
----
+- **App Service** (Linux P1v2) with staging slot for zero-downtime swaps
+- **Azure SQL** Server and database
+- **Key Vault** (RBAC mode) for credentials and connection strings
+- **Application Insights** with Log Analytics for monitoring and diagnostics
 
-### Azure Infrastructure & Security (IaC)
-The environment is fully provisioned via **Bicep (Infrastructure as Code)**, emphasizing a **Zero-Trust** security model.
-
-### Networking & Connectivity
-* **VNet Isolation:** Dedicated Virtual Network with dedicated subnets for App Service Integration and Private Endpoints.
-* **Private Link Service:** PaaS services (SQL, Key Vault, Storage) have **Public Access Disabled**. All service-to-service communication is restricted to the Azure backbone via **Private Endpoints**.
-* **DNS Governance:** Private DNS Zones linked to the VNet for secure, internal name resolution.
-* **Secure Administrative Access:** A Linux VM is deployed inside the VNet and accessed via **Azure Bastion**, enabling secure management and troubleshooting of private resources without exposing SSH/RDP to the public internet.
-
-### Identity & Cyber Security
-* **Keyless Architecture:** Utilizes **User-Assigned Managed Identities** and **Azure RBAC**. No secrets or connection strings are stored in app settings.
-* **Secrets Management:** Sensitive configurations are vaulted in **Azure Key Vault** with RBAC-only access.
-* **Access Control:** App Service SCM restricted via IP-based Access Restrictions (Home Office IP Allow-listing).
-* **Zero Secret Exposure:** No credentials stored in code or configuration — all access is handled via Managed Identities.
-
-### Governance & Observability
-* **Azure Policy:** Enforced initiatives for HTTPS-only, TLS 1.2+ requirements, and resource location compliance.
-* **Operational Excellence:** Log Analytics workspace integration with diagnostic settings enabled for all major services.
-* **Cost Management:** Budget alerts and **Resource Delete Locks** applied to critical infrastructure.
-
-### Access & Security Model
-* No public **DB** access
-* **Private endpoints** only
-* **Bastion** entry point
-* **Managed identity** auth
+Dev environment includes seeded test data via Bogus library. Prod is deployed clean for production use.
 
 ---
 
-### Infrastructure Preview
-<details><summary>🌐 <b>Networking (Click to Expand)</b></summary>
+## Repository Structure
 
-<img src="docs/Networking.png" width="800" />
- 
-The internal network is segmented into dedicated subnets for App Service integration and Private Link endpoints.
-
-</details> 
-
-
-<details><summary>🗺️ <b>DNS (Click to Expand)</b></summary>
-
-<img src="docs/DNS.png" width="800" />
-
-PaaS services are isolated within a private backbone, removing them from the public internet.
-
-</details>
-
-
-<details> <summary>🔑 <b>KeyVault (Click to Expand)</b></summary>
-
-<img src="docs/KeyVault.png" width="800" />
-
-Hardened Key Vault Networking: Public access is explicitly disabled, with communication restricted solely to private endpoint connections.
-
-</details>
-
-<details> <summary>⚖️ <b>Compliance (Click to Expand)</b></summary>
-
-<img src="docs/Compliance.png" width="800" />
-
-Policy Compliance The environment is audited against custom Initiatives, ensuring 100% compliance for TLS settings, HTTPS enforcement, and location tagging.
-
-</details>
-
-<details> <summary>🔐 <b>Locks (Click to Expand)</b></summary>
-
-<img src="docs/Locks.png" width="800" />
-
-Resource & Resource Group Locks Implementation of CanNotDelete locks on critical infrastructure to protect the Network, SQL, and Key Vault from accidental deletion.
-
-</details>
-
-<details> <summary>🆔 <b>Identity (Click to Expand)</b></summary>
-
-<img src="docs/Identity.png" width="800" />
-
-Managed Identity & Role Assignments Utilizing User-Assigned Managed Identities (UAMI) for specific tasks such as tagging governance and policy remediation.
-
-</details>
+```
+├── .github/
+│   ├── actions/
+│   │   └── terraform-setup/         
+│   └── workflows/
+│       ├── infrastructure.yml       
+│       └── application.yml          
+├── src/
+│   ├── IPNoticeHub.Web/             
+│   ├── IPNoticeHub.Infrastructure/  
+│   └── IPNoticeHub.Application/     
+├── tests/                           
+├── ops/
+│   └── infra/
+│       ├── main/                    
+│       └── env/                     
+├── scripts/                         
+└── .checkov.yaml                    
+```
 
 ---
 
-### 👨‍💻 Author
-* **Nikolay Todorov**
+## Infrastructure Pipeline
+
+```
+Validate (Terraform validate + TFLint + Checkov) → Plan → Apply
+```
+
+A composite action handles Azure OIDC login, Terraform setup, and backend initialization — keeping each job concise. Backend configuration values are computed once in the validate job and passed to subsequent jobs via outputs.
+
+---
+
+## Application Pipeline
+
+```
+Build + test + coverage → Deploy to staging → EF migrations → Smoke test → Swap to production
+```
+
+The connection string is retrieved from Key Vault at deploy time, masked in logs, and injected as an environment variable for EF Core migrations. Deployments use the staging slot pattern: deploy to staging, verify health, then swap to production with zero downtime. If the smoke test fails, production stays on the previous version.
+
+---
+
+## Application Architecture
+
+Built on **.NET 10** following **Clean Architecture** with strict separation of Domain, Application, Infrastructure, and Web layers.
+
+- **Entity Framework Core** with Code-First migrations and explicit entity configurations
+- **QuestPDF** for generating legally formatted DMCA and C&D documents
+- **Bogus** library for realistic test data generation (dev environment only)
+- **FluentAssertions** and **SQLite** for isolated, fast test execution
+- **Coverlet** for code coverage collection
+
+---
+
+## Key Patterns
+
+- **OIDC federated credentials** — no client secrets, short-lived tokens per workflow run
+- **Composite action** — shared Terraform setup logic across infrastructure and application workflows
+- **Key Vault secret injection** — connection string retrieved at deploy time, masked in logs
+- **EF Core migrations in pipeline** — database schema updates run before slot swap
+- **Zero-downtime deployment** — staging slot smoke test, then swap to production
+- **Concurrency control** — prevents simultaneous pipeline runs against the same environment
+- **Checkov + TFLint** — IaC security scanning, Terraform linting
+
+---
+
+## Demo Accounts (Dev Environment)
+
+**Demo Admin:** admin@ipnoticehub.com / Admin!234
+
+**Demo User:** demo@ipnoticehub.com / DemoUser!234
+
+To explore the system, sign in with the Demo User account — it includes sample trademarks, copyright registrations, and generated documents. Use the trademark search on the home page with pre-seeded marks like Google, Apple, LG, or Spotify.
+
+---
+
+## Tools
+
+Terraform, GitHub Actions, ASP.NET Core (.NET 10), Azure App Service, Azure SQL, Azure Key Vault, Application Insights, Entity Framework Core, QuestPDF, Bogus, Checkov, TFLint, Coverlet
